@@ -8,6 +8,6 @@ public class TestController {
 
 	@GetMapping("/test")
 	public String healthCheck() {
-		return "server test";
+		return "server testV2";
 	}
 }
