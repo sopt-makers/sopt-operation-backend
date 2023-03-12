@@ -25,6 +25,19 @@ jobs:
         run: chmod +x ./gradlew
         shell: bash
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: 'Get application.yml from AWS S3'
+        run: |
+          aws s3 cp \
+            --region ${{ secrets.AWS_REGION }} \
+            s3://{{ secrets.AWS_BUCKET_NAME }}/dev/deploy/application-dev.yml src/main/resources/application.yml
+
       - name: Build with Gradle
         run: ./gradlew build
         shell: bash
@@ -32,13 +45,6 @@ jobs:
       - name: Make zip file
         run: zip -r ./$GITHUB_SHA.zip .
         shell: bash
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Upload to S3
         run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://${{ secrets.AWS_BUCKET_NAME }}/dev/deploy/$GITHUB_SHA.zip
