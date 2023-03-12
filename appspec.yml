@@ -3,7 +3,7 @@ os: linux
 
 files:
   - source: /
-    destination: /home/ubuntu/smeme/
+    destination: /home/ubuntu/operation/
     overwrite: yes
 
 permissions:
