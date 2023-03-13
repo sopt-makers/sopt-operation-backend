@@ -34,7 +34,7 @@ jobs:
         run: |
           aws s3 cp \
             --region ${{ secrets.AWS_REGION }} \
-            s3://${{ secrets.AWS_BUCKET_NAME }}/dev/deploy/application-dev.yml src/main/resources/application.yml
+            s3://${{ secrets.AWS_BUCKET_NAME }}/dev/application-dev.yml src/main/resources/application.yml
 
       - name: Build with Gradle
         run: ./gradlew build
