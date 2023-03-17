@@ -25,7 +25,7 @@ jobs:
 
       - name: 'Create application.yml'
         run: |
-          ls src/main/resources
+          ls src/main
           pwd
           touch src/main/resources/application-prod.yml
           echo "${{ secrets.APPLICATION_PROD }}" >> src/main/resources/application-prod.yml
