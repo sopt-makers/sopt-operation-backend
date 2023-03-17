@@ -1,8 +1,8 @@
-name: cd-dev
+name: cd-prod
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -26,9 +26,9 @@ jobs:
       - name: Create application.yml
         run: |
           pwd
-          touch src/main/resources/application-dev.yml
-          echo "${{ secrets.APPLICATION_DEV }}" >> src/main/resources/application-dev.yml
-          cat src/main/resources/application-dev.yml
+          touch src/main/resources/application-prod.yml
+          echo "${{ secrets.APPLICATION_PROD }}" >> src/main/resources/application-prod.yml
+          cat src/main/resources/application-prod.yml
 
       - name: Build with Gradle
         run: ./gradlew build
@@ -46,10 +46,10 @@ jobs:
         shell: bash
 
       - name: Upload to S3
-        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://${{ secrets.AWS_BUCKET_NAME }}/dev/deploy/$GITHUB_SHA.zip
+        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://${{ secrets.AWS_BUCKET_NAME }}/prod/deploy/$GITHUB_SHA.zip
 
       - name: Code Deploy
         run: aws deploy create-deployment --application-name operation
           --deployment-config-name CodeDeployDefault.AllAtOnce
-          --deployment-group-name dev
-          --s3-location bucket=${{ secrets.AWS_BUCKET_NAME }},bundleType=zip,key=dev/deploy/$GITHUB_SHA.zip
+          --deployment-group-name prod
+          --s3-location bucket=${{ secrets.AWS_BUCKET_NAME }},bundleType=zip,key=prod/deploy/$GITHUB_SHA.zip
