@@ -23,18 +23,12 @@ jobs:
         run: chmod +x ./gradlew
         shell: bash
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: 'Get application.yml from AWS S3'
+      - name: Create application.yml
         run: |
-          aws s3 cp \
-            --region ${{ secrets.AWS_REGION }} \
-            s3://${{ secrets.AWS_BUCKET_NAME }}/dev/application-dev.yml src/main/resources/application.yml
+          pwd
+          touch src/main/resources/application-dev.yml
+          echo "${{ secrets.APPLICATION_DEV }}" >> src/main/resources/application-dev.yml
+          cat src/main/resources/application-dev.yml
 
       - name: Build with Gradle
         run: ./gradlew build
