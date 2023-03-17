@@ -23,7 +23,7 @@ jobs:
         run: chmod +x ./gradlew
         shell: bash
 
-      - name: 'Create application.yml'
+      - name: Create application.yml
         run: |
           pwd
           touch src/main/resources/application-prod.yml
