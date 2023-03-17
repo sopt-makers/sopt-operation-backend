@@ -25,8 +25,8 @@ jobs:
 
       - name: 'Create application.yml'
         run: |
-          echo "${{ secrets.APPLICATION_PROD }}" > src/main/resources/application-prod.yml
-          cat src/main/resources/application-prod.yml
+          echo "${{ secrets.APPLICATION_PROD }}" > ./src/main/resources/application-prod.yml
+          cat ./src/main/resources/application-prod.yml
 
       - name: Build with Gradle
         run: ./gradlew build
