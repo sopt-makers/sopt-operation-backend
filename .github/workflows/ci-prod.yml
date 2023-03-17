@@ -28,7 +28,6 @@ jobs:
           pwd
           touch src/main/resources/application-prod.yml
           echo ${{ secrets.APPLICATION_PROD }} >> src/main/resources/application-prod.yml
-          ls src/main/resources
 
       - name: Build with Gradle
         run: ./gradlew build
