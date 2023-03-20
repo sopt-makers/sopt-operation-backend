@@ -36,9 +36,9 @@ public class Attendance {
 	@OneToMany(mappedBy = "attendance")
 	private List<SubAttendance> subAttendances = new ArrayList<>();
 
-	public Attendance(Long memberId, Session session, AttendanceStatus status) {
+	public Attendance(Long memberId, Session session) {
 		this.memberId = memberId;
 		this.session = session;
-		this.status = status;
+		this.status = AttendanceStatus.ABSENT;
 	}
 }
