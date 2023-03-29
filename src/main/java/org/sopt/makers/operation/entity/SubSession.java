@@ -31,16 +31,16 @@ public class SubSession {
 	@JoinColumn(name = "session_id")
 	private Session session;
 
-	private int order;
+	private int round;
 
 	private LocalDateTime startAt;
 
 	@OneToMany(mappedBy = "subSession")
 	private List<SubAttendance> subAttendances = new ArrayList<>();
 
-	public SubSession(Session session, int order, LocalDateTime startAt) {
+	public SubSession(Session session, int round, LocalDateTime startAt) {
 		this.session = session;
-		this.order = order;
+		this.round = round;
 		this.startAt = startAt;
 	}
 }
