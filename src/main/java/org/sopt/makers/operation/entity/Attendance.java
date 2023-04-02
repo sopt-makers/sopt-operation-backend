@@ -29,8 +29,8 @@ public class Attendance {
 	private Long memberId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "session_id")
-	private Session session;
+	@JoinColumn(name = "lecture_id")
+	private Lecture lecture;
 
 	@Enumerated(EnumType.STRING)
 	private AttendanceStatus status;
@@ -38,9 +38,9 @@ public class Attendance {
 	@OneToMany(mappedBy = "attendance")
 	private List<SubAttendance> subAttendances = new ArrayList<>();
 
-	public Attendance(Long memberId, Session session) {
+	public Attendance(Long memberId, Lecture lecture) {
 		this.memberId = memberId;
-		this.session = session;
+		this.lecture = lecture;
 		this.status = AttendanceStatus.ABSENT;
 	}
 }

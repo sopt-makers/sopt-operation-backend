@@ -21,25 +21,25 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @Getter
-public class SubSession {
+public class SubLecture {
 
 	@Id @GeneratedValue(strategy = IDENTITY)
-	@Column(name = "sub_session_id")
+	@Column(name = "sub_lecture_id")
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "session_id")
-	private Session session;
+	@JoinColumn(name = "lecture_id")
+	private Lecture lecture;
 
 	private int order;
 
 	private LocalDateTime startAt;
 
-	@OneToMany(mappedBy = "subSession")
+	@OneToMany(mappedBy = "subLecture")
 	private List<SubAttendance> subAttendances = new ArrayList<>();
 
-	public SubSession(Session session, int order, LocalDateTime startAt) {
-		this.session = session;
+	public SubLecture(Lecture lecture, int order, LocalDateTime startAt) {
+		this.lecture = lecture;
 		this.order = order;
 		this.startAt = startAt;
 	}

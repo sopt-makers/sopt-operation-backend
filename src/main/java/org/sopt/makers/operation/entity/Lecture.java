@@ -17,10 +17,10 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
-public class Session {
+public class Lecture {
 
 	@Id @GeneratedValue(strategy = IDENTITY)
-	@Column(name = "session_id")
+	@Column(name = "lecture_id")
 	private Long id;
 
 	private String name;
@@ -28,13 +28,13 @@ public class Session {
 	@Enumerated(EnumType.STRING)
 	private Part part;
 
-	@OneToMany(mappedBy = "session")
-	List<SubSession> subSessions = new ArrayList<>();
+	@OneToMany(mappedBy = "lecture")
+	List<SubLecture> subLectures = new ArrayList<>();
 
-	@OneToMany(mappedBy = "session")
+	@OneToMany(mappedBy = "lecture")
 	List<Attendance> attendances = new ArrayList<>();
 
-	public Session(String name, Part part) {
+	public Lecture(String name, Part part) {
 		this.name = name;
 		this.part = part;
 	}

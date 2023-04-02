@@ -25,14 +25,14 @@ public class SubAttendance {
 	private Attendance attendance;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "sub_session_id")
-	private SubSession subSession;
+	@JoinColumn(name = "sub_lecture_id")
+	private SubLecture subLecture;
 
 	private boolean isCheck;
 
-	public SubAttendance(Attendance attendance, SubSession subSession) {
+	public SubAttendance(Attendance attendance, SubLecture subLecture) {
 		this.attendance = attendance;
-		this.subSession = subSession;
+		this.subLecture = subLecture;
 		isCheck = false;
 	}
 }
