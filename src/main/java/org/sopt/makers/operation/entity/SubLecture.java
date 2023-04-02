@@ -31,16 +31,16 @@ public class SubLecture {
 	@JoinColumn(name = "lecture_id")
 	private Lecture lecture;
 
-	private int order;
+	private int round;
 
 	private LocalDateTime startAt;
 
 	@OneToMany(mappedBy = "subLecture")
 	private List<SubAttendance> subAttendances = new ArrayList<>();
 
-	public SubLecture(Lecture lecture, int order, LocalDateTime startAt) {
+	public SubLecture(Lecture lecture, int round, LocalDateTime startAt) {
 		this.lecture = lecture;
-		this.order = order;
+		this.round = round;
 		this.startAt = startAt;
 	}
 }

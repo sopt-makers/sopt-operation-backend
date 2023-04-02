@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
-public class Lecture {
+public class Lecture extends BaseEntity {
 
 	@Id @GeneratedValue(strategy = IDENTITY)
 	@Column(name = "lecture_id")
@@ -27,6 +27,8 @@ public class Lecture {
 
 	@Enumerated(EnumType.STRING)
 	private Part part;
+
+	private int generation;
 
 	@OneToMany(mappedBy = "lecture")
 	List<SubLecture> subLectures = new ArrayList<>();

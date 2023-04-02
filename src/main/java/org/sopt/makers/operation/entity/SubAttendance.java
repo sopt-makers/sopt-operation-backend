@@ -28,11 +28,11 @@ public class SubAttendance {
 	@JoinColumn(name = "sub_lecture_id")
 	private SubLecture subLecture;
 
-	private boolean isCheck;
+	private AttendanceStatus status;
 
 	public SubAttendance(Attendance attendance, SubLecture subLecture) {
 		this.attendance = attendance;
 		this.subLecture = subLecture;
-		isCheck = false;
+		status = AttendanceStatus.ABSENT;
 	}
 }
