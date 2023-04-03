@@ -28,9 +28,10 @@ public class Member {
 
 	private String university;
 	private int score;
+	private String phone;
 
-	public Member(
-		Long playgroundId, String name, int generation, ObYb obyb, Part part, Gender gender, String university) {
+	public Member(Long playgroundId, String name, int generation, ObYb obyb, Part part,
+		Gender gender, String university, String phone) {
 
 		this.playgroundId = playgroundId;
 		this.name = name;
@@ -39,6 +40,7 @@ public class Member {
 		this.part = part;
 		this.gender = gender;
 		this.university = university;
+		this.phone = phone;
 		this.score = 2;
 	}
 }
