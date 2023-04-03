@@ -6,7 +6,6 @@ import lombok.val;
 import org.sopt.makers.operation.exception.TokenException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +37,7 @@ public class JwtTokenProvider {
         JwtBuilder jwtBuilder = Jwts.builder()
                 .setSubject(String.valueOf(authentication.getPrincipal()))
                 .setHeader(createHeader())
-                .setExpiration(createAccessExpireDate())
+                .setExpiration(createExpireDate("access"))
                 .signWith(accessKey, SignatureAlgorithm.HS256);
 
         return jwtBuilder.compact();
@@ -51,16 +50,14 @@ public class JwtTokenProvider {
         JwtBuilder jwtBuilder = Jwts.builder()
                 .setSubject(String.valueOf(authentication.getPrincipal()))
                 .setHeader(createHeader())
-                .setExpiration(createRefreshExpireDate())
+                .setExpiration(createExpireDate("refresh"))
                 .signWith(refreshKey, SignatureAlgorithm.HS256);
 
         return jwtBuilder.compact();
     }
 
     public AdminAuthentication getAuthentication(String token) {
-        AdminAuthentication authentication = new AdminAuthentication(getId(token), null, null);
-
-        return authentication;
+        return new AdminAuthentication(getId(token), null, null);
     }
 
     public Long getId(String token) {
@@ -75,29 +72,33 @@ public class JwtTokenProvider {
         return req.getHeader("Authorization");
     }
 
-    public boolean validateAccessTokenExpiration(String token) {
-        val now = LocalDateTime.now(KST);
-
-        try {
-            Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(accessSecretKey).build().parseClaimsJws(token);
-
-            if(claims.getBody().getExpiration().toInstant().atZone(KST).toLocalDateTime().isBefore(now)) return false;
-
-            return true;
-        } catch(Exception e) {
-            return false;
-        }
+    private LocalDateTime getCurrentTime() {
+        return LocalDateTime.now(KST);
     }
 
-    public boolean validateRefreshTokenExpiration(String token) {
-        val now = LocalDateTime.now(KST);
+    private String setSecretKey(String type) {
+        return switch (type) {
+            case "access" -> accessSecretKey;
+            case "refresh" -> refreshSecretKey;
+            default -> throw new TokenException("잘못된 유형의 토큰입니다");
+        };
+    }
+
+    private LocalDateTime setExpireTime(LocalDateTime now, String type) {
+        return switch (type) {
+            case "access" -> now.plusHours(5);
+            case "refresh" -> now.plusWeeks(2);
+            default -> throw new TokenException("잘못된 유형의 토큰입니다");
+        };
+    }
+
+    public boolean validateTokenExpiration(String token, String type) {
+        String secretKey = setSecretKey(type);
 
         try {
-            Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(refreshSecretKey).build().parseClaimsJws(token);
+            Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
 
-            if(claims.getBody().getExpiration().toInstant().atZone(KST).toLocalDateTime().isBefore(now)) return false;
-
-            return true;
+            return !claims.getBody().getExpiration().toInstant().atZone(KST).toLocalDateTime().isBefore(getCurrentTime());
         } catch(Exception e) {
             return false;
         }
@@ -113,15 +114,8 @@ public class JwtTokenProvider {
         return header;
     }
 
-    private Date createAccessExpireDate() {
-        val now = LocalDateTime.now(KST);
-
-        return Date.from(now.plusHours(5).atZone(ZoneId.systemDefault()).toInstant());
+    private Date createExpireDate(String type) {
+        return Date.from(setExpireTime(getCurrentTime(), type).atZone(ZoneId.systemDefault()).toInstant());
     }
 
-    private Date createRefreshExpireDate() {
-        val now = LocalDateTime.now(KST);
-
-        return Date.from(now.plusWeeks(2).atZone(ZoneId.systemDefault()).toInstant());
-    }
 }
