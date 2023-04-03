@@ -6,14 +6,14 @@ spring:
     baseline-on-migrate: true
 
   datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/operation?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=KST
-    username: root
-    password: root
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
 
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
       globally_quoted_identifiers: true
     properties:
       hibernate:

@@ -15,6 +15,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import org.sopt.makers.operation.entity.lecture.Lecture;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -36,7 +38,7 @@ public class SubLecture {
 	private LocalDateTime startAt;
 
 	@OneToMany(mappedBy = "subLecture")
-	private List<SubAttendance> subAttendances = new ArrayList<>();
+	private final List<SubAttendance> subAttendances = new ArrayList<>();
 
 	public SubLecture(Lecture lecture, int round, LocalDateTime startAt) {
 		this.lecture = lecture;
