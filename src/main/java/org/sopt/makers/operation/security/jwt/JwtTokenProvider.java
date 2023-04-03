@@ -37,7 +37,7 @@ public class JwtTokenProvider {
         JwtBuilder jwtBuilder = Jwts.builder()
                 .setSubject(String.valueOf(authentication.getPrincipal()))
                 .setHeader(createHeader())
-                .setExpiration(createExpireDate("access"))
+                .setExpiration(createExpireDate(JwtTokenType.ACCESS_TOKEN))
                 .signWith(accessKey, SignatureAlgorithm.HS256);
 
         return jwtBuilder.compact();
@@ -50,7 +50,7 @@ public class JwtTokenProvider {
         JwtBuilder jwtBuilder = Jwts.builder()
                 .setSubject(String.valueOf(authentication.getPrincipal()))
                 .setHeader(createHeader())
-                .setExpiration(createExpireDate("refresh"))
+                .setExpiration(createExpireDate(JwtTokenType.REFRESH_TOKEN))
                 .signWith(refreshKey, SignatureAlgorithm.HS256);
 
         return jwtBuilder.compact();
@@ -76,27 +76,23 @@ public class JwtTokenProvider {
         return LocalDateTime.now(KST);
     }
 
-    private String setSecretKey(String type) {
-        return switch (type) {
-            case "access" -> accessSecretKey;
-            case "refresh" -> refreshSecretKey;
-            default -> throw new TokenException("잘못된 유형의 토큰입니다");
+    private String setSecretKey(JwtTokenType jwtTokenType) {
+        return switch (jwtTokenType) {
+            case ACCESS_TOKEN -> accessSecretKey;
+            case REFRESH_TOKEN -> refreshSecretKey;
         };
     }
 
-    private LocalDateTime setExpireTime(LocalDateTime now, String type) {
-        return switch (type) {
-            case "access" -> now.plusHours(5);
-            case "refresh" -> now.plusWeeks(2);
-            default -> throw new TokenException("잘못된 유형의 토큰입니다");
+    private LocalDateTime setExpireTime(LocalDateTime now, JwtTokenType jwtTokenType) {
+        return switch (jwtTokenType) {
+            case ACCESS_TOKEN -> now.plusHours(5);
+            case REFRESH_TOKEN -> now.plusWeeks(2);
         };
     }
 
-    public boolean validateTokenExpiration(String token, String type) {
-        String secretKey = setSecretKey(type);
-
+    public boolean validateTokenExpiration(String token, JwtTokenType jwtTokenType) {
         try {
-            Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
+            Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(setSecretKey(jwtTokenType)).build().parseClaimsJws(token);
 
             return !claims.getBody().getExpiration().toInstant().atZone(KST).toLocalDateTime().isBefore(getCurrentTime());
         } catch(Exception e) {
@@ -114,8 +110,8 @@ public class JwtTokenProvider {
         return header;
     }
 
-    private Date createExpireDate(String type) {
-        return Date.from(setExpireTime(getCurrentTime(), type).atZone(ZoneId.systemDefault()).toInstant());
+    private Date createExpireDate(JwtTokenType jwtTokenType) {
+        return Date.from(setExpireTime(getCurrentTime(), jwtTokenType).atZone(ZoneId.systemDefault()).toInstant());
     }
 
 }
