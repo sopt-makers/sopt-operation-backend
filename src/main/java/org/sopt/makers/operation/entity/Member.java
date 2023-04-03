@@ -27,4 +27,18 @@ public class Member {
 	private Gender gender;
 
 	private String university;
+	private int score;
+
+	public Member(
+		Long playgroundId, String name, int generation, ObYb obyb, Part part, Gender gender, String university) {
+
+		this.playgroundId = playgroundId;
+		this.name = name;
+		this.generation = generation;
+		this.obyb = obyb;
+		this.part = part;
+		this.gender = gender;
+		this.university = university;
+		this.score = 2;
+	}
 }
