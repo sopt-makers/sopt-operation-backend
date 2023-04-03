@@ -3,12 +3,9 @@ package org.sopt.makers.operation.security.jwt;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.sopt.makers.operation.entity.Admin;
 import org.sopt.makers.operation.exception.TokenException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,44 +30,42 @@ public class JwtTokenProvider {
     @Value("${spring.jwt.secretKey.refresh}")
     private String refreshSecretKey;
     private final ZoneId KST = ZoneId.of("Asia/Seoul");
-    private final UserDetailsService userDetailsService;
 
-    public String generateAccessToken(Admin admin) {
+    public String generateAccessToken(Authentication authentication) {
         val secretKeyBytes = DatatypeConverter.parseBase64Binary(accessSecretKey);
         val accessKey = new SecretKeySpec(secretKeyBytes, SignatureAlgorithm.HS256.getJcaName());
 
         JwtBuilder jwtBuilder = Jwts.builder()
-                .setSubject(Long.toString(admin.getId()))
+                .setSubject(String.valueOf(authentication.getPrincipal()))
                 .setHeader(createHeader())
-                .setClaims(createClaims(admin))
                 .setExpiration(createAccessExpireDate())
                 .signWith(accessKey, SignatureAlgorithm.HS256);
 
         return jwtBuilder.compact();
     }
 
-    public String generateRefreshToken(Admin admin) {
+    public String generateRefreshToken(Authentication authentication) {
         val secretKeyBytes = DatatypeConverter.parseBase64Binary(refreshSecretKey);
         val refreshKey = new SecretKeySpec(secretKeyBytes, SignatureAlgorithm.HS256.getJcaName());
 
         JwtBuilder jwtBuilder = Jwts.builder()
-                .setSubject(Long.toString(admin.getId()))
+                .setSubject(String.valueOf(authentication.getPrincipal()))
                 .setHeader(createHeader())
-                .setClaims(createClaims(admin))
                 .setExpiration(createRefreshExpireDate())
                 .signWith(refreshKey, SignatureAlgorithm.HS256);
 
         return jwtBuilder.compact();
     }
 
-    public Authentication getAuthentication(String token) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(Long.toString(getId(token)));
-        return new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
+    public AdminAuthentication getAuthentication(String token) {
+        AdminAuthentication authentication = new AdminAuthentication(getId(token), null, null);
+
+        return authentication;
     }
 
     public Long getId(String token) {
         try {
-            return Long.parseLong(Jwts.parserBuilder().setSigningKey(accessSecretKey).build().parseClaimsJws(token).getBody().get("id").toString());
+            return Long.parseLong(Jwts.parserBuilder().setSigningKey(accessSecretKey).build().parseClaimsJws(token).getBody().getSubject());
         } catch(ExpiredJwtException e) {
             throw new TokenException("만료된 토큰입니다");
         }
@@ -116,16 +111,6 @@ public class JwtTokenProvider {
         header.put("regDate", System.currentTimeMillis());
 
         return header;
-    }
-
-    private Map<String, Object> createClaims(Admin admin) {
-        Map<String, Object> claims = new HashMap<>();
-
-        claims.put("id", admin.getId());
-        claims.put("status", admin.getStatus());
-        claims.put("role", admin.getRole());
-
-        return claims;
     }
 
     private Date createAccessExpireDate() {

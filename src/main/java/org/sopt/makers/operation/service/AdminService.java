@@ -9,7 +9,9 @@ import org.sopt.makers.operation.entity.Admin;
 import org.sopt.makers.operation.entity.AdminStatus;
 import org.sopt.makers.operation.exception.AdminFailureException;
 import org.sopt.makers.operation.repository.AdminRepository;
+import org.sopt.makers.operation.security.jwt.AdminAuthentication;
 import org.sopt.makers.operation.security.jwt.JwtTokenProvider;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,9 +53,11 @@ public class AdminService implements AdminServiceImpl {
 
         if(admin.getStatus().equals(AdminStatus.NOT_CERTIFIED)) throw new AdminFailureException("승인되지 않은 계정입니다");
 
-        admin.updateRefreshToken(jwtTokenProvider.generateRefreshToken(admin));
+        Authentication authentication = new AdminAuthentication(admin.getId(), null, null);
 
-        return new LoginResponseDTO(admin.getId(), admin.getName(), jwtTokenProvider.generateAccessToken(admin));
+        admin.updateRefreshToken(jwtTokenProvider.generateRefreshToken(authentication));
+
+        return new LoginResponseDTO(admin.getId(), admin.getName(), jwtTokenProvider.generateAccessToken(authentication));
     }
 
     private void isEmailDuplicated(String email){
