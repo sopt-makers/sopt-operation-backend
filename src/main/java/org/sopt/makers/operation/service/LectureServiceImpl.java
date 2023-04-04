@@ -1,7 +1,5 @@
 package org.sopt.makers.operation.service;
 
-import java.util.List;
-
 import org.sopt.makers.operation.dto.lecture.LectureRequestDTO;
 import org.sopt.makers.operation.dto.member.MemberSearchCondition;
 import org.sopt.makers.operation.entity.Attendance;
