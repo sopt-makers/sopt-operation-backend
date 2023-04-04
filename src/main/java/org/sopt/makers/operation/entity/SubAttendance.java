@@ -10,11 +10,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
-public class SubAttendance {
+@Getter
+public class SubAttendance extends BaseEntity {
 
 	@Id @GeneratedValue(strategy = IDENTITY)
 	@Column(name = "sub_attendance_id")

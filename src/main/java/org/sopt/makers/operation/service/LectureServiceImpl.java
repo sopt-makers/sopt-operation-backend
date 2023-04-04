@@ -1,11 +1,16 @@
 package org.sopt.makers.operation.service;
 
+import static org.sopt.makers.operation.common.ExceptionMessage.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
+
+import javax.persistence.EntityNotFoundException;
 
 import org.sopt.makers.operation.dto.lecture.AttendanceVO;
 import org.sopt.makers.operation.dto.lecture.LectureRequestDTO;
 import org.sopt.makers.operation.dto.lecture.LectureResponseDTO;
+import org.sopt.makers.operation.dto.lecture.LecturesResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LectureVO;
 import org.sopt.makers.operation.dto.member.MemberSearchCondition;
 import org.sopt.makers.operation.entity.Attendance;
@@ -39,11 +44,20 @@ public class LectureServiceImpl implements LectureService {
 	}
 
 	@Override
-	public LectureResponseDTO getLecturesByGeneration(int generation) {
+	public LecturesResponseDTO getLecturesByGeneration(int generation) {
 		List<LectureVO> lectures = lectureRepository.findByGenerationOrderByStartDateDesc(generation)
 			.stream().map(this::getLectureVO)
 			.toList();
-		return LectureResponseDTO.of(generation, lectures);
+		return LecturesResponseDTO.of(generation, lectures);
+	}
+
+	@Override
+	public LectureResponseDTO getLecture(Long lectureId, Part part) {
+		System.out.println("test: " + lectureId + " " + part);
+		Lecture lecture = lectureRepository.findById(lectureId)
+			.orElseThrow(() -> new EntityNotFoundException(INVALID_LECTURE.getName()));
+		List<Attendance> attendances = attendanceRepository.getAttendanceByPart(lecture, part);
+		return LectureResponseDTO.of(lecture, attendances);
 	}
 
 	private LectureVO getLectureVO(Lecture lecture) {

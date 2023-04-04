@@ -19,10 +19,12 @@ import javax.persistence.OneToMany;
 
 import org.sopt.makers.operation.entity.lecture.Lecture;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
+@Getter
 public class Attendance {
 
 	@Id @GeneratedValue(strategy = IDENTITY)
