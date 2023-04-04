@@ -36,7 +36,7 @@ public class Member {
 	private Gender gender;
 
 	private String university;
-	private int score;
+	private float score;
 	private String phone;
 
 	@OneToMany(mappedBy = "member")

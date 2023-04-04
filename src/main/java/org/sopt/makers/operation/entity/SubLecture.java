@@ -5,6 +5,7 @@ import static javax.persistence.GenerationType.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -40,9 +41,20 @@ public class SubLecture {
 	@OneToMany(mappedBy = "subLecture")
 	private final List<SubAttendance> subAttendances = new ArrayList<>();
 
-	public SubLecture(Lecture lecture, int round, LocalDateTime startAt) {
-		this.lecture = lecture;
+	public SubLecture(Lecture lecture, int round) {
+		setLecture(lecture);
 		this.round = round;
-		this.startAt = startAt;
+	}
+
+	public void startAttendance() {
+		this.startAt = LocalDateTime.now();
+	}
+
+	private void setLecture(Lecture lecture) {
+		if (Objects.nonNull(this.lecture)) {
+			this.lecture.getSubLectures().remove(this);
+		}
+		this.lecture = lecture;
+		lecture.getSubLectures().add(this);
 	}
 }
