@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -26,6 +28,13 @@ public class LectureController {
 	private final AdminService adminService;
 	private final LectureService lectureService;
 
+	@ApiOperation(value = "세션 생성")
+	@ApiResponses({
+		@io.swagger.annotations.ApiResponse(code = 201, message = "세션 생성 성공"),
+		@io.swagger.annotations.ApiResponse(code = 400, message = "필요한 값이 없음"),
+		@io.swagger.annotations.ApiResponse(code = 401, message = "유효하지 않은 토큰"),
+		@io.swagger.annotations.ApiResponse(code = 500, message = "서버 에러")
+	})
 	@PostMapping
 	public ResponseEntity<ApiResponse> createLecture(@RequestBody LectureRequestDTO requestDTO, Principal principal) {
 		adminService.confirmAdmin(Long.valueOf(principal.getName()));
