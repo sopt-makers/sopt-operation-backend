@@ -1,11 +1,18 @@
 package org.sopt.makers.operation.repository.attendance;
 
+import static java.util.Objects.*;
 import static org.sopt.makers.operation.entity.QAttendance.*;
+import static org.sopt.makers.operation.entity.QMember.*;
 
+import java.util.List;
+
+import org.sopt.makers.operation.entity.Attendance;
 import org.sopt.makers.operation.entity.AttendanceStatus;
+import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.lecture.Lecture;
 import org.springframework.stereotype.Repository;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -50,5 +57,21 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 				attendance.status.eq(AttendanceStatus.TARDY)
 			)
 			.fetchOne();
+	}
+
+	@Override
+	public List<Attendance> getAttendanceByPart(Lecture lecture, Part part) {
+		return queryFactory
+			.select(attendance)
+			.from(attendance)
+			.where(
+				attendance.lecture.eq(lecture),
+				partEq(part)
+			)
+			.fetch();
+	}
+
+	private BooleanExpression partEq(Part part) {
+		return nonNull(part) ? member.part.eq(part) : null;
 	}
 }

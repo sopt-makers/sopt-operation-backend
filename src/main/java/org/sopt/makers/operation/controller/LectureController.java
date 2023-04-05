@@ -5,13 +5,18 @@ import static org.sopt.makers.operation.common.ResponseMessage.*;
 import java.net.URI;
 import java.security.Principal;
 
+import javax.websocket.server.PathParam;
+
 import org.sopt.makers.operation.common.ApiResponse;
 import org.sopt.makers.operation.dto.lecture.LectureRequestDTO;
 import org.sopt.makers.operation.dto.lecture.LectureResponseDTO;
+import org.sopt.makers.operation.dto.lecture.LecturesResponseDTO;
+import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.service.AdminService;
 import org.sopt.makers.operation.service.LectureService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,12 +52,34 @@ public class LectureController {
 			.body(ApiResponse.success(SUCCESS_CREATE_LECTURE.getMessage(), lectureId));
 	}
 
+	@ApiOperation(value = "세션 리스트 조회")
+	@ApiResponses({
+		@io.swagger.annotations.ApiResponse(code = 200, message = "세션 리스트 조회 성공"),
+		@io.swagger.annotations.ApiResponse(code = 400, message = "필요한 값이 없음"),
+		@io.swagger.annotations.ApiResponse(code = 401, message = "유효하지 않은 토큰"),
+		@io.swagger.annotations.ApiResponse(code = 500, message = "서버 에러")
+	})
 	@GetMapping
 	public ResponseEntity<ApiResponse> getLecturesByGeneration(
 		@RequestParam("generation") int generation, Principal principal) {
 		adminService.confirmAdmin(Long.valueOf(principal.getName()));
-		LectureResponseDTO response = lectureService.getLecturesByGeneration(generation);
+		LecturesResponseDTO response = lectureService.getLecturesByGeneration(generation);
 		return ResponseEntity.ok(ApiResponse.success(SUCCESS_GET_LECTURES.getMessage(), response));
+	}
+
+	@ApiOperation(value = "세션 상세 조회")
+	@ApiResponses({
+		@io.swagger.annotations.ApiResponse(code = 200, message = "세션 상세 조회 성공"),
+		@io.swagger.annotations.ApiResponse(code = 400, message = "필요한 값이 없음"),
+		@io.swagger.annotations.ApiResponse(code = 401, message = "유효하지 않은 토큰"),
+		@io.swagger.annotations.ApiResponse(code = 500, message = "서버 에러")
+	})
+	@GetMapping("/{lectureId}")
+	public ResponseEntity<ApiResponse> getLecture(@PathVariable("lectureId") Long lectureId,
+		@RequestParam(required = false, name = "part") Part part, Principal principal) {
+		adminService.confirmAdmin(Long.valueOf(principal.getName()));
+		LectureResponseDTO response = lectureService.getLecture(lectureId, part);
+		return ResponseEntity.ok(ApiResponse.success(SUCCESS_GET_LECTURE.getMessage(), response));
 	}
 
 	private URI getURI(Long lectureId) {
