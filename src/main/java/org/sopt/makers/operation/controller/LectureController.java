@@ -7,12 +7,15 @@ import java.security.Principal;
 
 import org.sopt.makers.operation.common.ApiResponse;
 import org.sopt.makers.operation.dto.lecture.LectureRequestDTO;
+import org.sopt.makers.operation.dto.lecture.LectureResponseDTO;
 import org.sopt.makers.operation.service.AdminService;
 import org.sopt.makers.operation.service.LectureService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -42,6 +45,14 @@ public class LectureController {
 		return ResponseEntity
 			.created(getURI(lectureId))
 			.body(ApiResponse.success(SUCCESS_CREATE_LECTURE.getMessage(), lectureId));
+	}
+
+	@GetMapping
+	public ResponseEntity<ApiResponse> getLecturesByGeneration(
+		@RequestParam("generation") int generation, Principal principal) {
+		adminService.confirmAdmin(Long.valueOf(principal.getName()));
+		LectureResponseDTO response = lectureService.getLecturesByGeneration(generation);
+		return ResponseEntity.ok(ApiResponse.success(SUCCESS_GET_LECTURES.getMessage(), response));
 	}
 
 	private URI getURI(Long lectureId) {
