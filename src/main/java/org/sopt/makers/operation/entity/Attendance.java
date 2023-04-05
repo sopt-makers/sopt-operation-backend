@@ -43,7 +43,7 @@ public class Attendance {
 	private AttendanceStatus status;
 
 	@OneToMany(mappedBy = "attendance")
-	private List<SubAttendance> subAttendances = new ArrayList<>();
+	private final List<SubAttendance> subAttendances = new ArrayList<>();
 
 	public Attendance(Member member, Lecture lecture) {
 		setMember(member);
