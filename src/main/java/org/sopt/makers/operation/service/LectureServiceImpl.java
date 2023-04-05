@@ -8,6 +8,8 @@ import java.util.stream.Stream;
 
 import javax.persistence.EntityNotFoundException;
 
+import org.sopt.makers.operation.dto.lecture.AttendanceRequestDTO;
+import org.sopt.makers.operation.dto.lecture.AttendanceResponseDTO;
 import org.sopt.makers.operation.dto.lecture.AttendanceVO;
 import org.sopt.makers.operation.dto.lecture.LectureRequestDTO;
 import org.sopt.makers.operation.dto.lecture.LectureResponseDTO;
@@ -78,6 +80,24 @@ public class LectureServiceImpl implements LectureService {
 			.orElseThrow(() -> new EntityNotFoundException(INVALID_LECTURE.getName()));
 		List<Attendance> attendances = attendanceRepository.getAttendanceByPart(lecture, part);
 		return LectureResponseDTO.of(lecture, attendances);
+	}
+
+	@Override
+	@Transactional
+	public AttendanceResponseDTO startAttendance(AttendanceRequestDTO requestDTO) {
+		Lecture lecture = lectureRepository.findById(requestDTO.lectureId())
+			.orElseThrow(() -> new EntityNotFoundException(INVALID_LECTURE.getName()));
+
+		for (SubLecture subLecture : lecture.getSubLectures()) {
+			if (subLecture.getRound() < requestDTO.round() && subLecture.getStartAt() == null) {
+				throw new IllegalStateException(NOT_STARTED_PRE_ATTENDANCE.getName());
+			} else if (subLecture.getRound() == requestDTO.round()) {
+				subLecture.startAttendance();
+				return new AttendanceResponseDTO(lecture.getId(), subLecture.getId());
+			}
+		}
+
+		throw new IllegalStateException(INVALID_LECTURE.getName());
 	}
 
 	private LectureVO getLectureVO(Lecture lecture) {
