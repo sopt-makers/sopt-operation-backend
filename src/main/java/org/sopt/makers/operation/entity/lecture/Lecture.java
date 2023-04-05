@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.entity;
+package org.sopt.makers.operation.entity.lecture;
 
 import static javax.persistence.GenerationType.*;
 
@@ -14,10 +14,18 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import org.sopt.makers.operation.entity.Attendance;
+import org.sopt.makers.operation.entity.BaseEntity;
+import org.sopt.makers.operation.entity.Part;
+import org.sopt.makers.operation.entity.SubLecture;
+
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
+@Getter
 public class Lecture extends BaseEntity {
 
 	@Id @GeneratedValue(strategy = IDENTITY)
@@ -42,4 +50,16 @@ public class Lecture extends BaseEntity {
 
 	@OneToMany(mappedBy = "lecture")
 	List<Attendance> attendances = new ArrayList<>();
+
+	@Builder
+	public Lecture(String name, Part part, int generation, String place, LocalDateTime startDate, LocalDateTime endDate,
+		Attribute attribute) {
+		this.name = name;
+		this.part = part;
+		this.generation = generation;
+		this.place = place;
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.attribute = attribute;
+	}
 }
