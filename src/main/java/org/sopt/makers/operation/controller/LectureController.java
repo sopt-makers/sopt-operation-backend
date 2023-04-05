@@ -52,6 +52,13 @@ public class LectureController {
 			.body(ApiResponse.success(SUCCESS_CREATE_LECTURE.getMessage(), lectureId));
 	}
 
+	@ApiOperation(value = "세션 리스트 조회")
+	@ApiResponses({
+		@io.swagger.annotations.ApiResponse(code = 200, message = "세션 리스트 조회 성공"),
+		@io.swagger.annotations.ApiResponse(code = 400, message = "필요한 값이 없음"),
+		@io.swagger.annotations.ApiResponse(code = 401, message = "유효하지 않은 토큰"),
+		@io.swagger.annotations.ApiResponse(code = 500, message = "서버 에러")
+	})
 	@GetMapping
 	public ResponseEntity<ApiResponse> getLecturesByGeneration(
 		@RequestParam("generation") int generation, Principal principal) {
