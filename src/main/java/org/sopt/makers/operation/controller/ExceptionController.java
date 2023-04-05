@@ -26,4 +26,9 @@ public class ExceptionController {
     public ResponseEntity<ApiResponse> EntityNotFoundExceptionException (EntityNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.fail(ex.getMessage()));
     }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ApiResponse> IllegalStateExceptionException (IllegalStateException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.fail(ex.getMessage()));
+    }
 }
