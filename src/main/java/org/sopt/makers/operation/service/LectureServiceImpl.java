@@ -1,5 +1,7 @@
 package org.sopt.makers.operation.service;
 
+import java.util.stream.Stream;
+
 import org.sopt.makers.operation.dto.lecture.LectureRequestDTO;
 import org.sopt.makers.operation.dto.member.MemberSearchCondition;
 import org.sopt.makers.operation.entity.Attendance;
@@ -35,9 +37,8 @@ public class LectureServiceImpl implements LectureService {
 		Lecture savedLecture = lectureRepository.save(requestDTO.toEntity());
 
 		// 출석 세션 2개 생성
-		for (int i = 0; i < 2; i++) {
-			subLectureRepository.save(new SubLecture(savedLecture, i + 1));
-		}
+		Stream.iterate(1, i -> i + 1).limit(2)
+			.forEach(i -> subLectureRepository.save(new SubLecture(savedLecture, i)));
 
 		// 출석 생성
 		memberRepository
