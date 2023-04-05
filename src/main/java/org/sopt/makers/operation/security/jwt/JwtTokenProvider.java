@@ -12,8 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.DatatypeConverter;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,10 +30,14 @@ public class JwtTokenProvider {
 
     @Value("${spring.jwt.secretKey.refresh}")
     private String refreshSecretKey;
+
+    @Value("${spring.jwt.secretKey.app}")
+    private String appAccessSecretKey;
+
     private final ZoneId KST = ZoneId.of("Asia/Seoul");
 
     public String generateAccessToken(Authentication authentication) {
-        val secretKeyBytes = DatatypeConverter.parseBase64Binary(accessSecretKey);
+        val secretKeyBytes = DatatypeConverter.parseBase64Binary(encodeKey(accessSecretKey));
         val accessKey = new SecretKeySpec(secretKeyBytes, SignatureAlgorithm.HS256.getJcaName());
 
         JwtBuilder jwtBuilder = Jwts.builder()
@@ -44,7 +50,7 @@ public class JwtTokenProvider {
     }
 
     public String generateRefreshToken(Authentication authentication) {
-        val secretKeyBytes = DatatypeConverter.parseBase64Binary(refreshSecretKey);
+        val secretKeyBytes = DatatypeConverter.parseBase64Binary(encodeKey(refreshSecretKey));
         val refreshKey = new SecretKeySpec(secretKeyBytes, SignatureAlgorithm.HS256.getJcaName());
 
         JwtBuilder jwtBuilder = Jwts.builder()
@@ -56,13 +62,13 @@ public class JwtTokenProvider {
         return jwtBuilder.compact();
     }
 
-    public AdminAuthentication getAuthentication(String token) {
-        return new AdminAuthentication(getId(token), null, null);
+    public AdminAuthentication getAuthentication(String token, JwtTokenType jwtTokenType) {
+        return new AdminAuthentication(getId(token, jwtTokenType), null, null);
     }
 
-    public Long getId(String token) {
+    public Long getId(String token, JwtTokenType jwtTokenType) {
         try {
-            return Long.parseLong(Jwts.parserBuilder().setSigningKey(accessSecretKey).build().parseClaimsJws(token).getBody().getSubject());
+            return Long.parseLong(Jwts.parserBuilder().setSigningKey(encodeKey(setSecretKey(jwtTokenType))).build().parseClaimsJws(token).getBody().getSubject());
         } catch(ExpiredJwtException e) {
             throw new TokenException("만료된 토큰입니다");
         }
@@ -70,6 +76,10 @@ public class JwtTokenProvider {
 
     public String resolveToken(HttpServletRequest req) {
         return req.getHeader("Authorization");
+    }
+
+    private String encodeKey(String secretKey) {
+        return Base64.getEncoder().encodeToString(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
     private LocalDateTime getCurrentTime() {
@@ -80,6 +90,7 @@ public class JwtTokenProvider {
         return switch (jwtTokenType) {
             case ACCESS_TOKEN -> accessSecretKey;
             case REFRESH_TOKEN -> refreshSecretKey;
+            case APP_ACCESS_TOKEN -> appAccessSecretKey;
         };
     }
 
@@ -87,15 +98,17 @@ public class JwtTokenProvider {
         return switch (jwtTokenType) {
             case ACCESS_TOKEN -> now.plusHours(5);
             case REFRESH_TOKEN -> now.plusWeeks(2);
+            case APP_ACCESS_TOKEN -> throw new TokenException("잘못된 토큰입니다");
         };
     }
 
     public boolean validateTokenExpiration(String token, JwtTokenType jwtTokenType) {
         try {
-            Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(setSecretKey(jwtTokenType)).build().parseClaimsJws(token);
+            Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(encodeKey(setSecretKey(jwtTokenType))).build().parseClaimsJws(token);
 
             return !claims.getBody().getExpiration().toInstant().atZone(KST).toLocalDateTime().isBefore(getCurrentTime());
         } catch(Exception e) {
+            System.out.println(e);
             return false;
         }
     }

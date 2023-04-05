@@ -26,3 +26,4 @@ spring:
     secretKey:
       access: accesstest
       refresh: refreshtest
+      app: appAccesstest

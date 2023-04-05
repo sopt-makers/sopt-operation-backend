@@ -20,12 +20,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         String token = jwtTokenProvider.resolveToken(request);
 
-        if (token != null && jwtTokenProvider.validateTokenExpiration(token, JwtTokenType.ACCESS_TOKEN)) {
-            AdminAuthentication auth = jwtTokenProvider.getAuthentication(token);
+        JwtTokenType jwtTokenType = validateTokenType(request);
+
+        if (token != null && jwtTokenProvider.validateTokenExpiration(token, jwtTokenType)) {
+            AdminAuthentication auth = jwtTokenProvider.getAuthentication(token, jwtTokenType);
             auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
 
         chain.doFilter(request, response);
+    }
+
+    private JwtTokenType validateTokenType(HttpServletRequest request) {
+        return request.getRequestURI().startsWith("/api/v1/app") ?
+                JwtTokenType.APP_ACCESS_TOKEN :
+                JwtTokenType.ACCESS_TOKEN;
     }
 }
