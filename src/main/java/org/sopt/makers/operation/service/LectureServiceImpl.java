@@ -74,7 +74,6 @@ public class LectureServiceImpl implements LectureService {
 
 	@Override
 	public LectureResponseDTO getLecture(Long lectureId, Part part) {
-		System.out.println("test: " + lectureId + " " + part);
 		Lecture lecture = lectureRepository.findById(lectureId)
 			.orElseThrow(() -> new EntityNotFoundException(INVALID_LECTURE.getName()));
 		List<Attendance> attendances = attendanceRepository.getAttendanceByPart(lecture, part);
