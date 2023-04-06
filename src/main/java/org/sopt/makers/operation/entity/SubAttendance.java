@@ -58,4 +58,8 @@ public class SubAttendance extends BaseEntity {
 		this.subLecture = subLecture;
 		subLecture.getSubAttendances().add(this);
 	}
+
+	public void updateStatus(AttendanceStatus status) {
+		this.status = status;
+	}
 }

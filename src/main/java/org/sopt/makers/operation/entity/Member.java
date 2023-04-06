@@ -55,4 +55,8 @@ public class Member {
 		this.phone = phone;
 		this.score = 2;
 	}
+
+	public void updateScore(float score) {
+		this.score += score;
+	}
 }
