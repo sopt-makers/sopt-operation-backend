@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.sopt.makers.operation.dto.lecture.LectureSearchCondition;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.lecture.Lecture;
+import org.sopt.makers.operation.config.GenerationConfig;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -21,6 +22,8 @@ import static org.sopt.makers.operation.entity.lecture.QLecture.*;
 public class LectureRepositoryImpl implements LectureCustomRepository {
     private final JPAQueryFactory queryFactory;
 
+    private final GenerationConfig generationConfig;
+
     @Override
     public List<Lecture> searchLecture(LectureSearchCondition lectureSearchCondition) {
         LocalDateTime now = LocalDateTime.now();
@@ -34,7 +37,7 @@ public class LectureRepositoryImpl implements LectureCustomRepository {
                 .selectFrom(lecture)
                 .where(
                         lecture.part.in(partList),
-                        lecture.generation.eq(32),
+                        lecture.generation.eq(generationConfig.getCurrentGeneration()),
                         lecture.startDate.between(startOfDay, endOfDay)
                 )
                 .orderBy(lecture.startDate.asc())
