@@ -5,6 +5,6 @@ import java.util.List;
 import org.sopt.makers.operation.entity.lecture.Lecture;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface LectureRepository extends JpaRepository<Lecture, Long> {
+public interface LectureRepository extends JpaRepository<Lecture, Long>, LectureCustomRepository  {
 	List<Lecture> findByGenerationOrderByStartDateDesc(int generation);
 }

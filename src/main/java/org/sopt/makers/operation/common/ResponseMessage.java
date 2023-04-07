@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ResponseMessage {
 	SUCCESS_CREATE_LECTURE("세션 생성 성공"),
+	SUCCESS_SINGLE_GET_LECTURE("세션 조회 성공"),
 	SUCCESS_GET_LECTURES("세션 리스트 조회 성공"),
 	SUCCESS_GET_LECTURE("세션 상세 조회 성공"),
 	SUCCESS_START_ATTENDANCE("출석 시작 성공"),

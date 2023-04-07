@@ -18,8 +18,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@NoArgsConstructor
 @Getter
+@NoArgsConstructor
 public class SubAttendance extends BaseEntity {
 
 	@Id @GeneratedValue(strategy = IDENTITY)

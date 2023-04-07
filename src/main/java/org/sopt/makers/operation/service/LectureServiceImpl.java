@@ -3,9 +3,12 @@ package org.sopt.makers.operation.service;
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.sopt.makers.operation.dto.lecture.*;
 import javax.persistence.EntityNotFoundException;
 
 import org.sopt.makers.operation.dto.lecture.AttendanceRequestDTO;
@@ -20,6 +23,7 @@ import org.sopt.makers.operation.entity.Attendance;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.SubAttendance;
 import org.sopt.makers.operation.entity.SubLecture;
+import org.sopt.makers.operation.entity.lecture.Attribute;
 import org.sopt.makers.operation.entity.lecture.Lecture;
 import org.sopt.makers.operation.repository.attendance.AttendanceRepository;
 import org.sopt.makers.operation.repository.SubAttendanceRepository;
@@ -35,7 +39,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class LectureServiceImpl implements LectureService {
-
 	private final LectureRepository lectureRepository;
 	private final SubLectureRepository subLectureRepository;
 	private final AttendanceRepository attendanceRepository;
@@ -65,6 +68,47 @@ public class LectureServiceImpl implements LectureService {
 
 		return savedLecture.getId();
 	}
+
+	@Override
+	public LectureGetResponseDTO getCurrentLecture(LectureSearchCondition lectureSearchCondition) {
+		LocalDateTime now = LocalDateTime.now();
+
+		List<Lecture> lectures = lectureRepository.searchLecture(lectureSearchCondition);
+
+		// 세션이 없을 때
+		if (lectures.isEmpty()) {
+			return new LectureGetResponseDTO(LectureResponseType.NO_SESSION, "", "", null, null, Collections.emptyList());
+		}
+
+		Lecture currentSession;
+		LectureResponseType type;
+
+		// 하루에 세션이 하나일 때, 하루에 세션이 여러개일 때
+		if (lectures.size() == 1) {
+			currentSession = lectures.get(0);
+			type = (currentSession.getAttribute() == Attribute.EVENT) ? LectureResponseType.NO_ATTENDANCE : LectureResponseType.HAS_ATTENDANCE;
+		} else {
+			int sessionNumber = (now.getHour() < 16) ? 2 : 3;
+			type = (sessionNumber == 3) ? LectureResponseType.NO_ATTENDANCE : LectureResponseType.HAS_ATTENDANCE;
+			currentSession = lectures.get(sessionNumber - 2);
+		}
+
+		if(type.equals(LectureResponseType.NO_ATTENDANCE)) {
+			return LectureGetResponseDTO.of(type, currentSession, Collections.emptyList());
+		}
+
+		// 출결 가져오기
+		Attendance attendance = attendanceRepository.findAttendanceByLectureIdAndMemberId(currentSession.getId(), lectureSearchCondition.memberId());
+
+		List<LectureGetResponseVO> attendances = attendance.getSubAttendances().stream()
+				.map(subAttendance -> {
+					return LectureGetResponseVO.of(subAttendance.getStatus(), subAttendance.getLastModifiedDate());
+				})
+				.collect(Collectors.toList());
+
+		return LectureGetResponseDTO.of(type, currentSession, attendances);
+	}
+
 
 	@Override
 	public LecturesResponseDTO getLecturesByGeneration(int generation) {
