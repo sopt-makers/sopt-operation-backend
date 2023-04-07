@@ -86,11 +86,13 @@ record MemberVO(
 }
 
 record MemberAttendanceVO(
+	Long subAttendanceId,
 	int round,
 	AttendanceStatus status,
 	String date) {
 	static MemberAttendanceVO of(SubAttendance subAttendance) {
 		return new MemberAttendanceVO(
+			subAttendance.getId(),
 			subAttendance.getSubLecture().getRound(),
 			subAttendance.getStatus(),
 			subAttendance.getSubLecture().getStartAt() != null
