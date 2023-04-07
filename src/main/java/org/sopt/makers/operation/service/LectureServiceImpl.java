@@ -1,10 +1,13 @@
 package org.sopt.makers.operation.service;
 
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
 import org.sopt.makers.operation.dto.lecture.LectureGetResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LectureRequestDTO;
+import org.sopt.makers.operation.dto.lecture.LectureResponseType;
 import org.sopt.makers.operation.dto.lecture.LectureSearchCondition;
 import org.sopt.makers.operation.dto.member.MemberSearchCondition;
 import org.sopt.makers.operation.entity.Attendance;
@@ -61,21 +64,31 @@ public class LectureServiceImpl implements LectureService {
 
 	@Override
 	public LectureGetResponseDTO getCurrentLecture(LectureSearchCondition lectureSearchCondition) {
+		LocalDateTime now = LocalDateTime.now();
+
 		List<Lecture> lectures = lectureRepository.searchLecture(lectureSearchCondition);
 
-		if(lectures.size() == 0) return new LectureGetResponseDTO(1, "", "", null, null, List.of());
-
-		if(lectures.size() > 1) throw new LectureException("세션 조회 실패");
-
-		Lecture currentSession = lectures.get(0);
-
-		if (currentSession.getAttribute().equals(Attribute.EVENT)) {
-			return new LectureGetResponseDTO(3, currentSession.getPlace(), currentSession.getName(), currentSession.getStartDate(), currentSession.getEndDate(), List.of());
+		// 세션이 없을 때
+		if (lectures.isEmpty()) {
+			return new LectureGetResponseDTO(LectureResponseType.NO_SESSION, "", "", null, null, Collections.emptyList());
 		}
 
-		//타입 2일때만 출석 정보를 준다 (1차, 2차 출석)
-		return new LectureGetResponseDTO(2, currentSession.getPlace(), currentSession.getName(), currentSession.getStartDate(), currentSession.getEndDate(), List.of());
+		Lecture currentSession;
+		LectureResponseType type;
+
+		// 하루에 세션이 하나일 때, 하루에 세션이 여러개일 때
+		if (lectures.size() == 1) {
+			currentSession = lectures.get(0);
+			type = (currentSession.getAttribute() == Attribute.EVENT) ? LectureResponseType.NO_ATTENDANCE : LectureResponseType.HAS_ATTENDANCE;
+		} else {
+			int sessionNumber = (now.getHour() < 16) ? 2 : 3;
+			type = (sessionNumber == 3) ? LectureResponseType.NO_ATTENDANCE : LectureResponseType.HAS_ATTENDANCE;
+			currentSession = lectures.get(sessionNumber - 2);
+		}
+
+		return LectureGetResponseDTO.of(type, currentSession, Collections.emptyList());
 	}
+
 
 	private MemberSearchCondition getMemberSearchCondition(LectureRequestDTO requestDTO) {
 		return new MemberSearchCondition(

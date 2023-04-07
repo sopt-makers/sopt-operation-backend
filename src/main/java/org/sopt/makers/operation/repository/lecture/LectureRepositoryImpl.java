@@ -37,6 +37,7 @@ public class LectureRepositoryImpl implements LectureCustomRepository {
                         lecture.generation.eq(32),
                         lecture.startDate.between(startOfDay, endOfDay)
                 )
+                .orderBy(lecture.startDate.asc())
                 .fetch();
     }
 
