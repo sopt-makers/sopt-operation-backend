@@ -24,7 +24,6 @@ import java.security.Principal;
 @RequestMapping("/api/v1/app")
 public class AppController {
     private final MemberService memberService;
-
     private final LectureService lectureService;
 
     @GetMapping("/lecture")
@@ -32,7 +31,7 @@ public class AppController {
         Member member = memberService.confirmMember(Long.valueOf(principal.getName()))
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
 
-        LectureGetResponseDTO lectureGetResponseDTO = lectureService.getCurrentLecture(new LectureSearchCondition(member.getPart(), member.getGeneration(), member.getId()));
+        LectureGetResponseDTO lectureGetResponseDTO = lectureService.getCurrentLecture(LectureSearchCondition.of(member.getPart(), member.getGeneration(), member.getId()));
 
         return ResponseEntity
                 .status(HttpStatus.OK)

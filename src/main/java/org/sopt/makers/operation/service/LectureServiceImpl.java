@@ -14,7 +14,6 @@ import org.sopt.makers.operation.entity.SubAttendance;
 import org.sopt.makers.operation.entity.SubLecture;
 import org.sopt.makers.operation.entity.lecture.Attribute;
 import org.sopt.makers.operation.entity.lecture.Lecture;
-import org.sopt.makers.operation.exception.LectureException;
 import org.sopt.makers.operation.repository.AttendanceRepository;
 import org.sopt.makers.operation.repository.SubAttendanceRepository;
 import org.sopt.makers.operation.repository.lecture.LectureRepository;
@@ -24,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import org.w3c.dom.stylesheets.LinkStyle;
 
 @Service
 @RequiredArgsConstructor
