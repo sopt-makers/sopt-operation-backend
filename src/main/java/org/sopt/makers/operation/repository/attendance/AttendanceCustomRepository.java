@@ -11,4 +11,5 @@ public interface AttendanceCustomRepository {
 	Long countAbsent(Lecture lecture);
 	Long countTardy(Lecture lecture);
 	List<Attendance> getAttendanceByPart(Lecture lecture, Part part);
+	List<Attendance> findAttendanceByMemberId(Long memberId);
 }

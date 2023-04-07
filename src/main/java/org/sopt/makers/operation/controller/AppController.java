@@ -5,6 +5,7 @@ import static org.sopt.makers.operation.common.ExceptionMessage.*;
 
 import lombok.RequiredArgsConstructor;
 import org.sopt.makers.operation.common.ApiResponse;
+import org.sopt.makers.operation.dto.attendance.AttendanceTotalResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LectureGetResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LectureSearchCondition;
 import org.sopt.makers.operation.entity.Member;
@@ -34,5 +35,17 @@ public class AppController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success(SUCCESS_SINGLE_GET_LECTURE.getMessage(), lectureGetResponseDTO));
+    }
+
+    @GetMapping("/total")
+    public ResponseEntity<ApiResponse> getTotal(Principal principal) {
+        Member member = memberService.confirmMember(Long.valueOf(principal.getName()))
+                .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
+
+        AttendanceTotalResponseDTO attendanceTotalResponseDTO = lectureService.getTotal(member);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success(SUCCESS_SINGLE_GET_LECTURE.getMessage(), attendanceTotalResponseDTO));
     }
 }
