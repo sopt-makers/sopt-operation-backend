@@ -93,7 +93,7 @@ public class LectureServiceImpl implements LectureService {
 
 		List<LectureGetResponseVO> attendances = attendance.getSubAttendances().stream()
 				.map(subAttendance -> {
-					return LectureGetResponseVO.of(subAttendance.getStatus(), subAttendance.getCreatedDate());
+					return LectureGetResponseVO.of(subAttendance.getStatus(), subAttendance.getLastModifiedDate());
 				})
 				.collect(Collectors.toList());
 
