@@ -1,5 +1,7 @@
 package org.sopt.makers.operation.service;
 
+import static org.sopt.makers.operation.common.ExceptionMessage.*;
+
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -7,6 +9,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.sopt.makers.operation.dto.lecture.*;
+import javax.persistence.EntityNotFoundException;
+
+import org.sopt.makers.operation.dto.lecture.AttendanceRequestDTO;
+import org.sopt.makers.operation.dto.lecture.AttendanceResponseDTO;
+import org.sopt.makers.operation.dto.lecture.AttendanceVO;
+import org.sopt.makers.operation.dto.lecture.LectureRequestDTO;
+import org.sopt.makers.operation.dto.lecture.LectureResponseDTO;
+import org.sopt.makers.operation.dto.lecture.LecturesResponseDTO;
+import org.sopt.makers.operation.dto.lecture.LectureVO;
 import org.sopt.makers.operation.dto.member.MemberSearchCondition;
 import org.sopt.makers.operation.entity.Attendance;
 import org.sopt.makers.operation.entity.Part;
@@ -14,7 +25,7 @@ import org.sopt.makers.operation.entity.SubAttendance;
 import org.sopt.makers.operation.entity.SubLecture;
 import org.sopt.makers.operation.entity.lecture.Attribute;
 import org.sopt.makers.operation.entity.lecture.Lecture;
-import org.sopt.makers.operation.repository.AttendanceRepository;
+import org.sopt.makers.operation.repository.attendance.AttendanceRepository;
 import org.sopt.makers.operation.repository.SubAttendanceRepository;
 import org.sopt.makers.operation.repository.lecture.LectureRepository;
 import org.sopt.makers.operation.repository.lecture.SubLectureRepository;
@@ -98,6 +109,61 @@ public class LectureServiceImpl implements LectureService {
 		return LectureGetResponseDTO.of(type, currentSession, attendances);
 	}
 
+
+	@Override
+	public LecturesResponseDTO getLecturesByGeneration(int generation) {
+		List<LectureVO> lectures = lectureRepository.findByGenerationOrderByStartDateDesc(generation)
+			.stream().map(this::getLectureVO)
+			.toList();
+		return LecturesResponseDTO.of(generation, lectures);
+	}
+
+	@Override
+	public LectureResponseDTO getLecture(Long lectureId, Part part) {
+		Lecture lecture = lectureRepository.findById(lectureId)
+			.orElseThrow(() -> new EntityNotFoundException(INVALID_LECTURE.getName()));
+		List<Attendance> attendances = attendanceRepository.getAttendanceByPart(lecture, part);
+		return LectureResponseDTO.of(lecture, attendances);
+	}
+
+	@Override
+	@Transactional
+	public AttendanceResponseDTO startAttendance(AttendanceRequestDTO requestDTO) {
+		Lecture lecture = lectureRepository.findById(requestDTO.lectureId())
+			.orElseThrow(() -> new EntityNotFoundException(INVALID_LECTURE.getName()));
+
+		for (SubLecture subLecture : lecture.getSubLectures()) {
+			if (subLecture.getRound() < requestDTO.round() && subLecture.getStartAt() == null) {
+				throw new IllegalStateException(NOT_STARTED_PRE_ATTENDANCE.getName());
+			} else if (subLecture.getRound() == requestDTO.round()) {
+				subLecture.startAttendance();
+				return new AttendanceResponseDTO(lecture.getId(), subLecture.getId());
+			}
+		}
+
+		throw new IllegalStateException(INVALID_LECTURE.getName());
+	}
+
+	private LectureVO getLectureVO(Lecture lecture) {
+		return LectureVO.of(lecture, getAttendanceVO(lecture));
+	}
+
+	private AttendanceVO getAttendanceVO(Lecture lecture) {
+		if (lecture.getEndDate().isBefore(LocalDateTime.now())) {
+			return new AttendanceVO(
+				attendanceRepository.countAttendance(lecture),
+				attendanceRepository.countAbsent(lecture),
+				attendanceRepository.countTardy(lecture),
+				0L);
+		} else {
+			return new AttendanceVO(
+				attendanceRepository.countAttendance(lecture),
+				0L,
+				attendanceRepository.countTardy(lecture),
+				attendanceRepository.countAbsent(lecture)
+				);
+		}
+	}
 
 	private MemberSearchCondition getMemberSearchCondition(LectureRequestDTO requestDTO) {
 		return new MemberSearchCondition(

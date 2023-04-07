@@ -33,6 +33,6 @@ public class AppController {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(ApiResponse.success(SUCCESS_GET_LECTURE.getMessage(), lectureGetResponseDTO));
+                .body(ApiResponse.success(SUCCESS_SINGLE_GET_LECTURE.getMessage(), lectureGetResponseDTO));
     }
 }
