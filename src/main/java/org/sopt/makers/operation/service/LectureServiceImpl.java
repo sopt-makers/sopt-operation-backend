@@ -1,14 +1,19 @@
 package org.sopt.makers.operation.service;
 
+import java.util.List;
 import java.util.stream.Stream;
 
+import org.sopt.makers.operation.dto.lecture.LectureGetResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LectureRequestDTO;
+import org.sopt.makers.operation.dto.lecture.LectureSearchCondition;
 import org.sopt.makers.operation.dto.member.MemberSearchCondition;
 import org.sopt.makers.operation.entity.Attendance;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.SubAttendance;
 import org.sopt.makers.operation.entity.SubLecture;
+import org.sopt.makers.operation.entity.lecture.Attribute;
 import org.sopt.makers.operation.entity.lecture.Lecture;
+import org.sopt.makers.operation.exception.LectureException;
 import org.sopt.makers.operation.repository.AttendanceRepository;
 import org.sopt.makers.operation.repository.SubAttendanceRepository;
 import org.sopt.makers.operation.repository.lecture.LectureRepository;
@@ -18,12 +23,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import org.w3c.dom.stylesheets.LinkStyle;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class LectureServiceImpl implements LectureService {
-
 	private final LectureRepository lectureRepository;
 	private final SubLectureRepository subLectureRepository;
 	private final AttendanceRepository attendanceRepository;
@@ -52,6 +57,24 @@ public class LectureServiceImpl implements LectureService {
 
 
 		return savedLecture.getId();
+	}
+
+	@Override
+	public LectureGetResponseDTO getCurrentLecture(LectureSearchCondition lectureSearchCondition) {
+		List<Lecture> lectures = lectureRepository.searchLecture(lectureSearchCondition);
+
+		if(lectures.size() == 0) return new LectureGetResponseDTO(1, "", "", null, null, List.of());
+
+		if(lectures.size() > 1) throw new LectureException("세션 조회 실패");
+
+		Lecture currentSession = lectures.get(0);
+
+		if (currentSession.getAttribute().equals(Attribute.EVENT)) {
+			return new LectureGetResponseDTO(3, currentSession.getPlace(), currentSession.getName(), currentSession.getStartDate(), currentSession.getEndDate(), List.of());
+		}
+
+		//타입 2일때만 출석 정보를 준다 (1차, 2차 출석)
+		return new LectureGetResponseDTO(2, currentSession.getPlace(), currentSession.getName(), currentSession.getStartDate(), currentSession.getEndDate(), List.of());
 	}
 
 	private MemberSearchCondition getMemberSearchCondition(LectureRequestDTO requestDTO) {
