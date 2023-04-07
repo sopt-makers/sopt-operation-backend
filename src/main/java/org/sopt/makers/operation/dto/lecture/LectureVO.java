@@ -8,6 +8,7 @@ import org.sopt.makers.operation.entity.lecture.Attribute;
 import org.sopt.makers.operation.entity.lecture.Lecture;
 
 public record LectureVO(
+	Long lectureId,
 	String name,
 	Part partValue,
 	String partName,
@@ -19,6 +20,7 @@ public record LectureVO(
 
 	public static LectureVO of(Lecture lecture, AttendanceVO status) {
 		return new LectureVO(
+			lecture.getId(),
 			lecture.getName(),
 			lecture.getPart(),
 			lecture.getPart().getName(),
