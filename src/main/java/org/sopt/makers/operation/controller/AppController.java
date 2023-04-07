@@ -32,7 +32,7 @@ public class AppController {
         Member member = memberService.confirmMember(Long.valueOf(principal.getName()))
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
 
-        LectureGetResponseDTO lectureGetResponseDTO = lectureService.getCurrentLecture(new LectureSearchCondition(member.getPart(),member.getGeneration()));
+        LectureGetResponseDTO lectureGetResponseDTO = lectureService.getCurrentLecture(new LectureSearchCondition(member.getPart(), member.getGeneration(), member.getId()));
 
         return ResponseEntity
                 .status(HttpStatus.OK)

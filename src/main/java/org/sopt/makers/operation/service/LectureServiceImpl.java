@@ -3,12 +3,10 @@ package org.sopt.makers.operation.service;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.sopt.makers.operation.dto.lecture.LectureGetResponseDTO;
-import org.sopt.makers.operation.dto.lecture.LectureRequestDTO;
-import org.sopt.makers.operation.dto.lecture.LectureResponseType;
-import org.sopt.makers.operation.dto.lecture.LectureSearchCondition;
+import org.sopt.makers.operation.dto.lecture.*;
 import org.sopt.makers.operation.dto.member.MemberSearchCondition;
 import org.sopt.makers.operation.entity.Attendance;
 import org.sopt.makers.operation.entity.Part;
@@ -86,7 +84,20 @@ public class LectureServiceImpl implements LectureService {
 			currentSession = lectures.get(sessionNumber - 2);
 		}
 
-		return LectureGetResponseDTO.of(type, currentSession, Collections.emptyList());
+		if(type.equals(LectureResponseType.NO_ATTENDANCE)) {
+			return LectureGetResponseDTO.of(type, currentSession, Collections.emptyList());
+		}
+
+		// 출결 가져오기
+		Attendance attendance = attendanceRepository.findAttendanceByLectureIdAndMemberId(currentSession.getId(), lectureSearchCondition.memberId());
+
+		List<LectureGetResponseVO> attendances = attendance.getSubAttendances().stream()
+				.map(subAttendance -> {
+					return LectureGetResponseVO.of(subAttendance.getStatus(), subAttendance.getCreatedDate());
+				})
+				.collect(Collectors.toList());
+
+		return LectureGetResponseDTO.of(type, currentSession, attendances);
 	}
 
 
