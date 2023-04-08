@@ -66,6 +66,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 
 	private AttendanceResponseDTO updateMemberScoreInSeminar(SubAttendance subAttendance) {
 		AttendanceStatus status = getStatusIn32Seminar(subAttendance.getAttendance().getSubAttendances());
+		subAttendance.getAttendance().updateStatus(status);
 		Member member = subAttendance.getAttendance().getMember();
 		float score = getScoreIn32Seminar(status);
 		member.updateScore(score);
@@ -74,6 +75,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 
 	private AttendanceResponseDTO updateMemberScoreInEvent(SubAttendance subAttendance) {
 		AttendanceStatus status = getStatusIn32Event(subAttendance.getAttendance().getSubAttendances());
+		subAttendance.getAttendance().updateStatus(status);
 		Member member = subAttendance.getAttendance().getMember();
 		float score = getScoreIn32Event(status);
 		member.updateScore(score);
