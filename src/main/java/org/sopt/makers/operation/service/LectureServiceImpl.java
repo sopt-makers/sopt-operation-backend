@@ -146,22 +146,22 @@ public class LectureServiceImpl implements LectureService {
 	@Override
 	public AttendanceTotalResponseDTO getTotal(Member member) {
 		List<AttendanceTotalVO> attendances = attendanceRepository.findAttendanceByMemberId(member.getId())
-				.stream().map(this::getTotalAttendanceVO)
-				.toList();
+			.stream().map(this::getTotalAttendanceVO)
+			.toList();
 
 		Map<AttendanceStatus, Integer> countAttendance = attendances.stream()
-				.map(this::getAttendanceStatus)
-				.collect(
-						() -> new EnumMap<>(AttendanceStatus.class),
-						(map, status) -> map.merge(status, 1, Integer::sum),
-						(map1, map2) -> map2.forEach((status, count) -> map1.merge(status, count, Integer::sum))
-				);
+			.map(this::getAttendanceStatus)
+			.collect(
+				() -> new EnumMap<>(AttendanceStatus.class),
+				(map, status) -> map.merge(status, 1, Integer::sum),
+				(map1, map2) -> map2.forEach((status, count) -> map1.merge(status, count, Integer::sum))
+			);
 
 		AttendanceTotalCountVO total = AttendanceTotalCountVO.of(
-				countAttendance.size(),
-				countAttendance.getOrDefault(AttendanceStatus.ATTENDANCE, 0),
-				countAttendance.getOrDefault(AttendanceStatus.ABSENT, 0),
-				countAttendance.getOrDefault(AttendanceStatus.TARDY, 0)
+			countAttendance.size(),
+			countAttendance.getOrDefault(AttendanceStatus.ATTENDANCE, 0),
+			countAttendance.getOrDefault(AttendanceStatus.ABSENT, 0),
+			countAttendance.getOrDefault(AttendanceStatus.TARDY, 0)
 		);
 
 		return AttendanceTotalResponseDTO.of(member, total, attendances);
