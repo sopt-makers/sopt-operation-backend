@@ -12,8 +12,9 @@ public enum ResponseMessage {
 	SUCCESS_GET_LECTURE("세션 상세 조회 성공"),
 	SUCCESS_START_ATTENDANCE("출석 시작 성공"),
 	SUCCESS_UPDATE_ATTENDANCE_STATUS("출석 상태 변경 성공"),
-
 	SUCCESS_TOTAL_ATTENDANCE("전체 출석정보 조회 성공");
+	SUCCESS_GET_MEMBER_ATTENDANCE("회원 출석 정보 조회 성공"),
+	SUCCESS_GET_ATTENDANCE_SCORE("출석 점수 조회 성공");
 
 	private final String message;
 }

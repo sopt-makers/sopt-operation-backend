@@ -8,6 +8,7 @@ import org.sopt.makers.operation.common.ApiResponse;
 import org.sopt.makers.operation.dto.attendance.AttendanceTotalResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LectureGetResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LectureSearchCondition;
+import org.sopt.makers.operation.dto.member.MemberScoreGetResponse;
 import org.sopt.makers.operation.entity.Member;
 import org.sopt.makers.operation.exception.MemberException;
 import org.sopt.makers.operation.service.LectureService;
@@ -47,5 +48,15 @@ public class AppController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success(SUCCESS_TOTAL_ATTENDANCE.getMessage(), attendanceTotalResponseDTO));
+    }
+    
+    @GetMapping("/score")
+    public ResponseEntity<ApiResponse> getScore(Principal principal) {
+        Member member = memberService.confirmMember(Long.valueOf(principal.getName()))
+                .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success(SUCCESS_GET_ATTENDANCE_SCORE.getMessage(), MemberScoreGetResponse.of(member.getScore())));
     }
 }
