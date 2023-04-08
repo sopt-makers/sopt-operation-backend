@@ -4,10 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.sopt.makers.operation.common.ApiResponse;
-import org.sopt.makers.operation.dto.lecture.LectureRequestDTO;
-import org.sopt.makers.operation.dto.lecture.LectureResponseDTO;
 import org.sopt.makers.operation.dto.member.MemberListGetResponse;
-import org.sopt.makers.operation.entity.Member;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.service.AdminService;
 import org.sopt.makers.operation.service.MemberService;
@@ -18,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.List;
 
-import static org.sopt.makers.operation.common.ResponseMessage.SUCCESS_CREATE_LECTURE;
+import static org.sopt.makers.operation.common.ResponseMessage.SUCCESS_GET_MEMBERS;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,6 +42,6 @@ public class MemberController {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(ApiResponse.success(SUCCESS_CREATE_LECTURE.getMessage(), memberList));
+                .body(ApiResponse.success(SUCCESS_GET_MEMBERS.getMessage(), memberList));
     }
 }
