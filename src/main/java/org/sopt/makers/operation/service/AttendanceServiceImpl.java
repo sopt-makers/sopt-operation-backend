@@ -39,21 +39,22 @@ public class AttendanceServiceImpl implements AttendanceService {
 		subAttendance.updateStatus(requestDTO.status());
 
 		Attendance attendance = subAttendance.getAttendance();
-		SubLecture subLecture = subAttendance.getSubLecture();
 		Member member = attendance.getMember();
 
-		if (attendance.getSubAttendances().size() == subLecture.getRound()) {
-			switch (requestDTO.attribute()) {
-				case SEMINAR -> {
-					return updateMemberScoreInSeminar(subAttendance);
-				}
-				case EVENT -> {
-					return updateMemberScoreInEvent(subAttendance);
-				}
+		switch (requestDTO.attribute()) {
+			case SEMINAR -> {
+				return updateMemberScoreInSeminar(subAttendance);
+			}
+			case EVENT -> {
+				return updateMemberScoreInEvent(subAttendance);
 			}
 		}
 
-		return new AttendanceResponseDTO(member.getId(), ABSENT, 0, member.getScore());
+		return new AttendanceResponseDTO(
+			member.getId(),
+			getStatusIn32Seminar(attendance.getSubAttendances()),
+			0,
+			member.getScore());
 	}
 
 	@Override
@@ -103,11 +104,11 @@ public class AttendanceServiceImpl implements AttendanceService {
 
 	private AttendanceStatus getStatusIn32Seminar(List<SubAttendance> attendances) {
 		if (attendances.get(0).getStatus().equals(ATTENDANCE) && attendances.get(1).getStatus().equals(ATTENDANCE)) {
-			return ATTENDANCE; // 0
+			return ATTENDANCE;
 		} else if (attendances.get(0).getStatus().equals(ABSENT) && attendances.get(1).getStatus().equals(ATTENDANCE)) {
-			return TARDY; // -0.5
+			return TARDY;
 		}
-		return ABSENT; // -1
+		return ABSENT;
 	}
 
 	private AttendanceStatus getStatusIn32Event(List<SubAttendance> attendances) {
