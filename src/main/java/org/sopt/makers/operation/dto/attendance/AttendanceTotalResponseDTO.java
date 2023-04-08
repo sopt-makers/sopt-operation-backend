@@ -10,10 +10,8 @@ public record AttendanceTotalResponseDTO(
         int generation,
         String name,
         float score,
-
         AttendanceTotalCountVO total,
         List<AttendanceTotalVO> attendances
-
 )
 {
     public static AttendanceTotalResponseDTO of(Member member, AttendanceTotalCountVO total, List<AttendanceTotalVO> attendances){
