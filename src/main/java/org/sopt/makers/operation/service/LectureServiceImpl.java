@@ -7,6 +7,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import lombok.val;
 import org.sopt.makers.operation.dto.attendance.AttendanceTotalCountVO;
 import org.sopt.makers.operation.dto.attendance.AttendanceTotalResponseDTO;
 import org.sopt.makers.operation.dto.attendance.AttendanceTotalVO;
@@ -141,30 +142,6 @@ public class LectureServiceImpl implements LectureService {
 		}
 
 		throw new IllegalStateException(INVALID_LECTURE.getName());
-	}
-
-	@Override
-	public AttendanceTotalResponseDTO getTotal(Member member) {
-		List<AttendanceTotalVO> attendances = attendanceRepository.findAttendanceByMemberId(member.getId())
-			.stream().map(AttendanceTotalVO::getTotalAttendanceVO)
-			.toList();
-
-		Map<AttendanceStatus, Integer> countAttendance = attendances.stream()
-			.map(AttendanceTotalVO::getAttendanceStatus)
-			.collect(
-				() -> new EnumMap<>(AttendanceStatus.class),
-				(map, status) -> map.merge(status, 1, Integer::sum),
-				(map1, map2) -> map2.forEach((status, count) -> map1.merge(status, count, Integer::sum))
-			);
-
-		AttendanceTotalCountVO total = AttendanceTotalCountVO.of(
-			countAttendance.size(),
-			countAttendance.getOrDefault(AttendanceStatus.ATTENDANCE, 0),
-			countAttendance.getOrDefault(AttendanceStatus.ABSENT, 0),
-			countAttendance.getOrDefault(AttendanceStatus.TARDY, 0)
-		);
-
-		return AttendanceTotalResponseDTO.of(member, total, attendances);
 	}
 
 	private AttendanceTotalVO getTotalAttendanceVO(Attendance attendance) {

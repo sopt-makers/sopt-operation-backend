@@ -2,16 +2,19 @@ package org.sopt.makers.operation.dto.attendance;
 
 import org.sopt.makers.operation.entity.Attendance;
 import org.sopt.makers.operation.entity.AttendanceStatus;
+import org.sopt.makers.operation.entity.lecture.Attribute;
 
 import java.time.format.DateTimeFormatter;
 
 public record AttendanceTotalVO(
+        Attribute attribute,
         String name,
         AttendanceStatus status,
         String date
 ) {
     public static AttendanceTotalVO of(Attendance attendance){
         return new AttendanceTotalVO(
+                attendance.getLecture().getAttribute(),
                 attendance.getLecture().getName(),
                 attendance.getStatus(),
                 attendance.getLecture().getStartDate()

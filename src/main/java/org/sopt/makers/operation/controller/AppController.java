@@ -37,11 +37,11 @@ public class AppController {
     }
 
     @GetMapping("/total")
-    public ResponseEntity<ApiResponse> getTotal(Principal principal) {
+    public ResponseEntity<ApiResponse> getMemberTotalAttendance(Principal principal) {
         Member member = memberService.confirmMember(Long.valueOf(principal.getName()))
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
 
-        AttendanceTotalResponseDTO attendanceTotalResponseDTO = lectureService.getTotal(member);
+        AttendanceTotalResponseDTO attendanceTotalResponseDTO = memberService.getMemberTotalAttendance(member);
 
         return ResponseEntity
                 .ok(ApiResponse.success(SUCCESS_TOTAL_ATTENDANCE.getMessage(), attendanceTotalResponseDTO));
