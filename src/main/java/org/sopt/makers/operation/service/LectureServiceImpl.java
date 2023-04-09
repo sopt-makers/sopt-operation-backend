@@ -146,11 +146,11 @@ public class LectureServiceImpl implements LectureService {
 	@Override
 	public AttendanceTotalResponseDTO getTotal(Member member) {
 		List<AttendanceTotalVO> attendances = attendanceRepository.findAttendanceByMemberId(member.getId())
-			.stream().map(this::getTotalAttendanceVO)
+			.stream().map(AttendanceTotalVO::getTotalAttendanceVO)
 			.toList();
 
 		Map<AttendanceStatus, Integer> countAttendance = attendances.stream()
-			.map(this::getAttendanceStatus)
+			.map(AttendanceTotalVO::getAttendanceStatus)
 			.collect(
 				() -> new EnumMap<>(AttendanceStatus.class),
 				(map, status) -> map.merge(status, 1, Integer::sum),

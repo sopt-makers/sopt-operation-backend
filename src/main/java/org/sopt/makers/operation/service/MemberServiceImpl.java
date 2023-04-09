@@ -13,6 +13,8 @@ import org.sopt.makers.operation.repository.attendance.AttendanceRepository;
 import org.sopt.makers.operation.repository.member.MemberRepository;
 import org.springframework.stereotype.Service;
 
+import org.sopt.makers.operation.service.AttendanceServiceImpl;
+
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Optional;
@@ -36,11 +38,11 @@ public class MemberServiceImpl implements MemberService {
 
         List<MemberListGetResponse> memberList = members.stream().map(member -> {
             List<AttendanceTotalVO> attendances = attendanceRepository.findAttendanceByMemberId(member.getId())
-                    .stream().map(this::getTotalAttendanceVO)
+                    .stream().map(AttendanceTotalVO::getTotalAttendanceVO)
                     .toList();
 
             Map<AttendanceStatus, Integer> countAttendance = attendances.stream()
-                    .map(this::getAttendanceStatus)
+                    .map(AttendanceTotalVO::getAttendanceStatus)
                     .collect(
                             () -> new EnumMap<>(AttendanceStatus.class),
                             (map, status) -> map.merge(status, 1, Integer::sum),
@@ -58,13 +60,5 @@ public class MemberServiceImpl implements MemberService {
         }).collect(Collectors.toList());
 
         return memberList;
-    }
-
-    private AttendanceTotalVO getTotalAttendanceVO(Attendance attendance) {
-        return AttendanceTotalVO.of(attendance);
-    }
-
-    private AttendanceStatus getAttendanceStatus(AttendanceTotalVO attendance) {
-        return attendance.status();
     }
 }

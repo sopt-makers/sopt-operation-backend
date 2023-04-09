@@ -18,4 +18,12 @@ public record AttendanceTotalVO(
                         .format(DateTimeFormatter.ofPattern("M월 d일"))
         );
     }
+
+    public static AttendanceTotalVO getTotalAttendanceVO(Attendance attendance) {
+        return AttendanceTotalVO.of(attendance);
+    }
+
+    public static AttendanceStatus getAttendanceStatus(AttendanceTotalVO attendance) {
+        return attendance.status();
+    }
 }
