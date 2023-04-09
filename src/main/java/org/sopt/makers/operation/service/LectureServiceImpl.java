@@ -1,6 +1,7 @@
 package org.sopt.makers.operation.service;
 
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
+import static org.sopt.makers.operation.entity.AttendanceStatus.*;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -159,12 +160,40 @@ public class LectureServiceImpl implements LectureService {
 
 		AttendanceTotalCountVO total = AttendanceTotalCountVO.of(
 			countAttendance.size(),
-			countAttendance.getOrDefault(AttendanceStatus.ATTENDANCE, 0),
+			countAttendance.getOrDefault(ATTENDANCE, 0),
 			countAttendance.getOrDefault(AttendanceStatus.ABSENT, 0),
 			countAttendance.getOrDefault(AttendanceStatus.TARDY, 0)
 		);
 
 		return AttendanceTotalResponseDTO.of(member, total, attendances);
+	}
+
+	@Override
+	@Transactional
+	public void updateMembersScore(Long lectureId) {
+		Lecture lecture = lectureRepository.findById(lectureId)
+			.orElseThrow(() -> new EntityNotFoundException(INVALID_LECTURE.getName()));
+		lecture.getAttendances().forEach(this::updateScoreIn32);
+	}
+
+	private void updateScoreIn32(Attendance attendance) {
+		Attribute attribute = attendance.getLecture().getAttribute();
+		Member member = attendance.getMember();
+
+		switch (attribute) {
+			case SEMINAR -> {
+				if (attendance.getStatus().equals(TARDY)) {
+					member.updateScore(-0.5f);
+				} else if (attendance.getStatus().equals(ABSENT)) {
+					member.updateScore(-1);
+				}
+			}
+			case EVENT -> {
+				if (attendance.getStatus().equals(ATTENDANCE)) {
+					member.updateScore(0.5f);
+				}
+			}
+		}
 	}
 
 	private AttendanceTotalVO getTotalAttendanceVO(Attendance attendance) {
