@@ -71,6 +71,18 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 			.fetch();
 	}
 
+	@Override
+	public List<Attendance> findAttendanceByMemberId(Long memberId) {
+		return queryFactory
+			.select(attendance)
+			.from(attendance)
+			.where(
+				attendance.member.id.eq(memberId)
+			)
+			.orderBy(attendance.lecture.startDate.desc())
+			.fetch();
+	}
+
 	private BooleanExpression partEq(Part part) {
 		return nonNull(part) ? member.part.eq(part) : null;
 	}
