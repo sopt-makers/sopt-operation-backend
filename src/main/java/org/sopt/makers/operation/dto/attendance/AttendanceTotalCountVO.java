@@ -1,17 +1,17 @@
 package org.sopt.makers.operation.dto.attendance;
 
 public record AttendanceTotalCountVO(
-        int total,
         int attendance,
         int absent,
-        int tardy
+        int tardy,
+        int participate
 ) {
-    public static AttendanceTotalCountVO of(int total, int attendance, int absent, int tardy){
+    public static AttendanceTotalCountVO of(int attendance, int absent, int tardy, int participate){
         return new AttendanceTotalCountVO(
-                total,
                 attendance,
                 absent,
-                tardy
+                tardy,
+                participate
         );
     }
 }

@@ -18,7 +18,7 @@ import static org.sopt.makers.operation.common.ResponseMessage.SUCCESS_GET_MEMBE
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/member")
+@RequestMapping("/api/v1/members")
 public class MemberController {
     private final AdminService adminService;
     private final MemberService memberService;
