@@ -8,7 +8,6 @@ import org.sopt.makers.operation.dto.member.MemberListGetResponse;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.service.AdminService;
 import org.sopt.makers.operation.service.MemberService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,7 +40,6 @@ public class MemberController {
         List<MemberListGetResponse> memberList = memberService.getMemberList(part, generation);
 
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ApiResponse.success(SUCCESS_GET_MEMBERS.getMessage(), memberList));
+                .ok(ApiResponse.success(SUCCESS_GET_MEMBERS.getMessage(), memberList));
     }
 }

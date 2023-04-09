@@ -13,7 +13,6 @@ import org.sopt.makers.operation.entity.Member;
 import org.sopt.makers.operation.exception.MemberException;
 import org.sopt.makers.operation.service.LectureService;
 import org.sopt.makers.operation.service.MemberService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,8 +33,7 @@ public class AppController {
         LectureGetResponseDTO lectureGetResponseDTO = lectureService.getCurrentLecture(LectureSearchCondition.of(member.getPart(), member.getGeneration(), member.getId()));
 
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ApiResponse.success(SUCCESS_SINGLE_GET_LECTURE.getMessage(), lectureGetResponseDTO));
+                .ok(ApiResponse.success(SUCCESS_SINGLE_GET_LECTURE.getMessage(), lectureGetResponseDTO));
     }
 
     @GetMapping("/total")
@@ -46,8 +44,7 @@ public class AppController {
         AttendanceTotalResponseDTO attendanceTotalResponseDTO = lectureService.getTotal(member);
 
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ApiResponse.success(SUCCESS_TOTAL_ATTENDANCE.getMessage(), attendanceTotalResponseDTO));
+                .ok(ApiResponse.success(SUCCESS_TOTAL_ATTENDANCE.getMessage(), attendanceTotalResponseDTO));
     }
     
     @GetMapping("/score")
@@ -56,7 +53,6 @@ public class AppController {
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
 
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ApiResponse.success(SUCCESS_GET_ATTENDANCE_SCORE.getMessage(), MemberScoreGetResponse.of(member.getScore())));
+                .ok(ApiResponse.success(SUCCESS_GET_ATTENDANCE_SCORE.getMessage(), MemberScoreGetResponse.of(member.getScore())));
     }
 }
