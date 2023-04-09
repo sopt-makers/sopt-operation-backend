@@ -9,6 +9,7 @@ import org.sopt.makers.operation.entity.AttendanceStatus;
 import org.sopt.makers.operation.entity.Member;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.SubAttendance;
+import org.sopt.makers.operation.entity.lecture.Attribute;
 
 public record AttendanceMemberResponseDTO(
 	String name,
@@ -32,13 +33,32 @@ public record AttendanceMemberResponseDTO(
 
 record LectureVO(
 	String lecture,
+	float additiveScore,
 	List<AttendanceVO> attendances
 ) {
 	public static LectureVO of(Attendance attendance) {
 		return new LectureVO(
 			attendance.getLecture().getName(),
+			getAdditiveScore(attendance),
 			attendance.getSubAttendances().stream().map(AttendanceVO::of).toList()
 		);
+	}
+
+	public static float getAdditiveScore(Attendance attendance) {
+		if (attendance.getLecture().getAttribute().equals(Attribute.SEMINAR)) {
+			if (attendance.getStatus().equals(AttendanceStatus.ABSENT)) {
+				return -1;
+			} else if (attendance.getStatus().equals(AttendanceStatus.TARDY)) {
+				return -0.5f;
+			}
+			return 0;
+		} else if (attendance.getLecture().getAttribute().equals(Attribute.EVENT)) {
+			if (attendance.getStatus().equals(AttendanceStatus.ATTENDANCE)) {
+				return 0.5f;
+			}
+			return 0f;
+		}
+		return 0f;
 	}
 }
 
