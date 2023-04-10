@@ -101,9 +101,8 @@ public class LectureServiceImpl implements LectureService {
 		Attendance attendance = attendanceRepository.findAttendanceByLectureIdAndMemberId(currentSession.getId(), lectureSearchCondition.memberId());
 
 		List<LectureGetResponseVO> attendances = attendance.getSubAttendances().stream()
-				.map(subAttendance -> {
-					return LectureGetResponseVO.of(subAttendance.getStatus(), subAttendance.getLastModifiedDate());
-				})
+				.map(subAttendance -> LectureGetResponseVO
+					.of(subAttendance.getStatus(), subAttendance.getLastModifiedDate()))
 				.collect(Collectors.toList());
 
 		return LectureGetResponseDTO.of(type, currentSession, attendances);
@@ -120,8 +119,7 @@ public class LectureServiceImpl implements LectureService {
 
 	@Override
 	public LectureResponseDTO getLecture(Long lectureId, Part part) {
-		Lecture lecture = lectureRepository.findById(lectureId)
-			.orElseThrow(() -> new EntityNotFoundException(INVALID_LECTURE.getName()));
+		Lecture lecture = findLecture(lectureId);
 		List<Attendance> attendances = attendanceRepository.getAttendanceByPart(lecture, part);
 		return LectureResponseDTO.of(lecture, attendances);
 	}
@@ -129,8 +127,7 @@ public class LectureServiceImpl implements LectureService {
 	@Override
 	@Transactional
 	public AttendanceResponseDTO startAttendance(AttendanceRequestDTO requestDTO) {
-		Lecture lecture = lectureRepository.findById(requestDTO.lectureId())
-			.orElseThrow(() -> new EntityNotFoundException(INVALID_LECTURE.getName()));
+		Lecture lecture = findLecture(requestDTO.lectureId());
 
 		for (SubLecture subLecture : lecture.getSubLectures()) {
 			if (subLecture.getRound() < requestDTO.round() && subLecture.getStartAt() == null) {
@@ -178,5 +175,10 @@ public class LectureServiceImpl implements LectureService {
 			requestDTO.part() != Part.ALL ? requestDTO.part() : null,
 			requestDTO.generation()
 		);
+	}
+
+	private Lecture findLecture(Long id) {
+		return lectureRepository.findById(id)
+			.orElseThrow(() -> new EntityNotFoundException(INVALID_LECTURE.getName()));
 	}
 }

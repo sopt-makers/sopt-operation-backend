@@ -42,8 +42,7 @@ record MemberVO(
 ) {
 	static MemberVO of(Attendance attendance) {
 		List<MemberAttendanceVO> attendances = attendance.getSubAttendances()
-			.stream()
-			.map(MemberAttendanceVO::of)
+			.stream().map(MemberAttendanceVO::of)
 			.toList();
 
 		float score = 0;
@@ -60,15 +59,11 @@ record MemberVO(
 	}
 
 	private static float getScore(Attribute attribute, List<MemberAttendanceVO> attendances) {
-		switch (attribute) {
-			case SEMINAR -> {
-				return getResultInSeminar32(attendances.get(0).status(), attendances.get(1).status());
-			}
-			case EVENT -> {
-				return getResultInEvent32(attendances.get(1).status());
-			}
-		}
-		return 0;
+		return switch (attribute) {
+			case SEMINAR -> getResultInSeminar32(attendances.get(0).status(), attendances.get(1).status());
+			case EVENT -> getResultInEvent32(attendances.get(1).status());
+			case ETC -> 0;
+		};
 	}
 
 	private static float getResultInSeminar32 (AttendanceStatus first, AttendanceStatus second) {
