@@ -51,6 +51,10 @@ public class Attendance {
 		this.status = AttendanceStatus.ABSENT;
 	}
 
+	public void updateStatus(AttendanceStatus status) {
+		this.status = status;
+	}
+
 	private void setMember(Member member) {
 		if (Objects.nonNull(this.member)) {
 			this.member.getAttendances().remove(this);

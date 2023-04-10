@@ -19,4 +19,5 @@ public interface LectureService {
 	AttendanceResponseDTO startAttendance(AttendanceRequestDTO requestDTO);
 	AttendanceTotalResponseDTO getTotal(Member member);
 	void updateMembersScore(Long lectureId);
+
 }

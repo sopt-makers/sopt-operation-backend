@@ -15,7 +15,6 @@ import org.sopt.makers.operation.entity.Member;
 import org.sopt.makers.operation.exception.MemberException;
 import org.sopt.makers.operation.service.LectureService;
 import org.sopt.makers.operation.service.MemberService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,8 +42,7 @@ public class AppController {
         LectureGetResponseDTO lectureGetResponseDTO = lectureService.getCurrentLecture(LectureSearchCondition.of(member.getPart(), member.getGeneration(), member.getId()));
 
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ApiResponse.success(SUCCESS_SINGLE_GET_LECTURE.getMessage(), lectureGetResponseDTO));
+                .ok(ApiResponse.success(SUCCESS_SINGLE_GET_LECTURE.getMessage(), lectureGetResponseDTO));
     }
 
     @ApiOperation(value = "전체 출석 정보 조회")
@@ -55,15 +53,14 @@ public class AppController {
             @io.swagger.annotations.ApiResponse(code = 500, message = "서버 에러")
     })
     @GetMapping("/total")
-    public ResponseEntity<ApiResponse> getTotal(Principal principal) {
+    public ResponseEntity<ApiResponse> getMemberTotalAttendance(Principal principal) {
         Member member = memberService.confirmMember(Long.valueOf(principal.getName()))
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
 
-        AttendanceTotalResponseDTO attendanceTotalResponseDTO = lectureService.getTotal(member);
+        AttendanceTotalResponseDTO attendanceTotalResponseDTO = memberService.getMemberTotalAttendance(member);
 
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ApiResponse.success(SUCCESS_TOTAL_ATTENDANCE.getMessage(), attendanceTotalResponseDTO));
+                .ok(ApiResponse.success(SUCCESS_TOTAL_ATTENDANCE.getMessage(), attendanceTotalResponseDTO));
     }
 
     @ApiOperation(value = "출석 점수 조회")
@@ -79,7 +76,6 @@ public class AppController {
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
 
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ApiResponse.success(SUCCESS_GET_ATTENDANCE_SCORE.getMessage(), MemberScoreGetResponse.of(member.getScore())));
+                .ok(ApiResponse.success(SUCCESS_GET_ATTENDANCE_SCORE.getMessage(), MemberScoreGetResponse.of(member.getScore())));
     }
 }
