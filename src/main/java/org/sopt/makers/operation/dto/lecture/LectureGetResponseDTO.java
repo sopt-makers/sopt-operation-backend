@@ -3,14 +3,15 @@ package org.sopt.makers.operation.dto.lecture;
 import org.sopt.makers.operation.entity.lecture.Lecture;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public record LectureGetResponseDTO(
         LectureResponseType type,
         String location,
         String name,
-        LocalDateTime startDate,
-        LocalDateTime endDate,
+        String startDate,
+        String endDate,
         List<LectureGetResponseVO> attendances
 ) {
     public static LectureGetResponseDTO of(LectureResponseType type, Lecture lecture, List<LectureGetResponseVO> attendances) {
@@ -19,9 +20,13 @@ public record LectureGetResponseDTO(
                 type,
                 lecture.getPlace(),
                 lecture.getName(),
-                lecture.getStartDate(),
-                lecture.getEndDate(),
+                lecture.getStartDate().format(convertFormat()),
+                lecture.getEndDate().format(convertFormat()),
                 attendances
         );
+    }
+
+    private static DateTimeFormatter convertFormat() {
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     }
 }
