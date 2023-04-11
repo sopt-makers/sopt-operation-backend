@@ -17,6 +17,7 @@ import org.sopt.makers.operation.service.LectureService;
 import org.sopt.makers.operation.service.MemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.security.Principal;
 
@@ -35,7 +36,7 @@ public class AppController {
             @io.swagger.annotations.ApiResponse(code = 500, message = "서버 에러")
     })
     @GetMapping("/lecture")
-    public ResponseEntity<ApiResponse> getLecture(Principal principal) {
+    public ResponseEntity<ApiResponse> getLecture(@ApiIgnore Principal principal) {
         Member member = memberService.confirmMember(Long.valueOf(principal.getName()))
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
 
@@ -53,7 +54,7 @@ public class AppController {
             @io.swagger.annotations.ApiResponse(code = 500, message = "서버 에러")
     })
     @GetMapping("/total")
-    public ResponseEntity<ApiResponse> getMemberTotalAttendance(Principal principal) {
+    public ResponseEntity<ApiResponse> getMemberTotalAttendance(@ApiIgnore Principal principal) {
         Member member = memberService.confirmMember(Long.valueOf(principal.getName()))
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
 
@@ -71,7 +72,7 @@ public class AppController {
             @io.swagger.annotations.ApiResponse(code = 500, message = "서버 에러")
     })
     @GetMapping("/score")
-    public ResponseEntity<ApiResponse> getScore(Principal principal) {
+    public ResponseEntity<ApiResponse> getScore(@ApiIgnore Principal principal) {
         Member member = memberService.confirmMember(Long.valueOf(principal.getName()))
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
 
