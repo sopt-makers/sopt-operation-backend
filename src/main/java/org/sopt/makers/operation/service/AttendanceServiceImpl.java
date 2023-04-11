@@ -1,14 +1,18 @@
 package org.sopt.makers.operation.service;
 
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
+import static org.sopt.makers.operation.entity.AttendanceStatus.*;
+import static org.sopt.makers.operation.entity.lecture.Attribute.*;
 
 import javax.persistence.EntityNotFoundException;
 
 import org.sopt.makers.operation.dto.attendance.AttendanceMemberResponseDTO;
 import org.sopt.makers.operation.dto.attendance.AttendanceRequestDTO;
 import org.sopt.makers.operation.dto.attendance.AttendanceResponseDTO;
+import org.sopt.makers.operation.entity.Attendance;
 import org.sopt.makers.operation.entity.Member;
 import org.sopt.makers.operation.entity.SubAttendance;
+import org.sopt.makers.operation.entity.lecture.Attribute;
 import org.sopt.makers.operation.repository.SubAttendanceRepository;
 import org.sopt.makers.operation.repository.member.MemberRepository;
 import org.springframework.stereotype.Service;
@@ -36,6 +40,33 @@ public class AttendanceServiceImpl implements AttendanceService {
 	public AttendanceMemberResponseDTO getMemberAttendance(Long memberId) {
 		Member member = findMember(memberId);
 		return AttendanceMemberResponseDTO.of(member);
+	}
+
+	@Override
+	@Transactional
+	public float updateMemberScore(Long memberId) {
+		Member member = findMember(memberId);
+		float score = 2;
+		for (Attendance attendance : member.getAttendances()) {
+			score += getUpdateScore(attendance, attendance.getLecture().getAttribute());
+		}
+		member.setScore(score);
+		return member.getScore();
+	}
+
+	private float getUpdateScore(Attendance attendance, Attribute attribute) {
+		if (attribute.equals(SEMINAR)) {
+			if (attendance.getStatus().equals(TARDY)) {
+				return -0.5f;
+			} else if (attendance.getStatus().equals(ABSENT)) {
+				return -1;
+			}
+		} else if (attribute.equals(EVENT)) {
+			if (attendance.getStatus().equals(ATTENDANCE)) {
+				return 0.5f;
+			}
+		}
+		return 0;
 	}
 
 	private Member findMember(Long id) {

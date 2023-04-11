@@ -59,4 +59,7 @@ public class Member {
 	public void updateScore(float score) {
 		this.score += score;
 	}
+	public void setScore(float score) {
+		this.score = score;
+	}
 }
