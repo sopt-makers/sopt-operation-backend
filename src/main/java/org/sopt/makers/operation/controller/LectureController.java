@@ -100,6 +100,21 @@ public class LectureController {
 			.body(ApiResponse.success(SUCCESS_START_ATTENDANCE.getMessage(), response));
 	}
 
+	@ApiOperation(value = "출석 점수 갱신 트리거")
+	@ApiResponses({
+		@io.swagger.annotations.ApiResponse(code = 200, message = "출석 시작 성공"),
+		@io.swagger.annotations.ApiResponse(code = 400, message = "필요한 값이 없음"),
+		@io.swagger.annotations.ApiResponse(code = 401, message = "유효하지 않은 작큰"),
+		@io.swagger.annotations.ApiResponse(code = 500, message = "서버 에러")
+	})
+	@PatchMapping("/{lectureId}")
+	public ResponseEntity<ApiResponse> updateMembersScore(
+		Principal principal, @PathVariable("lectureId") Long lectureId) {
+		adminService.confirmAdmin(Long.valueOf(principal.getName()));
+		lectureService.updateMembersScore(lectureId);
+		return ResponseEntity.ok(ApiResponse.success(SUCCESS_UPDATE_MEMBER_SCORE.getMessage()));
+	}
+
 
 	private URI getURI(Long lectureId) {
 		return ServletUriComponentsBuilder

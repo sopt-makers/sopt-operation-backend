@@ -1,13 +1,13 @@
 package org.sopt.makers.operation.service;
 
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
+import static org.sopt.makers.operation.entity.AttendanceStatus.*;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import lombok.val;
 import org.sopt.makers.operation.dto.attendance.AttendanceTotalCountVO;
 import org.sopt.makers.operation.dto.attendance.AttendanceTotalResponseDTO;
 import org.sopt.makers.operation.dto.attendance.AttendanceTotalVO;
@@ -139,6 +139,58 @@ public class LectureServiceImpl implements LectureService {
 		}
 
 		throw new IllegalStateException(INVALID_LECTURE.getName());
+	}
+
+	@Override
+	public AttendanceTotalResponseDTO getTotal(Member member) {
+		List<AttendanceTotalVO> attendances = attendanceRepository.findAttendanceByMemberId(member.getId())
+			.stream().map(this::getTotalAttendanceVO)
+			.toList();
+
+		Map<AttendanceStatus, Integer> countAttendance = attendances.stream()
+			.map(this::getAttendanceStatus)
+			.collect(
+				() -> new EnumMap<>(AttendanceStatus.class),
+				(map, status) -> map.merge(status, 1, Integer::sum),
+				(map1, map2) -> map2.forEach((status, count) -> map1.merge(status, count, Integer::sum))
+			);
+
+		AttendanceTotalCountVO total = AttendanceTotalCountVO.of(
+			countAttendance.size(),
+			countAttendance.getOrDefault(ATTENDANCE, 0),
+			countAttendance.getOrDefault(AttendanceStatus.ABSENT, 0),
+			countAttendance.getOrDefault(AttendanceStatus.TARDY, 0)
+		);
+
+		return AttendanceTotalResponseDTO.of(member, total, attendances);
+	}
+
+	@Override
+	@Transactional
+	public void updateMembersScore(Long lectureId) {
+		Lecture lecture = lectureRepository.findById(lectureId)
+			.orElseThrow(() -> new EntityNotFoundException(INVALID_LECTURE.getName()));
+		lecture.getAttendances().forEach(this::updateScoreIn32);
+	}
+
+	private void updateScoreIn32(Attendance attendance) {
+		Attribute attribute = attendance.getLecture().getAttribute();
+		Member member = attendance.getMember();
+
+		switch (attribute) {
+			case SEMINAR -> {
+				if (attendance.getStatus().equals(TARDY)) {
+					member.updateScore(-0.5f);
+				} else if (attendance.getStatus().equals(ABSENT)) {
+					member.updateScore(-1);
+				}
+			}
+			case EVENT -> {
+				if (attendance.getStatus().equals(ATTENDANCE)) {
+					member.updateScore(0.5f);
+				}
+			}
+		}
 	}
 
 	private AttendanceTotalVO getTotalAttendanceVO(Attendance attendance) {
