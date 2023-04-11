@@ -4,6 +4,7 @@ import static org.sopt.makers.operation.common.ExceptionMessage.*;
 import static org.sopt.makers.operation.entity.AttendanceStatus.*;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -77,7 +78,7 @@ public class LectureServiceImpl implements LectureService {
 
 		// 세션이 없을 때
 		if (lectures.isEmpty()) {
-			return new LectureGetResponseDTO(LectureResponseType.NO_SESSION, "", "", null, null, Collections.emptyList());
+			return new LectureGetResponseDTO(LectureResponseType.NO_SESSION, "", "", "", "", Collections.emptyList());
 		}
 
 		Lecture currentSession;
@@ -86,7 +87,7 @@ public class LectureServiceImpl implements LectureService {
 		// 하루에 세션이 하나일 때, 하루에 세션이 여러개일 때
 		if (lectures.size() == 1) {
 			currentSession = lectures.get(0);
-			type = (currentSession.getAttribute() == Attribute.EVENT) ? LectureResponseType.NO_ATTENDANCE : LectureResponseType.HAS_ATTENDANCE;
+			type = (currentSession.getAttribute() == Attribute.SEMINAR) ? LectureResponseType.HAS_ATTENDANCE : LectureResponseType.NO_ATTENDANCE;
 		} else {
 			int sessionNumber = (now.getHour() < 16) ? 2 : 3;
 			type = (sessionNumber == 3) ? LectureResponseType.NO_ATTENDANCE : LectureResponseType.HAS_ATTENDANCE;
@@ -101,8 +102,7 @@ public class LectureServiceImpl implements LectureService {
 		Attendance attendance = attendanceRepository.findAttendanceByLectureIdAndMemberId(currentSession.getId(), lectureSearchCondition.memberId());
 
 		List<LectureGetResponseVO> attendances = attendance.getSubAttendances().stream()
-				.map(subAttendance -> LectureGetResponseVO
-					.of(subAttendance.getStatus(), subAttendance.getLastModifiedDate()))
+				.map(subAttendance -> LectureGetResponseVO.of(subAttendance.getStatus(), subAttendance.getLastModifiedDate()))
 				.collect(Collectors.toList());
 
 		return LectureGetResponseDTO.of(type, currentSession, attendances);
