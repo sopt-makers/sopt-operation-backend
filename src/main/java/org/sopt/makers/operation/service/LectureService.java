@@ -18,4 +18,6 @@ public interface LectureService {
 	LectureResponseDTO getLecture(Long lectureId, Part part);
 	AttendanceResponseDTO startAttendance(AttendanceRequestDTO requestDTO);
 	AttendanceTotalResponseDTO getTotal(Member member);
+	void updateMembersScore(Long lectureId);
+
 }
