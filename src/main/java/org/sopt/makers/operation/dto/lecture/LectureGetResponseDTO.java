@@ -12,9 +12,10 @@ public record LectureGetResponseDTO(
         String name,
         String startDate,
         String endDate,
+        String message,
         List<LectureGetResponseVO> attendances
 ) {
-    public static LectureGetResponseDTO of(LectureResponseType type, Lecture lecture, List<LectureGetResponseVO> attendances) {
+    public static LectureGetResponseDTO of(LectureResponseType type, Lecture lecture, String message, List<LectureGetResponseVO> attendances) {
 
         return new LectureGetResponseDTO(
                 type,
@@ -22,6 +23,7 @@ public record LectureGetResponseDTO(
                 lecture.getName(),
                 lecture.getStartDate().format(convertFormat()),
                 lecture.getEndDate().format(convertFormat()),
+                message,
                 attendances
         );
     }
