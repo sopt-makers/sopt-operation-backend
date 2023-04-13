@@ -10,6 +10,7 @@ import org.sopt.makers.operation.entity.Attendance;
 import org.sopt.makers.operation.entity.AttendanceStatus;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.SubAttendance;
+import org.sopt.makers.operation.entity.SubLecture;
 import org.sopt.makers.operation.entity.lecture.Attribute;
 import org.sopt.makers.operation.entity.lecture.Lecture;
 
@@ -18,19 +19,29 @@ public record LectureResponseDTO(
 	int generation,
 	Part part,
 	Attribute attribute,
+	List<SubLectureVO> subLectures,
 	List<MemberVO> members
 ) {
 	public static LectureResponseDTO of(Lecture lecture, List<Attendance> attendances) {
-
-		List<MemberVO> members = attendances.stream().map(MemberVO::of).toList();
-
 		return new LectureResponseDTO(
 			lecture.getName(),
 			lecture.getGeneration(),
 			lecture.getPart(),
 			lecture.getAttribute(),
-			members
+			lecture.getSubLectures().stream().map(SubLectureVO::of).toList(),
+			attendances.stream().map(MemberVO::of).toList()
 		);
+	}
+}
+
+record SubLectureVO(
+	Long subLectureId,
+	int round,
+	String startAt
+) {
+	static SubLectureVO of(SubLecture subLecture) {
+		String startAt = subLecture.getStartAt() != null ? subLecture.getStartAt().toString() : null;
+		return new SubLectureVO(subLecture.getId(), subLecture.getRound(), startAt);
 	}
 }
 
