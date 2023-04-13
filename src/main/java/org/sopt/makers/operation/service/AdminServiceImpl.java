@@ -5,6 +5,7 @@ import static org.sopt.makers.operation.common.ExceptionMessage.*;
 import javax.persistence.EntityNotFoundException;
 
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 
 import org.sopt.makers.operation.dto.admin.LoginRequestDTO;
 import org.sopt.makers.operation.dto.admin.LoginResponseDTO;
@@ -16,7 +17,6 @@ import org.sopt.makers.operation.exception.AdminFailureException;
 import org.sopt.makers.operation.repository.AdminRepository;
 import org.sopt.makers.operation.security.jwt.AdminAuthentication;
 import org.sopt.makers.operation.security.jwt.JwtTokenProvider;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +35,7 @@ public class AdminServiceImpl implements AdminService {
     public SignUpResponseDTO signUp(SignUpRequestDTO SignUpRequestDTO){
         isEmailDuplicated(SignUpRequestDTO.email());
 
-        Admin admin = adminRepository.save(Admin.builder()
+        val admin = adminRepository.save(Admin.builder()
                 .email(SignUpRequestDTO.email())
                 .password(passwordEncoder.encode(SignUpRequestDTO.password()))
                 .name(SignUpRequestDTO.name())
@@ -48,7 +48,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @Transactional
     public LoginResponseDTO login(LoginRequestDTO userLoginRequestDTO) {
-        Admin admin = adminRepository
+        val admin = adminRepository
                 .findByEmail(userLoginRequestDTO.email())
                 .orElseThrow(() -> new AdminFailureException("이메일이 존재하지 않습니다"));
 
@@ -58,7 +58,7 @@ public class AdminServiceImpl implements AdminService {
 
         if(admin.getStatus().equals(AdminStatus.NOT_CERTIFIED)) throw new AdminFailureException("승인되지 않은 계정입니다");
 
-        Authentication authentication = new AdminAuthentication(admin.getId(), null, null);
+        val authentication = new AdminAuthentication(admin.getId(), null, null);
 
         admin.updateRefreshToken(jwtTokenProvider.generateRefreshToken(authentication));
 
@@ -71,8 +71,13 @@ public class AdminServiceImpl implements AdminService {
             .orElseThrow(() -> new EntityNotFoundException(INVALID_MEMBER.getName()));
     }
 
-    private void isEmailDuplicated(String email){
+    private void isEmailDuplicated(String email) {
         if(adminRepository.existsByEmail(email)) throw new AdminFailureException("중복되는 이메일입니다");
     }
 
+    @Override
+    public String getRefreshToken(Long adminId) {
+        return adminRepository.findById(adminId)
+                .orElseThrow(() -> new EntityNotFoundException(INVALID_MEMBER.getName())).getRefreshToken();
+    }
 }

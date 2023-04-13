@@ -3,17 +3,19 @@ package org.sopt.makers.operation.controller;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.sopt.makers.operation.dto.admin.LoginRequestDTO;
 import org.sopt.makers.operation.dto.admin.LoginResponseDTO;
 import org.sopt.makers.operation.dto.admin.SignUpRequestDTO;
 import org.sopt.makers.operation.dto.admin.SignUpResponseDTO;
 import org.sopt.makers.operation.service.AdminServiceImpl;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.Duration;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,6 +42,19 @@ public class AdminController {
     })
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody final LoginRequestDTO userLoginRequestDTO) {
-        return ResponseEntity.status(HttpStatus.OK).body(authService.login(userLoginRequestDTO));
+        val response = authService.login(userLoginRequestDTO);
+        val refreshToken = authService.getRefreshToken(response.id());
+
+        val cookie = ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .maxAge(Duration.ofDays(14))
+                .secure(true)
+                .path("/")
+                .build();
+
+        val headers = new HttpHeaders();
+        headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(response);
     }
 }
