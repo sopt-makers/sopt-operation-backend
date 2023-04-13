@@ -59,4 +59,11 @@ public class AttendanceController {
 		AttendanceMemberResponseDTO response = attendanceService.getMemberAttendance(memberId);
 		return ResponseEntity.ok(ApiResponse.success(SUCCESS_GET_MEMBER_ATTENDANCE.getMessage(), response));
 	}
+
+	@PatchMapping("/member/{memberId}")
+	public ResponseEntity<ApiResponse> updateMemberScore(Principal principal, @PathVariable Long memberId) {
+		adminService.confirmAdmin(Long.valueOf(principal.getName()));
+		float response = attendanceService.updateMemberScore(memberId);
+		return ResponseEntity.ok(ApiResponse.success(SUCCESS_UPDATE_MEMBER_SCORE.getMessage(), response));
+	}
 }
