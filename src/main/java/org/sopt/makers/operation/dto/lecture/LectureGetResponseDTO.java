@@ -8,6 +8,7 @@ import java.util.List;
 
 public record LectureGetResponseDTO(
         LectureResponseType type,
+        Long id,
         String location,
         String name,
         String startDate,
@@ -19,6 +20,7 @@ public record LectureGetResponseDTO(
 
         return new LectureGetResponseDTO(
                 type,
+                lecture.getId(),
                 lecture.getPlace(),
                 lecture.getName(),
                 lecture.getStartDate().format(convertFormat()),

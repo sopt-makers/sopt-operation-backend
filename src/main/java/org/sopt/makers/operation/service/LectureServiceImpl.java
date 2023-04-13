@@ -72,7 +72,7 @@ public class LectureServiceImpl implements LectureService {
 
 	@Override
 	public LectureGetResponseDTO getCurrentLecture(LectureSearchCondition lectureSearchCondition) {
-		val now = LocalDateTime.now();
+		val now = LocalDateTime.now().plusHours(12);
 		val sessionNumber = (now.getHour() < 16) ? 2 : 3;
 		val lectures = lectureRepository.searchLecture(lectureSearchCondition);
 
@@ -80,35 +80,27 @@ public class LectureServiceImpl implements LectureService {
 
 		// 세션이 없을 때
 		if (lectures.isEmpty()) {
-			return new LectureGetResponseDTO(LectureResponseType.NO_SESSION, "", "", "", "", "", Collections.emptyList());
+			return new LectureGetResponseDTO(LectureResponseType.NO_SESSION, 0L,"", "", "", "", "", Collections.emptyList());
 		}
 
-		Lecture currentSession;
-		LectureResponseType type;
+		val currentLecture = getCurrentLecture(lectures, sessionNumber);
+		val lectureType = getLectureResponseType(currentLecture);
 
-		if (lectures.size() == 1) {
-			currentSession = lectures.get(0);
-			type = (currentSession.getAttribute() != Attribute.ETC) ? LectureResponseType.HAS_ATTENDANCE : LectureResponseType.NO_ATTENDANCE;
-		} else {
-			currentSession = lectures.get(sessionNumber - 2);
-			type = (sessionNumber == 3) ? LectureResponseType.NO_ATTENDANCE : LectureResponseType.HAS_ATTENDANCE;
-		}
-
-		if (type.equals(LectureResponseType.NO_ATTENDANCE)) {
+		if (lectureType.equals(LectureResponseType.NO_ATTENDANCE)) {
 			val message = "출석 점수가 반영되지 않아요.";
-			return LectureGetResponseDTO.of(type, currentSession, message, Collections.emptyList());
+			return LectureGetResponseDTO.of(lectureType, currentLecture, message, Collections.emptyList());
 		}
 
 		// 출결 가져오기
-		val attendance = attendanceRepository.findAttendanceByLectureIdAndMemberId(currentSession.getId(), lectureSearchCondition.memberId());
+		val attendance = attendanceRepository.findAttendanceByLectureIdAndMemberId(currentLecture.getId(), lectureSearchCondition.memberId());
 
 		val attendances = attendance.getSubAttendances().stream()
 				.map(subAttendance -> LectureGetResponseVO.of(subAttendance.getStatus(), subAttendance.getLastModifiedDate()))
 				.collect(Collectors.toList());
 
-		val message = (currentSession.getAttribute() == Attribute.SEMINAR) ? "" : "행사도 참여하고, 출석점수도 받고, 일석이조!";
+		val message = (currentLecture.getAttribute() == Attribute.SEMINAR) ? "" : "행사도 참여하고, 출석점수도 받고, 일석이조!";
 
-		return LectureGetResponseDTO.of(type, currentSession, message, attendances);
+		return LectureGetResponseDTO.of(lectureType, currentLecture, message, attendances);
 	}
 
 
@@ -211,5 +203,14 @@ public class LectureServiceImpl implements LectureService {
 	private Lecture findLecture(Long id) {
 		return lectureRepository.findById(id)
 			.orElseThrow(() -> new EntityNotFoundException(INVALID_LECTURE.getName()));
+	}
+
+	private Lecture getCurrentLecture(List<Lecture> lectures, int sessionNumber) {
+		val lectureSize = lectures.size();
+		return (lectureSize == 1) ? lectures.get(0) : lectures.get(sessionNumber - 2);
+	}
+
+	private LectureResponseType getLectureResponseType(Lecture currentSession) {
+		return (currentSession.getAttribute() != Attribute.ETC) ? LectureResponseType.HAS_ATTENDANCE : LectureResponseType.NO_ATTENDANCE;
 	}
 }
