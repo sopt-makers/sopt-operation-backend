@@ -15,6 +15,7 @@ import org.sopt.makers.operation.entity.SubAttendance;
 import org.sopt.makers.operation.entity.lecture.Attribute;
 import org.sopt.makers.operation.repository.SubAttendanceRepository;
 import org.sopt.makers.operation.repository.member.MemberRepository;
+import org.sopt.makers.operation.util.Generation32;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,12 +28,15 @@ public class AttendanceServiceImpl implements AttendanceService {
 
 	private final SubAttendanceRepository subAttendanceRepository;
 	private final MemberRepository memberRepository;
+	private final Generation32 sopt32;
 
 	@Override
 	@Transactional
 	public AttendanceResponseDTO updateAttendanceStatus(AttendanceRequestDTO requestDTO) {
 		SubAttendance subAttendance = findSubAttendance(requestDTO.subAttendanceId());
 		subAttendance.updateStatus(requestDTO.status());
+		Attendance attendance = subAttendance.getAttendance();
+		attendance.updateStatus(sopt32.getAttendanceStatus(requestDTO.attribute(), attendance.getSubAttendances()));
 		return AttendanceResponseDTO.of(subAttendance);
 	}
 
