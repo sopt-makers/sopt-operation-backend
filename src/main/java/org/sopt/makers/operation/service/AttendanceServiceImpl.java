@@ -46,10 +46,9 @@ public class AttendanceServiceImpl implements AttendanceService {
 	@Transactional
 	public float updateMemberScore(Long memberId) {
 		Member member = findMember(memberId);
-		float score = 2;
-		for (Attendance attendance : member.getAttendances()) {
-			score += getUpdateScore(attendance, attendance.getLecture().getAttribute());
-		}
+		float score = (float)(2 + member.getAttendances().stream()
+			.mapToDouble(attendance -> getUpdateScore(attendance, attendance.getLecture().getAttribute()))
+			.sum());
 		member.setScore(score);
 		return member.getScore();
 	}
