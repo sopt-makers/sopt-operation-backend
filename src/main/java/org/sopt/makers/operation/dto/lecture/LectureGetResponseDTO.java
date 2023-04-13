@@ -8,20 +8,24 @@ import java.util.List;
 
 public record LectureGetResponseDTO(
         LectureResponseType type,
+        Long id,
         String location,
         String name,
         String startDate,
         String endDate,
+        String message,
         List<LectureGetResponseVO> attendances
 ) {
-    public static LectureGetResponseDTO of(LectureResponseType type, Lecture lecture, List<LectureGetResponseVO> attendances) {
+    public static LectureGetResponseDTO of(LectureResponseType type, Lecture lecture, String message, List<LectureGetResponseVO> attendances) {
 
         return new LectureGetResponseDTO(
                 type,
+                lecture.getId(),
                 lecture.getPlace(),
                 lecture.getName(),
                 lecture.getStartDate().format(convertFormat()),
                 lecture.getEndDate().format(convertFormat()),
+                message,
                 attendances
         );
     }
