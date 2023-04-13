@@ -63,7 +63,18 @@ public class JwtTokenProvider {
     }
 
     public AdminAuthentication getAuthentication(String token, JwtTokenType jwtTokenType) {
-        return new AdminAuthentication(getId(token, jwtTokenType), null, null);
+        return switch (jwtTokenType) {
+            case ACCESS_TOKEN, REFRESH_TOKEN -> new AdminAuthentication(getId(token, jwtTokenType), null, null);
+            case APP_ACCESS_TOKEN -> new AdminAuthentication(getPlayGroundId(token, jwtTokenType), null, null);
+        };
+    }
+
+    public Long getPlayGroundId(String token, JwtTokenType jwtTokenType) {
+        try {
+            return Long.parseLong(Jwts.parserBuilder().setSigningKey(encodeKey(setSecretKey(jwtTokenType))).build().parseClaimsJws(token).getBody().get("playgroundId").toString());
+        } catch(ExpiredJwtException e) {
+            throw new TokenException("만료된 토큰입니다");
+        }
     }
 
     public Long getId(String token, JwtTokenType jwtTokenType) {
