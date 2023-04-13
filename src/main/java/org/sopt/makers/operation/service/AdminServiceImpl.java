@@ -7,10 +7,7 @@ import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
-import org.sopt.makers.operation.dto.admin.LoginRequestDTO;
-import org.sopt.makers.operation.dto.admin.LoginResponseDTO;
-import org.sopt.makers.operation.dto.admin.SignUpRequestDTO;
-import org.sopt.makers.operation.dto.admin.SignUpResponseDTO;
+import org.sopt.makers.operation.dto.admin.*;
 import org.sopt.makers.operation.entity.Admin;
 import org.sopt.makers.operation.entity.AdminStatus;
 import org.sopt.makers.operation.exception.AdminFailureException;
@@ -67,17 +64,36 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public void confirmAdmin(Long adminId) {
-        adminRepository.findById(adminId)
-            .orElseThrow(() -> new EntityNotFoundException(INVALID_MEMBER.getName()));
-    }
-
-    private void isEmailDuplicated(String email) {
-        if(adminRepository.existsByEmail(email)) throw new AdminFailureException("중복되는 이메일입니다");
+        this.findById(adminId);
     }
 
     @Override
     public String getRefreshToken(Long adminId) {
+        return this.findById(adminId).getRefreshToken();
+    }
+
+    @Override
+    public void validateRefreshToken(Long adminId, String requestRefreshToken) {
+        val admin = this.findById(adminId);
+        val refreshToken = admin.getRefreshToken();
+
+        if(!refreshToken.equals(requestRefreshToken)) throw new AdminFailureException("토큰이 일치하지 않습니다");
+    }
+
+    @Override
+    @Transactional
+    public void refresh(Long adminId, String newRefreshToken) {
+        val admin = this.findById(adminId);
+
+        admin.updateRefreshToken(newRefreshToken);
+    }
+
+    private Admin findById(Long adminId) {
         return adminRepository.findById(adminId)
-                .orElseThrow(() -> new EntityNotFoundException(INVALID_MEMBER.getName())).getRefreshToken();
+                .orElseThrow(() -> new EntityNotFoundException(INVALID_MEMBER.getName()));
+    }
+
+    private void isEmailDuplicated(String email) {
+        if(adminRepository.existsByEmail(email)) throw new AdminFailureException("중복되는 이메일입니다");
     }
 }
