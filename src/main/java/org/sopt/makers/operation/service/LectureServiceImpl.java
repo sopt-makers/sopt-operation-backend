@@ -4,6 +4,7 @@ import static org.sopt.makers.operation.common.ExceptionMessage.*;
 import static org.sopt.makers.operation.entity.AttendanceStatus.*;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -72,7 +73,7 @@ public class LectureServiceImpl implements LectureService {
 
 	@Override
 	public LectureGetResponseDTO getCurrentLecture(LectureSearchCondition lectureSearchCondition) {
-		val now = LocalDateTime.now().plusHours(12);
+		val now = LocalDateTime.now();
 		val sessionNumber = (now.getHour() < 16) ? 2 : 3;
 		val lectures = lectureRepository.searchLecture(lectureSearchCondition);
 
@@ -142,6 +143,37 @@ public class LectureServiceImpl implements LectureService {
 		Lecture lecture = lectureRepository.findById(lectureId)
 			.orElseThrow(() -> new EntityNotFoundException(INVALID_LECTURE.getName()));
 		lecture.getAttendances().forEach(this::updateScoreIn32);
+	}
+
+	@Override
+	public LectureCurrentRoundResponseDTO getCurrentLectureRound(Long lectureId) {
+		val now = LocalDateTime.now();
+		val today = now.toLocalDate();
+		val startOfDay = today.atStartOfDay();
+		val endOfDay = LocalDateTime.of(today, LocalTime.MAX);
+
+		val lecture = lectureRepository.findById(lectureId)
+				.orElseThrow(() -> new EntityNotFoundException(INVALID_LECTURE.getName()));
+
+		val lectureStartDate = lecture.getStartDate();
+
+		if(lectureStartDate.isBefore(startOfDay) || lectureStartDate.isAfter(endOfDay))
+			throw new LectureException("오늘 세션이 없습니다");
+
+		val subLectures = lecture.getSubLectures();
+
+		if(subLectures.isEmpty()) throw new LectureException("출석 시작 전입니다");
+
+		val subLectureComparator = Comparator.comparing(SubLecture::getRound, Comparator.reverseOrder());
+		Collections.sort(subLectures, subLectureComparator);
+
+		val subLecture = subLectures.get(0);
+
+		if(now.isBefore(subLecture.getStartAt())) throw new LectureException(subLecture.getRound()+"차 출석 시작 전입니다");
+
+		if(now.isAfter(subLecture.getStartAt().plusMinutes(10))) throw new LectureException("이미 끝난 출석입니다");
+
+		return LectureCurrentRoundResponseDTO.of(subLecture);
 	}
 
 	private void updateScoreIn32(Attendance attendance) {

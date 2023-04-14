@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.sopt.makers.operation.common.ApiResponse;
 import org.sopt.makers.operation.dto.attendance.AttendanceTotalResponseDTO;
+import org.sopt.makers.operation.dto.lecture.LectureCurrentRoundResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LectureGetResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LectureSearchCondition;
 import org.sopt.makers.operation.dto.member.MemberScoreGetResponse;
@@ -78,5 +79,22 @@ public class AppController {
 
         return ResponseEntity
                 .ok(ApiResponse.success(SUCCESS_GET_ATTENDANCE_SCORE.getMessage(), MemberScoreGetResponse.of(member.getScore())));
+    }
+
+    @ApiOperation(value = "출석 차수 조회")
+    @ApiResponses({
+            @io.swagger.annotations.ApiResponse(code = 200, message = "출석 차수 조회 성공"),
+            @io.swagger.annotations.ApiResponse(code = 400, message = "필요한 값이 없음"),
+            @io.swagger.annotations.ApiResponse(code = 401, message = "유효하지 않은 토큰"),
+            @io.swagger.annotations.ApiResponse(code = 500, message = "서버 에러")
+    })
+    @GetMapping("/lecture/round/{lectureId}")
+    public ResponseEntity<ApiResponse> getLecture(@PathVariable("lectureId") Long lectureId, Principal principal) {
+        memberService.confirmMember(Long.valueOf(principal.getName()))
+                .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
+
+        LectureCurrentRoundResponseDTO lectureCurrentRoundResponseDTO = lectureService.getCurrentLectureRound(lectureId);
+
+        return ResponseEntity.ok(ApiResponse.success(SUCCESS_GET_LECUTRE_ROUND.getMessage(), lectureCurrentRoundResponseDTO));
     }
 }
