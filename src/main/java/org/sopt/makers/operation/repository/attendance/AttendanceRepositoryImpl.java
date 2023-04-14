@@ -1,6 +1,7 @@
 package org.sopt.makers.operation.repository.attendance;
 
 import static java.util.Objects.*;
+import static org.sopt.makers.operation.entity.Part.*;
 import static org.sopt.makers.operation.entity.QAttendance.*;
 import static org.sopt.makers.operation.entity.QMember.*;
 
@@ -64,6 +65,7 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 		return queryFactory
 			.select(attendance)
 			.from(attendance)
+			.join(attendance.member, member)
 			.where(
 				attendance.lecture.eq(lecture),
 				partEq(part)
@@ -84,6 +86,6 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 	}
 
 	private BooleanExpression partEq(Part part) {
-		return nonNull(part) ? member.part.eq(part) : null;
+		return (part == null || part.equals(ALL)) ? null : member.part.eq(part);
 	}
 }
