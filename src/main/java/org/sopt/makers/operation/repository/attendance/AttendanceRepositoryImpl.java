@@ -1,6 +1,5 @@
 package org.sopt.makers.operation.repository.attendance;
 
-import static java.util.Objects.*;
 import static org.sopt.makers.operation.entity.Part.*;
 import static org.sopt.makers.operation.entity.QAttendance.*;
 import static org.sopt.makers.operation.entity.QMember.*;
@@ -11,6 +10,7 @@ import org.sopt.makers.operation.entity.Attendance;
 import org.sopt.makers.operation.entity.AttendanceStatus;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.lecture.Lecture;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -82,6 +82,22 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 				attendance.member.id.eq(memberId)
 			)
 			.orderBy(attendance.lecture.startDate.desc())
+			.fetch();
+	}
+
+	@Override
+	public List<Attendance> findMemberAttendances(Lecture lecture, Part part, Pageable pageable) {
+		return queryFactory
+			.select(attendance)
+			.from(attendance)
+			.leftJoin(attendance.member, member)
+			.where(
+				attendance.lecture.eq(lecture),
+				partEq(part)
+			)
+			.orderBy(member.name.asc())
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
 			.fetch();
 	}
 
