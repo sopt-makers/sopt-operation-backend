@@ -61,19 +61,6 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 	}
 
 	@Override
-	public List<Attendance> getAttendanceByPart(Lecture lecture, Part part) {
-		return queryFactory
-			.select(attendance)
-			.from(attendance)
-			.join(attendance.member, member)
-			.where(
-				attendance.lecture.eq(lecture),
-				partEq(part)
-			)
-			.fetch();
-	}
-
-	@Override
 	public List<Attendance> findAttendanceByMemberId(Long memberId) {
 		return queryFactory
 			.select(attendance)
@@ -86,7 +73,7 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 	}
 
 	@Override
-	public List<Attendance> findMemberAttendances(Lecture lecture, Part part, Pageable pageable) {
+	public List<Attendance> findLectureAttendances(Lecture lecture, Part part, Pageable pageable) {
 		return queryFactory
 			.select(attendance)
 			.from(attendance)
