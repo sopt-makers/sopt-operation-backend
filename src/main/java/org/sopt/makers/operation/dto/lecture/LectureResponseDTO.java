@@ -12,6 +12,7 @@ import org.sopt.makers.operation.entity.lecture.Attribute;
 import org.sopt.makers.operation.entity.lecture.Lecture;
 
 public record LectureResponseDTO(
+	Long lectureId,
 	String name,
 	int generation,
 	Part part,
@@ -22,6 +23,7 @@ public record LectureResponseDTO(
 ) {
 	public static LectureResponseDTO of(Lecture lecture) {
 		return new LectureResponseDTO(
+			lecture.getId(), 
 			lecture.getName(),
 			lecture.getGeneration(),
 			lecture.getPart(),
