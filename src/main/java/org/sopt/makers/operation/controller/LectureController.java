@@ -62,9 +62,9 @@ public class LectureController {
 	})
 	@GetMapping
 	public ResponseEntity<ApiResponse> getLecturesByGeneration(
-		@RequestParam("generation") int generation, Principal principal) {
+		@RequestParam("generation") int generation, @RequestParam(required = false) Part part, Principal principal) {
 		adminService.confirmAdmin(Long.valueOf(principal.getName()));
-		LecturesResponseDTO response = lectureService.getLecturesByGeneration(generation);
+		LecturesResponseDTO response = lectureService.getLecturesByGeneration(generation, part);
 		return ResponseEntity.ok(ApiResponse.success(SUCCESS_GET_LECTURES.getMessage(), response));
 	}
 

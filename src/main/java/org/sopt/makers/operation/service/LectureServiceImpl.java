@@ -105,8 +105,8 @@ public class LectureServiceImpl implements LectureService {
 
 
 	@Override
-	public LecturesResponseDTO getLecturesByGeneration(int generation) {
-		List<LectureVO> lectures = lectureRepository.findByGenerationOrderByStartDateDesc(generation)
+	public LecturesResponseDTO getLecturesByGeneration(int generation, Part part) {
+		List<LectureVO> lectures = lectureRepository.findLectures(generation, part)
 			.stream().map(this::getLectureVO)
 			.toList();
 		return LecturesResponseDTO.of(generation, lectures);
