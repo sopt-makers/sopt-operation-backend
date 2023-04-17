@@ -33,13 +33,14 @@ public class SubLecture {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "lecture_id")
 	private Lecture lecture;
-
 	private int round;
 
 	private LocalDateTime startAt;
 
 	@OneToMany(mappedBy = "subLecture")
 	private final List<SubAttendance> subAttendances = new ArrayList<>();
+
+	private Long code;
 
 	public SubLecture(Lecture lecture, int round) {
 		setLecture(lecture);
