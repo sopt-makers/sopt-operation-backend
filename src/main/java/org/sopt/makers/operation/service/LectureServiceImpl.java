@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 import lombok.val;
 
+import org.sopt.makers.operation.common.ExceptionMessage;
 import org.sopt.makers.operation.dto.attendance.AttendanceTotalVO;
 import org.sopt.makers.operation.dto.lecture.*;
 import javax.persistence.EntityNotFoundException;
@@ -158,20 +159,20 @@ public class LectureServiceImpl implements LectureService {
 		val lectureStartDate = lecture.getStartDate();
 
 		if(lectureStartDate.isBefore(startOfDay) || lectureStartDate.isAfter(endOfDay))
-			throw new LectureException("오늘 세션이 없습니다");
+			throw new LectureException(NO_SESSION.getName());
 
 		val subLectures = lecture.getSubLectures();
 
-		if(subLectures.isEmpty()) throw new LectureException("출석 시작 전입니다");
+		if(subLectures.isEmpty()) throw new LectureException(NOT_STARTED_ATTENDANCE.getName());
 
 		val subLectureComparator = Comparator.comparing(SubLecture::getRound, Comparator.reverseOrder());
 		Collections.sort(subLectures, subLectureComparator);
 
 		val subLecture = subLectures.get(0);
 
-		if(now.isBefore(subLecture.getStartAt())) throw new LectureException(subLecture.getRound()+"차 출석 시작 전입니다");
+		if(now.isBefore(subLecture.getStartAt())) throw new LectureException(subLecture.getRound() +NOT_STARTED_NTH_ATTENDANCE.getName());
 
-		if(now.isAfter(subLecture.getStartAt().plusMinutes(10))) throw new LectureException("이미 끝난 출석입니다");
+		if(now.isAfter(subLecture.getStartAt().plusMinutes(10))) throw new LectureException(ENDED_ATTENDANCE.getName());
 
 		return LectureCurrentRoundResponseDTO.of(subLecture);
 	}

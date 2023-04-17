@@ -74,11 +74,11 @@ public class AttendanceServiceImpl implements AttendanceService {
 		val subLecture = subLectureRepository.findById(requestDTO.subLectureId())
 				.orElseThrow(() -> new EntityNotFoundException(INVALID_SUB_LECTURE.getName()));
 
-		if(!subLecture.getCode().equals(requestDTO.code())) throw new SubLectureException("코드가 일치하지 않아요!");
+		if(!subLecture.getCode().equals(requestDTO.code())) throw new SubLectureException(INVALID_CODE.getName());
 
-		if(now.isBefore(subLecture.getStartAt())) throw new LectureException(subLecture.getRound()+"차 출석 시작 전입니다");
+		if(now.isBefore(subLecture.getStartAt())) throw new LectureException(subLecture.getRound() + NOT_STARTED_NTH_ATTENDANCE.getName());
 
-		if(now.isAfter(subLecture.getStartAt().plusMinutes(10))) throw new LectureException("이미 끝난 출석입니다");
+		if(now.isAfter(subLecture.getStartAt().plusMinutes(10))) throw new LectureException(ENDED_ATTENDANCE.getName());
 
 		Attendance attendance = attendanceRepository.findAttendanceByLectureIdAndMemberId(subLecture.getLecture().getId(), memberId);
 
