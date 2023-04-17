@@ -11,6 +11,7 @@ import org.sopt.makers.operation.dto.lecture.AttendanceResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LectureRequestDTO;
 import org.sopt.makers.operation.dto.lecture.LectureResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LecturesResponseDTO;
+import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.service.AdminService;
 import org.sopt.makers.operation.service.LectureService;
 import org.springframework.http.ResponseEntity;
@@ -61,9 +62,9 @@ public class LectureController {
 	})
 	@GetMapping
 	public ResponseEntity<ApiResponse> getLecturesByGeneration(
-		@RequestParam("generation") int generation, Principal principal) {
+		@RequestParam("generation") int generation, @RequestParam(required = false) Part part, Principal principal) {
 		adminService.confirmAdmin(Long.valueOf(principal.getName()));
-		LecturesResponseDTO response = lectureService.getLecturesByGeneration(generation);
+		LecturesResponseDTO response = lectureService.getLecturesByGeneration(generation, part);
 		return ResponseEntity.ok(ApiResponse.success(SUCCESS_GET_LECTURES.getMessage(), response));
 	}
 
