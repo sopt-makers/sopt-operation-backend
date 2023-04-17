@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 
 import lombok.val;
 
-import org.sopt.makers.operation.common.ExceptionMessage;
 import org.sopt.makers.operation.dto.attendance.AttendanceTotalVO;
 import org.sopt.makers.operation.dto.lecture.*;
 import javax.persistence.EntityNotFoundException;
@@ -107,8 +106,8 @@ public class LectureServiceImpl implements LectureService {
 
 
 	@Override
-	public LecturesResponseDTO getLecturesByGeneration(int generation) {
-		List<LectureVO> lectures = lectureRepository.findByGenerationOrderByStartDateDesc(generation)
+	public LecturesResponseDTO getLecturesByGeneration(int generation, Part part) {
+		List<LectureVO> lectures = lectureRepository.findLectures(generation, part)
 			.stream().map(this::getLectureVO)
 			.toList();
 		return LecturesResponseDTO.of(generation, lectures);
@@ -194,14 +193,6 @@ public class LectureServiceImpl implements LectureService {
 				}
 			}
 		}
-	}
-
-	private AttendanceTotalVO getTotalAttendanceVO(Attendance attendance) {
-		return AttendanceTotalVO.of(attendance);
-	}
-
-	private AttendanceStatus getAttendanceStatus(AttendanceTotalVO attendance) {
-		return attendance.status();
 	}
 
 	private LectureVO getLectureVO(Lecture lecture) {
