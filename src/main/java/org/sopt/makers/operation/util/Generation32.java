@@ -12,6 +12,29 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class Generation32 {
 
+	public float getUpdateScore(Attribute attribute, AttendanceStatus status) {
+		return switch (attribute) {
+			case SEMINAR -> getUpdateScoreInSeminar(status);
+			case EVENT -> getUpdateScoreInEvent(status);
+			default -> 0;
+		};
+	}
+
+	private float getUpdateScoreInSeminar(AttendanceStatus status) {
+		return switch (status) {
+			case TARDY -> -0.5f;
+			case ABSENT -> -1f;
+			default -> 0f;
+		};
+	}
+
+	private float getUpdateScoreInEvent(AttendanceStatus status) {
+		if (status.equals(ATTENDANCE)) {
+			return 0.5f;
+		}
+		return 0;
+	}
+
 	public AttendanceStatus getAttendanceStatus(Attribute attribute, List<SubAttendance> subAttendances) {
 		int firstRound = subAttendances.get(0).getSubLecture().getRound() == 1 ? 0 : 1;
 		SubAttendance first = subAttendances.get(firstRound);

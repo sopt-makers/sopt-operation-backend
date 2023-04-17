@@ -37,18 +37,19 @@ public class SubLecture {
 
 	private LocalDateTime startAt;
 
+	private String code;
+
 	@OneToMany(mappedBy = "subLecture")
 	private final List<SubAttendance> subAttendances = new ArrayList<>();
-
-	private Long code;
 
 	public SubLecture(Lecture lecture, int round) {
 		setLecture(lecture);
 		this.round = round;
 	}
 
-	public void startAttendance() {
+	public void startAttendance(String code) {
 		this.startAt = LocalDateTime.now();
+		this.code = code;
 	}
 
 	private void setLecture(Lecture lecture) {

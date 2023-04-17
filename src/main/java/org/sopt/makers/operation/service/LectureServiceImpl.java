@@ -115,10 +115,9 @@ public class LectureServiceImpl implements LectureService {
 	}
 
 	@Override
-	public LectureResponseDTO getLecture(Long lectureId, Part part) {
+	public LectureResponseDTO getLecture(Long lectureId) {
 		Lecture lecture = findLecture(lectureId);
-		List<Attendance> attendances = attendanceRepository.getAttendanceByPart(lecture, part);
-		return LectureResponseDTO.of(lecture, attendances);
+		return LectureResponseDTO.of(lecture);
 	}
 
 	@Override
@@ -130,7 +129,7 @@ public class LectureServiceImpl implements LectureService {
 			if (subLecture.getRound() < requestDTO.round() && subLecture.getStartAt() == null) {
 				throw new IllegalStateException(NOT_STARTED_PRE_ATTENDANCE.getName());
 			} else if (subLecture.getRound() == requestDTO.round()) {
-				subLecture.startAttendance();
+				subLecture.startAttendance(requestDTO.code());
 				return new AttendanceResponseDTO(lecture.getId(), subLecture.getId());
 			}
 		}
