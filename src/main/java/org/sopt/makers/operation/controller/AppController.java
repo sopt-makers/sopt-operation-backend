@@ -6,6 +6,7 @@ import static org.sopt.makers.operation.common.ExceptionMessage.*;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.sopt.makers.operation.common.ApiResponse;
 import org.sopt.makers.operation.dto.attendance.AttendRequestDTO;
 import org.sopt.makers.operation.dto.attendance.AttendResponseDTO;
@@ -42,7 +43,7 @@ public class AppController {
     })
     @GetMapping("/lecture")
     public ResponseEntity<ApiResponse> getLecture(@ApiIgnore Principal principal) {
-        Member member = memberService.confirmMember(Long.valueOf(principal.getName()))
+        val member = memberService.confirmMember(Long.valueOf(principal.getName()))
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
 
         LectureGetResponseDTO lectureGetResponseDTO = lectureService.getCurrentLecture(LectureSearchCondition.of(member.getPart(), member.getGeneration(), member.getId()));
@@ -60,7 +61,7 @@ public class AppController {
     })
     @GetMapping("/total")
     public ResponseEntity<ApiResponse> getMemberTotalAttendance(@ApiIgnore Principal principal) {
-        Member member = memberService.confirmMember(Long.valueOf(principal.getName()))
+        val member = memberService.confirmMember(Long.valueOf(principal.getName()))
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
 
         AttendanceTotalResponseDTO attendanceTotalResponseDTO = memberService.getMemberTotalAttendance(member);
@@ -78,7 +79,7 @@ public class AppController {
     })
     @GetMapping("/score")
     public ResponseEntity<ApiResponse> getScore(@ApiIgnore Principal principal) {
-        Member member = memberService.confirmMember(Long.valueOf(principal.getName()))
+        val member = memberService.confirmMember(Long.valueOf(principal.getName()))
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
 
         return ResponseEntity
@@ -97,7 +98,7 @@ public class AppController {
         memberService.confirmMember(Long.valueOf(principal.getName()))
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
 
-        LectureCurrentRoundResponseDTO lectureCurrentRoundResponseDTO = lectureService.getCurrentLectureRound(lectureId);
+        val lectureCurrentRoundResponseDTO = lectureService.getCurrentLectureRound(lectureId);
 
         return ResponseEntity.ok(ApiResponse.success(SUCCESS_GET_LECUTRE_ROUND.getMessage(), lectureCurrentRoundResponseDTO));
     }
@@ -114,7 +115,7 @@ public class AppController {
         Member member = memberService.confirmMember(Long.valueOf(principal.getName()))
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
 
-        AttendResponseDTO attendResponseDTO = attendanceService.attend(member.getId(), requestDTO);
+        val attendResponseDTO = attendanceService.attend(member.getId(), requestDTO);
 
         return ResponseEntity.ok(ApiResponse.success(SUCCESS_ATTEND.getMessage(), attendResponseDTO));
     }
