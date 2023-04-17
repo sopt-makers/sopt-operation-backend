@@ -195,14 +195,6 @@ public class LectureServiceImpl implements LectureService {
 		}
 	}
 
-	private AttendanceTotalVO getTotalAttendanceVO(Attendance attendance) {
-		return AttendanceTotalVO.of(attendance);
-	}
-
-	private AttendanceStatus getAttendanceStatus(AttendanceTotalVO attendance) {
-		return attendance.status();
-	}
-
 	private LectureVO getLectureVO(Lecture lecture) {
 		return LectureVO.of(lecture, getAttendanceVO(lecture));
 	}
