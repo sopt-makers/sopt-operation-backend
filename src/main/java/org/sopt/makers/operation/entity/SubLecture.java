@@ -42,8 +42,6 @@ public class SubLecture {
 	@OneToMany(mappedBy = "subLecture")
 	private final List<SubAttendance> subAttendances = new ArrayList<>();
 
-	private Long code;
-
 	public SubLecture(Lecture lecture, int round) {
 		setLecture(lecture);
 		this.round = round;

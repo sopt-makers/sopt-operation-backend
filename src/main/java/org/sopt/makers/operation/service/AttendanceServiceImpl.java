@@ -8,34 +8,28 @@ import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
-<<<<<<< HEAD
 import org.sopt.makers.operation.dto.attendance.AttendanceMemberResponseDTO;
 import org.sopt.makers.operation.dto.attendance.AttendanceRequestDTO;
 import org.sopt.makers.operation.dto.attendance.AttendanceResponseDTO;
 import org.sopt.makers.operation.dto.attendance.MemberResponseDTO;
-=======
 import lombok.val;
 import org.sopt.makers.operation.dto.attendance.*;
->>>>>>> develop
 import org.sopt.makers.operation.entity.Attendance;
 import org.sopt.makers.operation.entity.AttendanceStatus;
 import org.sopt.makers.operation.entity.Member;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.SubAttendance;
 import org.sopt.makers.operation.entity.lecture.Attribute;
-<<<<<<< HEAD
 import org.sopt.makers.operation.entity.lecture.Lecture;
 import org.sopt.makers.operation.exception.LectureException;
 import org.sopt.makers.operation.repository.SubAttendanceRepository;
 import org.sopt.makers.operation.repository.attendance.AttendanceRepository;
 import org.sopt.makers.operation.repository.lecture.LectureRepository;
-=======
 import org.sopt.makers.operation.exception.LectureException;
 import org.sopt.makers.operation.exception.SubLectureException;
 import org.sopt.makers.operation.repository.SubAttendanceRepository;
 import org.sopt.makers.operation.repository.attendance.AttendanceRepository;
 import org.sopt.makers.operation.repository.lecture.SubLectureRepository;
->>>>>>> develop
 import org.sopt.makers.operation.repository.member.MemberRepository;
 import org.sopt.makers.operation.util.Generation32;
 import org.springframework.data.domain.Pageable;
@@ -54,11 +48,8 @@ public class AttendanceServiceImpl implements AttendanceService {
 
 	private final SubAttendanceRepository subAttendanceRepository;
 	private final MemberRepository memberRepository;
-<<<<<<< HEAD
 	private final LectureRepository lectureRepository;
-=======
 	private final SubLectureRepository subLectureRepository;
->>>>>>> develop
 	private final AttendanceRepository attendanceRepository;
 	private final Generation32 sopt32;
 
@@ -90,7 +81,6 @@ public class AttendanceServiceImpl implements AttendanceService {
 	}
 
 	@Override
-<<<<<<< HEAD
 	public List<MemberResponseDTO> getMemberAttendances(Long lectureId, Part part, Pageable pageable) {
 		Lecture lecture = findLecture(lectureId);
 		List<Attendance> attendances = attendanceRepository.findLectureAttendances(lecture, part, pageable);
@@ -100,7 +90,8 @@ public class AttendanceServiceImpl implements AttendanceService {
 				sopt32.getUpdateScore(lecture.getAttribute(), attendance.getStatus())
 			)
 		).toList();
-=======
+	}
+
 	@Transactional
 	public AttendResponseDTO attend(Long memberId, AttendRequestDTO requestDTO) {
 		val now = LocalDateTime.now();
@@ -130,7 +121,6 @@ public class AttendanceServiceImpl implements AttendanceService {
 		}
 
 		return AttendResponseDTO.of(subLecture.getId());
->>>>>>> develop
 	}
 
 	private float getUpdateScore(Attendance attendance, Attribute attribute) {
