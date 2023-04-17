@@ -4,12 +4,14 @@ import static org.sopt.makers.operation.common.ExceptionMessage.*;
 import static org.sopt.makers.operation.entity.AttendanceStatus.*;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import lombok.val;
 
+import org.sopt.makers.operation.common.ExceptionMessage;
 import org.sopt.makers.operation.dto.attendance.AttendanceTotalVO;
 import org.sopt.makers.operation.dto.lecture.*;
 import javax.persistence.EntityNotFoundException;
@@ -72,7 +74,7 @@ public class LectureServiceImpl implements LectureService {
 
 	@Override
 	public LectureGetResponseDTO getCurrentLecture(LectureSearchCondition lectureSearchCondition) {
-		val now = LocalDateTime.now().plusHours(12);
+		val now = LocalDateTime.now();
 		val sessionNumber = (now.getHour() < 16) ? 2 : 3;
 		val lectures = lectureRepository.searchLecture(lectureSearchCondition);
 
@@ -141,6 +143,37 @@ public class LectureServiceImpl implements LectureService {
 		Lecture lecture = lectureRepository.findById(lectureId)
 			.orElseThrow(() -> new EntityNotFoundException(INVALID_LECTURE.getName()));
 		lecture.getAttendances().forEach(this::updateScoreIn32);
+	}
+
+	@Override
+	public LectureCurrentRoundResponseDTO getCurrentLectureRound(Long lectureId) {
+		val now = LocalDateTime.now();
+		val today = now.toLocalDate();
+		val startOfDay = today.atStartOfDay();
+		val endOfDay = LocalDateTime.of(today, LocalTime.MAX);
+
+		val lecture = lectureRepository.findById(lectureId)
+				.orElseThrow(() -> new EntityNotFoundException(INVALID_LECTURE.getName()));
+
+		val lectureStartDate = lecture.getStartDate();
+
+		if(lectureStartDate.isBefore(startOfDay) || lectureStartDate.isAfter(endOfDay))
+			throw new LectureException(NO_SESSION.getName());
+
+		val subLectures = lecture.getSubLectures();
+
+		if(subLectures.isEmpty()) throw new LectureException(NOT_STARTED_ATTENDANCE.getName());
+
+		val subLectureComparator = Comparator.comparing(SubLecture::getRound, Comparator.reverseOrder());
+		Collections.sort(subLectures, subLectureComparator);
+
+		val subLecture = subLectures.get(0);
+
+		if(now.isBefore(subLecture.getStartAt())) throw new LectureException(subLecture.getRound() +NOT_STARTED_NTH_ATTENDANCE.getName());
+
+		if(now.isAfter(subLecture.getStartAt().plusMinutes(10))) throw new LectureException(ENDED_ATTENDANCE.getName());
+
+		return LectureCurrentRoundResponseDTO.of(subLecture);
 	}
 
 	private void updateScoreIn32(Attendance attendance) {

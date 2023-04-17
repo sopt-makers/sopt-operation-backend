@@ -17,7 +17,9 @@ public enum ResponseMessage {
 	SUCCESS_GET_ATTENDANCE_SCORE("출석 점수 조회 성공"),
 	SUCCESS_UPDATE_MEMBER_SCORE("회원 출석 점수 갱신 성공"),
 	SUCCESS_GET_MEMBERS("유저 리스트 조회 성공"),
-	SUCCESS_GET_ATTENDANCES("출석 리스트 조회 성공");
+	SUCCESS_GET_ATTENDANCES("출석 리스트 조회 성공"),
+	SUCCESS_GET_LECUTRE_ROUND("출석 차수 조회 성공"),
+	SUCCESS_ATTEND("출석 성공");
 
 	private final String message;
 }
