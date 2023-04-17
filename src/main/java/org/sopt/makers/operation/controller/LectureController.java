@@ -1,25 +1,18 @@
 package org.sopt.makers.operation.controller;
 
-import static org.sopt.makers.operation.common.ExceptionMessage.INVALID_MEMBER;
 import static org.sopt.makers.operation.common.ResponseMessage.*;
 
 import java.net.URI;
 import java.security.Principal;
 
 import org.sopt.makers.operation.common.ApiResponse;
-<<<<<<< HEAD
 import org.sopt.makers.operation.dto.lecture.AttendanceRequestDTO;
 import org.sopt.makers.operation.dto.lecture.AttendanceResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LectureRequestDTO;
 import org.sopt.makers.operation.dto.lecture.LectureResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LecturesResponseDTO;
-=======
-import org.sopt.makers.operation.dto.lecture.*;
-import org.sopt.makers.operation.entity.Part;
->>>>>>> develop
 import org.sopt.makers.operation.service.AdminService;
 import org.sopt.makers.operation.service.LectureService;
-import org.sopt.makers.operation.service.MemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -42,7 +35,6 @@ public class LectureController {
 
 	private final AdminService adminService;
 	private final LectureService lectureService;
-	private final MemberService memberService;
 
 	@ApiOperation(value = "세션 생성")
 	@ApiResponses({
