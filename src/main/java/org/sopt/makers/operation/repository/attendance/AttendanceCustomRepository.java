@@ -5,11 +5,12 @@ import java.util.List;
 import org.sopt.makers.operation.entity.Attendance;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.lecture.Lecture;
+import org.springframework.data.domain.Pageable;
 
 public interface AttendanceCustomRepository {
 	Long countAttendance(Lecture lecture);
 	Long countAbsent(Lecture lecture);
 	Long countTardy(Lecture lecture);
-	List<Attendance> getAttendanceByPart(Lecture lecture, Part part);
 	List<Attendance> findAttendanceByMemberId(Long memberId);
+	List<Attendance> findLectureAttendances(Lecture lecture, Part part, Pageable pageable);
 }

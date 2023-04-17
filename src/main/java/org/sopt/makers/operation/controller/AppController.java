@@ -6,13 +6,18 @@ import static org.sopt.makers.operation.common.ExceptionMessage.*;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.sopt.makers.operation.common.ApiResponse;
+import org.sopt.makers.operation.dto.attendance.AttendRequestDTO;
+import org.sopt.makers.operation.dto.attendance.AttendResponseDTO;
 import org.sopt.makers.operation.dto.attendance.AttendanceTotalResponseDTO;
+import org.sopt.makers.operation.dto.lecture.LectureCurrentRoundResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LectureGetResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LectureSearchCondition;
 import org.sopt.makers.operation.dto.member.MemberScoreGetResponse;
 import org.sopt.makers.operation.entity.Member;
 import org.sopt.makers.operation.exception.MemberException;
+import org.sopt.makers.operation.service.AttendanceService;
 import org.sopt.makers.operation.service.LectureService;
 import org.sopt.makers.operation.service.MemberService;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +32,7 @@ import java.security.Principal;
 public class AppController {
     private final MemberService memberService;
     private final LectureService lectureService;
+    private final AttendanceService attendanceService;
 
     @ApiOperation(value = "단일 세미나 상태 조회")
     @ApiResponses({
@@ -37,7 +43,7 @@ public class AppController {
     })
     @GetMapping("/lecture")
     public ResponseEntity<ApiResponse> getLecture(@ApiIgnore Principal principal) {
-        Member member = memberService.confirmMember(Long.valueOf(principal.getName()))
+        val member = memberService.confirmMember(Long.valueOf(principal.getName()))
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
 
         LectureGetResponseDTO lectureGetResponseDTO = lectureService.getCurrentLecture(LectureSearchCondition.of(member.getPart(), member.getGeneration(), member.getId()));
@@ -55,7 +61,7 @@ public class AppController {
     })
     @GetMapping("/total")
     public ResponseEntity<ApiResponse> getMemberTotalAttendance(@ApiIgnore Principal principal) {
-        Member member = memberService.confirmMember(Long.valueOf(principal.getName()))
+        val member = memberService.confirmMember(Long.valueOf(principal.getName()))
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
 
         AttendanceTotalResponseDTO attendanceTotalResponseDTO = memberService.getMemberTotalAttendance(member);
@@ -73,10 +79,44 @@ public class AppController {
     })
     @GetMapping("/score")
     public ResponseEntity<ApiResponse> getScore(@ApiIgnore Principal principal) {
-        Member member = memberService.confirmMember(Long.valueOf(principal.getName()))
+        val member = memberService.confirmMember(Long.valueOf(principal.getName()))
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
 
         return ResponseEntity
                 .ok(ApiResponse.success(SUCCESS_GET_ATTENDANCE_SCORE.getMessage(), MemberScoreGetResponse.of(member.getScore())));
+    }
+
+    @ApiOperation(value = "출석 차수 조회")
+    @ApiResponses({
+            @io.swagger.annotations.ApiResponse(code = 200, message = "출석 차수 조회 성공"),
+            @io.swagger.annotations.ApiResponse(code = 400, message = "필요한 값이 없음"),
+            @io.swagger.annotations.ApiResponse(code = 401, message = "유효하지 않은 토큰"),
+            @io.swagger.annotations.ApiResponse(code = 500, message = "서버 에러")
+    })
+    @GetMapping("/lecture/round/{lectureId}")
+    public ResponseEntity<ApiResponse> getRound(@PathVariable("lectureId") Long lectureId, @ApiIgnore Principal principal) {
+        memberService.confirmMember(Long.valueOf(principal.getName()))
+                .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
+
+        val lectureCurrentRoundResponseDTO = lectureService.getCurrentLectureRound(lectureId);
+
+        return ResponseEntity.ok(ApiResponse.success(SUCCESS_GET_LECUTRE_ROUND.getMessage(), lectureCurrentRoundResponseDTO));
+    }
+
+    @ApiOperation(value = "출석 하기")
+    @ApiResponses({
+            @io.swagger.annotations.ApiResponse(code = 200, message = "출석 차수 조회 성공"),
+            @io.swagger.annotations.ApiResponse(code = 400, message = "필요한 값이 없음"),
+            @io.swagger.annotations.ApiResponse(code = 401, message = "유효하지 않은 토큰"),
+            @io.swagger.annotations.ApiResponse(code = 500, message = "서버 에러")
+    })
+    @PostMapping("/attend")
+    public ResponseEntity<ApiResponse> attend(@RequestBody AttendRequestDTO requestDTO, @ApiIgnore Principal principal) {
+        Member member = memberService.confirmMember(Long.valueOf(principal.getName()))
+                .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
+
+        val attendResponseDTO = attendanceService.attend(member.getId(), requestDTO);
+
+        return ResponseEntity.ok(ApiResponse.success(SUCCESS_ATTEND.getMessage(), attendResponseDTO));
     }
 }

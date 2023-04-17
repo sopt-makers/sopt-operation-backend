@@ -69,17 +69,9 @@ public class LectureController {
 	}
 
 	@ApiOperation(value = "세션 상세 조회")
-	@ApiResponses({
-		@io.swagger.annotations.ApiResponse(code = 200, message = "세션 상세 조회 성공"),
-		@io.swagger.annotations.ApiResponse(code = 400, message = "필요한 값이 없음"),
-		@io.swagger.annotations.ApiResponse(code = 401, message = "유효하지 않은 토큰"),
-		@io.swagger.annotations.ApiResponse(code = 500, message = "서버 에러")
-	})
 	@GetMapping("/{lectureId}")
-	public ResponseEntity<ApiResponse> getLecture(@PathVariable("lectureId") Long lectureId,
-		@RequestParam(required = false, name = "part") Part part, Principal principal) {
-		adminService.confirmAdmin(Long.valueOf(principal.getName()));
-		LectureResponseDTO response = lectureService.getLecture(lectureId, part);
+	public ResponseEntity<ApiResponse> getLecture(@PathVariable Long lectureId) {
+		LectureResponseDTO response = lectureService.getLecture(lectureId);
 		return ResponseEntity.ok(ApiResponse.success(SUCCESS_GET_LECTURE.getMessage(), response));
 	}
 
@@ -114,7 +106,6 @@ public class LectureController {
 		lectureService.updateMembersScore(lectureId);
 		return ResponseEntity.ok(ApiResponse.success(SUCCESS_UPDATE_MEMBER_SCORE.getMessage()));
 	}
-
 
 	private URI getURI(Long lectureId) {
 		return ServletUriComponentsBuilder
