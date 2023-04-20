@@ -4,6 +4,8 @@ import static org.sopt.makers.operation.common.ExceptionMessage.*;
 import static org.sopt.makers.operation.entity.AttendanceStatus.*;
 import static org.sopt.makers.operation.entity.lecture.Attribute.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -52,10 +54,10 @@ public class AttendanceServiceImpl implements AttendanceService {
 	@Override
 	@Transactional
 	public AttendUpdateResponseDTO updateAttendanceStatus(AttendUpdateRequestDTO requestDTO) {
-		SubAttendance subAttendance = findSubAttendance(requestDTO.subAttendanceId());
+		val subAttendance = findSubAttendance(requestDTO.subAttendanceId());
 		subAttendance.updateStatus(requestDTO.status());
 
-		Attendance attendance = subAttendance.getAttendance();
+		val attendance = subAttendance.getAttendance();
 		attendance.updateStatus(sopt32.getAttendanceStatus(requestDTO.attribute(), attendance.getSubAttendances()));
 
 		return AttendUpdateResponseDTO.of(subAttendance);
@@ -64,7 +66,16 @@ public class AttendanceServiceImpl implements AttendanceService {
 	@Override
 	public AttendanceMemberResponseDTO findMemberAttendance(Long memberId) {
 		Member member = findMember(memberId);
-		return AttendanceMemberResponseDTO.of(member);
+		val attendances = attendanceRepository.findByMember(member);
+
+		HashMap<Long, ArrayList<MemberInfo>> map = new HashMap<>();
+		for (MemberInfo info : attendances) {
+			Long id = info.attendanceId();
+			if (!map.containsKey(id)) map.put(id, new ArrayList<>());
+			map.get(id).add(info);
+		}
+
+		return AttendanceMemberResponseDTO.of(member, map);
 	}
 
 	@Override
