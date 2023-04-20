@@ -24,6 +24,7 @@ import org.sopt.makers.operation.entity.SubAttendance;
 import org.sopt.makers.operation.entity.lecture.Attribute;
 import org.sopt.makers.operation.entity.lecture.Lecture;
 import org.sopt.makers.operation.exception.LectureException;
+import org.sopt.makers.operation.exception.MemberException;
 import org.sopt.makers.operation.repository.SubAttendanceRepository;
 import org.sopt.makers.operation.repository.attendance.AttendanceRepository;
 import org.sopt.makers.operation.repository.lecture.LectureRepository;
@@ -82,8 +83,9 @@ public class AttendanceServiceImpl implements AttendanceService {
 	@Transactional
 	public float updateMemberScore(Long memberId) {
 		Member member = findMember(memberId);
-		float score = (float)(2 + member.getAttendances().stream()
-			.mapToDouble(attendance -> getUpdateScore(attendance, attendance.getLecture().getAttribute()))
+		float score = (float)(2 + attendanceRepository.findAttendancesOfMember(member)
+			.stream()
+			.mapToDouble(info -> sopt32.getUpdateScore(info.attribute(), info.status()))
 			.sum());
 		member.setScore(score);
 		return member.getScore();
@@ -132,24 +134,9 @@ public class AttendanceServiceImpl implements AttendanceService {
 		return AttendResponseDTO.of(subLecture.getId());
 	}
 
-	private float getUpdateScore(Attendance attendance, Attribute attribute) {
-		if (attribute.equals(SEMINAR)) {
-			if (attendance.getStatus().equals(TARDY)) {
-				return -0.5f;
-			} else if (attendance.getStatus().equals(ABSENT)) {
-				return -1;
-			}
-		} else if (attribute.equals(EVENT)) {
-			if (attendance.getStatus().equals(ATTENDANCE)) {
-				return 0.5f;
-			}
-		}
-		return 0;
-	}
-
 	private Member findMember(Long id) {
 		return memberRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException(INVALID_MEMBER.getName()));
+			.orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
 	}
 
 	private SubAttendance findSubAttendance(Long id) {

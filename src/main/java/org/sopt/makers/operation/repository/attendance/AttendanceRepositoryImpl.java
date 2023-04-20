@@ -9,7 +9,9 @@ import static org.sopt.makers.operation.entity.lecture.QLecture.*;
 
 import java.util.List;
 
+import org.sopt.makers.operation.dto.attendance.AttendanceInfo;
 import org.sopt.makers.operation.dto.attendance.MemberInfo;
+import org.sopt.makers.operation.dto.attendance.QAttendanceInfo;
 import org.sopt.makers.operation.dto.attendance.QMemberInfo;
 import org.sopt.makers.operation.entity.Attendance;
 import org.sopt.makers.operation.entity.AttendanceStatus;
@@ -112,6 +114,19 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 			.leftJoin(subLecture.lecture, lecture)
 			.where(attendance.member.eq(member))
 			.orderBy(lecture.startDate.asc())
+			.fetch();
+	}
+
+	@Override
+	public List<AttendanceInfo> findAttendancesOfMember(Member member) {
+		return queryFactory
+			.select(new QAttendanceInfo(
+				lecture.attribute,
+				attendance.status
+			))
+			.from(attendance)
+			.leftJoin(attendance.lecture, lecture)
+			.where(attendance.member.eq(member))
 			.fetch();
 	}
 

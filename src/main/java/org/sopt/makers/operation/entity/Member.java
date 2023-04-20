@@ -27,6 +27,8 @@ public class Member {
 	private Long playgroundId;
 	private String name;
 	private int generation;
+
+	@Enumerated(EnumType.STRING)
 	private ObYb obyb;
 
 	@Enumerated(EnumType.STRING)

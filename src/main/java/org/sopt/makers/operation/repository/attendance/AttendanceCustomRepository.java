@@ -2,6 +2,7 @@ package org.sopt.makers.operation.repository.attendance;
 
 import java.util.List;
 
+import org.sopt.makers.operation.dto.attendance.AttendanceInfo;
 import org.sopt.makers.operation.dto.attendance.MemberInfo;
 import org.sopt.makers.operation.entity.Attendance;
 import org.sopt.makers.operation.entity.Member;
@@ -16,4 +17,5 @@ public interface AttendanceCustomRepository {
 	List<Attendance> findAttendanceByMemberId(Long memberId);
 	List<Attendance> findLectureAttendances(Lecture lecture, Part part, Pageable pageable);
 	List<MemberInfo> findByMember(Member member);
+	List<AttendanceInfo> findAttendancesOfMember(Member member);
 }
