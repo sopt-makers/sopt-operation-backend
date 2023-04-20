@@ -12,7 +12,7 @@ import org.sopt.makers.operation.dto.attendance.*;
 
 public interface AttendanceService {
 	AttendUpdateResponseDTO updateAttendanceStatus(AttendUpdateRequestDTO requestDTO);
-	AttendanceMemberResponseDTO getMemberAttendance(Long memberId);
+	AttendanceMemberResponseDTO findMemberAttendance(Long memberId);
 	float updateMemberScore(Long memberId);
 	List<MemberResponseDTO> getMemberAttendances(Long lectureId, Part part, Pageable pageable);
 	AttendResponseDTO attend(Long memberId, AttendRequestDTO requestDTO);

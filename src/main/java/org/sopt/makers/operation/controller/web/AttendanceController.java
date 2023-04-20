@@ -35,8 +35,8 @@ public class AttendanceController {
 
 	@ApiOperation(value = "유저별 출석 정보 조회")
 	@GetMapping("/{memberId}")
-	public ResponseEntity<ApiResponse> updateAttendanceStatus(@PathVariable Long memberId) {
-		val response = attendanceService.getMemberAttendance(memberId);
+	public ResponseEntity<ApiResponse> findMemberAttendance(@PathVariable Long memberId) {
+		val response = attendanceService.findMemberAttendance(memberId);
 		return ResponseEntity.ok(ApiResponse.success(SUCCESS_GET_MEMBER_ATTENDANCE.getMessage(), response));
 	}
 

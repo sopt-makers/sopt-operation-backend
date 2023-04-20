@@ -62,7 +62,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 	}
 
 	@Override
-	public AttendanceMemberResponseDTO getMemberAttendance(Long memberId) {
+	public AttendanceMemberResponseDTO findMemberAttendance(Long memberId) {
 		Member member = findMember(memberId);
 		return AttendanceMemberResponseDTO.of(member);
 	}
