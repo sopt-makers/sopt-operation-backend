@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.controller;
+package org.sopt.makers.operation.controller.app;
 
 import static java.util.Objects.*;
 import static org.sopt.makers.operation.common.ResponseMessage.*;

@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.controller;
+package org.sopt.makers.operation.controller.web;
 
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
