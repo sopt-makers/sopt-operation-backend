@@ -14,6 +14,7 @@ import org.sopt.makers.operation.exception.AdminFailureException;
 import org.sopt.makers.operation.repository.AdminRepository;
 import org.sopt.makers.operation.security.jwt.AdminAuthentication;
 import org.sopt.makers.operation.security.jwt.JwtTokenProvider;
+import org.sopt.makers.operation.security.jwt.JwtTokenType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,16 +64,6 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void confirmAdmin(Long adminId) {
-        this.findById(adminId);
-    }
-
-    @Override
-    public String getRefreshToken(Long adminId) {
-        return this.findById(adminId).getRefreshToken();
-    }
-
-    @Override
     public void validateRefreshToken(Long adminId, String requestRefreshToken) {
         val admin = this.findById(adminId);
         val refreshToken = admin.getRefreshToken();
@@ -82,7 +73,9 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     @Transactional
-    public RefreshResponseDTO refresh(Long adminId, String refreshToken) {
+    public RefreshResponseDTO refresh(String refreshToken) {
+        val adminId = jwtTokenProvider.getId(refreshToken, JwtTokenType.REFRESH_TOKEN);
+
         validateRefreshToken(adminId, refreshToken);
 
         val adminAuthentication = new AdminAuthentication(adminId, null, null);
