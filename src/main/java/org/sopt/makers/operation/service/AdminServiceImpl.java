@@ -59,7 +59,7 @@ public class AdminServiceImpl implements AdminService {
 
         admin.updateRefreshToken(jwtTokenProvider.generateRefreshToken(authentication));
 
-        return new LoginResponseDTO(admin.getId(), admin.getName(), jwtTokenProvider.generateAccessToken(authentication));
+        return LoginResponseDTO.of(admin, jwtTokenProvider.generateAccessToken(authentication), admin.getRefreshToken());
     }
 
     @Override

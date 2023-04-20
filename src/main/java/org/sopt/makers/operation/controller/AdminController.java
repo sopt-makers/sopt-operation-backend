@@ -38,11 +38,9 @@ public class AdminController {
     @ApiOperation(value = "로그인")
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> login(@RequestBody LoginRequestDTO userLoginRequestDTO) {
-        //TODO: login + refresh 토큰 코드 통일화 {response: "...", token: "..."}
         val response = authService.login(userLoginRequestDTO);
-        val refreshToken = authService.getRefreshToken(response.id());
 
-        val cookie = ResponseCookie.from("refreshToken", refreshToken)
+        val cookie = ResponseCookie.from("refreshToken", response.refreshToken())
             .httpOnly(true)
             .maxAge(Duration.ofDays(14))
             .secure(true)
@@ -54,7 +52,7 @@ public class AdminController {
 
         return ResponseEntity.status(OK)
             .headers(headers)
-            .body(ApiResponse.success(SUCCESS_LOGIN_UP.getMessage(), response));
+            .body(ApiResponse.success(SUCCESS_LOGIN_UP.getMessage(), response.loginResponseVO()));
     }
 
     @ApiOperation(value = "토큰 재발급")
