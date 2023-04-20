@@ -106,9 +106,6 @@ public class AttendanceServiceImpl implements AttendanceService {
 
 		if(now.isAfter(subLecture.getStartAt().plusMinutes(10))) throw new LectureException(ENDED_ATTENDANCE.getName());
 
-		System.out.println(subLecture.getLecture().getId());
-		System.out.println(memberId);
-
 		Attendance attendance = attendanceRepository.findAttendanceByLectureIdAndMemberId(subLecture.getLecture().getId(), memberId);
 
 		val subAttendance = attendance.getSubAttendances().stream()
