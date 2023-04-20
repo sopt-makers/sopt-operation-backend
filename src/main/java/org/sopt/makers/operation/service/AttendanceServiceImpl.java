@@ -1,8 +1,7 @@
 package org.sopt.makers.operation.service;
 
+import static java.util.Objects.nonNull;
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
-import static org.sopt.makers.operation.entity.AttendanceStatus.*;
-import static org.sopt.makers.operation.entity.lecture.Attribute.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +20,6 @@ import org.sopt.makers.operation.entity.AttendanceStatus;
 import org.sopt.makers.operation.entity.Member;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.SubAttendance;
-import org.sopt.makers.operation.entity.lecture.Attribute;
 import org.sopt.makers.operation.entity.lecture.Lecture;
 import org.sopt.makers.operation.exception.LectureException;
 import org.sopt.makers.operation.exception.MemberException;
@@ -113,6 +111,10 @@ public class AttendanceServiceImpl implements AttendanceService {
 		val subLecture = subLectureRepository.findById(requestDTO.subLectureId())
 				.orElseThrow(() -> new EntityNotFoundException(INVALID_SUB_LECTURE.getName()));
 
+		if(!nonNull(subLecture.getStartAt()) || !nonNull(subLecture.getCode())) throw new LectureException(NOT_STARTED_ATTENDANCE.getName());
+
+		val currentRound = subLecture.getRound();
+
 		if(!subLecture.getCode().equals(requestDTO.code())) throw new SubLectureException(INVALID_CODE.getName());
 
 		if(now.isBefore(subLecture.getStartAt())) throw new LectureException(subLecture.getRound() + NOT_STARTED_NTH_ATTENDANCE.getName());
@@ -121,18 +123,16 @@ public class AttendanceServiceImpl implements AttendanceService {
 
 		Attendance attendance = attendanceRepository.findAttendanceByLectureIdAndMemberId(subLecture.getLecture().getId(), memberId);
 
-		val subAttendance = attendance.getSubAttendances().stream()
-				.filter(subAttendance3 ->
-						(subAttendance3.getSubLecture().getId().equals(requestDTO.subLectureId())
-								&& subAttendance3.getAttendance().getId().equals(attendance.getId()))
-				).toList();
+		val currentRoundSubAttendance = attendance.getSubAttendances()
+      		.stream()
+			.filter(subAttendance ->
+					(subAttendance.getSubLecture().getRound() == currentRound)
+			).findFirst();
 
-		subAttendance.get(0).updateStatus(AttendanceStatus.ATTENDANCE);
+		currentRoundSubAttendance.get().updateStatus(AttendanceStatus.ATTENDANCE);
 
-		if(subLecture.getRound() == 2) {
-			attendance.updateStatus(sopt32.getAttendanceStatus(attendance.getLecture().getAttribute(), attendance.getSubAttendances()));
-			this.updateMemberScore(memberId);
-		}
+		attendance.updateStatus(sopt32.getAttendanceStatus(attendance.getLecture().getAttribute(), attendance.getSubAttendances()));
+		this.updateMemberScore(memberId);
 
 		return AttendResponseDTO.of(subLecture.getId());
 	}

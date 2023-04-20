@@ -1,5 +1,6 @@
 package org.sopt.makers.operation.service;
 
+import static java.util.Objects.nonNull;
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
 import static org.sopt.makers.operation.entity.AttendanceStatus.*;
 
@@ -11,8 +12,6 @@ import java.util.stream.Stream;
 
 import lombok.val;
 
-import org.sopt.makers.operation.common.ExceptionMessage;
-import org.sopt.makers.operation.dto.attendance.AttendanceTotalVO;
 import org.sopt.makers.operation.dto.lecture.*;
 import javax.persistence.EntityNotFoundException;
 
@@ -48,7 +47,6 @@ public class LectureServiceImpl implements LectureService {
 	private final AttendanceRepository attendanceRepository;
 	private final SubAttendanceRepository subAttendanceRepository;
 	private final MemberRepository memberRepository;
-	private final MemberService memberService;
 
 	@Override
 	@Transactional
@@ -173,6 +171,8 @@ public class LectureServiceImpl implements LectureService {
 		Collections.sort(subLectures, subLectureComparator);
 
 		val subLecture = subLectures.get(0);
+
+		if(!nonNull(subLecture.getStartAt())) throw new LectureException(NOT_STARTED_ATTENDANCE.getName());
 
 		if(now.isBefore(subLecture.getStartAt())) throw new LectureException(subLecture.getRound() + NOT_STARTED_NTH_ATTENDANCE.getName());
 
