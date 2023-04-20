@@ -1,47 +1,48 @@
 package org.sopt.makers.operation.dto.attendance;
 
+import static org.sopt.makers.operation.util.Generation32.*;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.sopt.makers.operation.entity.Attendance;
 import org.sopt.makers.operation.entity.AttendanceStatus;
-import org.sopt.makers.operation.entity.Member;
-import org.sopt.makers.operation.entity.SubAttendance;
 
-public record MemberResponseDTO(
+public record MemberResponseDTO (
 	Long attendanceId,
 	MemberVO member,
 	List<SubAttendanceVO> attendances,
 	float updatedScore) {
 
-	public static MemberResponseDTO of(Attendance attendance, float updatedScore) {
+	public static MemberResponseDTO of(ArrayList<LectureInfo> infos) {
+		LectureInfo info = infos.get(0);
 		return new MemberResponseDTO(
-			attendance.getId(),
-			MemberVO.of(attendance.getMember()),
-			attendance.getSubAttendances().stream().map(SubAttendanceVO::of).toList(),
-			updatedScore
+			info.attendanceId(),
+			MemberVO.of(info),
+			infos.stream().map(SubAttendanceVO::of).toList(),
+			getUpdateScore(info.attribute(), info.attendanceStatus())
 		);
 	}
 }
 
 record MemberVO(Long memberId, String name, String university) {
-	static MemberVO of(Member member) {
+	static MemberVO of(LectureInfo info) {
 		return new MemberVO(
-			member.getId(),
-			member.getName(),
-			member.getUniversity()
+			info.memberId(),
+			info.memberName(),
+			info.university()
 		);
 	}
 }
 
 record SubAttendanceVO(Long subAttendanceId, int round, AttendanceStatus status, String updateAt) {
-	static SubAttendanceVO of(SubAttendance subAttendance) {
+	static SubAttendanceVO of(LectureInfo info) {
 		return new SubAttendanceVO(
-			subAttendance.getId(),
-			subAttendance.getSubLecture().getRound(),
-			subAttendance.getStatus(),
-			transfer(subAttendance.getLastModifiedDate())
+			info.subAttendanceId(),
+			info.round(),
+			info.subAttendanceStatus(),
+			transfer(info.updatedAt())
 		);
 	}
 

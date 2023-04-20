@@ -1,8 +1,7 @@
 package org.sopt.makers.operation.service;
 
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
-import static org.sopt.makers.operation.entity.AttendanceStatus.*;
-import static org.sopt.makers.operation.entity.lecture.Attribute.*;
+import static org.sopt.makers.operation.util.Generation32.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +20,6 @@ import org.sopt.makers.operation.entity.AttendanceStatus;
 import org.sopt.makers.operation.entity.Member;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.SubAttendance;
-import org.sopt.makers.operation.entity.lecture.Attribute;
 import org.sopt.makers.operation.entity.lecture.Lecture;
 import org.sopt.makers.operation.exception.LectureException;
 import org.sopt.makers.operation.exception.MemberException;
@@ -31,7 +29,6 @@ import org.sopt.makers.operation.repository.lecture.LectureRepository;
 import org.sopt.makers.operation.exception.SubLectureException;
 import org.sopt.makers.operation.repository.lecture.SubLectureRepository;
 import org.sopt.makers.operation.repository.member.MemberRepository;
-import org.sopt.makers.operation.util.Generation32;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +47,6 @@ public class AttendanceServiceImpl implements AttendanceService {
 	private final LectureRepository lectureRepository;
 	private final SubLectureRepository subLectureRepository;
 	private final AttendanceRepository attendanceRepository;
-	private final Generation32 sopt32;
 
 	@Override
 	@Transactional
@@ -59,7 +55,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 		subAttendance.updateStatus(requestDTO.status());
 
 		val attendance = subAttendance.getAttendance();
-		attendance.updateStatus(sopt32.getAttendanceStatus(requestDTO.attribute(), attendance.getSubAttendances()));
+		attendance.updateStatus(getAttendanceStatus(requestDTO.attribute(), attendance.getSubAttendances()));
 
 		return AttendUpdateResponseDTO.of(subAttendance);
 	}
@@ -85,7 +81,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 		val member = findMember(memberId);
 		val score = (float)(2 + attendanceRepository.findAttendancesOfMember(member)
 			.stream()
-			.mapToDouble(info -> sopt32.getUpdateScore(info.attribute(), info.status()))
+			.mapToDouble(info -> getUpdateScore(info.attribute(), info.status()))
 			.sum());
 		member.setScore(score);
 		return member.getScore();
@@ -94,13 +90,18 @@ public class AttendanceServiceImpl implements AttendanceService {
 	@Override
 	public List<MemberResponseDTO> getMemberAttendances(Long lectureId, Part part, Pageable pageable) {
 		Lecture lecture = findLecture(lectureId);
-		List<Attendance> attendances = attendanceRepository.findLectureAttendances(lecture, part, pageable);
-		return attendances.stream().map(attendance ->
-			MemberResponseDTO.of(
-				attendance,
-				sopt32.getUpdateScore(lecture.getAttribute(), attendance.getStatus())
-			)
-		).toList();
+
+		HashMap<Long, ArrayList<LectureInfo>> map = new HashMap<>();
+		attendanceRepository.findLectureAttendances(lecture, part, pageable)
+			.forEach(info -> {
+				Long key = info.attendanceId();
+				if (!map.containsKey(key)) {
+					map.put(key, new ArrayList<>());
+				}
+				map.get(key).add(info);
+			});
+
+		return map.keySet().stream().map(key -> MemberResponseDTO.of(map.get(key))).toList();
 	}
 
 	@Override
@@ -130,7 +131,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 		subAttendance.get(0).updateStatus(AttendanceStatus.ATTENDANCE);
 
 		if(subLecture.getRound() == 2) {
-			attendance.updateStatus(sopt32.getAttendanceStatus(attendance.getLecture().getAttribute(), attendance.getSubAttendances()));
+			attendance.updateStatus(getAttendanceStatus(attendance.getLecture().getAttribute(), attendance.getSubAttendances()));
 			this.updateMemberScore(memberId);
 		}
 

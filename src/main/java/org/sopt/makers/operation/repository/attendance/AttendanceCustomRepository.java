@@ -3,6 +3,7 @@ package org.sopt.makers.operation.repository.attendance;
 import java.util.List;
 
 import org.sopt.makers.operation.dto.attendance.AttendanceInfo;
+import org.sopt.makers.operation.dto.attendance.LectureInfo;
 import org.sopt.makers.operation.dto.attendance.MemberInfo;
 import org.sopt.makers.operation.entity.Attendance;
 import org.sopt.makers.operation.entity.Member;
@@ -15,7 +16,7 @@ public interface AttendanceCustomRepository {
 	Long countAbsent(Lecture lecture);
 	Long countTardy(Lecture lecture);
 	List<Attendance> findAttendanceByMemberId(Long memberId);
-	List<Attendance> findLectureAttendances(Lecture lecture, Part part, Pageable pageable);
+	List<LectureInfo> findLectureAttendances(Lecture lecture, Part part, Pageable pageable);
 	List<MemberInfo> findByMember(Member member);
 	List<AttendanceInfo> findAttendancesOfMember(Member member);
 }
