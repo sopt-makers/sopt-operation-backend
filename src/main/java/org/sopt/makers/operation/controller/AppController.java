@@ -4,14 +4,11 @@ import static org.sopt.makers.operation.common.ResponseMessage.*;
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
 
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.sopt.makers.operation.common.ApiResponse;
 import org.sopt.makers.operation.dto.attendance.AttendRequestDTO;
-import org.sopt.makers.operation.dto.attendance.AttendResponseDTO;
 import org.sopt.makers.operation.dto.attendance.AttendanceTotalResponseDTO;
-import org.sopt.makers.operation.dto.lecture.LectureCurrentRoundResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LectureGetResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LectureSearchCondition;
 import org.sopt.makers.operation.dto.member.MemberScoreGetResponse;
@@ -35,12 +32,6 @@ public class AppController {
     private final AttendanceService attendanceService;
 
     @ApiOperation(value = "단일 세미나 상태 조회")
-    @ApiResponses({
-            @io.swagger.annotations.ApiResponse(code = 200, message = "세션 조회 성공"),
-            @io.swagger.annotations.ApiResponse(code = 400, message = "필요한 값이 없음"),
-            @io.swagger.annotations.ApiResponse(code = 401, message = "유효하지 않은 토큰"),
-            @io.swagger.annotations.ApiResponse(code = 500, message = "서버 에러")
-    })
     @GetMapping("/lecture")
     public ResponseEntity<ApiResponse> getLecture(@ApiIgnore Principal principal) {
         val member = memberService.confirmMember(Long.valueOf(principal.getName()))
@@ -53,12 +44,6 @@ public class AppController {
     }
 
     @ApiOperation(value = "전체 출석 정보 조회")
-    @ApiResponses({
-            @io.swagger.annotations.ApiResponse(code = 200, message = "전체 출석정보 조회 성공"),
-            @io.swagger.annotations.ApiResponse(code = 400, message = "필요한 값이 없음"),
-            @io.swagger.annotations.ApiResponse(code = 401, message = "유효하지 않은 토큰"),
-            @io.swagger.annotations.ApiResponse(code = 500, message = "서버 에러")
-    })
     @GetMapping("/total")
     public ResponseEntity<ApiResponse> getMemberTotalAttendance(@ApiIgnore Principal principal) {
         val member = memberService.confirmMember(Long.valueOf(principal.getName()))
@@ -71,12 +56,6 @@ public class AppController {
     }
 
     @ApiOperation(value = "출석 점수 조회")
-    @ApiResponses({
-            @io.swagger.annotations.ApiResponse(code = 200, message = "출석 점수 조회 성공"),
-            @io.swagger.annotations.ApiResponse(code = 400, message = "필요한 값이 없음"),
-            @io.swagger.annotations.ApiResponse(code = 401, message = "유효하지 않은 토큰"),
-            @io.swagger.annotations.ApiResponse(code = 500, message = "서버 에러")
-    })
     @GetMapping("/score")
     public ResponseEntity<ApiResponse> getScore(@ApiIgnore Principal principal) {
         val member = memberService.confirmMember(Long.valueOf(principal.getName()))
@@ -87,29 +66,13 @@ public class AppController {
     }
 
     @ApiOperation(value = "출석 차수 조회")
-    @ApiResponses({
-            @io.swagger.annotations.ApiResponse(code = 200, message = "출석 차수 조회 성공"),
-            @io.swagger.annotations.ApiResponse(code = 400, message = "필요한 값이 없음"),
-            @io.swagger.annotations.ApiResponse(code = 401, message = "유효하지 않은 토큰"),
-            @io.swagger.annotations.ApiResponse(code = 500, message = "서버 에러")
-    })
     @GetMapping("/lecture/round/{lectureId}")
-    public ResponseEntity<ApiResponse> getRound(@PathVariable("lectureId") Long lectureId, @ApiIgnore Principal principal) {
-        memberService.confirmMember(Long.valueOf(principal.getName()))
-                .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
-
+    public ResponseEntity<ApiResponse> getRound(@PathVariable("lectureId") Long lectureId) {
         val lectureCurrentRoundResponseDTO = lectureService.getCurrentLectureRound(lectureId);
-
         return ResponseEntity.ok(ApiResponse.success(SUCCESS_GET_LECUTRE_ROUND.getMessage(), lectureCurrentRoundResponseDTO));
     }
 
     @ApiOperation(value = "출석 하기")
-    @ApiResponses({
-            @io.swagger.annotations.ApiResponse(code = 200, message = "출석 차수 조회 성공"),
-            @io.swagger.annotations.ApiResponse(code = 400, message = "필요한 값이 없음"),
-            @io.swagger.annotations.ApiResponse(code = 401, message = "유효하지 않은 토큰"),
-            @io.swagger.annotations.ApiResponse(code = 500, message = "서버 에러")
-    })
     @PostMapping("/attend")
     public ResponseEntity<ApiResponse> attend(@RequestBody AttendRequestDTO requestDTO, @ApiIgnore Principal principal) {
         Member member = memberService.confirmMember(Long.valueOf(principal.getName()))

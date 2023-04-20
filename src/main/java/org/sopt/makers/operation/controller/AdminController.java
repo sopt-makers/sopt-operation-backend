@@ -1,7 +1,6 @@
 package org.sopt.makers.operation.controller;
 
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.sopt.makers.operation.dto.admin.*;
@@ -25,22 +24,12 @@ public class AdminController {
     private final JwtTokenProvider jwtTokenProvider;
 
     @ApiOperation(value = "회원가입")
-    @ApiResponses({
-        @io.swagger.annotations.ApiResponse(code = 200, message = "회원가입 성공"),
-        @io.swagger.annotations.ApiResponse(code = 400, message = "필요한 값이 없음"),
-        @io.swagger.annotations.ApiResponse(code = 500, message = "서버 에러")
-    })
     @PostMapping("/signup")
     public ResponseEntity<SignUpResponseDTO> signup(@RequestBody final SignUpRequestDTO signUpRequestDTO) {
         return ResponseEntity.status(HttpStatus.OK).body(authService.signUp(signUpRequestDTO));
     }
 
     @ApiOperation(value = "로그인")
-    @ApiResponses({
-        @io.swagger.annotations.ApiResponse(code = 200, message = "로그인 성공"),
-        @io.swagger.annotations.ApiResponse(code = 400, message = "필요한 값이 없음"),
-        @io.swagger.annotations.ApiResponse(code = 500, message = "서버 에러")
-    })
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody final LoginRequestDTO userLoginRequestDTO) {
         val response = authService.login(userLoginRequestDTO);
@@ -60,11 +49,6 @@ public class AdminController {
     }
 
     @ApiOperation(value = "토큰 갱신")
-    @ApiResponses({
-            @io.swagger.annotations.ApiResponse(code = 200, message = "토큰 재발급 성공"),
-            @io.swagger.annotations.ApiResponse(code = 400, message = "필요한 값이 없음"),
-            @io.swagger.annotations.ApiResponse(code = 500, message = "서버 에러")
-    })
     @PatchMapping("/refresh")
     public ResponseEntity<RefreshResponseDTO> refresh(@CookieValue(name = "refreshToken") String refreshToken) {
         val adminId = jwtTokenProvider.getId(refreshToken, JwtTokenType.REFRESH_TOKEN);
