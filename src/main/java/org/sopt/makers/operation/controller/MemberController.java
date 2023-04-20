@@ -2,14 +2,13 @@ package org.sopt.makers.operation.controller;
 
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
+
 import org.sopt.makers.operation.common.ApiResponse;
-import org.sopt.makers.operation.dto.member.MemberListGetResponse;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.service.MemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 import static org.sopt.makers.operation.common.ResponseMessage.SUCCESS_GET_MEMBERS;
 
@@ -23,7 +22,7 @@ public class MemberController {
     @GetMapping("/list")
     public ResponseEntity<ApiResponse> getMemberList(
         @RequestParam(required = false) Part part, @RequestParam(required = false) Integer generation) {
-        List<MemberListGetResponse> memberList = memberService.getMemberList(part, generation);
+        val memberList = memberService.getMemberList(part, generation);
         return ResponseEntity.ok(ApiResponse.success(SUCCESS_GET_MEMBERS.getMessage(), memberList));
     }
 }
