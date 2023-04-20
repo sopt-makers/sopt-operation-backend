@@ -9,5 +9,5 @@ public interface AdminService {
     void confirmAdmin(Long adminId);
     String getRefreshToken(Long adminId);
     void validateRefreshToken(Long adminId, String requestRefreshToken);
-    void refresh(Long adminId, String newRefreshToken);
+    RefreshResponseDTO refresh(Long adminId, String refreshToken);
 }

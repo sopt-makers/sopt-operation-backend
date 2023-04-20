@@ -57,17 +57,12 @@ public class AdminController {
 
     @ApiOperation(value = "토큰 재발급")
     @PatchMapping("/refresh")
-    public ResponseEntity<ApiResponse> refresh(@CookieValue(name = "refreshToken") String refreshToken) {
-        //TODO: jwtTokenProvider.getId 내부에서 validateRefreshToken 수행하고 adminId 반환 방식 제안
+    public ResponseEntity<ApiResponse> refresh(@CookieValue String refreshToken) {
         val adminId = jwtTokenProvider.getId(refreshToken, JwtTokenType.REFRESH_TOKEN);
-        authService.validateRefreshToken(adminId, refreshToken);
 
-        val adminAuthentication = new AdminAuthentication(adminId, null, null);
-        val newRefreshToken = jwtTokenProvider.generateRefreshToken(adminAuthentication);
-        val newAccessToken = jwtTokenProvider.generateAccessToken(adminAuthentication);
-        authService.refresh(adminId, newRefreshToken);
+        val response = authService.refresh(adminId, refreshToken);
 
-        val cookie = ResponseCookie.from("refreshToken", newRefreshToken)
+        val cookie = ResponseCookie.from("refreshToken", response.refreshToken())
             .httpOnly(true)
             .maxAge(Duration.ofDays(14))
             .secure(true)
@@ -78,6 +73,6 @@ public class AdminController {
         headers.add(SET_COOKIE, cookie.toString());
 
         return ResponseEntity.status(OK).headers(headers)
-            .body(ApiResponse.success(SUCCESS_GET_REFRESH_TOKEN.getMessage(), newAccessToken));
+            .body(ApiResponse.success(SUCCESS_GET_REFRESH_TOKEN.getMessage(), response.accessToken()));
     }
 }

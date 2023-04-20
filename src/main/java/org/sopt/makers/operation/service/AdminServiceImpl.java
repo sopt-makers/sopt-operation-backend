@@ -82,10 +82,17 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     @Transactional
-    public void refresh(Long adminId, String newRefreshToken) {
-        val admin = this.findById(adminId);
+    public RefreshResponseDTO refresh(Long adminId, String refreshToken) {
+        validateRefreshToken(adminId, refreshToken);
+
+        val adminAuthentication = new AdminAuthentication(adminId, null, null);
+        val newAccessToken = jwtTokenProvider.generateAccessToken(adminAuthentication);
+        val newRefreshToken = jwtTokenProvider.generateRefreshToken(adminAuthentication);
+        val admin = findById(adminId);
 
         admin.updateRefreshToken(newRefreshToken);
+
+        return RefreshResponseDTO.of(newAccessToken, newRefreshToken);
     }
 
     private Admin findById(Long adminId) {
