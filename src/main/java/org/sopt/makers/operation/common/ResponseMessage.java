@@ -6,6 +6,11 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum ResponseMessage {
+	// auth
+	SUCCESS_SIGN_UP("회원 가입 성공"),
+	SUCCESS_LOGIN_UP("로그인 성공"),
+	SUCCESS_GET_REFRESH_TOKEN("토큰 재발급 성공"),
+
 	SUCCESS_CREATE_LECTURE("세션 생성 성공"),
 	SUCCESS_SINGLE_GET_LECTURE("세션 조회 성공"),
 	SUCCESS_GET_LECTURES("세션 리스트 조회 성공"),
