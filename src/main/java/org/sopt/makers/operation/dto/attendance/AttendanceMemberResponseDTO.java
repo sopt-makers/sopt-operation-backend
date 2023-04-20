@@ -13,6 +13,8 @@ import org.sopt.makers.operation.entity.AttendanceStatus;
 import org.sopt.makers.operation.entity.Member;
 import org.sopt.makers.operation.entity.lecture.Attribute;
 
+import lombok.val;
+
 public record AttendanceMemberResponseDTO(
 	String name,
 	float score,
@@ -39,7 +41,7 @@ record LectureVO(
 	List<AttendanceVO> attendances
 ) {
 	public static LectureVO of(ArrayList<MemberInfo> infos) {
-		MemberInfo info = infos.get(0);
+		val info = infos.get(0);
 		return new LectureVO(
 			info.lectureName(),
 			getAdditiveScore(info.lectureAttribute(), info.attendanceStatus()),
