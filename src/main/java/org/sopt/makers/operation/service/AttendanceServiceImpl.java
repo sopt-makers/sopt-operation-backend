@@ -82,8 +82,8 @@ public class AttendanceServiceImpl implements AttendanceService {
 	@Override
 	@Transactional
 	public float updateMemberScore(Long memberId) {
-		Member member = findMember(memberId);
-		float score = (float)(2 + attendanceRepository.findAttendancesOfMember(member)
+		val member = findMember(memberId);
+		val score = (float)(2 + attendanceRepository.findAttendancesOfMember(member)
 			.stream()
 			.mapToDouble(info -> sopt32.getUpdateScore(info.attribute(), info.status()))
 			.sum());
