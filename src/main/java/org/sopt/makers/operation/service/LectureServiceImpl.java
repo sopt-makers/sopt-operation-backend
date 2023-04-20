@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 import lombok.val;
 
+import org.sopt.makers.operation.common.ExceptionMessage;
 import org.sopt.makers.operation.dto.attendance.AttendanceTotalVO;
 import org.sopt.makers.operation.dto.lecture.*;
 import javax.persistence.EntityNotFoundException;
@@ -27,6 +28,7 @@ import org.sopt.makers.operation.entity.*;
 import org.sopt.makers.operation.entity.lecture.Attribute;
 import org.sopt.makers.operation.entity.lecture.Lecture;
 import org.sopt.makers.operation.exception.LectureException;
+import org.sopt.makers.operation.exception.MemberException;
 import org.sopt.makers.operation.repository.attendance.AttendanceRepository;
 import org.sopt.makers.operation.repository.SubAttendanceRepository;
 import org.sopt.makers.operation.repository.lecture.LectureRepository;
@@ -46,6 +48,7 @@ public class LectureServiceImpl implements LectureService {
 	private final AttendanceRepository attendanceRepository;
 	private final SubAttendanceRepository subAttendanceRepository;
 	private final MemberRepository memberRepository;
+	private final MemberService memberService;
 
 	@Override
 	@Transactional
@@ -72,18 +75,21 @@ public class LectureServiceImpl implements LectureService {
 	}
 
 	@Override
-	public LectureGetResponseDTO getCurrentLecture(LectureSearchCondition lectureSearchCondition) {
-		val now = LocalDateTime.now();
-		val sessionNumber = (now.getHour() < 16) ? 2 : 3;
-		val lectures = lectureRepository.searchLecture(lectureSearchCondition);
+	public LectureGetResponseDTO getCurrentLecture(Long playGroundId) {
+		val member = memberRepository.getMemberByPlaygroundId(playGroundId);
+		val searchCondition = LectureSearchCondition.of(member);
+		val lectures = lectureRepository.searchLecture(searchCondition);
 
-		if (lectures.size() > 2) throw new LectureException("세션의 개수가 올바르지 않습니다");
+		if (lectures.size() > 2) {
+			throw new LectureException("세션의 개수가 올바르지 않습니다");
+		}
 
 		// 세션이 없을 때
 		if (lectures.isEmpty()) {
 			return new LectureGetResponseDTO(LectureResponseType.NO_SESSION, 0L,"", "", "", "", "", Collections.emptyList());
 		}
 
+		val sessionNumber = (LocalDateTime.now().getHour() < 16) ? 2 : 3;
 		val currentLecture = getCurrentLecture(lectures, sessionNumber);
 		val lectureType = getLectureResponseType(currentLecture);
 
@@ -93,7 +99,7 @@ public class LectureServiceImpl implements LectureService {
 		}
 
 		// 출결 가져오기
-		val attendance = attendanceRepository.findAttendanceByLectureIdAndMemberId(currentLecture.getId(), lectureSearchCondition.memberId());
+		val attendance = attendanceRepository.findAttendanceByLectureIdAndMemberId(currentLecture.getId(), searchCondition.memberId());
 
 		val attendances = attendance.getSubAttendances().stream()
 				.map(subAttendance -> LectureGetResponseVO.of(subAttendance.getStatus(), subAttendance.getLastModifiedDate()))

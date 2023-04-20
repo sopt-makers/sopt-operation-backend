@@ -14,6 +14,7 @@ import org.sopt.makers.operation.exception.AdminFailureException;
 import org.sopt.makers.operation.repository.AdminRepository;
 import org.sopt.makers.operation.security.jwt.AdminAuthentication;
 import org.sopt.makers.operation.security.jwt.JwtTokenProvider;
+import org.sopt.makers.operation.security.jwt.JwtTokenType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,17 +60,7 @@ public class AdminServiceImpl implements AdminService {
 
         admin.updateRefreshToken(jwtTokenProvider.generateRefreshToken(authentication));
 
-        return new LoginResponseDTO(admin.getId(), admin.getName(), jwtTokenProvider.generateAccessToken(authentication));
-    }
-
-    @Override
-    public void confirmAdmin(Long adminId) {
-        this.findById(adminId);
-    }
-
-    @Override
-    public String getRefreshToken(Long adminId) {
-        return this.findById(adminId).getRefreshToken();
+        return LoginResponseDTO.of(admin, jwtTokenProvider.generateAccessToken(authentication), admin.getRefreshToken());
     }
 
     @Override
@@ -82,10 +73,19 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     @Transactional
-    public void refresh(Long adminId, String newRefreshToken) {
-        val admin = this.findById(adminId);
+    public RefreshResponseDTO refresh(String refreshToken) {
+        val adminId = jwtTokenProvider.getId(refreshToken, JwtTokenType.REFRESH_TOKEN);
+
+        validateRefreshToken(adminId, refreshToken);
+
+        val adminAuthentication = new AdminAuthentication(adminId, null, null);
+        val newAccessToken = jwtTokenProvider.generateAccessToken(adminAuthentication);
+        val newRefreshToken = jwtTokenProvider.generateRefreshToken(adminAuthentication);
+        val admin = findById(adminId);
 
         admin.updateRefreshToken(newRefreshToken);
+
+        return RefreshResponseDTO.of(newAccessToken, newRefreshToken);
     }
 
     private Admin findById(Long adminId) {

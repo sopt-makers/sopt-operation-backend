@@ -3,11 +3,19 @@ package org.sopt.makers.operation.repository.attendance;
 import static org.sopt.makers.operation.entity.Part.*;
 import static org.sopt.makers.operation.entity.QAttendance.*;
 import static org.sopt.makers.operation.entity.QMember.*;
+import static org.sopt.makers.operation.entity.QSubAttendance.*;
+import static org.sopt.makers.operation.entity.QSubLecture.*;
+import static org.sopt.makers.operation.entity.lecture.QLecture.*;
 
 import java.util.List;
 
+import org.sopt.makers.operation.dto.attendance.AttendanceInfo;
+import org.sopt.makers.operation.dto.attendance.MemberInfo;
+import org.sopt.makers.operation.dto.attendance.QAttendanceInfo;
+import org.sopt.makers.operation.dto.attendance.QMemberInfo;
 import org.sopt.makers.operation.entity.Attendance;
 import org.sopt.makers.operation.entity.AttendanceStatus;
+import org.sopt.makers.operation.entity.Member;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.lecture.Lecture;
 import org.springframework.data.domain.Pageable;
@@ -85,6 +93,40 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 			.orderBy(member.name.asc())
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
+			.fetch();
+	}
+
+	@Override
+	public List<MemberInfo> findByMember(Member member) {
+		return queryFactory
+			.select(new QMemberInfo(
+				lecture.name,
+				lecture.attribute,
+				attendance.id,
+				attendance.status,
+				subLecture.round,
+				subAttendance.status,
+				subAttendance.lastModifiedDate
+			))
+			.from(subAttendance)
+			.leftJoin(subAttendance.attendance, attendance)
+			.leftJoin(subAttendance.subLecture, subLecture)
+			.leftJoin(subLecture.lecture, lecture)
+			.where(attendance.member.eq(member))
+			.orderBy(lecture.startDate.asc())
+			.fetch();
+	}
+
+	@Override
+	public List<AttendanceInfo> findAttendancesOfMember(Member member) {
+		return queryFactory
+			.select(new QAttendanceInfo(
+				lecture.attribute,
+				attendance.status
+			))
+			.from(attendance)
+			.leftJoin(attendance.lecture, lecture)
+			.where(attendance.member.eq(member))
 			.fetch();
 	}
 
