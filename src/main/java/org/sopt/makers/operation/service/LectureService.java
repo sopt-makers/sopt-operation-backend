@@ -11,7 +11,7 @@ import org.sopt.makers.operation.dto.lecture.*;
 
 public interface LectureService {
 	Long createLecture(LectureRequestDTO requestDTO);
-	LectureGetResponseDTO getCurrentLecture(Long memberId);
+	LectureGetResponseDTO getCurrentLecture(Long playGroundId);
 	LecturesResponseDTO getLecturesByGeneration(int generation, Part part);
 	LectureResponseDTO getLecture(Long lectureId);
 	AttendanceResponseDTO startAttendance(AttendanceRequestDTO requestDTO);

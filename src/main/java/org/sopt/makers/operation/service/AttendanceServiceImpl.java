@@ -103,8 +103,11 @@ public class AttendanceServiceImpl implements AttendanceService {
 		).toList();
 	}
 
+	@Override
 	@Transactional
-	public AttendResponseDTO attend(Long memberId, AttendRequestDTO requestDTO) {
+	public AttendResponseDTO attend(Long playGroundId, AttendRequestDTO requestDTO) {
+		val memberId = memberRepository.getMemberByPlaygroundId(playGroundId).getId();
+
 		val now = LocalDateTime.now();
 
 		val subLecture = subLectureRepository.findById(requestDTO.subLectureId())

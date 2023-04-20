@@ -75,9 +75,8 @@ public class LectureServiceImpl implements LectureService {
 	}
 
 	@Override
-	public LectureGetResponseDTO getCurrentLecture(Long memberId) {
-		val member = memberService.confirmMember(memberId)
-			.orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
+	public LectureGetResponseDTO getCurrentLecture(Long playGroundId) {
+		val member = memberRepository.getMemberByPlaygroundId(playGroundId);
 		val searchCondition = LectureSearchCondition.of(member);
 		val lectures = lectureRepository.searchLecture(searchCondition);
 
