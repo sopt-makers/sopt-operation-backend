@@ -1,7 +1,6 @@
 package org.sopt.makers.operation.controller;
 
 import static org.sopt.makers.operation.common.ResponseMessage.*;
-import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.HttpStatus.*;
 
 import io.swagger.annotations.ApiOperation;
@@ -10,23 +9,17 @@ import lombok.val;
 
 import org.sopt.makers.operation.common.ApiResponse;
 import org.sopt.makers.operation.dto.admin.*;
-import org.sopt.makers.operation.security.jwt.AdminAuthentication;
-import org.sopt.makers.operation.security.jwt.JwtTokenProvider;
-import org.sopt.makers.operation.security.jwt.JwtTokenType;
 import org.sopt.makers.operation.service.AdminServiceImpl;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
+import org.sopt.makers.operation.util.Cookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.Duration;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
 public class AdminController {
     private final AdminServiceImpl authService;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final Cookie cookie;
 
     @ApiOperation(value = "회원가입")
     @PostMapping("/signup")
@@ -38,48 +31,21 @@ public class AdminController {
     @ApiOperation(value = "로그인")
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> login(@RequestBody LoginRequestDTO userLoginRequestDTO) {
-        //TODO: login + refresh 토큰 코드 통일화 {response: "...", token: "..."}
         val response = authService.login(userLoginRequestDTO);
-        val refreshToken = authService.getRefreshToken(response.id());
-
-        val cookie = ResponseCookie.from("refreshToken", refreshToken)
-            .httpOnly(true)
-            .maxAge(Duration.ofDays(14))
-            .secure(true)
-            .path("/")
-            .build();
-
-        val headers = new HttpHeaders();
-        headers.add(SET_COOKIE, cookie.toString());
+        val headers = cookie.setRefreshToken(response.refreshToken());
 
         return ResponseEntity.status(OK)
             .headers(headers)
-            .body(ApiResponse.success(SUCCESS_LOGIN_UP.getMessage(), response));
+            .body(ApiResponse.success(SUCCESS_LOGIN_UP.getMessage(), response.loginResponseVO()));
     }
 
     @ApiOperation(value = "토큰 재발급")
     @PatchMapping("/refresh")
-    public ResponseEntity<ApiResponse> refresh(@CookieValue(name = "refreshToken") String refreshToken) {
-        //TODO: jwtTokenProvider.getId 내부에서 validateRefreshToken 수행하고 adminId 반환 방식 제안
-        val adminId = jwtTokenProvider.getId(refreshToken, JwtTokenType.REFRESH_TOKEN);
-        authService.validateRefreshToken(adminId, refreshToken);
-
-        val adminAuthentication = new AdminAuthentication(adminId, null, null);
-        val newRefreshToken = jwtTokenProvider.generateRefreshToken(adminAuthentication);
-        val newAccessToken = jwtTokenProvider.generateAccessToken(adminAuthentication);
-        authService.refresh(adminId, newRefreshToken);
-
-        val cookie = ResponseCookie.from("refreshToken", newRefreshToken)
-            .httpOnly(true)
-            .maxAge(Duration.ofDays(14))
-            .secure(true)
-            .path("/")
-            .build();
-
-        val headers = new HttpHeaders();
-        headers.add(SET_COOKIE, cookie.toString());
+    public ResponseEntity<ApiResponse> refresh(@CookieValue String refreshToken) {
+        val response = authService.refresh(refreshToken);
+        val headers = cookie.setRefreshToken(response.refreshToken());
 
         return ResponseEntity.status(OK).headers(headers)
-            .body(ApiResponse.success(SUCCESS_GET_REFRESH_TOKEN.getMessage(), newAccessToken));
+            .body(ApiResponse.success(SUCCESS_GET_REFRESH_TOKEN.getMessage(), response.accessToken()));
     }
 }
