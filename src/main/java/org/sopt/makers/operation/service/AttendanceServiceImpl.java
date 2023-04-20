@@ -90,8 +90,11 @@ public class AttendanceServiceImpl implements AttendanceService {
 		).toList();
 	}
 
+	@Override
 	@Transactional
-	public AttendResponseDTO attend(Long memberId, AttendRequestDTO requestDTO) {
+	public AttendResponseDTO attend(Long playGroundId, AttendRequestDTO requestDTO) {
+		val memberId = memberRepository.getMemberByPlaygroundId(playGroundId).getId();
+
 		val now = LocalDateTime.now();
 
 		val subLecture = subLectureRepository.findById(requestDTO.subLectureId())
@@ -102,6 +105,9 @@ public class AttendanceServiceImpl implements AttendanceService {
 		if(now.isBefore(subLecture.getStartAt())) throw new LectureException(subLecture.getRound() + NOT_STARTED_NTH_ATTENDANCE.getName());
 
 		if(now.isAfter(subLecture.getStartAt().plusMinutes(10))) throw new LectureException(ENDED_ATTENDANCE.getName());
+
+		System.out.println(subLecture.getLecture().getId());
+		System.out.println(memberId);
 
 		Attendance attendance = attendanceRepository.findAttendanceByLectureIdAndMemberId(subLecture.getLecture().getId(), memberId);
 

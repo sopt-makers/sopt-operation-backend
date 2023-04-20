@@ -7,6 +7,7 @@ import org.sopt.makers.operation.dto.attendance.AttendanceTotalCountVO;
 import org.sopt.makers.operation.dto.attendance.AttendanceTotalResponseDTO;
 import org.sopt.makers.operation.dto.attendance.AttendanceTotalVO;
 import org.sopt.makers.operation.dto.member.MemberListGetResponse;
+import org.sopt.makers.operation.dto.member.MemberScoreGetResponse;
 import org.sopt.makers.operation.dto.member.MemberSearchCondition;
 import org.sopt.makers.operation.entity.AttendanceStatus;
 import org.sopt.makers.operation.entity.Member;
@@ -17,7 +18,6 @@ import org.sopt.makers.operation.repository.member.MemberRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.EnumMap;
-import java.util.Optional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,11 +26,6 @@ import java.util.stream.Collectors;
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final AttendanceRepository attendanceRepository;
-
-    @Override
-    public Optional<Member> confirmMember(Long playGroundId) {
-        return Optional.ofNullable(memberRepository.getMemberByPlaygroundId(playGroundId));
-    }
 
     @Override
     public List<MemberListGetResponse> getMemberList(Part part, int generation) {
@@ -52,7 +47,9 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public AttendanceTotalResponseDTO getMemberTotalAttendance(Member member) {
+    public AttendanceTotalResponseDTO getMemberTotalAttendance(Long playGroundId) {
+        val member = memberRepository.getMemberByPlaygroundId(playGroundId);
+
         val attendances = findAttendances(member);
         val countAttendance = countAttendance(attendances);
         val total = translateAttendanceStatus(countAttendance);
@@ -60,6 +57,13 @@ public class MemberServiceImpl implements MemberService {
         val filteredAttendances = filterEtcNoAppearance(attendances);
 
         return AttendanceTotalResponseDTO.of(member, total, filteredAttendances);
+    }
+
+    @Override
+    public MemberScoreGetResponse getMemberScore(Long playGroundId) {
+        val member = memberRepository.getMemberByPlaygroundId(playGroundId);
+
+        return MemberScoreGetResponse.of(member.getScore());
     }
 
     private List<AttendanceTotalVO> filterEtcNoAppearance(List<AttendanceTotalVO> attendances) {
