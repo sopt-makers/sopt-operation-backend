@@ -9,8 +9,8 @@ import java.util.List;
 import javax.persistence.EntityNotFoundException;
 
 import org.sopt.makers.operation.dto.attendance.AttendanceMemberResponseDTO;
-import org.sopt.makers.operation.dto.attendance.AttendanceRequestDTO;
-import org.sopt.makers.operation.dto.attendance.AttendanceResponseDTO;
+import org.sopt.makers.operation.dto.attendance.AttendUpdateRequestDTO;
+import org.sopt.makers.operation.dto.attendance.AttendUpdateResponseDTO;
 import org.sopt.makers.operation.dto.attendance.MemberResponseDTO;
 import lombok.val;
 import org.sopt.makers.operation.dto.attendance.*;
@@ -25,10 +25,7 @@ import org.sopt.makers.operation.exception.LectureException;
 import org.sopt.makers.operation.repository.SubAttendanceRepository;
 import org.sopt.makers.operation.repository.attendance.AttendanceRepository;
 import org.sopt.makers.operation.repository.lecture.LectureRepository;
-import org.sopt.makers.operation.exception.LectureException;
 import org.sopt.makers.operation.exception.SubLectureException;
-import org.sopt.makers.operation.repository.SubAttendanceRepository;
-import org.sopt.makers.operation.repository.attendance.AttendanceRepository;
 import org.sopt.makers.operation.repository.lecture.SubLectureRepository;
 import org.sopt.makers.operation.repository.member.MemberRepository;
 import org.sopt.makers.operation.util.Generation32;
@@ -39,7 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 @Service
 @RequiredArgsConstructor
@@ -55,12 +51,14 @@ public class AttendanceServiceImpl implements AttendanceService {
 
 	@Override
 	@Transactional
-	public AttendanceResponseDTO updateAttendanceStatus(AttendanceRequestDTO requestDTO) {
+	public AttendUpdateResponseDTO updateAttendanceStatus(AttendUpdateRequestDTO requestDTO) {
 		SubAttendance subAttendance = findSubAttendance(requestDTO.subAttendanceId());
 		subAttendance.updateStatus(requestDTO.status());
+
 		Attendance attendance = subAttendance.getAttendance();
 		attendance.updateStatus(sopt32.getAttendanceStatus(requestDTO.attribute(), attendance.getSubAttendances()));
-		return AttendanceResponseDTO.of(subAttendance);
+
+		return AttendUpdateResponseDTO.of(subAttendance);
 	}
 
 	@Override
