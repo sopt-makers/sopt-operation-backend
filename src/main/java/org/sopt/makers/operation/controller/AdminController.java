@@ -10,10 +10,10 @@ import lombok.val;
 
 import org.sopt.makers.operation.common.ApiResponse;
 import org.sopt.makers.operation.dto.admin.*;
-import org.sopt.makers.operation.security.jwt.AdminAuthentication;
 import org.sopt.makers.operation.security.jwt.JwtTokenProvider;
 import org.sopt.makers.operation.security.jwt.JwtTokenType;
 import org.sopt.makers.operation.service.AdminServiceImpl;
+import org.sopt.makers.operation.util.Cookie;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +27,7 @@ import java.time.Duration;
 public class AdminController {
     private final AdminServiceImpl authService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final Cookie cookie;
 
     @ApiOperation(value = "회원가입")
     @PostMapping("/signup")
@@ -39,16 +40,7 @@ public class AdminController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> login(@RequestBody LoginRequestDTO userLoginRequestDTO) {
         val response = authService.login(userLoginRequestDTO);
-
-        val cookie = ResponseCookie.from("refreshToken", response.refreshToken())
-            .httpOnly(true)
-            .maxAge(Duration.ofDays(14))
-            .secure(true)
-            .path("/")
-            .build();
-
-        val headers = new HttpHeaders();
-        headers.add(SET_COOKIE, cookie.toString());
+        val headers = cookie.setRefreshToken(response.refreshToken());
 
         return ResponseEntity.status(OK)
             .headers(headers)
@@ -59,18 +51,8 @@ public class AdminController {
     @PatchMapping("/refresh")
     public ResponseEntity<ApiResponse> refresh(@CookieValue String refreshToken) {
         val adminId = jwtTokenProvider.getId(refreshToken, JwtTokenType.REFRESH_TOKEN);
-
         val response = authService.refresh(adminId, refreshToken);
-
-        val cookie = ResponseCookie.from("refreshToken", response.refreshToken())
-            .httpOnly(true)
-            .maxAge(Duration.ofDays(14))
-            .secure(true)
-            .path("/")
-            .build();
-
-        val headers = new HttpHeaders();
-        headers.add(SET_COOKIE, cookie.toString());
+        val headers = cookie.setRefreshToken(response.refreshToken());
 
         return ResponseEntity.status(OK).headers(headers)
             .body(ApiResponse.success(SUCCESS_GET_REFRESH_TOKEN.getMessage(), response.accessToken()));
