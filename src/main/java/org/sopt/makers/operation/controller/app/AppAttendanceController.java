@@ -18,11 +18,11 @@ import java.security.Principal;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/app")
+@RequestMapping("/api/v1/app/attendances")
 public class AppAttendanceController {
     private final AttendanceService attendanceService;
     @ApiOperation(value = "출석 하기")
-    @PostMapping("/attendances/attend")
+    @PostMapping("/attend")
     public ResponseEntity<ApiResponse> attend(@RequestBody AttendRequestDTO requestDTO, @ApiIgnore Principal principal) {
         val response = attendanceService.attend(getMemberId(principal), requestDTO);
         return ResponseEntity.ok(ApiResponse.success(SUCCESS_ATTEND.getMessage(), response));
