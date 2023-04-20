@@ -11,5 +11,5 @@ import java.util.List;
 public interface MemberService {
     Optional<Member> confirmMember(Long playGroundId);
     List<MemberListGetResponse> getMemberList(Part part, int generation);
-    public AttendanceTotalResponseDTO getMemberTotalAttendance(Member member);
+    AttendanceTotalResponseDTO getMemberTotalAttendance(Member member);
 }

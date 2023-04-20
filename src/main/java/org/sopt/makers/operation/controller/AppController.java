@@ -1,5 +1,6 @@
 package org.sopt.makers.operation.controller;
 
+import static java.util.Objects.*;
 import static org.sopt.makers.operation.common.ResponseMessage.*;
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
 
@@ -8,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.sopt.makers.operation.common.ApiResponse;
 import org.sopt.makers.operation.dto.attendance.AttendRequestDTO;
-import org.sopt.makers.operation.dto.lecture.LectureSearchCondition;
 import org.sopt.makers.operation.dto.member.MemberScoreGetResponse;
 import org.sopt.makers.operation.entity.Member;
 import org.sopt.makers.operation.exception.MemberException;
@@ -32,11 +32,8 @@ public class AppController {
     @ApiOperation(value = "단일 세미나 상태 조회")
     @GetMapping("/lecture")
     public ResponseEntity<ApiResponse> getLecture(@ApiIgnore Principal principal) {
-        //TODO: memberId를 Service 로 넘겨서 member 검증 방식 제안
-        val member = memberService.confirmMember(Long.valueOf(principal.getName()))
-                .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
-        val response = lectureService.getCurrentLecture(
-            LectureSearchCondition.of(member.getPart(), member.getGeneration(), member.getId()));
+        Long memberId = getMemberId(principal);
+        val response = lectureService.getCurrentLecture(memberId);
         return ResponseEntity.ok(ApiResponse.success(SUCCESS_SINGLE_GET_LECTURE.getMessage(), response));
     }
 
@@ -76,5 +73,9 @@ public class AppController {
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
         val response = attendanceService.attend(member.getId(), requestDTO);
         return ResponseEntity.ok(ApiResponse.success(SUCCESS_ATTEND.getMessage(), response));
+    }
+
+    private Long getMemberId(Principal principal) {
+        return nonNull(principal) ? Long.valueOf(principal.getName()) : null;
     }
 }
