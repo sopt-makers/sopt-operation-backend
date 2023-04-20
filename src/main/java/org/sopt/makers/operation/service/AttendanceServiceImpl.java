@@ -117,7 +117,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 
 		if(now.isBefore(subLecture.getStartAt())) throw new LectureException(subLecture.getRound() + NOT_STARTED_NTH_ATTENDANCE.getName());
 
-		if(now.isAfter(subLecture.getStartAt().plusMinutes(10))) throw new LectureException(ENDED_ATTENDANCE.getName());
+		if(now.isAfter(subLecture.getStartAt().plusMinutes(10))) throw new LectureException(subLecture.getRound() + ENDED_ATTENDANCE.getName());
 
 		Attendance attendance = attendanceRepository.findAttendanceByLectureIdAndMemberId(subLecture.getLecture().getId(), memberId);
 
