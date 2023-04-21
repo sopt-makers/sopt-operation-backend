@@ -104,7 +104,10 @@ public class AttendanceServiceImpl implements AttendanceService {
 	@Override
 	@Transactional
 	public AttendResponseDTO attend(Long playGroundId, AttendRequestDTO requestDTO) {
-		val memberId = memberRepository.getMemberByPlaygroundId(playGroundId).getId();
+		val member = memberRepository.getMemberByPlaygroundId(playGroundId)
+				.orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
+
+		val memberId = member.getId();
 
 		val now = LocalDateTime.now();
 

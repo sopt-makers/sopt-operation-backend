@@ -74,12 +74,14 @@ public class LectureServiceImpl implements LectureService {
 
 	@Override
 	public LectureGetResponseDTO getCurrentLecture(Long playGroundId) {
-		val member = memberRepository.getMemberByPlaygroundId(playGroundId);
+		val member = memberRepository.getMemberByPlaygroundId(playGroundId)
+				.orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
+
 		val searchCondition = LectureSearchCondition.of(member);
 		val lectures = lectureRepository.searchLecture(searchCondition);
 
 		if (lectures.size() > 2) {
-			throw new LectureException("세션의 개수가 올바르지 않습니다");
+			throw new LectureException(INVALID_COUNT_SESSION.getName());
 		}
 
 		// 세션이 없을 때

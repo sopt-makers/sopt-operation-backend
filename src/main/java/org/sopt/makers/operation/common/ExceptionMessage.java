@@ -15,6 +15,7 @@ public enum ExceptionMessage {
 	NOT_STARTED_ATTENDANCE("출석 시작 전입니다."),
 	NOT_STARTED_NTH_ATTENDANCE("차 출석 시작 전입니다."),
 	ENDED_ATTENDANCE("차 출석이 이미 종료되었습니다."),
+	INVALID_COUNT_SESSION("세션의 개수가 올바르지 않습니다."),
 	INVALID_CODE("코드가 일치하지 않아요!");
 
 

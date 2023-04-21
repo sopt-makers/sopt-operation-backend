@@ -5,9 +5,8 @@ import org.sopt.makers.operation.entity.Part;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long>, MemberCustomRepository {
-    Member getMemberByPlaygroundId(Long id);
-
-    List<Member> getMembersByPartAndGeneration(Part part, int generation);
+    Optional<Member> getMemberByPlaygroundId(Long id);
 }
