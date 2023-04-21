@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class Generation32 {
 
-	public float getUpdateScore(Attribute attribute, AttendanceStatus status) {
+	public static float getUpdateScore(Attribute attribute, AttendanceStatus status) {
 		return switch (attribute) {
 			case SEMINAR -> getUpdateScoreInSeminar(status);
 			case EVENT -> getUpdateScoreInEvent(status);
@@ -20,7 +20,7 @@ public class Generation32 {
 		};
 	}
 
-	private float getUpdateScoreInSeminar(AttendanceStatus status) {
+	private static float getUpdateScoreInSeminar(AttendanceStatus status) {
 		return switch (status) {
 			case TARDY -> -0.5f;
 			case ABSENT -> -1f;
@@ -28,14 +28,14 @@ public class Generation32 {
 		};
 	}
 
-	private float getUpdateScoreInEvent(AttendanceStatus status) {
+	private static float getUpdateScoreInEvent(AttendanceStatus status) {
 		if (status.equals(ATTENDANCE)) {
 			return 0.5f;
 		}
 		return 0;
 	}
 
-	public AttendanceStatus getAttendanceStatus(Attribute attribute, List<SubAttendance> subAttendances) {
+	public static AttendanceStatus getAttendanceStatus(Attribute attribute, List<SubAttendance> subAttendances) {
 		int firstRound = subAttendances.get(0).getSubLecture().getRound() == 1 ? 0 : 1;
 		SubAttendance first = subAttendances.get(firstRound);
 		SubAttendance second = subAttendances.get(1 - firstRound);
@@ -46,7 +46,7 @@ public class Generation32 {
 		};
 	}
 
-	private AttendanceStatus getAttendanceStatusInSeminar(SubAttendance first, SubAttendance second) {
+	private static AttendanceStatus getAttendanceStatusInSeminar(SubAttendance first, SubAttendance second) {
 		if (first.getStatus().equals(ATTENDANCE) && second.getStatus().equals(ATTENDANCE)) {
 			return ATTENDANCE;
 		} else if (first.getStatus().equals(ABSENT) && second.getStatus().equals(ATTENDANCE)) {
@@ -55,14 +55,14 @@ public class Generation32 {
 		return ABSENT;
 	}
 
-	private AttendanceStatus getAttendanceStatusInEvent(SubAttendance second) {
+	private static AttendanceStatus getAttendanceStatusInEvent(SubAttendance second) {
 		if (second.getStatus().equals(ATTENDANCE)) {
 			return ATTENDANCE;
 		}
 		return ABSENT;
 	}
 
-	private AttendanceStatus getAttendanceStatusInEtc(SubAttendance second) {
+	private static AttendanceStatus getAttendanceStatusInEtc(SubAttendance second) {
 		if (second.getStatus().equals(ATTENDANCE)) {
 			return PARTICIPATE;
 		}

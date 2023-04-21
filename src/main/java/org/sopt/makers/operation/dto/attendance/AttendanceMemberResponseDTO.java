@@ -1,7 +1,6 @@
 package org.sopt.makers.operation.dto.attendance;
 
-import static org.sopt.makers.operation.entity.AttendanceStatus.*;
-import static org.sopt.makers.operation.entity.lecture.Attribute.*;
+import static org.sopt.makers.operation.util.Generation32.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -9,9 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.sopt.makers.operation.entity.AttendanceStatus;
 import org.sopt.makers.operation.entity.Member;
-import org.sopt.makers.operation.entity.lecture.Attribute;
 
 import lombok.val;
 
@@ -44,26 +41,9 @@ record LectureVO(
 		val info = infos.get(0);
 		return new LectureVO(
 			info.lectureName(),
-			getAdditiveScore(info.lectureAttribute(), info.attendanceStatus()),
+			getUpdateScore(info.lectureAttribute(), info.attendanceStatus()),
 			infos.stream().map(AttendanceVO::of).toList()
 		);
-	}
-
-	public static float getAdditiveScore(Attribute attribute, AttendanceStatus status) {
-		if (attribute.equals(SEMINAR)) {
-			if (status.equals(ABSENT)) {
-				return -1;
-			} else if (status.equals(TARDY)) {
-				return -0.5f;
-			}
-			return 0;
-		} else if (attribute.equals(EVENT)) {
-			if (status.equals(ATTENDANCE)) {
-				return 0.5f;
-			}
-			return 0f;
-		}
-		return 0f;
 	}
 }
 

@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.controller;
+package org.sopt.makers.operation.controller.web;
 
 import static org.sopt.makers.operation.common.ResponseMessage.*;
 import static org.springframework.http.HttpStatus.*;
