@@ -101,7 +101,8 @@ public class LectureServiceImpl implements LectureService {
 		}
 
 		// 출결 가져오기
-		val attendance = attendanceRepository.findAttendanceByLectureIdAndMemberId(currentLecture.getId(), searchCondition.memberId());
+		val attendance = attendanceRepository.findAttendanceByLectureIdAndMemberId(currentLecture.getId(), searchCondition.memberId())
+				.orElseThrow(() -> new LectureException(INVALID_ATTENDANCE.getName()));
 
 		val attendances = attendance.getSubAttendances().stream()
 				.map(subAttendance -> LectureGetResponseVO.of(subAttendance.getStatus(), subAttendance.getLastModifiedDate()))

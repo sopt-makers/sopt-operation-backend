@@ -10,6 +10,7 @@ public enum ExceptionMessage {
 	INVALID_LECTURE("존재하지 않는 세션입니다."),
 	INVALID_SUB_LECTURE("존재하지 않는 세션입니다."),
 	INVALID_ATTENDANCE("존재하지 않는 출석 세션입니다."),
+	INVALID_SUB_ATTENDANCE("존재하지 않는 N차 출석입니다."),
 	NOT_STARTED_PRE_ATTENDANCE("이전의 출석체크가 시작되지 않았습니다."),
 	NO_SESSION("오늘 세션이 없습니다."),
 	NOT_STARTED_ATTENDANCE("출석 시작 전입니다."),
