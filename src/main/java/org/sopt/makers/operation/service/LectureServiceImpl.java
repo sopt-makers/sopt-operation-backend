@@ -6,6 +6,7 @@ import static org.sopt.makers.operation.entity.AttendanceStatus.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -47,6 +48,7 @@ public class LectureServiceImpl implements LectureService {
 	private final AttendanceRepository attendanceRepository;
 	private final SubAttendanceRepository subAttendanceRepository;
 	private final MemberRepository memberRepository;
+	private final ZoneId KST = ZoneId.of("Asia/Seoul");
 
 	@Override
 	@Transactional
@@ -89,7 +91,7 @@ public class LectureServiceImpl implements LectureService {
 			return new LectureGetResponseDTO(LectureResponseType.NO_SESSION, 0L,"", "", "", "", "", Collections.emptyList());
 		}
 
-		val sessionNumber = (LocalDateTime.now().getHour() < 16) ? 2 : 3;
+		val sessionNumber = (LocalDateTime.now(KST).getHour() < 16) ? 2 : 3;
 		val currentLecture = getCurrentLecture(lectures, sessionNumber);
 		val lectureType = getLectureResponseType(currentLecture);
 
@@ -152,7 +154,7 @@ public class LectureServiceImpl implements LectureService {
 
 	@Override
 	public LectureCurrentRoundResponseDTO getCurrentLectureRound(Long lectureId) {
-		val now = LocalDateTime.now();
+		val now = LocalDateTime.now(KST);
 		val today = now.toLocalDate();
 		val startOfDay = today.atStartOfDay();
 		val endOfDay = LocalDateTime.of(today, LocalTime.MAX);
@@ -208,7 +210,7 @@ public class LectureServiceImpl implements LectureService {
 	}
 
 	private AttendanceVO getAttendanceVO(Lecture lecture) {
-		if (lecture.getEndDate().isBefore(LocalDateTime.now())) {
+		if (lecture.getEndDate().isBefore(LocalDateTime.now(KST))) {
 			return new AttendanceVO(
 				attendanceRepository.countAttendance(lecture),
 				attendanceRepository.countAbsent(lecture),
