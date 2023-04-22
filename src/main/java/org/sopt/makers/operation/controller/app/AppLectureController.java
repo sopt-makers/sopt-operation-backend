@@ -17,18 +17,18 @@ import java.security.Principal;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/app")
+@RequestMapping("/api/v1/app/lectures")
 public class AppLectureController {
     private final LectureService lectureService;
     @ApiOperation(value = "단일 세미나 상태 조회")
-    @GetMapping("/lecture")
+    @GetMapping
     public ResponseEntity<ApiResponse> getLecture(@ApiIgnore Principal principal) {
         val response = lectureService.getCurrentLecture(getMemberId(principal));
         return ResponseEntity.ok(ApiResponse.success(SUCCESS_SINGLE_GET_LECTURE.getMessage(), response));
     }
 
     @ApiOperation(value = "출석 차수 조회")
-    @GetMapping("/lectures/round/{lectureId}")
+    @GetMapping("/round/{lectureId}")
     public ResponseEntity<ApiResponse> getRound(@PathVariable("lectureId") Long lectureId) {
         val response = lectureService.getCurrentLectureRound(lectureId);
         return ResponseEntity.ok(ApiResponse.success(SUCCESS_GET_LECTURE_ROUND.getMessage(), response));

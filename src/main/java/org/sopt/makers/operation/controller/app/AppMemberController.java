@@ -19,18 +19,18 @@ import static org.sopt.makers.operation.common.ResponseMessage.SUCCESS_TOTAL_ATT
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/app")
+@RequestMapping("/api/v1/app/members")
 public class AppMemberController {
     private final MemberService memberService;
     @ApiOperation(value = "전체 출석 정보 조회")
-    @GetMapping("/total")
+    @GetMapping("/attendances")
     public ResponseEntity<ApiResponse> getMemberTotalAttendance(@ApiIgnore Principal principal) {
         val response = memberService.getMemberTotalAttendance(getMemberId(principal));
         return ResponseEntity.ok(ApiResponse.success(SUCCESS_TOTAL_ATTENDANCE.getMessage(), response));
     }
 
     @ApiOperation(value = "출석 점수 조회")
-    @GetMapping("/members/score")
+    @GetMapping("/score")
     public ResponseEntity<ApiResponse> getScore(@ApiIgnore Principal principal) {
         val response = memberService.getMemberScore(getMemberId(principal));
         return ResponseEntity.ok(ApiResponse.success(SUCCESS_GET_ATTENDANCE_SCORE.getMessage(), response));
