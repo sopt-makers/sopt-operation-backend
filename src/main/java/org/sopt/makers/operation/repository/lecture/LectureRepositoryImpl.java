@@ -3,6 +3,7 @@ package org.sopt.makers.operation.repository.lecture;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.sopt.makers.operation.dto.lecture.LectureSearchCondition;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.lecture.Lecture;
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,15 +25,15 @@ import static org.sopt.makers.operation.entity.lecture.QLecture.*;
 @RequiredArgsConstructor
 public class LectureRepositoryImpl implements LectureCustomRepository {
     private final JPAQueryFactory queryFactory;
-
     private final GenerationConfig generationConfig;
+    private final ZoneId KST = ZoneId.of("Asia/Seoul");
 
     @Override
     public List<Lecture> searchLecture(LectureSearchCondition lectureSearchCondition) {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDate today = now.toLocalDate();
-        LocalDateTime startOfDay = today.atStartOfDay();
-        LocalDateTime endOfDay = LocalDateTime.of(today, LocalTime.MAX);
+        val now = LocalDateTime.now(KST);
+        val today = now.toLocalDate();
+        val startOfDay = today.atStartOfDay();
+        val endOfDay = LocalDateTime.of(today, LocalTime.MAX);
 
         List<Part> partList = Arrays.asList(lectureSearchCondition.part(), Part.ALL);
 

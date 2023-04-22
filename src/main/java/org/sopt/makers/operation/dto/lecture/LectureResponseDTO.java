@@ -3,6 +3,7 @@ package org.sopt.makers.operation.dto.lecture;
 import static org.sopt.makers.operation.entity.AttendanceStatus.*;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 import org.sopt.makers.operation.entity.Attendance;
@@ -65,6 +66,6 @@ record AttendanceInfo(
 	}
 
 	private static long[] getCount(long count, LocalDateTime endDate) {
-		return endDate.isBefore(LocalDateTime.now()) ? new long[] {count, 0} : new long[] {0, count};
+		return endDate.isBefore(LocalDateTime.now(ZoneId.of("Asia/Seoul"))) ? new long[] {count, 0} : new long[] {0, count};
 	}
 }

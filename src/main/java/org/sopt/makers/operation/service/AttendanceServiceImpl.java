@@ -1,8 +1,10 @@
 package org.sopt.makers.operation.service;
 
+import static java.util.Objects.nonNull;
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
 import static org.sopt.makers.operation.util.Generation32.*;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +49,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 	private final LectureRepository lectureRepository;
 	private final SubLectureRepository subLectureRepository;
 	private final AttendanceRepository attendanceRepository;
+	private final ZoneId KST = ZoneId.of("Asia/Seoul");
 
 	@Override
 	@Transactional
@@ -107,33 +110,51 @@ public class AttendanceServiceImpl implements AttendanceService {
 	@Override
 	@Transactional
 	public AttendResponseDTO attend(Long playGroundId, AttendRequestDTO requestDTO) {
-		val memberId = memberRepository.getMemberByPlaygroundId(playGroundId).getId();
+		val member = memberRepository.getMemberByPlaygroundId(playGroundId)
+				.orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
 
-		val now = LocalDateTime.now();
+		val memberId = member.getId();
+
+		val now = LocalDateTime.now(KST);
 
 		val subLecture = subLectureRepository.findById(requestDTO.subLectureId())
 				.orElseThrow(() -> new EntityNotFoundException(INVALID_SUB_LECTURE.getName()));
 
-		if(!subLecture.getCode().equals(requestDTO.code())) throw new SubLectureException(INVALID_CODE.getName());
-
-		if(now.isBefore(subLecture.getStartAt())) throw new LectureException(subLecture.getRound() + NOT_STARTED_NTH_ATTENDANCE.getName());
-
-		if(now.isAfter(subLecture.getStartAt().plusMinutes(10))) throw new LectureException(ENDED_ATTENDANCE.getName());
-
-		Attendance attendance = attendanceRepository.findAttendanceByLectureIdAndMemberId(subLecture.getLecture().getId(), memberId);
-
-		val subAttendance = attendance.getSubAttendances().stream()
-				.filter(subAttendance3 ->
-						(subAttendance3.getSubLecture().getId().equals(requestDTO.subLectureId())
-								&& subAttendance3.getAttendance().getId().equals(attendance.getId()))
-				).toList();
-
-		subAttendance.get(0).updateStatus(AttendanceStatus.ATTENDANCE);
-
-		if(subLecture.getRound() == 2) {
-			attendance.updateStatus(getAttendanceStatus(attendance.getLecture().getAttribute(), attendance.getSubAttendances()));
-			this.updateMemberScore(memberId);
+		if (!nonNull(subLecture.getStartAt()) || !nonNull(subLecture.getCode())) {
+			throw new LectureException(NOT_STARTED_ATTENDANCE.getName());
 		}
+
+		val currentRound = subLecture.getRound();
+
+		if (!subLecture.getCode().equals(requestDTO.code())) {
+			throw new SubLectureException(INVALID_CODE.getName());
+		}
+
+		if (now.isBefore(subLecture.getStartAt())) {
+			throw new LectureException(subLecture.getRound() + NOT_STARTED_NTH_ATTENDANCE.getName());
+		}
+
+		if (now.isAfter(subLecture.getStartAt().plusMinutes(10))) {
+			throw new LectureException(subLecture.getRound() + ENDED_ATTENDANCE.getName());
+		}
+
+		Attendance attendance = attendanceRepository.findAttendanceByLectureIdAndMemberId(subLecture.getLecture().getId(), memberId)
+				.orElseThrow(() -> new LectureException(INVALID_ATTENDANCE.getName()));
+
+		val currentRoundSubAttendance = attendance.getSubAttendances()
+      		.stream()
+			.filter(subAttendance ->
+					(subAttendance.getSubLecture().getRound() == currentRound)
+			).findFirst();
+
+		if (!nonNull(currentRoundSubAttendance)) {
+			throw new EntityNotFoundException(INVALID_SUB_ATTENDANCE.getName());
+		}
+
+		currentRoundSubAttendance.get().updateStatus(AttendanceStatus.ATTENDANCE);
+
+		attendance.updateStatus(getAttendanceStatus(attendance.getLecture().getAttribute(), attendance.getSubAttendances()));
+		this.updateMemberScore(memberId);
 
 		return AttendResponseDTO.of(subLecture.getId());
 	}

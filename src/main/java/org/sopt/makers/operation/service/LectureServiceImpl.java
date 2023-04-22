@@ -1,18 +1,18 @@
 package org.sopt.makers.operation.service;
 
+import static java.util.Objects.nonNull;
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
 import static org.sopt.makers.operation.entity.AttendanceStatus.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import lombok.val;
 
-import org.sopt.makers.operation.common.ExceptionMessage;
-import org.sopt.makers.operation.dto.attendance.AttendanceTotalVO;
 import org.sopt.makers.operation.dto.lecture.*;
 import javax.persistence.EntityNotFoundException;
 
@@ -48,7 +48,7 @@ public class LectureServiceImpl implements LectureService {
 	private final AttendanceRepository attendanceRepository;
 	private final SubAttendanceRepository subAttendanceRepository;
 	private final MemberRepository memberRepository;
-	private final MemberService memberService;
+	private final ZoneId KST = ZoneId.of("Asia/Seoul");
 
 	@Override
 	@Transactional
@@ -76,12 +76,14 @@ public class LectureServiceImpl implements LectureService {
 
 	@Override
 	public LectureGetResponseDTO getCurrentLecture(Long playGroundId) {
-		val member = memberRepository.getMemberByPlaygroundId(playGroundId);
+		val member = memberRepository.getMemberByPlaygroundId(playGroundId)
+				.orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
+
 		val searchCondition = LectureSearchCondition.of(member);
 		val lectures = lectureRepository.searchLecture(searchCondition);
 
 		if (lectures.size() > 2) {
-			throw new LectureException("세션의 개수가 올바르지 않습니다");
+			throw new LectureException(INVALID_COUNT_SESSION.getName());
 		}
 
 		// 세션이 없을 때
@@ -89,7 +91,7 @@ public class LectureServiceImpl implements LectureService {
 			return new LectureGetResponseDTO(LectureResponseType.NO_SESSION, 0L,"", "", "", "", "", Collections.emptyList());
 		}
 
-		val sessionNumber = (LocalDateTime.now().getHour() < 16) ? 2 : 3;
+		val sessionNumber = (LocalDateTime.now(KST).getHour() < 16) ? 2 : 3;
 		val currentLecture = getCurrentLecture(lectures, sessionNumber);
 		val lectureType = getLectureResponseType(currentLecture);
 
@@ -99,7 +101,8 @@ public class LectureServiceImpl implements LectureService {
 		}
 
 		// 출결 가져오기
-		val attendance = attendanceRepository.findAttendanceByLectureIdAndMemberId(currentLecture.getId(), searchCondition.memberId());
+		val attendance = attendanceRepository.findAttendanceByLectureIdAndMemberId(currentLecture.getId(), searchCondition.memberId())
+				.orElseThrow(() -> new LectureException(INVALID_ATTENDANCE.getName()));
 
 		val attendances = attendance.getSubAttendances().stream()
 				.map(subAttendance -> LectureGetResponseVO.of(subAttendance.getStatus(), subAttendance.getLastModifiedDate()))
@@ -152,7 +155,7 @@ public class LectureServiceImpl implements LectureService {
 
 	@Override
 	public LectureCurrentRoundResponseDTO getCurrentLectureRound(Long lectureId) {
-		val now = LocalDateTime.now();
+		val now = LocalDateTime.now(KST);
 		val today = now.toLocalDate();
 		val startOfDay = today.atStartOfDay();
 		val endOfDay = LocalDateTime.of(today, LocalTime.MAX);
@@ -162,21 +165,32 @@ public class LectureServiceImpl implements LectureService {
 
 		val lectureStartDate = lecture.getStartDate();
 
-		if(lectureStartDate.isBefore(startOfDay) || lectureStartDate.isAfter(endOfDay))
+		if (lectureStartDate.isBefore(startOfDay) || lectureStartDate.isAfter(endOfDay)) {
 			throw new LectureException(NO_SESSION.getName());
+		}
 
 		val subLectures = lecture.getSubLectures();
 
-		if(subLectures.isEmpty()) throw new LectureException(NOT_STARTED_ATTENDANCE.getName());
+		if (subLectures.isEmpty()) {
+			throw new LectureException(NOT_STARTED_ATTENDANCE.getName());
+		}
 
 		val subLectureComparator = Comparator.comparing(SubLecture::getRound, Comparator.reverseOrder());
 		Collections.sort(subLectures, subLectureComparator);
 
 		val subLecture = subLectures.get(0);
 
-		if(now.isBefore(subLecture.getStartAt())) throw new LectureException(subLecture.getRound() +NOT_STARTED_NTH_ATTENDANCE.getName());
+		if (!nonNull(subLecture.getStartAt())) {
+			throw new LectureException(NOT_STARTED_ATTENDANCE.getName());
+		}
 
-		if(now.isAfter(subLecture.getStartAt().plusMinutes(10))) throw new LectureException(ENDED_ATTENDANCE.getName());
+		if (now.isBefore(subLecture.getStartAt())) {
+			throw new LectureException(subLecture.getRound() + NOT_STARTED_NTH_ATTENDANCE.getName());
+		}
+
+		if (now.isAfter(subLecture.getStartAt().plusMinutes(10))) {
+			throw new LectureException(subLecture.getRound() + ENDED_ATTENDANCE.getName());
+		}
 
 		return LectureCurrentRoundResponseDTO.of(subLecture);
 	}
@@ -206,7 +220,7 @@ public class LectureServiceImpl implements LectureService {
 	}
 
 	private AttendanceVO getAttendanceVO(Lecture lecture) {
-		if (lecture.getEndDate().isBefore(LocalDateTime.now())) {
+		if (lecture.getEndDate().isBefore(LocalDateTime.now(KST))) {
 			return new AttendanceVO(
 				attendanceRepository.countAttendance(lecture),
 				attendanceRepository.countAbsent(lecture),

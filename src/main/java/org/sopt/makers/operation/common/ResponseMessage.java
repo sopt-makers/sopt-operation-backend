@@ -31,6 +31,5 @@ public enum ResponseMessage {
 	SUCCESS_GET_LECTURE("세션 상세 조회 성공"),
 	SUCCESS_START_ATTENDANCE("출석 시작 성공"),
 	SUCCESS_GET_MEMBERS("유저 리스트 조회 성공");
-
 	private final String message;
 }
