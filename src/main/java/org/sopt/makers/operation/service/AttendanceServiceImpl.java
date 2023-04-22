@@ -120,15 +120,23 @@ public class AttendanceServiceImpl implements AttendanceService {
 		val subLecture = subLectureRepository.findById(requestDTO.subLectureId())
 				.orElseThrow(() -> new EntityNotFoundException(INVALID_SUB_LECTURE.getName()));
 
-		if(!nonNull(subLecture.getStartAt()) || !nonNull(subLecture.getCode())) throw new LectureException(NOT_STARTED_ATTENDANCE.getName());
+		if (!nonNull(subLecture.getStartAt()) || !nonNull(subLecture.getCode())) {
+			throw new LectureException(NOT_STARTED_ATTENDANCE.getName());
+		}
 
 		val currentRound = subLecture.getRound();
 
-		if(!subLecture.getCode().equals(requestDTO.code())) throw new SubLectureException(INVALID_CODE.getName());
+		if (!subLecture.getCode().equals(requestDTO.code())) {
+			throw new SubLectureException(INVALID_CODE.getName());
+		}
 
-		if(now.isBefore(subLecture.getStartAt())) throw new LectureException(subLecture.getRound() + NOT_STARTED_NTH_ATTENDANCE.getName());
+		if (now.isBefore(subLecture.getStartAt())) {
+			throw new LectureException(subLecture.getRound() + NOT_STARTED_NTH_ATTENDANCE.getName());
+		}
 
-		if(now.isAfter(subLecture.getStartAt().plusMinutes(10))) throw new LectureException(subLecture.getRound() + ENDED_ATTENDANCE.getName());
+		if (now.isAfter(subLecture.getStartAt().plusMinutes(10))) {
+			throw new LectureException(subLecture.getRound() + ENDED_ATTENDANCE.getName());
+		}
 
 		Attendance attendance = attendanceRepository.findAttendanceByLectureIdAndMemberId(subLecture.getLecture().getId(), memberId)
 				.orElseThrow(() -> new LectureException(INVALID_ATTENDANCE.getName()));
@@ -139,7 +147,9 @@ public class AttendanceServiceImpl implements AttendanceService {
 					(subAttendance.getSubLecture().getRound() == currentRound)
 			).findFirst();
 
-		if(!nonNull(currentRoundSubAttendance)) throw new EntityNotFoundException(INVALID_SUB_ATTENDANCE.getName());
+		if (!nonNull(currentRoundSubAttendance)) {
+			throw new EntityNotFoundException(INVALID_SUB_ATTENDANCE.getName());
+		}
 
 		currentRoundSubAttendance.get().updateStatus(AttendanceStatus.ATTENDANCE);
 

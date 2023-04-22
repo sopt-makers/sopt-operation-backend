@@ -165,23 +165,32 @@ public class LectureServiceImpl implements LectureService {
 
 		val lectureStartDate = lecture.getStartDate();
 
-		if(lectureStartDate.isBefore(startOfDay) || lectureStartDate.isAfter(endOfDay))
+		if (lectureStartDate.isBefore(startOfDay) || lectureStartDate.isAfter(endOfDay)) {
 			throw new LectureException(NO_SESSION.getName());
+		}
 
 		val subLectures = lecture.getSubLectures();
 
-		if(subLectures.isEmpty()) throw new LectureException(NOT_STARTED_ATTENDANCE.getName());
+		if (subLectures.isEmpty()) {
+			throw new LectureException(NOT_STARTED_ATTENDANCE.getName());
+		}
 
 		val subLectureComparator = Comparator.comparing(SubLecture::getRound, Comparator.reverseOrder());
 		Collections.sort(subLectures, subLectureComparator);
 
 		val subLecture = subLectures.get(0);
 
-		if(!nonNull(subLecture.getStartAt())) throw new LectureException(NOT_STARTED_ATTENDANCE.getName());
+		if (!nonNull(subLecture.getStartAt())) {
+			throw new LectureException(NOT_STARTED_ATTENDANCE.getName());
+		}
 
-		if(now.isBefore(subLecture.getStartAt())) throw new LectureException(subLecture.getRound() + NOT_STARTED_NTH_ATTENDANCE.getName());
+		if (now.isBefore(subLecture.getStartAt())) {
+			throw new LectureException(subLecture.getRound() + NOT_STARTED_NTH_ATTENDANCE.getName());
+		}
 
-		if(now.isAfter(subLecture.getStartAt().plusMinutes(10))) throw new LectureException(subLecture.getRound() + ENDED_ATTENDANCE.getName());
+		if (now.isAfter(subLecture.getStartAt().plusMinutes(10))) {
+			throw new LectureException(subLecture.getRound() + ENDED_ATTENDANCE.getName());
+		}
 
 		return LectureCurrentRoundResponseDTO.of(subLecture);
 	}
