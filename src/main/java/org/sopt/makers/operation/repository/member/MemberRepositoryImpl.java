@@ -5,6 +5,8 @@ import static org.sopt.makers.operation.entity.QMember.*;
 
 import java.util.List;
 
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.StringExpression;
 import org.sopt.makers.operation.dto.member.MemberSearchCondition;
 import org.sopt.makers.operation.entity.Member;
 import org.sopt.makers.operation.entity.Part;
@@ -23,12 +25,15 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
 
 	@Override
 	public List<Member> search(MemberSearchCondition condition) {
+		StringExpression firstName = Expressions.stringTemplate("SUBSTR({0}, 1, 1)", member.name);
+
 		return queryFactory
 			.selectFrom(member)
 			.where(
 				partEq(condition.part()),
 				member.generation.eq(condition.generation())
 			)
+        	.orderBy(firstName.asc())
 			.fetch();
 	}
 
