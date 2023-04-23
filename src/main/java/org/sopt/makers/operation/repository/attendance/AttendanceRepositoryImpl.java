@@ -7,8 +7,12 @@ import static org.sopt.makers.operation.entity.QSubAttendance.*;
 import static org.sopt.makers.operation.entity.QSubLecture.*;
 import static org.sopt.makers.operation.entity.lecture.QLecture.*;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 
+import lombok.val;
 import org.sopt.makers.operation.dto.attendance.AttendanceInfo;
 import org.sopt.makers.operation.dto.attendance.LectureInfo;
 import org.sopt.makers.operation.dto.attendance.MemberInfo;
@@ -33,6 +37,7 @@ import lombok.RequiredArgsConstructor;
 public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 
 	private final JPAQueryFactory queryFactory;
+	private final ZoneId KST = ZoneId.of("Asia/Seoul");
 
 	@Override
 	public Long countAttendance(Lecture lecture) {
@@ -72,14 +77,17 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 
 	@Override
 	public List<Attendance> findAttendanceByMemberId(Long memberId) {
+		val now = LocalDateTime.now(KST);
+
 		return queryFactory
-			.select(attendance)
-			.from(attendance)
-			.where(
-				attendance.member.id.eq(memberId)
-			)
-			.orderBy(attendance.lecture.startDate.desc())
-			.fetch();
+				.select(attendance)
+				.from(attendance)
+				.leftJoin(attendance.lecture, lecture)
+				.where(attendance.member.id.eq(memberId),
+						lecture.endDate.before(now)
+				)
+				.orderBy(attendance.lecture.startDate.desc())
+				.fetch();
 	}
 
 	@Override
