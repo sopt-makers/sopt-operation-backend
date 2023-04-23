@@ -10,6 +10,7 @@ import java.util.List;
 public record LectureGetResponseVO(
         AttendanceStatus status,
         String attendedAt
+
 ) {
     public static LectureGetResponseVO of(AttendanceStatus status, LocalDateTime attendedAt){
         return new LectureGetResponseVO(

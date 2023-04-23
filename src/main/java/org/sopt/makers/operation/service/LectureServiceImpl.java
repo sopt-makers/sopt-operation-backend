@@ -76,6 +76,8 @@ public class LectureServiceImpl implements LectureService {
 
 	@Override
 	public LectureGetResponseDTO getCurrentLecture(Long playGroundId) {
+		val now = LocalDateTime.now(KST).plusHours(8);
+
 		val member = memberRepository.getMemberByPlaygroundId(playGroundId)
 				.orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
 
@@ -104,13 +106,34 @@ public class LectureServiceImpl implements LectureService {
 		val attendance = attendanceRepository.findAttendanceByLectureIdAndMemberId(currentLecture.getId(), searchCondition.memberId())
 				.orElseThrow(() -> new LectureException(INVALID_ATTENDANCE.getName()));
 
-		val attendances = attendance.getSubAttendances().stream()
+		val sortSubAttendances = attendance.getSubAttendances().stream()
+				.sorted(Comparator.comparingInt(subAttendance -> subAttendance.getSubLecture().getRound()))
+				.collect(Collectors.toList());
+
+		val subAttendances = sortSubAttendances.stream()
 				.map(subAttendance -> LectureGetResponseVO.of(subAttendance.getStatus(), subAttendance.getLastModifiedDate()))
 				.collect(Collectors.toList());
 
 		val message = (currentLecture.getAttribute() == Attribute.SEMINAR) ? "" : "행사도 참여하고, 출석점수도 받고, 일석이조!";
 
-		return LectureGetResponseDTO.of(lectureType, currentLecture, message, attendances);
+		val subLectures = currentLecture.getSubLectures().stream()
+				.sorted(Comparator.comparingInt(SubLecture::getRound))
+				.collect(Collectors.toList());
+
+		val firstSessionStart = subLectures.get(0).getStartAt();
+		val secondSessionStart = subLectures.get(1).getStartAt();
+
+		// 세미나 시작 전 혹은 1차 출석 시작 전
+		if(now.isBefore(currentLecture.getStartDate()) || !nonNull(firstSessionStart)) {
+			return LectureGetResponseDTO.of(lectureType, currentLecture, message, Collections.emptyList());
+		}
+
+		// 1차 출석 시작, 2차 출석 시작 전
+		if(now.isAfter(firstSessionStart) && !nonNull(secondSessionStart)) {
+			return LectureGetResponseDTO.of(lectureType, currentLecture, message, Arrays.asList(subAttendances.get(0)));
+		}
+
+		return LectureGetResponseDTO.of(lectureType, currentLecture, message, subAttendances);
 	}
 
 
