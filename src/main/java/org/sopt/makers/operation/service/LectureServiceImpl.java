@@ -150,6 +150,9 @@ public class LectureServiceImpl implements LectureService {
 	public void updateMembersScore(Long lectureId) {
 		Lecture lecture = lectureRepository.findById(lectureId)
 			.orElseThrow(() -> new EntityNotFoundException(INVALID_LECTURE.getName()));
+		if (lecture.getEndDate().isAfter(LocalDateTime.now(ZoneId.of("Asia/Seoul")))) {
+			throw new IllegalStateException(NOT_END_TIME_YET.getName());
+		}
 		lecture.getAttendances().forEach(this::updateScoreIn32);
 	}
 
