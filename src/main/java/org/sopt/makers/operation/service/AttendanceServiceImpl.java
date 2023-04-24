@@ -138,7 +138,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 			throw new LectureException(subLecture.getRound() + ENDED_ATTENDANCE.getName());
 		}
 
-		Attendance attendance = attendanceRepository.findAttendanceByLectureIdAndMemberId(subLecture.getLecture().getId(), memberId)
+		val attendance = attendanceRepository.findAttendanceByLectureIdAndMemberId(subLecture.getLecture().getId(), memberId)
 				.orElseThrow(() -> new LectureException(INVALID_ATTENDANCE.getName()));
 
 		val currentRoundSubAttendance = attendance.getSubAttendances()
@@ -152,9 +152,6 @@ public class AttendanceServiceImpl implements AttendanceService {
 		}
 
 		currentRoundSubAttendance.get().updateStatus(AttendanceStatus.ATTENDANCE);
-
-		attendance.updateStatus(getAttendanceStatus(attendance.getLecture().getAttribute(), attendance.getSubAttendances()));
-		this.updateMemberScore(memberId);
 
 		return AttendResponseDTO.of(subLecture.getId());
 	}
