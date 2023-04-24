@@ -216,7 +216,7 @@ public class LectureServiceImpl implements LectureService {
 			throw new LectureException(NOT_STARTED_ATTENDANCE.getName());
 		}
 
-		val subLectureComparator = Comparator.comparing(SubLecture::getRound, Comparator.reverseOrder());
+		val subLectureComparator = Comparator.comparing(SubLecture::getRound);
 		Collections.sort(subLectures, subLectureComparator);
 
 		val subLecture = subLectures.get(0);
