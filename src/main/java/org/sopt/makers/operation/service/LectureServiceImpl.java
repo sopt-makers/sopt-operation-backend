@@ -219,21 +219,42 @@ public class LectureServiceImpl implements LectureService {
 		val subLectureComparator = Comparator.comparing(SubLecture::getRound);
 		Collections.sort(subLectures, subLectureComparator);
 
-		val subLecture = subLectures.get(0);
+		val firstLecture = subLectures.get(0);
+		val secondLecture = subLectures.get(1);
 
-		if (!nonNull(subLecture.getStartAt())) {
+		// 1차, 2차 모두 시작 안했을 때
+		if(!nonNull(firstLecture.getStartAt()) && !nonNull(secondLecture.getStartAt())) {
 			throw new LectureException(NOT_STARTED_ATTENDANCE.getName());
 		}
 
-		if (now.isBefore(subLecture.getStartAt())) {
-			throw new LectureException(subLecture.getRound() + NOT_STARTED_NTH_ATTENDANCE.getName());
+		// 1차만 시작하였을 때
+		if (nonNull(firstLecture.getStartAt()) && !nonNull(secondLecture.getStartAt())) {
+			// 1차 출석 시작 전일 때
+			if (now.isBefore(firstLecture.getStartAt())) {
+				throw new LectureException(firstLecture.getRound() + NOT_STARTED_NTH_ATTENDANCE.getName());
+			}
+
+			// 1차 출석이 마감되었을 때
+			if (now.isAfter(firstLecture.getStartAt().plusMinutes(10))) {
+				throw new LectureException(firstLecture.getRound() + ENDED_ATTENDANCE.getName());
+			}
+
+			return LectureCurrentRoundResponseDTO.of(firstLecture);
 		}
 
-		if (now.isAfter(subLecture.getStartAt().plusMinutes(10))) {
-			throw new LectureException(subLecture.getRound() + ENDED_ATTENDANCE.getName());
+		if (nonNull(firstLecture.getStartAt()) && nonNull(secondLecture.getStartAt())) {
+			// 2차 출석 시작 전일 때
+			if (now.isBefore(secondLecture.getStartAt())) {
+				throw new LectureException(secondLecture.getRound() + NOT_STARTED_NTH_ATTENDANCE.getName());
+			}
+
+			// 2차 출석이 마감되었을 때
+			if (now.isAfter(secondLecture.getStartAt().plusMinutes(10))) {
+				throw new LectureException(secondLecture.getRound() + ENDED_ATTENDANCE.getName());
+			}
 		}
 
-		return LectureCurrentRoundResponseDTO.of(subLecture);
+		return LectureCurrentRoundResponseDTO.of(secondLecture);
 	}
 
 	private void updateScoreIn32(Attendance attendance) {
