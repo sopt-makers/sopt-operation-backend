@@ -76,7 +76,7 @@ public class LectureServiceImpl implements LectureService {
 
 	@Override
 	public LectureGetResponseDTO getCurrentLecture(Long playGroundId) {
-		val now = LocalDateTime.now(KST).plusHours(8);
+		val now = LocalDateTime.now(KST);
 
 		val member = memberRepository.getMemberByPlaygroundId(playGroundId)
 				.orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
@@ -108,7 +108,7 @@ public class LectureServiceImpl implements LectureService {
 
 		val sortSubAttendances = attendance.getSubAttendances().stream()
 				.sorted(Comparator.comparingInt(subAttendance -> subAttendance.getSubLecture().getRound()))
-				.collect(Collectors.toList());
+				.toList();
 
 		val subAttendances = sortSubAttendances.stream()
 				.map(subAttendance -> LectureGetResponseVO.of(subAttendance.getStatus(), subAttendance.getLastModifiedDate()))
@@ -118,7 +118,7 @@ public class LectureServiceImpl implements LectureService {
 
 		val subLectures = currentLecture.getSubLectures().stream()
 				.sorted(Comparator.comparingInt(SubLecture::getRound))
-				.collect(Collectors.toList());
+				.toList();
 
 		val firstSessionStart = subLectures.get(0).getStartAt();
 		val secondSessionStart = subLectures.get(1).getStartAt();
@@ -130,7 +130,27 @@ public class LectureServiceImpl implements LectureService {
 
 		// 1차 출석 시작, 2차 출석 시작 전
 		if(now.isAfter(firstSessionStart) && !nonNull(secondSessionStart)) {
-			return LectureGetResponseDTO.of(lectureType, currentLecture, message, Arrays.asList(subAttendances.get(0)));
+			// 1차 출석 마감되었을 경우, 1차 출석 출석 시
+			if(now.isAfter(firstSessionStart.plusMinutes(10)) || subAttendances.get(0).status().equals(ATTENDANCE)) {
+				return LectureGetResponseDTO.of(lectureType, currentLecture, message, Collections.singletonList(subAttendances.get(0)));
+			}
+
+			// 1차 출석 마감 전, 결석일 시
+			if(subAttendances.get(0).status().equals(ABSENT)) {
+				return LectureGetResponseDTO.of(lectureType, currentLecture, message, Collections.emptyList());
+			}
+		}
+
+		if(now.isAfter(secondSessionStart)) {
+			// 2차 출석 마감되었을 경우, 2차 출석 출석 시
+			if(now.isAfter(secondSessionStart.plusMinutes(10)) || subAttendances.get(1).status().equals(ATTENDANCE)) {
+				return LectureGetResponseDTO.of(lectureType, currentLecture, message, subAttendances);
+			}
+
+			// 2차 출석 마감 전, 결석일 시
+			if(subAttendances.get(1).status().equals(ABSENT)) {
+				return LectureGetResponseDTO.of(lectureType, currentLecture, message, Collections.singletonList(subAttendances.get(0)));
+			}
 		}
 
 		return LectureGetResponseDTO.of(lectureType, currentLecture, message, subAttendances);
