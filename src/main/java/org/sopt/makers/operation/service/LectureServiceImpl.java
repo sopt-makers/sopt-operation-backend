@@ -142,13 +142,8 @@ public class LectureServiceImpl implements LectureService {
 		}
 
 		if(now.isAfter(secondSessionStart)) {
-			// 2차 출석 마감되었을 경우, 2차 출석 출석 시
-			if(now.isAfter(secondSessionStart.plusMinutes(10)) || subAttendances.get(1).status().equals(ATTENDANCE)) {
-				return LectureGetResponseDTO.of(lectureType, currentLecture, message, subAttendances);
-			}
-
 			// 2차 출석 마감 전, 결석일 시
-			if(subAttendances.get(1).status().equals(ABSENT)) {
+			if(now.isBefore(secondSessionStart.plusMinutes(10)) && subAttendances.get(1).status().equals(ABSENT)) {
 				return LectureGetResponseDTO.of(lectureType, currentLecture, message, Collections.singletonList(subAttendances.get(0)));
 			}
 		}
