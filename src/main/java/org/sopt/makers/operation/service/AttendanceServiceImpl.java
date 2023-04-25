@@ -153,6 +153,8 @@ public class AttendanceServiceImpl implements AttendanceService {
 
 		currentRoundSubAttendance.get().updateStatus(AttendanceStatus.ATTENDANCE);
 
+		attendance.updateStatus(getAttendanceStatus(attendance.getLecture().getAttribute(), attendance.getSubAttendances()));
+
 		return AttendResponseDTO.of(subLecture.getId());
 	}
 
