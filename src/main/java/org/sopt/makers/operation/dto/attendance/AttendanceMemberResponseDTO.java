@@ -35,6 +35,7 @@ public record AttendanceMemberResponseDTO(
 record LectureVO(
 	String lecture,
 	float additiveScore,
+	String status,
 	List<AttendanceVO> attendances
 ) {
 	public static LectureVO of(ArrayList<MemberInfo> infos) {
@@ -42,6 +43,7 @@ record LectureVO(
 		return new LectureVO(
 			info.lectureName(),
 			getUpdateScore(info.lectureAttribute(), info.attendanceStatus()),
+			infos.get(0).attendanceStatus().getName(),
 			infos.stream().map(AttendanceVO::of).toList()
 		);
 	}
