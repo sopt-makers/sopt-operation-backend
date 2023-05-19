@@ -1,6 +1,7 @@
 package org.sopt.makers.operation.entity.lecture;
 
 import static javax.persistence.GenerationType.*;
+import static org.sopt.makers.operation.util.Generation32.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import org.sopt.makers.operation.entity.Attendance;
+import org.sopt.makers.operation.entity.AttendanceStatus;
 import org.sopt.makers.operation.entity.BaseEntity;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.SubLecture;
@@ -38,12 +40,18 @@ public class Lecture extends BaseEntity {
 	private Part part;
 
 	private int generation;
+
 	private String place;
+
 	private LocalDateTime startDate;
+
 	private LocalDateTime endDate;
 
 	@Enumerated(EnumType.STRING)
 	private Attribute attribute;
+
+	@Enumerated(EnumType.STRING)
+	private LectureStatus lectureStatus;
 
 	@OneToMany(mappedBy = "lecture")
 	List<SubLecture> subLectures = new ArrayList<>();
@@ -61,5 +69,21 @@ public class Lecture extends BaseEntity {
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.attribute = attribute;
+		this.lectureStatus = LectureStatus.BEFORE;
+	}
+
+	public void updateStatus(LectureStatus status) {
+		this.lectureStatus = status;
+	}
+
+	public void finish() {
+		this.lectureStatus = LectureStatus.END;
+		attendances.forEach(this::updateScore);
+	}
+
+	private void updateScore(Attendance attendance) {
+		Attribute attribute = this.attribute;
+		AttendanceStatus status = attendance.getStatus();
+		attendance.getMember().updateScore(getUpdateScore(attribute, status));
 	}
 }
