@@ -11,6 +11,7 @@ import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.SubLecture;
 import org.sopt.makers.operation.entity.lecture.Attribute;
 import org.sopt.makers.operation.entity.lecture.Lecture;
+import org.sopt.makers.operation.entity.lecture.LectureStatus;
 
 public record LectureResponseDTO(
 	Long lectureId,
@@ -19,7 +20,8 @@ public record LectureResponseDTO(
 	Part part,
 	Attribute attribute,
 	List<SubLectureVO> subLectures,
-	AttendanceInfo result
+	AttendanceInfo result,
+	LectureStatus status
 
 ) {
 	public static LectureResponseDTO of(Lecture lecture) {
@@ -30,7 +32,8 @@ public record LectureResponseDTO(
 			lecture.getPart(),
 			lecture.getAttribute(),
 			lecture.getSubLectures().stream().map(SubLectureVO::of).toList(),
-			AttendanceInfo.of(lecture, lecture.getAttendances())
+			AttendanceInfo.of(lecture, lecture.getAttendances()),
+			lecture.getLectureStatus()
 		);
 	}
 }
