@@ -15,7 +15,7 @@ public interface LectureService {
 	LecturesResponseDTO getLecturesByGeneration(int generation, Part part);
 	LectureResponseDTO getLecture(Long lectureId);
 	AttendanceResponseDTO startAttendance(AttendanceRequestDTO requestDTO);
-	void updateMembersScore(Long lectureId);
+	void finishLecture(Long lectureId);
 	LectureCurrentRoundResponseDTO getCurrentLectureRound(Long lectureId);
 
 }
