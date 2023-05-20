@@ -193,7 +193,8 @@ public class LectureServiceImpl implements LectureService {
 	@Transactional
 	public void finishLecture(Long lectureId) {
 		val lecture = findLecture(lectureId);
-		if (lecture.getEndDate().isAfter(LocalDateTime.now(ZoneId.of("Asia/Seoul")))) {
+		val now = LocalDateTime.now(KST);
+		if (now.isBefore(lecture.getEndDate())) {
 			throw new IllegalStateException(NOT_END_TIME_YET.getName());
 		}
 		lecture.finish();
