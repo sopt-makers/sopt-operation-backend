@@ -3,6 +3,7 @@ package org.sopt.makers.operation.service;
 import static java.util.Objects.nonNull;
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
 import static org.sopt.makers.operation.entity.AttendanceStatus.*;
+import static org.sopt.makers.operation.entity.lecture.LectureStatus.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -171,27 +172,32 @@ public class LectureServiceImpl implements LectureService {
 	public AttendanceResponseDTO startAttendance(AttendanceRequestDTO requestDTO) {
 		Lecture lecture = findLecture(requestDTO.lectureId());
 
-		for (SubLecture subLecture : lecture.getSubLectures()) {
-			if (subLecture.getRound() < requestDTO.round() && subLecture.getStartAt() == null) {
-				throw new IllegalStateException(NOT_STARTED_PRE_ATTENDANCE.getName());
-			} else if (subLecture.getRound() == requestDTO.round()) {
-				subLecture.startAttendance(requestDTO.code());
-				return new AttendanceResponseDTO(lecture.getId(), subLecture.getId());
-			}
+		// 출석 가능 여부 유효성 체크
+		if (requestDTO.round() == 2 && lecture.getLectureStatus().equals(BEFORE)) {
+			throw new IllegalStateException(NOT_STARTED_PRE_ATTENDANCE.getName());
+		} else if (lecture.getLectureStatus().equals(END)) {
+			throw new IllegalStateException(END_LECTURE.getName());
 		}
 
-		throw new IllegalStateException(INVALID_LECTURE.getName());
+		// 출석 세션 상태 업데이트 (시작)
+		SubLecture subLecture = lecture.getSubLectures().stream()
+			.filter(session -> session.getRound() == requestDTO.round())
+			.findFirst()
+			.orElseThrow(() -> new IllegalStateException(NO_SUB_LECTURE_EQUAL_ROUND.getName()));
+		subLecture.startAttendance(requestDTO.code());
+
+		return new AttendanceResponseDTO(lecture.getId(), subLecture.getId());
 	}
 
 	@Override
 	@Transactional
-	public void updateMembersScore(Long lectureId) {
-		Lecture lecture = lectureRepository.findById(lectureId)
-			.orElseThrow(() -> new EntityNotFoundException(INVALID_LECTURE.getName()));
-		if (lecture.getEndDate().isAfter(LocalDateTime.now(ZoneId.of("Asia/Seoul")))) {
+	public void finishLecture(Long lectureId) {
+		val lecture = findLecture(lectureId);
+		val now = LocalDateTime.now(KST);
+		if (now.isBefore(lecture.getEndDate())) {
 			throw new IllegalStateException(NOT_END_TIME_YET.getName());
 		}
-		lecture.getAttendances().forEach(this::updateScoreIn32);
+		lecture.finish();
 	}
 
 	@Override
@@ -255,26 +261,6 @@ public class LectureServiceImpl implements LectureService {
 		}
 
 		return LectureCurrentRoundResponseDTO.of(secondLecture);
-	}
-
-	private void updateScoreIn32(Attendance attendance) {
-		Attribute attribute = attendance.getLecture().getAttribute();
-		Member member = attendance.getMember();
-
-		switch (attribute) {
-			case SEMINAR -> {
-				if (attendance.getStatus().equals(TARDY)) {
-					member.updateScore(-0.5f);
-				} else if (attendance.getStatus().equals(ABSENT)) {
-					member.updateScore(-1);
-				}
-			}
-			case EVENT -> {
-				if (attendance.getStatus().equals(ATTENDANCE)) {
-					member.updateScore(0.5f);
-				}
-			}
-		}
 	}
 
 	private LectureVO getLectureVO(Lecture lecture) {

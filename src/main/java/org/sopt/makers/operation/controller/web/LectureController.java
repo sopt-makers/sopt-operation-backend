@@ -65,8 +65,8 @@ public class LectureController {
 
 	@ApiOperation(value = "출석 점수 갱신 트리거 (출석 종료)")
 	@PatchMapping("/{lectureId}")
-	public ResponseEntity<ApiResponse> updateMembersScore(@PathVariable("lectureId") Long lectureId) {
-		lectureService.updateMembersScore(lectureId);
+	public ResponseEntity<ApiResponse> finishLecture(@PathVariable("lectureId") Long lectureId) {
+		lectureService.finishLecture(lectureId);
 		return ResponseEntity.ok(ApiResponse.success(SUCCESS_UPDATE_MEMBER_SCORE.getMessage()));
 	}
 
