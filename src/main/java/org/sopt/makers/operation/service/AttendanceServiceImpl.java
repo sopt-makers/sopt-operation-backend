@@ -17,7 +17,6 @@ import org.sopt.makers.operation.dto.attendance.AttendUpdateResponseDTO;
 import org.sopt.makers.operation.dto.attendance.MemberResponseDTO;
 import lombok.val;
 import org.sopt.makers.operation.dto.attendance.*;
-import org.sopt.makers.operation.entity.Attendance;
 import org.sopt.makers.operation.entity.AttendanceStatus;
 import org.sopt.makers.operation.entity.Member;
 import org.sopt.makers.operation.entity.Part;
@@ -92,19 +91,8 @@ public class AttendanceServiceImpl implements AttendanceService {
 
 	@Override
 	public List<MemberResponseDTO> getMemberAttendances(Long lectureId, Part part, Pageable pageable) {
-		Lecture lecture = findLecture(lectureId);
-
-		HashMap<Long, ArrayList<LectureInfo>> map = new HashMap<>();
-		attendanceRepository.findLectureAttendances(lecture, part, pageable)
-			.forEach(info -> {
-				Long key = info.attendanceId();
-				if (!map.containsKey(key)) {
-					map.put(key, new ArrayList<>());
-				}
-				map.get(key).add(info);
-			});
-
-		return map.keySet().stream().map(key -> MemberResponseDTO.of(map.get(key))).toList();
+		val attendances = attendanceRepository.findAttendancesFetchJoin(lectureId, part, pageable);
+		return attendances.stream().map(MemberResponseDTO::of).toList();
 	}
 
 	@Override

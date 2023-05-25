@@ -8,16 +8,13 @@ import static org.sopt.makers.operation.entity.QSubLecture.*;
 import static org.sopt.makers.operation.entity.lecture.QLecture.*;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
 
 import lombok.val;
 import org.sopt.makers.operation.dto.attendance.AttendanceInfo;
-import org.sopt.makers.operation.dto.attendance.LectureInfo;
 import org.sopt.makers.operation.dto.attendance.MemberInfo;
 import org.sopt.makers.operation.dto.attendance.QAttendanceInfo;
-import org.sopt.makers.operation.dto.attendance.QLectureInfo;
 import org.sopt.makers.operation.dto.attendance.QMemberInfo;
 import org.sopt.makers.operation.entity.Attendance;
 import org.sopt.makers.operation.entity.AttendanceStatus;
@@ -91,35 +88,6 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 	}
 
 	@Override
-	public List<LectureInfo> findLectureAttendances(Lecture lecture, Part part, Pageable pageable) {
-		return queryFactory
-			.select(new QLectureInfo(
-				attendance.id.as("attendanceId"),
-				member.id.as("memberId"),
-				member.name.as("memberName"),
-				member.university.as("university"),
-				attendance.lecture.attribute,
-				attendance.status.as("attendanceStatus"),
-				subAttendance.id.as("subAttendanceId"),
-				subLecture.round,
-				subAttendance.status.as("subAttendanceStatus"),
-				subAttendance.lastModifiedDate.as("updatedAt")
-			))
-			.from(subAttendance)
-			.leftJoin(subAttendance.attendance, attendance)
-			.leftJoin(subAttendance.subLecture, subLecture)
-			.leftJoin(attendance.member, member)
-			.where(
-				attendance.lecture.eq(lecture),
-				partEq(part)
-			)
-			.orderBy(member.name.asc())
-			// .offset(pageable.getOffset())
-			// .limit(pageable.getPageSize() * 2L)
-			.fetch();
-	}
-
-	@Override
 	public List<MemberInfo> findByMember(Member member) {
 		return queryFactory
 			.select(new QMemberInfo(
@@ -150,6 +118,25 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 			.from(attendance)
 			.leftJoin(attendance.lecture, lecture)
 			.where(attendance.member.eq(member))
+			.fetch();
+	}
+
+	@Override
+	public List<Attendance> findAttendancesFetchJoin(Long lectureId, Part part, Pageable pageable) {
+		return queryFactory
+			.select(attendance)
+			.from(attendance)
+			.join(attendance.subAttendances, subAttendance).fetchJoin()
+			.join(subAttendance.subLecture, subLecture).fetchJoin()
+			.join(attendance.lecture, lecture).fetchJoin()
+			.join(attendance.member, member).fetchJoin().distinct()
+			.where(
+				attendance.lecture.id.eq(lectureId),
+				partEq(part)
+			)
+			.orderBy(member.name.asc())
+			// .offset(pageable.getOffset())
+			// .limit(pageable.getPageSize())
 			.fetch();
 	}
 

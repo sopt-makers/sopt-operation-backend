@@ -48,7 +48,7 @@ public class AttendanceController {
 	}
 
 	@ApiOperation(value = "세션별 출석 정보 조회")
-	@GetMapping("lecture/{lectureId}")
+	@GetMapping("/lecture/{lectureId}")
 	public ResponseEntity<ApiResponse> getAttendancesByLecture(
 		@PathVariable Long lectureId, @RequestParam(required = false) Part part, Pageable pageable) {
 		val response = attendanceService.getMemberAttendances(lectureId, part, pageable);

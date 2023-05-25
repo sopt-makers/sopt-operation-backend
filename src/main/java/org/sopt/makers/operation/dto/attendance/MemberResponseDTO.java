@@ -4,10 +4,12 @@ import static org.sopt.makers.operation.util.Generation32.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
+import org.sopt.makers.operation.entity.Attendance;
 import org.sopt.makers.operation.entity.AttendanceStatus;
+import org.sopt.makers.operation.entity.Member;
+import org.sopt.makers.operation.entity.SubAttendance;
 
 public record MemberResponseDTO (
 	Long attendanceId,
@@ -15,35 +17,31 @@ public record MemberResponseDTO (
 	List<SubAttendanceVO> attendances,
 	float updatedScore) {
 
-	public static MemberResponseDTO of(ArrayList<LectureInfo> infos) {
-		LectureInfo info = infos.get(0);
+	public static MemberResponseDTO of(Attendance attendance) {
 		return new MemberResponseDTO(
-			info.attendanceId(),
-			MemberVO.of(info),
-			infos.stream().map(SubAttendanceVO::of).toList(),
-			getUpdateScore(info.attribute(), info.attendanceStatus())
-		);
+			attendance.getId(),
+			MemberVO.of(attendance.getMember()),
+			attendance.getSubAttendances().stream().map(SubAttendanceVO::of).toList(),
+			getUpdateScore(attendance.getLecture().getAttribute(), attendance.getStatus()));
 	}
 }
 
 record MemberVO(Long memberId, String name, String university) {
-	static MemberVO of(LectureInfo info) {
+	static MemberVO of(Member member) {
 		return new MemberVO(
-			info.memberId(),
-			info.memberName(),
-			info.university()
-		);
+			member.getId(),
+			member.getName(),
+			member.getUniversity());
 	}
 }
 
 record SubAttendanceVO(Long subAttendanceId, int round, AttendanceStatus status, String updateAt) {
-	static SubAttendanceVO of(LectureInfo info) {
+	static SubAttendanceVO of(SubAttendance subAttendance) {
 		return new SubAttendanceVO(
-			info.subAttendanceId(),
-			info.round(),
-			info.subAttendanceStatus(),
-			transfer(info.updatedAt())
-		);
+			subAttendance.getId(),
+			subAttendance.getSubLecture().getRound(),
+			subAttendance.getStatus(),
+			transfer(subAttendance.getLastModifiedDate()));
 	}
 
 	private static String transfer(LocalDateTime time) {
