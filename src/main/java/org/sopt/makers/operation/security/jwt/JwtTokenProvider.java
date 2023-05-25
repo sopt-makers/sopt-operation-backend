@@ -70,11 +70,15 @@ public class JwtTokenProvider {
 
             val now = getCurrentTime();
             val expireTime = claims.getExpiration().toInstant().atZone(KST).toLocalDateTime();
-            if (expireTime.isBefore(now)) return false;
+            if (expireTime.isBefore(now)) {
+                throw new TokenException(ExceptionMessage.EXPIRED_TOKEN.getName());
+            }
 
             return true;
-        } catch(SignatureException | ExpiredJwtException e) {
-            return false;
+        } catch (ExpiredJwtException e) {
+            throw new TokenException(ExceptionMessage.EXPIRED_TOKEN.getName());
+        } catch (SignatureException e) {
+            throw new TokenException(ExceptionMessage.INVALID_SIGNATURE.getName());
         }
     }
 
@@ -91,10 +95,14 @@ public class JwtTokenProvider {
 
             val now = getCurrentTime();
             val expireTime = claims.getExpiration().toInstant().atZone(KST).toLocalDateTime();
-            if (expireTime.isBefore(now)) throw new TokenException(ExceptionMessage.INVALID_TOKEN.getName());
+            if (expireTime.isBefore(now)) {
+                throw new TokenException(ExceptionMessage.EXPIRED_TOKEN.getName());
+            }
 
             return Long.parseLong(claims.get("playgroundId").toString());
-        } catch(ExpiredJwtException e) {
+        } catch (ExpiredJwtException e) {
+            throw new TokenException(ExceptionMessage.EXPIRED_TOKEN.getName());
+        } catch (SignatureException e) {
             throw new TokenException(ExceptionMessage.INVALID_SIGNATURE.getName());
         }
     }
@@ -105,10 +113,14 @@ public class JwtTokenProvider {
 
             val now = getCurrentTime();
             val expireTime = claims.getExpiration().toInstant().atZone(KST).toLocalDateTime();
-            if (expireTime.isBefore(now)) throw new TokenException(ExceptionMessage.INVALID_TOKEN.getName());
+            if (expireTime.isBefore(now)) {
+                throw new TokenException(ExceptionMessage.EXPIRED_TOKEN.getName());
+            }
 
             return Long.parseLong(claims.getSubject());
-        } catch(SignatureException e) {
+        } catch (ExpiredJwtException e) {
+            throw new TokenException(ExceptionMessage.EXPIRED_TOKEN.getName());
+        } catch (SignatureException e) {
             throw new TokenException(ExceptionMessage.INVALID_SIGNATURE.getName());
         }
     }
@@ -127,8 +139,7 @@ public class JwtTokenProvider {
 
     public String resolveToken(HttpServletRequest request) {
         val headerAuth = request.getHeader("Authorization");
-        if (StringUtils.hasText(headerAuth)) return headerAuth;
-        return null;
+        return (StringUtils.hasText(headerAuth)) ? headerAuth : null;
     }
 
     private String encodeKey(String secretKey) {
