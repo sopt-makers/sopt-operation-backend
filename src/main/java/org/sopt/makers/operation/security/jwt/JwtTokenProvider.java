@@ -3,11 +3,13 @@ package org.sopt.makers.operation.security.jwt;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.sopt.makers.operation.common.ExceptionMessage;
 import org.sopt.makers.operation.exception.TokenException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
@@ -37,29 +39,43 @@ public class JwtTokenProvider {
     private final ZoneId KST = ZoneId.of("Asia/Seoul");
 
     public String generateAccessToken(Authentication authentication) {
-        val secretKeyBytes = DatatypeConverter.parseBase64Binary(encodeKey(accessSecretKey));
+        val encodedKey = encodeKey(accessSecretKey);
+        val secretKeyBytes = DatatypeConverter.parseBase64Binary(encodedKey);
         val accessKey = new SecretKeySpec(secretKeyBytes, SignatureAlgorithm.HS256.getJcaName());
 
-        JwtBuilder jwtBuilder = Jwts.builder()
+        return Jwts.builder()
                 .setSubject(String.valueOf(authentication.getPrincipal()))
                 .setHeader(createHeader())
                 .setExpiration(createExpireDate(JwtTokenType.ACCESS_TOKEN))
-                .signWith(accessKey, SignatureAlgorithm.HS256);
-
-        return jwtBuilder.compact();
+                .signWith(accessKey, SignatureAlgorithm.HS256)
+                .compact();
     }
 
     public String generateRefreshToken(Authentication authentication) {
-        val secretKeyBytes = DatatypeConverter.parseBase64Binary(encodeKey(refreshSecretKey));
+        val encodedKey = encodeKey(refreshSecretKey);
+        val secretKeyBytes = DatatypeConverter.parseBase64Binary(encodedKey);
         val refreshKey = new SecretKeySpec(secretKeyBytes, SignatureAlgorithm.HS256.getJcaName());
 
-        JwtBuilder jwtBuilder = Jwts.builder()
+        return Jwts.builder()
                 .setSubject(String.valueOf(authentication.getPrincipal()))
                 .setHeader(createHeader())
                 .setExpiration(createExpireDate(JwtTokenType.REFRESH_TOKEN))
-                .signWith(refreshKey, SignatureAlgorithm.HS256);
+                .signWith(refreshKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
 
-        return jwtBuilder.compact();
+    public boolean validateTokenExpiration(String token, JwtTokenType jwtTokenType) {
+        try {
+            val claims = getClaimsFromToken(token, jwtTokenType);
+
+            val now = getCurrentTime();
+            val expireTime = claims.getExpiration().toInstant().atZone(KST).toLocalDateTime();
+            if (expireTime.isBefore(now)) return false;
+
+            return true;
+        } catch(SignatureException | ExpiredJwtException e) {
+            return false;
+        }
     }
 
     public AdminAuthentication getAuthentication(String token, JwtTokenType jwtTokenType) {
@@ -71,22 +87,48 @@ public class JwtTokenProvider {
 
     public Long getPlayGroundId(String token, JwtTokenType jwtTokenType) {
         try {
-            return Long.parseLong(Jwts.parserBuilder().setSigningKey(encodeKey(setSecretKey(jwtTokenType))).build().parseClaimsJws(token).getBody().get("playgroundId").toString());
+            val claims = getClaimsFromToken(token, jwtTokenType);
+
+            val now = getCurrentTime();
+            val expireTime = claims.getExpiration().toInstant().atZone(KST).toLocalDateTime();
+            if (expireTime.isBefore(now)) throw new TokenException(ExceptionMessage.INVALID_TOKEN.getName());
+
+            return Long.parseLong(claims.get("playgroundId").toString());
         } catch(ExpiredJwtException e) {
-            throw new TokenException("만료된 토큰입니다");
+            throw new TokenException(ExceptionMessage.INVALID_SIGNATURE.getName());
         }
     }
 
     public Long getId(String token, JwtTokenType jwtTokenType) {
         try {
-            return Long.parseLong(Jwts.parserBuilder().setSigningKey(encodeKey(setSecretKey(jwtTokenType))).build().parseClaimsJws(token).getBody().getSubject());
-        } catch(ExpiredJwtException e) {
-            throw new TokenException("만료된 토큰입니다");
+            val claims = getClaimsFromToken(token, jwtTokenType);
+
+            val now = getCurrentTime();
+            val expireTime = claims.getExpiration().toInstant().atZone(KST).toLocalDateTime();
+            if (expireTime.isBefore(now)) throw new TokenException(ExceptionMessage.INVALID_TOKEN.getName());
+
+            return Long.parseLong(claims.getSubject());
+        } catch(SignatureException e) {
+            throw new TokenException(ExceptionMessage.INVALID_SIGNATURE.getName());
         }
     }
 
-    public String resolveToken(HttpServletRequest req) {
-        return req.getHeader("Authorization");
+    private Claims getClaimsFromToken(String token, JwtTokenType jwtTokenType) {
+        val encodedKey = encodeKey(setSecretKey(jwtTokenType));
+
+        val claims = Jwts.parserBuilder()
+                .setSigningKey(encodedKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims;
+    }
+
+    public String resolveToken(HttpServletRequest request) {
+        val headerAuth = request.getHeader("Authorization");
+        if (StringUtils.hasText(headerAuth)) return headerAuth;
+        return null;
     }
 
     private String encodeKey(String secretKey) {
@@ -109,19 +151,8 @@ public class JwtTokenProvider {
         return switch (jwtTokenType) {
             case ACCESS_TOKEN -> now.plusHours(5);
             case REFRESH_TOKEN -> now.plusWeeks(2);
-            case APP_ACCESS_TOKEN -> throw new TokenException("잘못된 토큰입니다");
+            case APP_ACCESS_TOKEN -> throw new TokenException(ExceptionMessage.INVALID_TOKEN.getName());
         };
-    }
-
-    public boolean validateTokenExpiration(String token, JwtTokenType jwtTokenType) {
-        try {
-            Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(encodeKey(setSecretKey(jwtTokenType))).build().parseClaimsJws(token);
-
-            return !claims.getBody().getExpiration().toInstant().atZone(KST).toLocalDateTime().isBefore(getCurrentTime());
-        } catch(Exception e) {
-            System.out.println(e);
-            return false;
-        }
     }
 
     private Map<String, Object> createHeader() {
@@ -135,7 +166,10 @@ public class JwtTokenProvider {
     }
 
     private Date createExpireDate(JwtTokenType jwtTokenType) {
-        return Date.from(setExpireTime(getCurrentTime(), jwtTokenType).atZone(ZoneId.systemDefault()).toInstant());
+        val now = getCurrentTime();
+        val expireTime = setExpireTime(now, jwtTokenType);
+
+        return Date.from(expireTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 
 }
