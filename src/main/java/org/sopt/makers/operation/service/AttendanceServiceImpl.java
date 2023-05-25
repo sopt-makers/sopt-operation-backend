@@ -5,8 +5,6 @@ import static org.sopt.makers.operation.common.ExceptionMessage.*;
 import static org.sopt.makers.operation.util.Generation32.*;
 
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -65,16 +63,8 @@ public class AttendanceServiceImpl implements AttendanceService {
 	@Override
 	public AttendanceMemberResponseDTO findMemberAttendance(Long memberId) {
 		val member = findMember(memberId);
-		val attendances = attendanceRepository.findByMember(member);
-
-		HashMap<Long, ArrayList<MemberInfo>> map = new HashMap<>();
-		for (MemberInfo info : attendances) {
-			Long id = info.attendanceId();
-			if (!map.containsKey(id)) map.put(id, new ArrayList<>());
-			map.get(id).add(info);
-		}
-
-		return AttendanceMemberResponseDTO.of(member, map);
+		val attendances = attendanceRepository.findAttendancesByMember(memberId);
+		return AttendanceMemberResponseDTO.of(member, attendances);
 	}
 
 	@Override
