@@ -122,7 +122,7 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 	}
 
 	@Override
-	public List<Attendance> findAttendancesFetchJoin(Long lectureId, Part part, Pageable pageable) {
+	public List<Attendance> findAttendancesByLecture(Long lectureId, Part part, Pageable pageable) {
 		return queryFactory
 			.select(attendance)
 			.from(attendance)

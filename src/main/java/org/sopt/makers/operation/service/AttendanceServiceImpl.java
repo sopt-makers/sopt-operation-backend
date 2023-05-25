@@ -91,7 +91,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 
 	@Override
 	public List<MemberResponseDTO> getMemberAttendances(Long lectureId, Part part, Pageable pageable) {
-		val attendances = attendanceRepository.findAttendancesFetchJoin(lectureId, part, pageable);
+		val attendances = attendanceRepository.findAttendancesByLecture(lectureId, part, pageable);
 		return attendances.stream().map(MemberResponseDTO::of).toList();
 	}
 
