@@ -61,7 +61,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 	}
 
 	@Override
-	public AttendanceMemberResponseDTO findMemberAttendance(Long memberId) {
+	public AttendanceMemberResponseDTO findAttendancesByMember(Long memberId) {
 		val member = findMember(memberId);
 		val attendances = attendanceRepository.findAttendancesByMember(memberId);
 		return AttendanceMemberResponseDTO.of(member, attendances);
@@ -80,7 +80,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 	}
 
 	@Override
-	public List<MemberResponseDTO> getMemberAttendances(Long lectureId, Part part, Pageable pageable) {
+	public List<MemberResponseDTO> findAttendancesByLecture(Long lectureId, Part part, Pageable pageable) {
 		val attendances = attendanceRepository.findAttendancesByLecture(lectureId, part, pageable);
 		return attendances.stream().map(MemberResponseDTO::of).toList();
 	}
