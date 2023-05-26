@@ -1,5 +1,7 @@
 package org.sopt.makers.operation.entity;
 
+import static org.sopt.makers.operation.util.Generation32.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,7 +63,10 @@ public class Member {
 	public void updateScore(float score) {
 		this.score += score;
 	}
-	public void setScore(float score) {
-		this.score = score;
+
+	public void updateTotalScore() {
+		this.score = (float) (2 + this.attendances.stream()
+			.mapToDouble(attendance -> getUpdateScore(attendance.getLecture().getAttribute(), attendance.getStatus()))
+			.sum());
 	}
 }
