@@ -114,15 +114,11 @@ public class AttendanceServiceImpl implements AttendanceService {
 
 		val currentRoundSubAttendance = attendance.getSubAttendances()
       		.stream()
-			.filter(subAttendance ->
-					(subAttendance.getSubLecture().getRound() == currentRound)
-			).findFirst();
+			.filter(subAttendance -> subAttendance.getSubLecture().getRound() == currentRound)
+			.findFirst()
+			.orElseThrow(() -> new EntityNotFoundException(INVALID_SUB_ATTENDANCE.getName()));
 
-		if (!nonNull(currentRoundSubAttendance)) {
-			throw new EntityNotFoundException(INVALID_SUB_ATTENDANCE.getName());
-		}
-
-		currentRoundSubAttendance.get().updateStatus(AttendanceStatus.ATTENDANCE);
+		currentRoundSubAttendance.updateStatus(AttendanceStatus.ATTENDANCE);
 
 		attendance.updateStatus(getAttendanceStatus(attendance.getLecture().getAttribute(), attendance.getSubAttendances()));
 
