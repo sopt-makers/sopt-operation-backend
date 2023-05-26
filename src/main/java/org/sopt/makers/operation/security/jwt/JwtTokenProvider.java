@@ -1,6 +1,10 @@
 package org.sopt.makers.operation.security.jwt;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.sopt.makers.operation.common.ExceptionMessage;
@@ -120,7 +124,7 @@ public class JwtTokenProvider {
             return Long.parseLong(claims.getSubject());
         } catch (ExpiredJwtException e) {
             throw new TokenException(ExceptionMessage.EXPIRED_TOKEN.getName());
-        } catch (SignatureException e) {
+        } catch (SecurityException e) {
             throw new TokenException(ExceptionMessage.INVALID_SIGNATURE.getName());
         }
     }
@@ -128,13 +132,11 @@ public class JwtTokenProvider {
     private Claims getClaimsFromToken(String token, JwtTokenType jwtTokenType) {
         val encodedKey = encodeKey(setSecretKey(jwtTokenType));
 
-        val claims = Jwts.parserBuilder()
+        return Jwts.parserBuilder()
                 .setSigningKey(encodedKey)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-
-        return claims;
     }
 
     public String resolveToken(HttpServletRequest request) {
