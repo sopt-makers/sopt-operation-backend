@@ -19,12 +19,10 @@ import org.sopt.makers.operation.entity.AttendanceStatus;
 import org.sopt.makers.operation.entity.Member;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.SubAttendance;
-import org.sopt.makers.operation.entity.lecture.Lecture;
 import org.sopt.makers.operation.exception.LectureException;
 import org.sopt.makers.operation.exception.MemberException;
 import org.sopt.makers.operation.repository.SubAttendanceRepository;
 import org.sopt.makers.operation.repository.attendance.AttendanceRepository;
-import org.sopt.makers.operation.repository.lecture.LectureRepository;
 import org.sopt.makers.operation.exception.SubLectureException;
 import org.sopt.makers.operation.repository.lecture.SubLectureRepository;
 import org.sopt.makers.operation.repository.member.MemberRepository;
@@ -43,7 +41,6 @@ public class AttendanceServiceImpl implements AttendanceService {
 
 	private final SubAttendanceRepository subAttendanceRepository;
 	private final MemberRepository memberRepository;
-	private final LectureRepository lectureRepository;
 	private final SubLectureRepository subLectureRepository;
 	private final AttendanceRepository attendanceRepository;
 	private final ZoneId KST = ZoneId.of("Asia/Seoul");
@@ -140,10 +137,5 @@ public class AttendanceServiceImpl implements AttendanceService {
 	private SubAttendance findSubAttendance(Long id) {
 		return subAttendanceRepository.findById(id)
 			.orElseThrow(() -> new EntityNotFoundException(INVALID_ATTENDANCE.getName()));
-	}
-
-	private Lecture findLecture(Long id) {
-		return lectureRepository.findById(id)
-			.orElseThrow(() -> new LectureException(INVALID_LECTURE.getName()));
 	}
 }
