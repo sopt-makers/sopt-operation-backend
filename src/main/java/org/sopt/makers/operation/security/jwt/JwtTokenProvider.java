@@ -2,6 +2,7 @@ package org.sopt.makers.operation.security.jwt;
 
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.sopt.makers.operation.exception.TokenException;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
@@ -119,7 +121,7 @@ public class JwtTokenProvider {
 
             return !claims.getBody().getExpiration().toInstant().atZone(KST).toLocalDateTime().isBefore(getCurrentTime());
         } catch(Exception e) {
-            System.out.println(e);
+            log.error(e.getMessage());
             return false;
         }
     }
