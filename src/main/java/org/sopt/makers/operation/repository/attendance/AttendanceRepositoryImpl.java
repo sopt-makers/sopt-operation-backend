@@ -13,11 +13,9 @@ import java.util.List;
 import java.util.Optional;
 
 import lombok.val;
-import org.sopt.makers.operation.dto.attendance.AttendanceInfo;
-import org.sopt.makers.operation.dto.attendance.QAttendanceInfo;
+
 import org.sopt.makers.operation.entity.Attendance;
 import org.sopt.makers.operation.entity.AttendanceStatus;
-import org.sopt.makers.operation.entity.Member;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.QSubAttendance;
 import org.sopt.makers.operation.entity.SubAttendance;
@@ -86,19 +84,6 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 				)
 				.orderBy(attendance.lecture.startDate.desc())
 				.fetch();
-	}
-
-	@Override
-	public List<AttendanceInfo> findAttendancesOfMember(Member member) {
-		return queryFactory
-			.select(new QAttendanceInfo(
-				lecture.attribute,
-				attendance.status
-			))
-			.from(attendance)
-			.leftJoin(attendance.lecture, lecture)
-			.where(attendance.member.eq(member))
-			.fetch();
 	}
 
 	@Override

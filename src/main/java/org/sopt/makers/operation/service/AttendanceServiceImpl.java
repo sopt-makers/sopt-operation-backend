@@ -69,12 +69,9 @@ public class AttendanceServiceImpl implements AttendanceService {
 	@Override
 	@Transactional
 	public float updateMemberScore(Long memberId) {
-		val member = findMember(memberId);
-		val score = (float)(2 + attendanceRepository.findAttendancesOfMember(member)
-			.stream()
-			.mapToDouble(info -> getUpdateScore(info.attribute(), info.status()))
-			.sum());
-		member.setScore(score);
+		Member member = memberRepository.findMemberByIdFetchJoinAttendances(memberId)
+			.orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
+		member.updateTotalScore();
 		return member.getScore();
 	}
 
