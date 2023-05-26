@@ -52,11 +52,10 @@ public class AttendanceServiceImpl implements AttendanceService {
 	@Transactional
 	public AttendUpdateResponseDTO updateAttendanceStatus(AttendUpdateRequestDTO requestDTO) {
 		val subAttendance = findSubAttendance(requestDTO.subAttendanceId());
+		val attendance = attendanceRepository.findAttendanceBySubAttendance(subAttendance)
+				.orElseThrow(() -> new EntityNotFoundException(INVALID_ATTENDANCE.getName()));
 		subAttendance.updateStatus(requestDTO.status());
-
-		val attendance = subAttendance.getAttendance();
 		attendance.updateStatus(getAttendanceStatus(requestDTO.attribute(), attendance.getSubAttendances()));
-
 		return AttendUpdateResponseDTO.of(subAttendance);
 	}
 
