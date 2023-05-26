@@ -5,8 +5,6 @@ import static org.sopt.makers.operation.common.ExceptionMessage.*;
 import static org.sopt.makers.operation.util.Generation32.*;
 
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -17,7 +15,6 @@ import org.sopt.makers.operation.dto.attendance.AttendUpdateResponseDTO;
 import org.sopt.makers.operation.dto.attendance.MemberResponseDTO;
 import lombok.val;
 import org.sopt.makers.operation.dto.attendance.*;
-import org.sopt.makers.operation.entity.Attendance;
 import org.sopt.makers.operation.entity.AttendanceStatus;
 import org.sopt.makers.operation.entity.Member;
 import org.sopt.makers.operation.entity.Part;
@@ -64,18 +61,10 @@ public class AttendanceServiceImpl implements AttendanceService {
 	}
 
 	@Override
-	public AttendanceMemberResponseDTO findMemberAttendance(Long memberId) {
+	public AttendanceMemberResponseDTO findAttendancesByMember(Long memberId) {
 		val member = findMember(memberId);
-		val attendances = attendanceRepository.findByMember(member);
-
-		HashMap<Long, ArrayList<MemberInfo>> map = new HashMap<>();
-		for (MemberInfo info : attendances) {
-			Long id = info.attendanceId();
-			if (!map.containsKey(id)) map.put(id, new ArrayList<>());
-			map.get(id).add(info);
-		}
-
-		return AttendanceMemberResponseDTO.of(member, map);
+		val attendances = attendanceRepository.findAttendancesByMember(memberId);
+		return AttendanceMemberResponseDTO.of(member, attendances);
 	}
 
 	@Override
@@ -91,20 +80,9 @@ public class AttendanceServiceImpl implements AttendanceService {
 	}
 
 	@Override
-	public List<MemberResponseDTO> getMemberAttendances(Long lectureId, Part part, Pageable pageable) {
-		Lecture lecture = findLecture(lectureId);
-
-		HashMap<Long, ArrayList<LectureInfo>> map = new HashMap<>();
-		attendanceRepository.findLectureAttendances(lecture, part, pageable)
-			.forEach(info -> {
-				Long key = info.attendanceId();
-				if (!map.containsKey(key)) {
-					map.put(key, new ArrayList<>());
-				}
-				map.get(key).add(info);
-			});
-
-		return map.keySet().stream().map(key -> MemberResponseDTO.of(map.get(key))).toList();
+	public List<MemberResponseDTO> findAttendancesByLecture(Long lectureId, Part part, Pageable pageable) {
+		val attendances = attendanceRepository.findAttendancesByLecture(lectureId, part, pageable);
+		return attendances.stream().map(MemberResponseDTO::of).toList();
 	}
 
 	@Override

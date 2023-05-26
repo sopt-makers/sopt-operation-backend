@@ -4,13 +4,11 @@ import static org.sopt.makers.operation.util.Generation32.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
+import org.sopt.makers.operation.entity.Attendance;
 import org.sopt.makers.operation.entity.Member;
-
-import lombok.val;
+import org.sopt.makers.operation.entity.SubAttendance;
 
 public record AttendanceMemberResponseDTO(
 	String name,
@@ -20,15 +18,14 @@ public record AttendanceMemberResponseDTO(
 	String phone,
 	List<LectureVO> lectures
 ) {
-	public static AttendanceMemberResponseDTO of(Member member, HashMap<Long, ArrayList<MemberInfo>> map) {
+	public static AttendanceMemberResponseDTO of(Member member, List<Attendance> attendances) {
 		return new AttendanceMemberResponseDTO(
 			member.getName(),
 			member.getScore(),
 			member.getPart().getName(),
 			member.getUniversity(),
 			member.getPhone(),
-			map.keySet().stream().map(key -> LectureVO.of(map.get(key))).toList()
-		);
+			attendances.stream().map(LectureVO::of).toList());
 	}
 }
 
@@ -38,14 +35,12 @@ record LectureVO(
 	String status,
 	List<AttendanceVO> attendances
 ) {
-	public static LectureVO of(ArrayList<MemberInfo> infos) {
-		val info = infos.get(0);
+	public static LectureVO of(Attendance attendance) {
 		return new LectureVO(
-			info.lectureName(),
-			getUpdateScore(info.lectureAttribute(), info.attendanceStatus()),
-			infos.get(0).attendanceStatus().getName(),
-			infos.stream().map(AttendanceVO::of).toList()
-		);
+			attendance.getLecture().getName(),
+			getUpdateScore(attendance.getLecture().getAttribute(), attendance.getStatus()),
+			attendance.getStatus().getName(),
+			attendance.getSubAttendances().stream().map(AttendanceVO::of).toList());
 	}
 }
 
@@ -54,11 +49,11 @@ record AttendanceVO(
 	String status,
 	String date
 ) {
-	public static AttendanceVO of(MemberInfo info) {
+	public static AttendanceVO of(SubAttendance subAttendance) {
 		return new AttendanceVO(
-			info.round(),
-			info.subAttendanceStatus().getName(),
-			convertDate(info.updatedAt())
+			subAttendance.getSubLecture().getRound(),
+			subAttendance.getStatus().getName(),
+			convertDate(subAttendance.getLastModifiedDate())
 		);
 	}
 
