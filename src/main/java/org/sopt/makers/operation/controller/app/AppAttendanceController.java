@@ -9,7 +9,6 @@ import lombok.val;
 import org.sopt.makers.operation.common.ApiResponse;
 import org.sopt.makers.operation.dto.attendance.AttendRequestDTO;
 import org.sopt.makers.operation.service.AttendanceService;
-import org.sopt.makers.operation.service.MemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;

@@ -1,7 +1,6 @@
 package org.sopt.makers.operation.service;
 
 import org.sopt.makers.operation.dto.admin.*;
-import org.sopt.makers.operation.entity.Admin;
 
 public interface AdminService {
     SignUpResponseDTO signUp(SignUpRequestDTO signUpRequestDTO);

@@ -10,7 +10,6 @@ import org.sopt.makers.operation.entity.lecture.Lecture;
 import org.sopt.makers.operation.config.GenerationConfig;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 

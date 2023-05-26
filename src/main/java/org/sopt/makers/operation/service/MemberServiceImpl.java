@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.EnumMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.sopt.makers.operation.common.ExceptionMessage.INVALID_MEMBER;
 
@@ -38,15 +37,12 @@ public class MemberServiceImpl implements MemberService {
 
         val members = memberRepository.search(new MemberSearchCondition(part, generation));
 
-        val memberList = members.stream().map(member -> {
+        return members.stream().map(member -> {
             val attendances = findAttendances(member);
             val countAttendance = countAttendance(attendances);
             val total = translateAttendanceStatus(countAttendance);
-
             return MemberListGetResponse.of(member, total);
-        }).collect(Collectors.toList());
-
-        return memberList;
+        }).toList();
     }
 
     @Override
