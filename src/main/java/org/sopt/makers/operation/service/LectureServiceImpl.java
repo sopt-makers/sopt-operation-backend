@@ -223,7 +223,7 @@ public class LectureServiceImpl implements LectureService {
 		}
 
 		val subLectureComparator = Comparator.comparing(SubLecture::getRound);
-		Collections.sort(subLectures, subLectureComparator);
+		subLectures.sort(subLectureComparator);
 
 		val firstLecture = subLectures.get(0);
 		val secondLecture = subLectures.get(1);
