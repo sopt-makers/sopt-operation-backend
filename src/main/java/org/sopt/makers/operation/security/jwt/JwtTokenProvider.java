@@ -6,7 +6,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.sopt.makers.operation.common.ExceptionMessage;
 import org.sopt.makers.operation.exception.TokenException;
@@ -27,7 +26,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
