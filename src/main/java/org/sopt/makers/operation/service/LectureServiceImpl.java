@@ -15,7 +15,6 @@ import java.util.stream.Stream;
 import lombok.val;
 
 import org.sopt.makers.operation.dto.lecture.*;
-import javax.persistence.EntityNotFoundException;
 
 import org.sopt.makers.operation.dto.lecture.AttendanceRequestDTO;
 import org.sopt.makers.operation.dto.lecture.AttendanceResponseDTO;
@@ -208,7 +207,7 @@ public class LectureServiceImpl implements LectureService {
 		val endOfDay = LocalDateTime.of(today, LocalTime.MAX);
 
 		val lecture = lectureRepository.findById(lectureId)
-				.orElseThrow(() -> new EntityNotFoundException(INVALID_LECTURE.getName()));
+				.orElseThrow(() -> new LectureException(INVALID_LECTURE.getName()));
 
 		val lectureStartDate = lecture.getStartDate();
 
@@ -293,7 +292,7 @@ public class LectureServiceImpl implements LectureService {
 
 	private Lecture findLecture(Long id) {
 		return lectureRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException(INVALID_LECTURE.getName()));
+			.orElseThrow(() -> new LectureException(INVALID_LECTURE.getName()));
 	}
 
 	private Lecture getCurrentLecture(List<Lecture> lectures, int sessionNumber) {

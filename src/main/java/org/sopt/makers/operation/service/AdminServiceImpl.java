@@ -2,8 +2,6 @@ package org.sopt.makers.operation.service;
 
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
 
-import javax.persistence.EntityNotFoundException;
-
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
@@ -90,7 +88,7 @@ public class AdminServiceImpl implements AdminService {
 
     private Admin findById(Long adminId) {
         return adminRepository.findById(adminId)
-                .orElseThrow(() -> new EntityNotFoundException(INVALID_MEMBER.getName()));
+                .orElseThrow(() -> new AdminFailureException(INVALID_MEMBER.getName()));
     }
 
     private void isEmailDuplicated(String email) {

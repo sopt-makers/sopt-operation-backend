@@ -31,8 +31,6 @@ public class ExceptionController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.fail(ex.getMessage()));
     }
 
-
-
     @ExceptionHandler(MemberException.class)
     public ResponseEntity<ApiResponse> MemberException (MemberException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.fail(ex.getMessage()));

@@ -89,7 +89,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 		val now = LocalDateTime.now(KST);
 
 		val subLecture = subLectureRepository.findById(requestDTO.subLectureId())
-				.orElseThrow(() -> new EntityNotFoundException(INVALID_SUB_LECTURE.getName()));
+				.orElseThrow(() -> new SubLectureException(INVALID_SUB_LECTURE.getName()));
 
 		if (!nonNull(subLecture.getStartAt()) || !nonNull(subLecture.getCode())) {
 			throw new LectureException(NOT_STARTED_ATTENDANCE.getName());
