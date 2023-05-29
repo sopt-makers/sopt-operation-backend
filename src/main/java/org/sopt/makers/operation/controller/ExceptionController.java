@@ -1,7 +1,5 @@
 package org.sopt.makers.operation.controller;
 
-import javax.persistence.EntityNotFoundException;
-
 import org.sopt.makers.operation.common.ApiResponse;
 import org.sopt.makers.operation.exception.*;
 import org.springframework.http.HttpStatus;
@@ -21,11 +19,6 @@ public class ExceptionController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.fail(ex.getMessage()));
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ApiResponse> EntityNotFoundExceptionException (EntityNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.fail(ex.getMessage()));
-    }
-
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ApiResponse> IllegalStateExceptionException (IllegalStateException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.fail(ex.getMessage()));
@@ -33,17 +26,17 @@ public class ExceptionController {
 
     @ExceptionHandler(MemberException.class)
     public ResponseEntity<ApiResponse> MemberException (MemberException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.fail(ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.fail(ex.getMessage()));
     }
 
     @ExceptionHandler(LectureException.class)
     public ResponseEntity<ApiResponse> LectureException (LectureException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.fail(ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.fail(ex.getMessage()));
     }
 
     @ExceptionHandler(SubLectureException.class)
     public ResponseEntity<ApiResponse> SubLectureException (SubLectureException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.fail(ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.fail(ex.getMessage()));
     }
 
 }
