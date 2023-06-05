@@ -7,8 +7,6 @@ import static org.sopt.makers.operation.util.Generation32.*;
 import java.time.ZoneId;
 import java.util.List;
 
-import javax.persistence.EntityNotFoundException;
-
 import org.sopt.makers.operation.dto.attendance.AttendanceMemberResponseDTO;
 import org.sopt.makers.operation.dto.attendance.AttendUpdateRequestDTO;
 import org.sopt.makers.operation.dto.attendance.AttendUpdateResponseDTO;
@@ -19,12 +17,10 @@ import org.sopt.makers.operation.entity.AttendanceStatus;
 import org.sopt.makers.operation.entity.Member;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.SubAttendance;
-import org.sopt.makers.operation.entity.lecture.Lecture;
 import org.sopt.makers.operation.exception.LectureException;
 import org.sopt.makers.operation.exception.MemberException;
 import org.sopt.makers.operation.repository.SubAttendanceRepository;
 import org.sopt.makers.operation.repository.attendance.AttendanceRepository;
-import org.sopt.makers.operation.repository.lecture.LectureRepository;
 import org.sopt.makers.operation.exception.SubLectureException;
 import org.sopt.makers.operation.repository.lecture.SubLectureRepository;
 import org.sopt.makers.operation.repository.member.MemberRepository;
@@ -43,7 +39,6 @@ public class AttendanceServiceImpl implements AttendanceService {
 
 	private final SubAttendanceRepository subAttendanceRepository;
 	private final MemberRepository memberRepository;
-	private final LectureRepository lectureRepository;
 	private final SubLectureRepository subLectureRepository;
 	private final AttendanceRepository attendanceRepository;
 	private final ZoneId KST = ZoneId.of("Asia/Seoul");
@@ -52,11 +47,10 @@ public class AttendanceServiceImpl implements AttendanceService {
 	@Transactional
 	public AttendUpdateResponseDTO updateAttendanceStatus(AttendUpdateRequestDTO requestDTO) {
 		val subAttendance = findSubAttendance(requestDTO.subAttendanceId());
+		val attendance = attendanceRepository.findAttendanceBySubAttendance(subAttendance)
+				.orElseThrow(() -> new LectureException(INVALID_ATTENDANCE.getName()));
 		subAttendance.updateStatus(requestDTO.status());
-
-		val attendance = subAttendance.getAttendance();
 		attendance.updateStatus(getAttendanceStatus(requestDTO.attribute(), attendance.getSubAttendances()));
-
 		return AttendUpdateResponseDTO.of(subAttendance);
 	}
 
@@ -70,12 +64,9 @@ public class AttendanceServiceImpl implements AttendanceService {
 	@Override
 	@Transactional
 	public float updateMemberScore(Long memberId) {
-		val member = findMember(memberId);
-		val score = (float)(2 + attendanceRepository.findAttendancesOfMember(member)
-			.stream()
-			.mapToDouble(info -> getUpdateScore(info.attribute(), info.status()))
-			.sum());
-		member.setScore(score);
+		Member member = memberRepository.findMemberByIdFetchJoinAttendances(memberId)
+			.orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
+		member.updateTotalScore();
 		return member.getScore();
 	}
 
@@ -96,7 +87,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 		val now = LocalDateTime.now(KST);
 
 		val subLecture = subLectureRepository.findById(requestDTO.subLectureId())
-				.orElseThrow(() -> new EntityNotFoundException(INVALID_SUB_LECTURE.getName()));
+				.orElseThrow(() -> new SubLectureException(INVALID_SUB_LECTURE.getName()));
 
 		if (!nonNull(subLecture.getStartAt()) || !nonNull(subLecture.getCode())) {
 			throw new LectureException(NOT_STARTED_ATTENDANCE.getName());
@@ -121,15 +112,11 @@ public class AttendanceServiceImpl implements AttendanceService {
 
 		val currentRoundSubAttendance = attendance.getSubAttendances()
       		.stream()
-			.filter(subAttendance ->
-					(subAttendance.getSubLecture().getRound() == currentRound)
-			).findFirst();
+			.filter(subAttendance -> subAttendance.getSubLecture().getRound() == currentRound)
+			.findFirst()
+			.orElseThrow(() -> new SubLectureException(INVALID_SUB_ATTENDANCE.getName()));
 
-		if (!nonNull(currentRoundSubAttendance)) {
-			throw new EntityNotFoundException(INVALID_SUB_ATTENDANCE.getName());
-		}
-
-		currentRoundSubAttendance.get().updateStatus(AttendanceStatus.ATTENDANCE);
+		currentRoundSubAttendance.updateStatus(AttendanceStatus.ATTENDANCE);
 
 		attendance.updateStatus(getAttendanceStatus(attendance.getLecture().getAttribute(), attendance.getSubAttendances()));
 
@@ -143,11 +130,6 @@ public class AttendanceServiceImpl implements AttendanceService {
 
 	private SubAttendance findSubAttendance(Long id) {
 		return subAttendanceRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException(INVALID_ATTENDANCE.getName()));
-	}
-
-	private Lecture findLecture(Long id) {
-		return lectureRepository.findById(id)
-			.orElseThrow(() -> new LectureException(INVALID_LECTURE.getName()));
+			.orElseThrow(() -> new LectureException(INVALID_ATTENDANCE.getName()));
 	}
 }

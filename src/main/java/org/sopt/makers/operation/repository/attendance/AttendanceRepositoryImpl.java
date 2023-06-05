@@ -10,14 +10,15 @@ import static org.sopt.makers.operation.entity.lecture.QLecture.*;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Optional;
 
 import lombok.val;
-import org.sopt.makers.operation.dto.attendance.AttendanceInfo;
-import org.sopt.makers.operation.dto.attendance.QAttendanceInfo;
+
 import org.sopt.makers.operation.entity.Attendance;
 import org.sopt.makers.operation.entity.AttendanceStatus;
-import org.sopt.makers.operation.entity.Member;
 import org.sopt.makers.operation.entity.Part;
+import org.sopt.makers.operation.entity.QSubAttendance;
+import org.sopt.makers.operation.entity.SubAttendance;
 import org.sopt.makers.operation.entity.lecture.Lecture;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -86,19 +87,6 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 	}
 
 	@Override
-	public List<AttendanceInfo> findAttendancesOfMember(Member member) {
-		return queryFactory
-			.select(new QAttendanceInfo(
-				lecture.attribute,
-				attendance.status
-			))
-			.from(attendance)
-			.leftJoin(attendance.lecture, lecture)
-			.where(attendance.member.eq(member))
-			.fetch();
-	}
-
-	@Override
 	public List<Attendance> findAttendancesByLecture(Long lectureId, Part part, Pageable pageable) {
 		return queryFactory
 			.select(attendance)
@@ -112,8 +100,8 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 				partEq(part)
 			)
 			.orderBy(member.name.asc())
-			// .offset(pageable.getOffset())
-			// .limit(pageable.getPageSize())
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
 			.fetch();
 	}
 
@@ -128,6 +116,17 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 			.where(attendance.member.id.eq(memberId))
 			.orderBy(lecture.startDate.asc())
 			.fetch();
+	}
+
+	@Override
+	public Optional<Attendance> findAttendanceBySubAttendance(SubAttendance subAttendance) {
+		return queryFactory
+			.select(attendance)
+			.from(attendance)
+			.join(attendance.subAttendances, QSubAttendance.subAttendance).fetchJoin()
+			.join(QSubAttendance.subAttendance.subLecture, subLecture).fetchJoin()
+			.where(attendance.subAttendances.contains(subAttendance))
+			.stream().findFirst();
 	}
 
 	private BooleanExpression partEq(Part part) {
