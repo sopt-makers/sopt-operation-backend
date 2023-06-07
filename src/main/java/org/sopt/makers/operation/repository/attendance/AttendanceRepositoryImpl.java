@@ -114,7 +114,7 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 			.leftJoin(attendance.lecture, lecture).fetchJoin()
 			.leftJoin(subAttendance.subLecture, subLecture).fetchJoin()
 			.where(attendance.member.id.eq(memberId))
-			.orderBy(lecture.startDate.asc())
+			.orderBy(lecture.startDate.desc())
 			.fetch();
 	}
 
