@@ -17,5 +17,6 @@ public interface LectureService {
 	AttendanceResponseDTO startAttendance(AttendanceRequestDTO requestDTO);
 	void finishLecture(Long lectureId);
 	LectureCurrentRoundResponseDTO getCurrentLectureRound(Long lectureId);
+	void deleteLecture(Long lectureId);
 
 }

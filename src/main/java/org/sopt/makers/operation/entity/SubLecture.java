@@ -42,7 +42,7 @@ public class SubLecture {
 
 	private String code;
 
-	@OneToMany(mappedBy = "subLecture")
+	@OneToMany(mappedBy = "subLecture", orphanRemoval = true)
 	private final List<SubAttendance> subAttendances = new ArrayList<>();
 
 	public SubLecture(Lecture lecture, int round) {
