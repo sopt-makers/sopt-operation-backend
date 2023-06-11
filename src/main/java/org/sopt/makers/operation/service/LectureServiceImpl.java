@@ -265,6 +265,10 @@ public class LectureServiceImpl implements LectureService {
 	@Override
 	@Transactional
 	public void deleteLecture(Long lectureId) {
+		Lecture lecture = findLecture(lectureId);
+		subAttendanceRepository.deleteAllBySubLectureIn(lecture.getSubLectures());
+		subLectureRepository.deleteAllByLecture(lecture);
+		attendanceRepository.deleteAllByLecture(lecture);
 		lectureRepository.deleteById(lectureId);
 	}
 

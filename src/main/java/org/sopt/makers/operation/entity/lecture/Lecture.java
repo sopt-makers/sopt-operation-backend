@@ -53,10 +53,10 @@ public class Lecture extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private LectureStatus lectureStatus;
 
-	@OneToMany(mappedBy = "lecture", orphanRemoval = true)
+	@OneToMany(mappedBy = "lecture")
 	List<SubLecture> subLectures = new ArrayList<>();
 
-	@OneToMany(mappedBy = "lecture", orphanRemoval = true)
+	@OneToMany(mappedBy = "lecture")
 	List<Attendance> attendances = new ArrayList<>();
 
 	@Builder
