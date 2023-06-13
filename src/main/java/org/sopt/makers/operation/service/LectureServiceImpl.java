@@ -262,6 +262,16 @@ public class LectureServiceImpl implements LectureService {
 		return LectureCurrentRoundResponseDTO.of(secondLecture);
 	}
 
+	@Override
+	@Transactional
+	public void deleteLecture(Long lectureId) {
+		Lecture lecture = findLecture(lectureId);
+		subAttendanceRepository.deleteAllBySubLectureIn(lecture.getSubLectures());
+		subLectureRepository.deleteAllByLecture(lecture);
+		attendanceRepository.deleteAllByLecture(lecture);
+		lectureRepository.deleteById(lectureId);
+	}
+
 	private LectureVO getLectureVO(Lecture lecture) {
 		return LectureVO.of(lecture, getAttendanceVO(lecture));
 	}
