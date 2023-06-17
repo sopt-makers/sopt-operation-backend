@@ -100,8 +100,8 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 				partEq(part)
 			)
 			.orderBy(member.name.asc())
-//			.offset(pageable.getOffset())
-//			.limit(pageable.getPageSize())
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
 			.fetch();
 	}
 
