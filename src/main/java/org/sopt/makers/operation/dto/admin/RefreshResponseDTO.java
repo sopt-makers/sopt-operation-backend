@@ -1,7 +1,5 @@
 package org.sopt.makers.operation.dto.admin;
 
-import lombok.Getter;
-
 public record RefreshResponseDTO(String accessToken, String refreshToken) {
     public static RefreshResponseDTO of(String accessToken, String refreshToken) {
         return new RefreshResponseDTO(

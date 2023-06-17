@@ -16,6 +16,7 @@ public class Cookie {
                 .httpOnly(true)
                 .maxAge(Duration.ofDays(14))
                 .secure(true)
+                .sameSite("none")
                 .path("/")
                 .build();
 

@@ -2,7 +2,6 @@ package org.sopt.makers.operation.dto.lecture;
 
 import org.sopt.makers.operation.entity.lecture.Lecture;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 

@@ -10,6 +10,7 @@ import org.sopt.makers.operation.dto.lecture.LectureRequestDTO;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.service.LectureService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -65,9 +66,15 @@ public class LectureController {
 
 	@ApiOperation(value = "출석 점수 갱신 트리거 (출석 종료)")
 	@PatchMapping("/{lectureId}")
-	public ResponseEntity<ApiResponse> updateMembersScore(@PathVariable("lectureId") Long lectureId) {
-		lectureService.updateMembersScore(lectureId);
+	public ResponseEntity<ApiResponse> finishLecture(@PathVariable("lectureId") Long lectureId) {
+		lectureService.finishLecture(lectureId);
 		return ResponseEntity.ok(ApiResponse.success(SUCCESS_UPDATE_MEMBER_SCORE.getMessage()));
+	}
+
+	@DeleteMapping("/{lectureId}")
+	public ResponseEntity<ApiResponse> deleteLecture(@PathVariable Long lectureId) {
+		lectureService.deleteLecture(lectureId);
+		return ResponseEntity.ok(ApiResponse.success(SUCCESS_DELETE_LECTURE.getMessage()));
 	}
 
 	private URI getURI(Long lectureId) {

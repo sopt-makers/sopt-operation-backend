@@ -1,6 +1,7 @@
 package org.sopt.makers.operation.entity;
 
 import static javax.persistence.GenerationType.*;
+import static org.sopt.makers.operation.entity.lecture.LectureStatus.*;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -18,6 +19,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.sopt.makers.operation.entity.lecture.Lecture;
+import org.sopt.makers.operation.entity.lecture.LectureStatus;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -51,6 +53,15 @@ public class SubLecture {
 	public void startAttendance(String code) {
 		this.startAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
 		this.code = code;
+		this.lecture.updateStatus(getUpdatedStatus());
+	}
+
+	private LectureStatus getUpdatedStatus() {
+		return switch (this.round) {
+			case 1 -> FIRST;
+			case 2 -> SECOND;
+			default -> this.lecture.getLectureStatus();
+		};
 	}
 
 	private void setLecture(Lecture lecture) {
