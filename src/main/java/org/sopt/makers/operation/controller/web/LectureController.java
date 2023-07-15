@@ -77,6 +77,13 @@ public class LectureController {
 		return ResponseEntity.ok(ApiResponse.success(SUCCESS_DELETE_LECTURE.getMessage()));
 	}
 
+	@ApiOperation(value = "세션 상세 조회 (팝업)")
+	@GetMapping("/detail/{lectureId}")
+	public ResponseEntity<ApiResponse> getLectureDetail(@PathVariable Long lectureId) {
+		val response = lectureService.getLectureDetail(lectureId);
+		return ResponseEntity.ok(ApiResponse.success(SUCCESS_GET_LECTURE.getMessage(), response));
+	}
+
 	private URI getURI(Long lectureId) {
 		return ServletUriComponentsBuilder
 			.fromCurrentRequest()

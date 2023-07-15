@@ -18,5 +18,6 @@ public interface LectureService {
 	void finishLecture(Long lectureId);
 	LectureCurrentRoundResponseDTO getCurrentLectureRound(Long lectureId);
 	void deleteLecture(Long lectureId);
+	LectureDetailResponseDTO getLectureDetail(Long lectureId);
 
 }
