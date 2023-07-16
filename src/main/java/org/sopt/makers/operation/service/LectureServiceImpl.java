@@ -272,6 +272,12 @@ public class LectureServiceImpl implements LectureService {
 		lectureRepository.deleteById(lectureId);
 	}
 
+	@Override
+	public LectureDetailResponseDTO getLectureDetail(Long lectureId) {
+		val lecture = findLecture(lectureId);
+		return LectureDetailResponseDTO.of(lecture);
+	}
+
 	private LectureVO getLectureVO(Lecture lecture) {
 		return LectureVO.of(lecture, getAttendanceVO(lecture));
 	}
