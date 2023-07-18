@@ -129,6 +129,16 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 			.stream().findFirst();
 	}
 
+	@Override
+	public List<Attendance> findByLecture(Lecture lecture) {
+		return queryFactory
+			.select(attendance)
+			.from(attendance)
+			.leftJoin(attendance.member, member).fetchJoin().distinct()
+			.where(attendance.lecture.eq(lecture))
+			.fetch();
+	}
+
 	private BooleanExpression partEq(Part part) {
 		return (part == null || part.equals(ALL)) ? null : member.part.eq(part);
 	}
