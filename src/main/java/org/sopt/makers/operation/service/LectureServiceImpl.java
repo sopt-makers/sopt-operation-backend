@@ -4,6 +4,7 @@ import static java.util.Objects.nonNull;
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
 import static org.sopt.makers.operation.entity.AttendanceStatus.*;
 import static org.sopt.makers.operation.entity.lecture.LectureStatus.*;
+import static org.sopt.makers.operation.util.Generation32.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -266,10 +267,20 @@ public class LectureServiceImpl implements LectureService {
 	@Transactional
 	public void deleteLecture(Long lectureId) {
 		Lecture lecture = findLecture(lectureId);
+		if (lecture.getLectureStatus().equals(END)) {
+			revertMemberScore(lecture);
+		}
 		subAttendanceRepository.deleteAllBySubLectureIn(lecture.getSubLectures());
 		subLectureRepository.deleteAllByLecture(lecture);
 		attendanceRepository.deleteAllByLecture(lecture);
 		lectureRepository.deleteById(lectureId);
+	}
+
+	private void revertMemberScore(Lecture lecture) {
+		attendanceRepository.findByLecture(lecture).forEach(attendance -> {
+			float score = getUpdateScore(lecture.getAttribute(), attendance.getStatus());
+			attendance.getMember().updateScore((-1) * score);
+		});
 	}
 
 	@Override
