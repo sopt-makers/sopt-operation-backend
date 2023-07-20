@@ -30,11 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             val jwtTokenType = validateTokenType(request);
 
-            val isTokenAvailable = checkJwtAvailable(token, jwtTokenType);
-
-            if (!isTokenAvailable) {
-                throw new TokenException(ExceptionMessage.INVALID_AUTH_REQUEST.getName());
-            }
+            checkJwtAvailable(token, jwtTokenType);
 
             val auth = jwtTokenProvider.getAuthentication(token, jwtTokenType);
             auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -44,8 +40,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         chain.doFilter(request, response);
     }
 
-    private boolean checkJwtAvailable (String token, JwtTokenType jwtTokenType) {
-        return token != null && jwtTokenProvider.validateTokenExpiration(token, jwtTokenType);
+    private void checkJwtAvailable (String token, JwtTokenType jwtTokenType) {
+        if (token == null || !jwtTokenProvider.validateTokenExpiration(token, jwtTokenType)) {
+            throw new TokenException(ExceptionMessage.INVALID_AUTH_REQUEST.getName());
+        }
     }
 
     private JwtTokenType validateTokenType(HttpServletRequest request) {
