@@ -1,5 +1,6 @@
 package org.sopt.makers.operation.entity;
 
+import static org.sopt.makers.operation.entity.lecture.LectureStatus.*;
 import static org.sopt.makers.operation.util.Generation32.*;
 
 import java.util.ArrayList;
@@ -13,6 +14,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+
+import org.sopt.makers.operation.entity.lecture.Lecture;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -66,7 +69,12 @@ public class Member {
 
 	public void updateTotalScore() {
 		this.score = (float) (2 + this.attendances.stream()
-			.mapToDouble(attendance -> getUpdateScore(attendance.getLecture().getAttribute(), attendance.getStatus()))
+			.mapToDouble(attendance -> {
+				Lecture lecture = attendance.getLecture();
+				return lecture.getLectureStatus().equals(END)
+					? getUpdateScore(lecture.getAttribute(), attendance.getStatus())
+					: 0;
+			})
 			.sum());
 	}
 }
