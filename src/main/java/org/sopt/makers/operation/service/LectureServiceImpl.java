@@ -19,11 +19,9 @@ import org.sopt.makers.operation.dto.lecture.*;
 
 import org.sopt.makers.operation.dto.lecture.AttendanceRequestDTO;
 import org.sopt.makers.operation.dto.lecture.AttendanceResponseDTO;
-import org.sopt.makers.operation.dto.lecture.AttendanceVO;
 import org.sopt.makers.operation.dto.lecture.LectureRequestDTO;
 import org.sopt.makers.operation.dto.lecture.LectureResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LecturesResponseDTO;
-import org.sopt.makers.operation.dto.lecture.LectureVO;
 import org.sopt.makers.operation.dto.member.MemberSearchCondition;
 import org.sopt.makers.operation.entity.*;
 import org.sopt.makers.operation.entity.lecture.Attribute;
@@ -155,9 +153,7 @@ public class LectureServiceImpl implements LectureService {
 
 	@Override
 	public LecturesResponseDTO getLecturesByGeneration(int generation, Part part) {
-		List<LectureVO> lectures = lectureRepository.findLectures(generation, part)
-			.stream().map(this::getLectureVO)
-			.toList();
+		val lectures = lectureRepository.findLectures(generation, part);
 		return LecturesResponseDTO.of(generation, lectures);
 	}
 
@@ -287,27 +283,6 @@ public class LectureServiceImpl implements LectureService {
 	public LectureDetailResponseDTO getLectureDetail(Long lectureId) {
 		val lecture = findLecture(lectureId);
 		return LectureDetailResponseDTO.of(lecture);
-	}
-
-	private LectureVO getLectureVO(Lecture lecture) {
-		return LectureVO.of(lecture, getAttendanceVO(lecture));
-	}
-
-	private AttendanceVO getAttendanceVO(Lecture lecture) {
-		if (lecture.getEndDate().isBefore(LocalDateTime.now(KST))) {
-			return new AttendanceVO(
-				attendanceRepository.countAttendance(lecture),
-				attendanceRepository.countAbsent(lecture),
-				attendanceRepository.countTardy(lecture),
-				0L);
-		} else {
-			return new AttendanceVO(
-				attendanceRepository.countAttendance(lecture),
-				0L,
-				attendanceRepository.countTardy(lecture),
-				attendanceRepository.countAbsent(lecture)
-				);
-		}
 	}
 
 	private MemberSearchCondition getMemberSearchCondition(LectureRequestDTO requestDTO) {
