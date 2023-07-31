@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Objects.*;
+import static org.sopt.makers.operation.entity.QAttendance.*;
 import static org.sopt.makers.operation.entity.lecture.QLecture.*;
 
 @Repository
@@ -51,6 +52,7 @@ public class LectureRepositoryImpl implements LectureCustomRepository {
     public List<Lecture> findLectures(int generation, Part part) {
         return queryFactory
             .selectFrom(lecture)
+            .leftJoin(lecture.attendances, attendance).fetchJoin().distinct()
             .where(
                 lecture.generation.eq(generation),
                 partEq(part)
