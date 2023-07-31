@@ -4,7 +4,6 @@ import static java.util.Objects.nonNull;
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
 import static org.sopt.makers.operation.util.Generation32.*;
 
-import java.time.ZoneId;
 import java.util.List;
 
 import org.sopt.makers.operation.dto.attendance.AttendanceMemberResponseDTO;
@@ -41,7 +40,6 @@ public class AttendanceServiceImpl implements AttendanceService {
 	private final MemberRepository memberRepository;
 	private final SubLectureRepository subLectureRepository;
 	private final AttendanceRepository attendanceRepository;
-	private final ZoneId KST = ZoneId.of("Asia/Seoul");
 
 	@Override
 	@Transactional
@@ -84,7 +82,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 
 		val memberId = member.getId();
 
-		val now = LocalDateTime.now(KST);
+		val now = LocalDateTime.now();
 
 		val subLecture = subLectureRepository.findById(requestDTO.subLectureId())
 				.orElseThrow(() -> new SubLectureException(INVALID_SUB_LECTURE.getName()));

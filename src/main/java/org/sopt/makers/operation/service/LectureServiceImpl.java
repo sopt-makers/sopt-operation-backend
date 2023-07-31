@@ -8,7 +8,6 @@ import static org.sopt.makers.operation.util.Generation32.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -47,7 +46,6 @@ public class LectureServiceImpl implements LectureService {
 	private final AttendanceRepository attendanceRepository;
 	private final SubAttendanceRepository subAttendanceRepository;
 	private final MemberRepository memberRepository;
-	private final ZoneId KST = ZoneId.of("Asia/Seoul");
 
 	@Override
 	@Transactional
@@ -75,7 +73,7 @@ public class LectureServiceImpl implements LectureService {
 
 	@Override
 	public LectureGetResponseDTO getCurrentLecture(Long playGroundId) {
-		val now = LocalDateTime.now(KST);
+		val now = LocalDateTime.now();
 
 		val member = memberRepository.getMemberByPlaygroundId(playGroundId)
 				.orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
@@ -92,7 +90,7 @@ public class LectureServiceImpl implements LectureService {
 			return new LectureGetResponseDTO(LectureResponseType.NO_SESSION, 0L,"", "", "", "", "", Collections.emptyList());
 		}
 
-		val sessionNumber = (LocalDateTime.now(KST).getHour() < 16) ? 2 : 3;
+		val sessionNumber = (LocalDateTime.now().getHour() < 16) ? 2 : 3;
 		val currentLecture = getCurrentLecture(lectures, sessionNumber);
 		val lectureType = getLectureResponseType(currentLecture);
 
@@ -189,7 +187,7 @@ public class LectureServiceImpl implements LectureService {
 	@Transactional
 	public void finishLecture(Long lectureId) {
 		val lecture = findLecture(lectureId);
-		val now = LocalDateTime.now(KST);
+		val now = LocalDateTime.now();
 		if (now.isBefore(lecture.getEndDate())) {
 			throw new IllegalStateException(NOT_END_TIME_YET.getName());
 		}
@@ -198,7 +196,7 @@ public class LectureServiceImpl implements LectureService {
 
 	@Override
 	public LectureCurrentRoundResponseDTO getCurrentLectureRound(Long lectureId) {
-		val now = LocalDateTime.now(KST);
+		val now = LocalDateTime.now();
 		val today = now.toLocalDate();
 		val startOfDay = today.atStartOfDay();
 		val endOfDay = LocalDateTime.of(today, LocalTime.MAX);

@@ -4,7 +4,6 @@ import static javax.persistence.GenerationType.*;
 import static org.sopt.makers.operation.entity.lecture.LectureStatus.*;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -51,7 +50,7 @@ public class SubLecture {
 	}
 
 	public void startAttendance(String code) {
-		this.startAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+		this.startAt = LocalDateTime.now();
 		this.code = code;
 		this.lecture.updateStatus(getUpdatedStatus());
 	}

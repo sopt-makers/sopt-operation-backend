@@ -8,7 +8,6 @@ import static org.sopt.makers.operation.entity.QSubLecture.*;
 import static org.sopt.makers.operation.entity.lecture.QLecture.*;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,11 +31,10 @@ import lombok.RequiredArgsConstructor;
 public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 
 	private final JPAQueryFactory queryFactory;
-	private final ZoneId KST = ZoneId.of("Asia/Seoul");
 
 	@Override
 	public List<Attendance> findAttendanceByMemberId(Long memberId) {
-		val now = LocalDateTime.now(KST);
+		val now = LocalDateTime.now();
 
 		return queryFactory
 				.select(attendance)
