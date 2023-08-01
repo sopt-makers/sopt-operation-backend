@@ -1,11 +1,7 @@
 package org.sopt.makers.operation.dto.lecture;
 
-import static org.sopt.makers.operation.entity.AttendanceStatus.*;
-
-import java.time.LocalDateTime;
 import java.util.List;
 
-import org.sopt.makers.operation.entity.AttendanceStatus;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.lecture.Attribute;
 import org.sopt.makers.operation.entity.lecture.Lecture;
@@ -34,7 +30,7 @@ record LectureVO(
 	String startDate,
 	Attribute attributeValue,
 	String attributeName,
-	AttendanceCountVO status
+	AttendancesStatusVO attendances
 ) {
 	public static LectureVO of(Lecture lecture) {
 		return LectureVO.builder()
@@ -45,35 +41,8 @@ record LectureVO(
 			.startDate(lecture.getStartDate().toString())
 			.attributeValue(lecture.getAttribute())
 			.attributeName(lecture.getAttribute().getName())
-			.status(AttendanceCountVO.of(lecture))
+			.attendances(AttendancesStatusVO.of(lecture))
 			.build();
-	}
-}
-
-@Builder
-record AttendanceCountVO(
-	int attendance,
-	int absent,
-	int tardy,
-	int unknown
-) {
-	public static AttendanceCountVO of(Lecture lecture) {
-		return AttendanceCountVO.builder()
-			.attendance(getCount(lecture, ATTENDANCE))
-			.absent(isEnd(lecture) ? getCount(lecture, ABSENT) : 0)
-			.tardy(getCount(lecture, TARDY))
-			.unknown(isEnd(lecture) ? 0 : getCount(lecture, ABSENT))
-			.build();
-	}
-
-	private static int getCount(Lecture lecture, AttendanceStatus status) {
-		return (int)lecture.getAttendances().stream()
-			.filter(attendance -> attendance.getStatus().equals(status))
-			.count();
-	}
-
-	private static boolean isEnd(Lecture lecture) {
-		return lecture.getEndDate().isBefore(LocalDateTime.now());
 	}
 }
 
