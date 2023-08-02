@@ -13,8 +13,8 @@ public record LectureDetailResponseDTO(
 	String name,
 	String place,
 	String attribute,
-	LocalDateTime startDate,
-	LocalDateTime endDate
+	String startDate,
+	String endDate
 ) {
 	public static LectureDetailResponseDTO of(Lecture lecture) {
 		return LectureDetailResponseDTO.builder()
@@ -23,8 +23,8 @@ public record LectureDetailResponseDTO(
 			.name(lecture.getName())
 			.place(lecture.getPlace())
 			.attribute(lecture.getAttribute().getName())
-			.startDate(lecture.getStartDate())
-			.endDate(lecture.getEndDate())
+			.startDate(lecture.getStartDate().toString())
+			.endDate(lecture.getEndDate().toString())
 			.build();
 	}
 }

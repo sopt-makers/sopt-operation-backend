@@ -40,8 +40,6 @@ public class JwtTokenProvider {
     @Value("${spring.jwt.secretKey.app}")
     private String appAccessSecretKey;
 
-    private final ZoneId KST = ZoneId.of("Asia/Seoul");
-
     public String generateAccessToken(Authentication authentication) {
         val encodedKey = encodeKey(accessSecretKey);
         val secretKeyBytes = DatatypeConverter.parseBase64Binary(encodedKey);
@@ -130,7 +128,7 @@ public class JwtTokenProvider {
     }
 
     private LocalDateTime getCurrentTime() {
-        return LocalDateTime.now(KST);
+        return LocalDateTime.now();
     }
 
     private String setSecretKey(JwtTokenType jwtTokenType) {
