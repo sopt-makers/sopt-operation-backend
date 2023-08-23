@@ -5,7 +5,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.lecture.Lecture;
-import org.sopt.makers.operation.config.GenerationConfig;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,7 +17,6 @@ import static org.sopt.makers.operation.entity.lecture.QLecture.*;
 @RequiredArgsConstructor
 public class LectureRepositoryImpl implements LectureCustomRepository {
     private final JPAQueryFactory queryFactory;
-    private final GenerationConfig generationConfig;
     @Override
     public List<Lecture> findLectures(int generation, Part part) {
         return queryFactory
