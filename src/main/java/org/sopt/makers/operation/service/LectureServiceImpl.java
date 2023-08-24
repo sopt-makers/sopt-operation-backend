@@ -76,7 +76,7 @@ public class LectureServiceImpl implements LectureService {
 		val attendances = attendanceRepository.findCurrentAttendanceByMember(playGroundId);
 
 		if (attendances.isEmpty()) {
-			return new LectureGetResponseDTO(LectureResponseType.NO_SESSION, 0L,"", "", "", "", "", Collections.emptyList());
+			return new LectureGetResponseDTO(LectureResponseType.NO_SESSION, 0L, "", "", "", "", "", Collections.emptyList());
 		}
 
 		if (attendances.size() > 2) {
@@ -158,9 +158,9 @@ public class LectureServiceImpl implements LectureService {
 
 		// 출석 세션 상태 업데이트 (시작)
 		SubLecture subLecture = lecture.getSubLectures().stream()
-				.filter(session -> session.getRound() == requestDTO.round())
-				.findFirst()
-				.orElseThrow(() -> new IllegalStateException(NO_SUB_LECTURE_EQUAL_ROUND.getName()));
+			.filter(session -> session.getRound() == requestDTO.round())
+			.findFirst()
+			.orElseThrow(() -> new IllegalStateException(NO_SUB_LECTURE_EQUAL_ROUND.getName()));
 		subLecture.startAttendance(requestDTO.code());
 
 		return new AttendanceResponseDTO(lecture.getId(), subLecture.getId());
@@ -268,14 +268,14 @@ public class LectureServiceImpl implements LectureService {
 
 	private MemberSearchCondition getMemberSearchCondition(LectureRequestDTO requestDTO) {
 		return new MemberSearchCondition(
-				requestDTO.part() != Part.ALL ? requestDTO.part() : null,
-				requestDTO.generation()
+			requestDTO.part() != Part.ALL ? requestDTO.part() : null,
+			requestDTO.generation()
 		);
 	}
 
 	private Lecture findLecture(Long id) {
 		return lectureRepository.findById(id)
-				.orElseThrow(() -> new LectureException(INVALID_LECTURE.getName()));
+			.orElseThrow(() -> new LectureException(INVALID_LECTURE.getName()));
 	}
 
 	private Attendance getCurrentAttendance(List<Attendance> attendances, LocalDateTime now) {
