@@ -110,15 +110,14 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 		val startOfDay = today.atStartOfDay();
 		val endOfDay = LocalDateTime.of(today, LocalTime.MAX);
 
-		//List<Part> partList = Arrays.asList(lectureSearchCondition.part(), Part.ALL);
-
 		return queryFactory
 				.select(attendance)
 				.from(attendance)
 				.leftJoin(attendance.lecture, lecture).fetchJoin()
 				.leftJoin(attendance.member, member).fetchJoin()
 				.where(
-						lecture.part.in(Part.SERVER),
+						lecture.part.eq(member.part)
+								.or(lecture.part.eq(Part.ALL)),
 						lecture.startDate.between(startOfDay, endOfDay),
 						member.playgroundId.eq(playGroundId),
 						member.generation.eq(generationConfig.getCurrentGeneration())
