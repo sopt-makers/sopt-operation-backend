@@ -75,64 +75,59 @@ public class LectureServiceImpl implements LectureService {
 
 		val attendances = attendanceRepository.findCurrentAttendanceByMember(playGroundId);
 
-		// 세션이 없을 때
 		if (attendances.isEmpty()) {
 			return new LectureGetResponseDTO(LectureResponseType.NO_SESSION, 0L,"", "", "", "", "", Collections.emptyList());
 		}
 
-		// 세션이 하루에 3개 이상인 경우
 		if (attendances.size() > 2) {
 			throw new LectureException(INVALID_COUNT_SESSION.getName());
 		}
 
-		// 현재 출석과 세션 가져오기
-		val currentAttendance = getCurrentAttendance(attendances);
+		// 현재 출석과 Lecture 가져오기
+		val currentAttendance = getCurrentAttendance(attendances, now);
 		val currentLecture = currentAttendance.getLecture();
 		val lectureType = getLectureResponseType(currentLecture);
-
-		// sub 세션에 관련한 1,2차 출석 가져오기
-		val subAttendances = attendanceRepository.findSubAttendanceByAttendanceId(currentAttendance.getId());
-
-		val firstSubLectureAttendance = subAttendances.get(0);
-		val secondSubLectureAttendance = subAttendances.get(1);
-
-		val firstSubLecture = firstSubLectureAttendance.getSubLecture();
-		val secondSubLecture = secondSubLectureAttendance.getSubLecture();
-
-		val firstSessionStart = firstSubLecture.getStartAt();
-		val secondSessionStart = secondSubLecture.getStartAt();
 
 		if (lectureType.equals(LectureResponseType.NO_ATTENDANCE)) {
 			val message = "출석 점수가 반영되지 않아요.";
 			return LectureGetResponseDTO.of(lectureType, currentLecture, message, Collections.emptyList());
 		}
 
+		val subAttendances = attendanceRepository.findSubAttendanceByAttendanceId(currentAttendance.getId());
+
+		val firstSubLectureAttendance = subAttendances.get(0);
+		val secondSubLectureAttendance = subAttendances.get(1);
+
+		val firstSubLectureAttendanceStatus = firstSubLectureAttendance.getStatus();
+		val secondSubLectureAttendanceStatus = secondSubLectureAttendance.getStatus();
+
+		val firstSessionStart = firstSubLectureAttendance.getSubLecture().getStartAt();
+		val secondSessionStart = secondSubLectureAttendance.getSubLecture().getStartAt();
+
 		val message = (currentLecture.getAttribute() == Attribute.SEMINAR) ? "" : "행사도 참여하고, 출석점수도 받고, 일석이조!";
 
-		// 세미나 시작 전 혹은 1차 출석 시작 전
-		if (now.isBefore(currentLecture.getStartDate()) || !nonNull(firstSubLecture.getStartAt())) {
+		// Lecture 시작 전 혹은 1차 출석 시작 전
+		if (now.isBefore(currentLecture.getStartDate()) || !nonNull(firstSessionStart)) {
 			return LectureGetResponseDTO.of(lectureType, currentLecture, message, Collections.emptyList());
 		}
 
 		// 1차 출석 시작, 2차 출석 시작 전
 		if (now.isAfter(firstSessionStart) && !nonNull(secondSessionStart)) {
-			// 1차 출석 마감되었을 경우, 1차 출석 출석 시
-			if(now.isAfter(firstSessionStart.plusMinutes(10)) || firstSubLectureAttendance.getStatus().equals(ATTENDANCE)) {
-				return LectureGetResponseDTO.of(lectureType, currentLecture, message, Collections.singletonList(firstSubLectureAttendance));
-			}
-
-			// 1차 출석 마감 전, 결석일 시
-			if (subAttendances.get(0).getStatus().equals(ABSENT)) {
+			// 1차 출석 중 결석인 상태
+			if (now.isBefore(firstSessionStart.plusMinutes(10)) && firstSubLectureAttendanceStatus.equals(ABSENT)) {
 				return LectureGetResponseDTO.of(lectureType, currentLecture, message, Collections.emptyList());
 			}
+
+			return LectureGetResponseDTO.of(lectureType, currentLecture, message, Collections.singletonList(firstSubLectureAttendance));
 		}
 
+		// 2차 출석 시작 이후
 		if (now.isAfter(secondSessionStart)) {
-			if(now.isBefore(secondSessionStart.plusMinutes(10)) && secondSubLectureAttendance.getStatus().equals(ABSENT)) {
+			// 2차 출석 중 결석인 상태
+			if (now.isBefore(secondSessionStart.plusMinutes(10)) && secondSubLectureAttendanceStatus.equals(ABSENT)) {
 				return LectureGetResponseDTO.of(lectureType, currentLecture, message, Collections.singletonList(firstSubLectureAttendance));
 			}
 		}
-
 		return LectureGetResponseDTO.of(lectureType, currentLecture, message, subAttendances);
 	}
 
@@ -283,9 +278,9 @@ public class LectureServiceImpl implements LectureService {
 				.orElseThrow(() -> new LectureException(INVALID_LECTURE.getName()));
 	}
 
-	private Attendance getCurrentAttendance(List<Attendance> attendances) {
+	private Attendance getCurrentAttendance(List<Attendance> attendances, LocalDateTime now) {
 		val lectureSize = attendances.size();
-		val currentHour = LocalDateTime.now().getHour();
+		val currentHour = now.getHour();
 
 		int attendanceIndex = (lectureSize == 2 && currentHour >= 16) ? 1 : 0;
 		return attendances.get(attendanceIndex);
