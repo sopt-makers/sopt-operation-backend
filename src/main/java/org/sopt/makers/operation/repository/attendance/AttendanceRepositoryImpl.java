@@ -111,32 +111,31 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 		val endOfDay = LocalDateTime.of(today, LocalTime.MAX);
 
 		return queryFactory
-				.select(attendance)
-				.from(attendance)
-				.leftJoin(attendance.lecture, lecture).fetchJoin()
-				.leftJoin(attendance.member, member).fetchJoin()
-				.where(
-						lecture.part.eq(member.part)
-								.or(lecture.part.eq(Part.ALL)),
-						lecture.startDate.between(startOfDay, endOfDay),
-						member.playgroundId.eq(playGroundId),
-						member.generation.eq(generationConfig.getCurrentGeneration())
-				)
-				.orderBy(lecture.startDate.asc())
-				.fetch();
+			.select(attendance)
+			.from(attendance)
+			.leftJoin(attendance.lecture, lecture).fetchJoin()
+			.leftJoin(attendance.member, member).fetchJoin()
+			.where(
+				lecture.part.eq(member.part).or(lecture.part.eq(Part.ALL)),
+				lecture.startDate.between(startOfDay, endOfDay),
+				member.playgroundId.eq(playGroundId),
+				member.generation.eq(generationConfig.getCurrentGeneration())
+			)
+			.orderBy(lecture.startDate.asc())
+			.fetch();
 	}
 
 	@Override
 	public List<SubAttendance> findSubAttendanceByAttendanceId(Long attendanceId) {
 		return queryFactory
-				.select(subAttendance)
-				.from(subAttendance)
-				.leftJoin(subAttendance.subLecture, subLecture).fetchJoin()
-				.where(
-						subAttendance.attendance.id.eq(attendanceId)
-				)
-				.orderBy(subAttendance.createdDate.asc())
-				.fetch();
+			.select(subAttendance)
+			.from(subAttendance)
+			.leftJoin(subAttendance.subLecture, subLecture).fetchJoin()
+			.where(
+				subAttendance.attendance.id.eq(attendanceId)
+			)
+			.orderBy(subAttendance.createdDate.asc())
+			.fetch();
 	}
 
 	private BooleanExpression partEq(Part part) {
