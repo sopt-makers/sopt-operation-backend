@@ -205,56 +205,41 @@ public class LectureServiceImpl implements LectureService {
 				.orElseThrow(() -> new LectureException(INVALID_LECTURE.getName()));
 
 		val lectureStartDate = lecture.getStartDate();
+		val lectureStatus = lecture.getLectureStatus();
+
+		val subLectures = lecture.getSubLectures();
+		subLectures.sort(Comparator.comparing(SubLecture::getRound));
+
+		val subLecture = lectureStatus.equals(FIRST) ?
+				subLectures.get(0) : subLectures.get(1);
 
 		if (lectureStartDate.isBefore(startOfDay) || lectureStartDate.isAfter(endOfDay)) {
 			throw new LectureException(NO_SESSION.getName());
 		}
 
-		val subLectures = lecture.getSubLectures();
-
-		if (subLectures.isEmpty()) {
+		if (lectureStatus.equals(BEFORE)) {
 			throw new LectureException(NOT_STARTED_ATTENDANCE.getName());
 		}
 
-		val subLectureComparator = Comparator.comparing(SubLecture::getRound);
-		subLectures.sort(subLectureComparator);
-
-		val firstLecture = subLectures.get(0);
-		val secondLecture = subLectures.get(1);
-
-		// 1차, 2차 모두 시작 안했을 때
-		if(!nonNull(firstLecture.getStartAt()) && !nonNull(secondLecture.getStartAt())) {
-			throw new LectureException(NOT_STARTED_ATTENDANCE.getName());
-		}
-
-		// 1차만 시작하였을 때
-		if (nonNull(firstLecture.getStartAt()) && !nonNull(secondLecture.getStartAt())) {
-			// 1차 출석 시작 전일 때
-			if (now.isBefore(firstLecture.getStartAt())) {
-				throw new LectureException(firstLecture.getRound() + NOT_STARTED_NTH_ATTENDANCE.getName());
-			}
-
+		if (lectureStatus.equals(FIRST)) {
 			// 1차 출석이 마감되었을 때
-			if (now.isAfter(firstLecture.getStartAt().plusMinutes(10))) {
-				throw new LectureException(firstLecture.getRound() + ENDED_ATTENDANCE.getName());
+			if (now.isAfter(subLecture.getStartAt().plusMinutes(10))) {
+				throw new LectureException(subLecture.getRound() + ENDED_ATTENDANCE.getName());
 			}
-
-			return LectureCurrentRoundResponseDTO.of(firstLecture);
 		}
 
-		if (nonNull(firstLecture.getStartAt()) && nonNull(secondLecture.getStartAt())) {
-			// 2차 출석 시작 전일 때
-			if (now.isBefore(secondLecture.getStartAt())) {
-				throw new LectureException(secondLecture.getRound() + NOT_STARTED_NTH_ATTENDANCE.getName());
-			}
-
+		if (lectureStatus.equals(SECOND)) {
 			// 2차 출석이 마감되었을 때
-			if (now.isAfter(secondLecture.getStartAt().plusMinutes(10))) {
-				throw new LectureException(secondLecture.getRound() + ENDED_ATTENDANCE.getName());
+			if (now.isAfter(subLecture.getStartAt().plusMinutes(10))) {
+				throw new LectureException(subLecture.getRound() + ENDED_ATTENDANCE.getName());
 			}
 		}
 
-		return LectureCurrentRoundResponseDTO.of(secondLecture);
+		if (lectureStatus.equals(END)) {
+			throw new LectureException(END_LECTURE.getName());
+		}
+
+		return LectureCurrentRoundResponseDTO.of(subLecture);
 	}
 
 	@Override
