@@ -13,11 +13,11 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Objects.*;
+import static org.sopt.makers.operation.entity.QAttendance.*;
 import static org.sopt.makers.operation.entity.lecture.QLecture.*;
 
 @Repository
@@ -25,11 +25,10 @@ import static org.sopt.makers.operation.entity.lecture.QLecture.*;
 public class LectureRepositoryImpl implements LectureCustomRepository {
     private final JPAQueryFactory queryFactory;
     private final GenerationConfig generationConfig;
-    private final ZoneId KST = ZoneId.of("Asia/Seoul");
 
     @Override
     public List<Lecture> searchLecture(LectureSearchCondition lectureSearchCondition) {
-        val now = LocalDateTime.now(KST);
+        val now = LocalDateTime.now();
         val today = now.toLocalDate();
         val startOfDay = today.atStartOfDay();
         val endOfDay = LocalDateTime.of(today, LocalTime.MAX);
@@ -51,6 +50,7 @@ public class LectureRepositoryImpl implements LectureCustomRepository {
     public List<Lecture> findLectures(int generation, Part part) {
         return queryFactory
             .selectFrom(lecture)
+            .leftJoin(lecture.attendances, attendance).fetchJoin().distinct()
             .where(
                 lecture.generation.eq(generation),
                 partEq(part)

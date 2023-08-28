@@ -2,8 +2,6 @@ package org.sopt.makers.operation.dto.attendance;
 
 import static org.sopt.makers.operation.util.Generation32.*;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.sopt.makers.operation.entity.Attendance;
@@ -53,11 +51,7 @@ record AttendanceVO(
 		return new AttendanceVO(
 			subAttendance.getSubLecture().getRound(),
 			subAttendance.getStatus().getName(),
-			convertDate(subAttendance.getLastModifiedDate())
+			subAttendance.getLastModifiedDate().toString()
 		);
-	}
-
-	private static String convertDate(LocalDateTime date) {
-		return date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
 	}
 }

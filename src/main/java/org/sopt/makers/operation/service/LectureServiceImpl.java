@@ -4,10 +4,10 @@ import static java.util.Objects.nonNull;
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
 import static org.sopt.makers.operation.entity.AttendanceStatus.*;
 import static org.sopt.makers.operation.entity.lecture.LectureStatus.*;
+import static org.sopt.makers.operation.util.Generation32.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -18,11 +18,9 @@ import org.sopt.makers.operation.dto.lecture.*;
 
 import org.sopt.makers.operation.dto.lecture.AttendanceRequestDTO;
 import org.sopt.makers.operation.dto.lecture.AttendanceResponseDTO;
-import org.sopt.makers.operation.dto.lecture.AttendanceVO;
 import org.sopt.makers.operation.dto.lecture.LectureRequestDTO;
 import org.sopt.makers.operation.dto.lecture.LectureResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LecturesResponseDTO;
-import org.sopt.makers.operation.dto.lecture.LectureVO;
 import org.sopt.makers.operation.dto.member.MemberSearchCondition;
 import org.sopt.makers.operation.entity.*;
 import org.sopt.makers.operation.entity.lecture.Attribute;
@@ -48,7 +46,6 @@ public class LectureServiceImpl implements LectureService {
 	private final AttendanceRepository attendanceRepository;
 	private final SubAttendanceRepository subAttendanceRepository;
 	private final MemberRepository memberRepository;
-	private final ZoneId KST = ZoneId.of("Asia/Seoul");
 
 	@Override
 	@Transactional
@@ -76,7 +73,7 @@ public class LectureServiceImpl implements LectureService {
 
 	@Override
 	public LectureGetResponseDTO getCurrentLecture(Long playGroundId) {
-		val now = LocalDateTime.now(KST);
+		val now = LocalDateTime.now();
 
 		val member = memberRepository.getMemberByPlaygroundId(playGroundId)
 				.orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
@@ -93,7 +90,7 @@ public class LectureServiceImpl implements LectureService {
 			return new LectureGetResponseDTO(LectureResponseType.NO_SESSION, 0L,"", "", "", "", "", Collections.emptyList());
 		}
 
-		val sessionNumber = (LocalDateTime.now(KST).getHour() < 16) ? 2 : 3;
+		val sessionNumber = (LocalDateTime.now().getHour() < 16) ? 2 : 3;
 		val currentLecture = getCurrentLecture(lectures, sessionNumber);
 		val lectureType = getLectureResponseType(currentLecture);
 
@@ -154,9 +151,7 @@ public class LectureServiceImpl implements LectureService {
 
 	@Override
 	public LecturesResponseDTO getLecturesByGeneration(int generation, Part part) {
-		List<LectureVO> lectures = lectureRepository.findLectures(generation, part)
-			.stream().map(this::getLectureVO)
-			.toList();
+		val lectures = lectureRepository.findLectures(generation, part);
 		return LecturesResponseDTO.of(generation, lectures);
 	}
 
@@ -192,7 +187,7 @@ public class LectureServiceImpl implements LectureService {
 	@Transactional
 	public void finishLecture(Long lectureId) {
 		val lecture = findLecture(lectureId);
-		val now = LocalDateTime.now(KST);
+		val now = LocalDateTime.now();
 		if (now.isBefore(lecture.getEndDate())) {
 			throw new IllegalStateException(NOT_END_TIME_YET.getName());
 		}
@@ -201,7 +196,7 @@ public class LectureServiceImpl implements LectureService {
 
 	@Override
 	public LectureCurrentRoundResponseDTO getCurrentLectureRound(Long lectureId) {
-		val now = LocalDateTime.now(KST);
+		val now = LocalDateTime.now();
 		val today = now.toLocalDate();
 		val startOfDay = today.atStartOfDay();
 		val endOfDay = LocalDateTime.of(today, LocalTime.MAX);
@@ -266,31 +261,26 @@ public class LectureServiceImpl implements LectureService {
 	@Transactional
 	public void deleteLecture(Long lectureId) {
 		Lecture lecture = findLecture(lectureId);
+		if (lecture.getLectureStatus().equals(END)) {
+			revertMemberScore(lecture);
+		}
 		subAttendanceRepository.deleteAllBySubLectureIn(lecture.getSubLectures());
 		subLectureRepository.deleteAllByLecture(lecture);
 		attendanceRepository.deleteAllByLecture(lecture);
 		lectureRepository.deleteById(lectureId);
 	}
 
-	private LectureVO getLectureVO(Lecture lecture) {
-		return LectureVO.of(lecture, getAttendanceVO(lecture));
+	private void revertMemberScore(Lecture lecture) {
+		attendanceRepository.findByLecture(lecture).forEach(attendance -> {
+			float score = getUpdateScore(lecture.getAttribute(), attendance.getStatus());
+			attendance.getMember().updateScore((-1) * score);
+		});
 	}
 
-	private AttendanceVO getAttendanceVO(Lecture lecture) {
-		if (lecture.getEndDate().isBefore(LocalDateTime.now(KST))) {
-			return new AttendanceVO(
-				attendanceRepository.countAttendance(lecture),
-				attendanceRepository.countAbsent(lecture),
-				attendanceRepository.countTardy(lecture),
-				0L);
-		} else {
-			return new AttendanceVO(
-				attendanceRepository.countAttendance(lecture),
-				0L,
-				attendanceRepository.countTardy(lecture),
-				attendanceRepository.countAbsent(lecture)
-				);
-		}
+	@Override
+	public LectureDetailResponseDTO getLectureDetail(Long lectureId) {
+		val lecture = findLecture(lectureId);
+		return LectureDetailResponseDTO.of(lecture);
 	}
 
 	private MemberSearchCondition getMemberSearchCondition(LectureRequestDTO requestDTO) {

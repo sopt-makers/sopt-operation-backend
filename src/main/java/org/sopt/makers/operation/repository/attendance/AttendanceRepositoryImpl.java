@@ -8,14 +8,12 @@ import static org.sopt.makers.operation.entity.QSubLecture.*;
 import static org.sopt.makers.operation.entity.lecture.QLecture.*;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
 import lombok.val;
 
 import org.sopt.makers.operation.entity.Attendance;
-import org.sopt.makers.operation.entity.AttendanceStatus;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.QSubAttendance;
 import org.sopt.makers.operation.entity.SubAttendance;
@@ -33,47 +31,10 @@ import lombok.RequiredArgsConstructor;
 public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 
 	private final JPAQueryFactory queryFactory;
-	private final ZoneId KST = ZoneId.of("Asia/Seoul");
-
-	@Override
-	public Long countAttendance(Lecture lecture) {
-		return queryFactory
-			.select(attendance.count())
-			.from(attendance)
-			.where(
-				attendance.lecture.eq(lecture),
-				attendance.status.eq(AttendanceStatus.ATTENDANCE)
-			)
-			.fetchOne();
-	}
-
-	@Override
-	public Long countAbsent(Lecture lecture) {
-		return queryFactory
-			.select(attendance.count())
-			.from(attendance)
-			.where(
-				attendance.lecture.eq(lecture),
-				attendance.status.eq(AttendanceStatus.ABSENT)
-			)
-			.fetchOne();
-	}
-
-	@Override
-	public Long countTardy(Lecture lecture) {
-		return queryFactory
-			.select(attendance.count())
-			.from(attendance)
-			.where(
-				attendance.lecture.eq(lecture),
-				attendance.status.eq(AttendanceStatus.TARDY)
-			)
-			.fetchOne();
-	}
 
 	@Override
 	public List<Attendance> findAttendanceByMemberId(Long memberId) {
-		val now = LocalDateTime.now(KST);
+		val now = LocalDateTime.now();
 
 		return queryFactory
 				.select(attendance)
@@ -87,7 +48,7 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 	}
 
 	@Override
-	public List<Attendance> findAttendancesByLecture(Long lectureId, Part part, Pageable pageable) {
+	public List<Attendance> findAttendancesByLecture(Long lectureId, Part part) {
 		return queryFactory
 			.select(attendance)
 			.from(attendance)
@@ -100,8 +61,6 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 				partEq(part)
 			)
 			.orderBy(member.name.asc())
-//			.offset(pageable.getOffset())
-//			.limit(pageable.getPageSize())
 			.fetch();
 	}
 
@@ -127,6 +86,16 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 			.join(QSubAttendance.subAttendance.subLecture, subLecture).fetchJoin()
 			.where(attendance.subAttendances.contains(subAttendance))
 			.stream().findFirst();
+	}
+
+	@Override
+	public List<Attendance> findByLecture(Lecture lecture) {
+		return queryFactory
+			.select(attendance)
+			.from(attendance)
+			.leftJoin(attendance.member, member).fetchJoin().distinct()
+			.where(attendance.lecture.eq(lecture))
+			.fetch();
 	}
 
 	private BooleanExpression partEq(Part part) {

@@ -50,8 +50,8 @@ public class AttendanceController {
 	@ApiOperation(value = "세션별 출석 정보 조회")
 	@GetMapping("/lecture/{lectureId}")
 	public ResponseEntity<ApiResponse> findAttendancesByLecture(
-		@PathVariable Long lectureId, @RequestParam(required = false) Part part, Pageable pageable) {
-		val response = attendanceService.findAttendancesByLecture(lectureId, part, pageable);
+		@PathVariable Long lectureId, @RequestParam(required = false) Part part) {
+		val response = attendanceService.findAttendancesByLecture(lectureId, part);
 		return ResponseEntity.ok(ApiResponse.success(SUCCESS_GET_ATTENDANCES.getMessage(), response));
 	}
 }
