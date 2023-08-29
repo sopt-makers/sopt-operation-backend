@@ -282,7 +282,7 @@ public class LectureServiceImpl implements LectureService {
 		val lectureSize = attendances.size();
 		val currentHour = now.getHour();
 
-		int attendanceIndex = (lectureSize == 2 && currentHour >= 16) ? 1 : 0;
+		val attendanceIndex = (lectureSize == 2 && currentHour >= 16) ? 1 : 0;
 		return attendances.get(attendanceIndex);
 	}
 
