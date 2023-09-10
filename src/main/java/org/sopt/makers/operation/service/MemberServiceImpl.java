@@ -1,5 +1,7 @@
 package org.sopt.makers.operation.service;
 
+import static org.sopt.makers.operation.common.ExceptionMessage.*;
+
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
@@ -22,8 +24,7 @@ import org.springframework.stereotype.Service;
 import java.util.EnumMap;
 import java.util.List;
 
-import static org.sopt.makers.operation.common.ExceptionMessage.INVALID_MEMBER;
-
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 
 @Service
@@ -72,11 +73,11 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public void putMember(Long playGroundId, MemberRequestDTO requestDTO) {
-        memberRepository.getMemberByPlaygroundId(playGroundId).ifPresentOrElse(
-            member -> member.updateMember(requestDTO),
-            () -> memberRepository.save(new Member(playGroundId, requestDTO))
-        );
+    public void createMember(Long playGroundId, MemberRequestDTO requestDTO) {
+        if (memberRepository.existsByPlaygroundId(playGroundId)) {
+            throw new EntityNotFoundException(DUPLICATED_MEMBER.getName());
+        }
+        memberRepository.save(new Member(playGroundId, requestDTO));
     }
 
     private List<AttendanceTotalVO> filterEtcNoAppearance(List<AttendanceTotalVO> attendances) {

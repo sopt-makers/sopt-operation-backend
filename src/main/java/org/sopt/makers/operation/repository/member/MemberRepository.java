@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long>, MemberCustomRepository {
     Optional<Member> getMemberByPlaygroundId(Long id);
+    boolean existsByPlaygroundId(Long id);
 }

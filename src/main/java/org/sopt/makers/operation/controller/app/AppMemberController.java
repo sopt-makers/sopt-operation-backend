@@ -8,7 +8,7 @@ import org.sopt.makers.operation.dto.member.MemberRequestDTO;
 import org.sopt.makers.operation.service.MemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,11 +39,11 @@ public class AppMemberController {
     }
 
     @ApiOperation(value = "회원 등록")
-    @PutMapping
+    @PostMapping
     public ResponseEntity<ApiResponse> createMember(
         @ApiIgnore Principal principal, @RequestBody MemberRequestDTO requestDTO
     ) {
-        memberService.putMember(getMemberId(principal), requestDTO);
+        memberService.createMember(getMemberId(principal), requestDTO);
         return ResponseEntity.ok(ApiResponse.success(SUCCESS_PUT_MEMBER.getMessage()));
     }
 

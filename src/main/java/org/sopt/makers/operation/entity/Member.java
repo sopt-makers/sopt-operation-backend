@@ -30,7 +30,9 @@ public class Member {
 	@Column(name = "member_id")
 	private Long id;
 
+	@Column(unique = true)
 	private Long playgroundId;
+
 	private String name;
 	private int generation;
 
@@ -60,30 +62,6 @@ public class Member {
 		this.university = requestDTO.university();
 		this.phone = requestDTO.phone();
 		this.score = 2;
-	}
-
-	public void updateMember(MemberRequestDTO requestDTO) {
-		if (!this.name.equals(requestDTO.name())) {
-			this.name = requestDTO.name();
-		}
-		if (this.generation != requestDTO.generation()) {
-			this.generation = requestDTO.generation();
-		}
-		if (!this.obyb.equals(requestDTO.obyb())) {
-			this.obyb = requestDTO.obyb();
-		}
-		if (!this.part.equals(requestDTO.part())) {
-			this.part = requestDTO.part();
-		}
-		if (!this.gender.equals(requestDTO.gender())) {
-			this.gender = requestDTO.gender();
-		}
-		if (!this.university.equals(requestDTO.university())) {
-			this.university = requestDTO.university();
-		}
-		if (!this.phone.equals(requestDTO.phone())) {
-			this.phone = requestDTO.phone();
-		}
 	}
 
 	public void updateScore(float score) {

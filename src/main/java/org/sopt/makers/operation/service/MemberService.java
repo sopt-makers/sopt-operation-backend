@@ -12,5 +12,5 @@ public interface MemberService {
     List<MemberListGetResponse> getMemberList(Part part, int generation);
     AttendanceTotalResponseDTO getMemberTotalAttendance(Long playGroundId);
     MemberScoreGetResponse getMemberScore(Long playGroundId);
-    void putMember(Long playGroundId, MemberRequestDTO requestDTO);
+    void createMember(Long playGroundId, MemberRequestDTO requestDTO);
 }
