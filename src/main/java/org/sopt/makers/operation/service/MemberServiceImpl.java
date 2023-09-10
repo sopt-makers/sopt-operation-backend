@@ -7,6 +7,7 @@ import org.sopt.makers.operation.dto.attendance.AttendanceTotalCountVO;
 import org.sopt.makers.operation.dto.attendance.AttendanceTotalResponseDTO;
 import org.sopt.makers.operation.dto.attendance.AttendanceTotalVO;
 import org.sopt.makers.operation.dto.member.MemberListGetResponse;
+import org.sopt.makers.operation.dto.member.MemberRequestDTO;
 import org.sopt.makers.operation.dto.member.MemberScoreGetResponse;
 import org.sopt.makers.operation.dto.member.MemberSearchCondition;
 import org.sopt.makers.operation.entity.AttendanceStatus;
@@ -22,6 +23,8 @@ import java.util.EnumMap;
 import java.util.List;
 
 import static org.sopt.makers.operation.common.ExceptionMessage.INVALID_MEMBER;
+
+import javax.transaction.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -65,6 +68,15 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
 
         return MemberScoreGetResponse.of(member.getScore());
+    }
+
+    @Override
+    @Transactional
+    public void putMember(Long playGroundId, MemberRequestDTO requestDTO) {
+        memberRepository.getMemberByPlaygroundId(playGroundId).ifPresentOrElse(
+            member -> member.updateMember(requestDTO),
+            () -> memberRepository.save(new Member(playGroundId, requestDTO))
+        );
     }
 
     private List<AttendanceTotalVO> filterEtcNoAppearance(List<AttendanceTotalVO> attendances) {

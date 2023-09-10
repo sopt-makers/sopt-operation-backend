@@ -15,6 +15,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import org.sopt.makers.operation.dto.member.MemberRequestDTO;
 import org.sopt.makers.operation.entity.lecture.Lecture;
 
 import lombok.Getter;
@@ -49,18 +50,40 @@ public class Member {
 	@OneToMany(mappedBy = "member")
 	List<Attendance> attendances = new ArrayList<>();
 
-	public Member(Long playgroundId, String name, int generation, ObYb obyb, Part part,
-		Gender gender, String university, String phone) {
-
+	public Member(Long playgroundId, MemberRequestDTO requestDTO) {
 		this.playgroundId = playgroundId;
-		this.name = name;
-		this.generation = generation;
-		this.obyb = obyb;
-		this.part = part;
-		this.gender = gender;
-		this.university = university;
-		this.phone = phone;
+		this.name = requestDTO.name();
+		this.generation = requestDTO.generation();
+		this.obyb = requestDTO.obyb();
+		this.part = requestDTO.part();
+		this.gender = requestDTO.gender();
+		this.university = requestDTO.university();
+		this.phone = requestDTO.phone();
 		this.score = 2;
+	}
+
+	public void updateMember(MemberRequestDTO requestDTO) {
+		if (!this.name.equals(requestDTO.name())) {
+			this.name = requestDTO.name();
+		}
+		if (this.generation != requestDTO.generation()) {
+			this.generation = requestDTO.generation();
+		}
+		if (!this.obyb.equals(requestDTO.obyb())) {
+			this.obyb = requestDTO.obyb();
+		}
+		if (!this.part.equals(requestDTO.part())) {
+			this.part = requestDTO.part();
+		}
+		if (!this.gender.equals(requestDTO.gender())) {
+			this.gender = requestDTO.gender();
+		}
+		if (!this.university.equals(requestDTO.university())) {
+			this.university = requestDTO.university();
+		}
+		if (!this.phone.equals(requestDTO.phone())) {
+			this.phone = requestDTO.phone();
+		}
 	}
 
 	public void updateScore(float score) {

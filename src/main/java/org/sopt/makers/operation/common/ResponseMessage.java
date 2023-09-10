@@ -18,6 +18,7 @@ public enum ResponseMessage {
 	SUCCESS_GET_ATTENDANCE_SCORE("출석 점수 조회 성공"),
 	SUCCESS_GET_LECTURE_ROUND("출석 차수 조회 성공"),
 	SUCCESS_ATTEND("출석 성공"),
+	SUCCESS_PUT_MEMBER("회원 등록 성공"),
 
 	/** attendance **/
 	SUCCESS_UPDATE_ATTENDANCE_STATUS("출석 상태 변경 성공"),
