@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 import java.util.EnumMap;
 import java.util.List;
 
-import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 
 @Service
@@ -75,7 +74,7 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public void createMember(Long playGroundId, MemberRequestDTO requestDTO) {
         if (memberRepository.existsByPlaygroundId(playGroundId)) {
-            throw new EntityNotFoundException(DUPLICATED_MEMBER.getName());
+            throw new IllegalStateException(DUPLICATED_MEMBER.getName());
         }
         memberRepository.save(new Member(playGroundId, requestDTO));
     }
