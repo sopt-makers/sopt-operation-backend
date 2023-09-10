@@ -19,8 +19,6 @@ import java.security.Principal;
 import static java.util.Objects.nonNull;
 import static org.sopt.makers.operation.common.ResponseMessage.*;
 
-import javax.validation.Valid;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/app/members")
@@ -43,7 +41,7 @@ public class AppMemberController {
     @ApiOperation(value = "회원 등록")
     @PutMapping
     public ResponseEntity<ApiResponse> createMember(
-        @ApiIgnore Principal principal, @Valid @RequestBody MemberRequestDTO requestDTO
+        @ApiIgnore Principal principal, @RequestBody MemberRequestDTO requestDTO
     ) {
         memberService.putMember(getMemberId(principal), requestDTO);
         return ResponseEntity.ok(ApiResponse.success(SUCCESS_PUT_MEMBER.getMessage()));
