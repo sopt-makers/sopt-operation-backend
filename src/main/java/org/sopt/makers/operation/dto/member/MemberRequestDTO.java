@@ -5,6 +5,7 @@ import org.sopt.makers.operation.entity.ObYb;
 import org.sopt.makers.operation.entity.Part;
 
 public record MemberRequestDTO(
+	Long playgroundId,
 	String name,
 	int generation,
 	ObYb obyb,

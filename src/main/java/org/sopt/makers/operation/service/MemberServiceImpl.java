@@ -72,11 +72,11 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public void createMember(Long playGroundId, MemberRequestDTO requestDTO) {
-        if (memberRepository.existsByPlaygroundId(playGroundId)) {
+    public void createMember(MemberRequestDTO requestDTO) {
+        if (memberRepository.existsByPlaygroundId(requestDTO.playgroundId())) {
             throw new IllegalStateException(DUPLICATED_MEMBER.getName());
         }
-        memberRepository.save(new Member(playGroundId, requestDTO));
+        memberRepository.save(new Member(requestDTO));
     }
 
     private List<AttendanceTotalVO> filterEtcNoAppearance(List<AttendanceTotalVO> attendances) {

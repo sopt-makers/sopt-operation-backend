@@ -52,8 +52,8 @@ public class Member {
 	@OneToMany(mappedBy = "member")
 	List<Attendance> attendances = new ArrayList<>();
 
-	public Member(Long playgroundId, MemberRequestDTO requestDTO) {
-		this.playgroundId = playgroundId;
+	public Member(MemberRequestDTO requestDTO) {
+		this.playgroundId = requestDTO.playgroundId();
 		this.name = requestDTO.name();
 		this.generation = requestDTO.generation();
 		this.obyb = requestDTO.obyb();
