@@ -50,7 +50,7 @@ public class SecurityConfig {
                     .antMatchers("/api/v1/auth/**","/exception/**").permitAll()
                 .and()
                     .authorizeRequests()
-                    .antMatchers("/api/v1/**").authenticated()
+                    .antMatchers("/api/v1/**", "/swagger-ui/**").authenticated()
                 .and()
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
