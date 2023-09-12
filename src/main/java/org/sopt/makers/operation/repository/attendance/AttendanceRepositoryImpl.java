@@ -48,7 +48,7 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 	}
 
 	@Override
-	public List<Attendance> findAttendancesByLecture(Long lectureId, Part part, Pageable pageable) {
+	public List<Attendance> findAttendancesByLecture(Long lectureId, Part part) {
 		return queryFactory
 			.select(attendance)
 			.from(attendance)
@@ -61,8 +61,8 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 				partEq(part)
 			)
 			.orderBy(member.name.asc())
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize())
+			// .offset(pageable.getOffset())
+			// .limit(pageable.getPageSize())
 			.fetch();
 	}
 
