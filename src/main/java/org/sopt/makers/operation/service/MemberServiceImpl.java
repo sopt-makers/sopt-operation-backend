@@ -1,5 +1,7 @@
 package org.sopt.makers.operation.service;
 
+import static org.sopt.makers.operation.common.ExceptionMessage.*;
+
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
@@ -7,6 +9,7 @@ import org.sopt.makers.operation.dto.attendance.AttendanceTotalCountVO;
 import org.sopt.makers.operation.dto.attendance.AttendanceTotalResponseDTO;
 import org.sopt.makers.operation.dto.attendance.AttendanceTotalVO;
 import org.sopt.makers.operation.dto.member.MemberListGetResponse;
+import org.sopt.makers.operation.dto.member.MemberRequestDTO;
 import org.sopt.makers.operation.dto.member.MemberScoreGetResponse;
 import org.sopt.makers.operation.dto.member.MemberSearchCondition;
 import org.sopt.makers.operation.entity.AttendanceStatus;
@@ -21,7 +24,7 @@ import org.springframework.stereotype.Service;
 import java.util.EnumMap;
 import java.util.List;
 
-import static org.sopt.makers.operation.common.ExceptionMessage.INVALID_MEMBER;
+import javax.transaction.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -65,6 +68,15 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
 
         return MemberScoreGetResponse.of(member.getScore());
+    }
+
+    @Override
+    @Transactional
+    public void createMember(MemberRequestDTO requestDTO) {
+        if (memberRepository.existsByPlaygroundId(requestDTO.playgroundId())) {
+            throw new IllegalStateException(DUPLICATED_MEMBER.getName());
+        }
+        memberRepository.save(new Member(requestDTO));
     }
 
     private List<AttendanceTotalVO> filterEtcNoAppearance(List<AttendanceTotalVO> attendances) {

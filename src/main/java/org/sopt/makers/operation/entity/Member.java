@@ -15,6 +15,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import org.sopt.makers.operation.dto.member.MemberRequestDTO;
 import org.sopt.makers.operation.entity.lecture.Lecture;
 
 import lombok.Getter;
@@ -29,7 +30,9 @@ public class Member {
 	@Column(name = "member_id")
 	private Long id;
 
+	@Column(unique = true)
 	private Long playgroundId;
+
 	private String name;
 	private int generation;
 
@@ -49,17 +52,15 @@ public class Member {
 	@OneToMany(mappedBy = "member")
 	List<Attendance> attendances = new ArrayList<>();
 
-	public Member(Long playgroundId, String name, int generation, ObYb obyb, Part part,
-		Gender gender, String university, String phone) {
-
-		this.playgroundId = playgroundId;
-		this.name = name;
-		this.generation = generation;
-		this.obyb = obyb;
-		this.part = part;
-		this.gender = gender;
-		this.university = university;
-		this.phone = phone;
+	public Member(MemberRequestDTO requestDTO) {
+		this.playgroundId = requestDTO.playgroundId();
+		this.name = requestDTO.name();
+		this.generation = requestDTO.generation();
+		this.obyb = requestDTO.obyb();
+		this.part = requestDTO.part();
+		this.gender = requestDTO.gender();
+		this.university = requestDTO.university();
+		this.phone = requestDTO.phone();
 		this.score = 2;
 	}
 
