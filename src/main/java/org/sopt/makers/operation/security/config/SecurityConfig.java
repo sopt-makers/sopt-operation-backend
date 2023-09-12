@@ -47,7 +47,7 @@ public class SecurityConfig {
                 .cors().configurationSource(corsConfigurationSource())
                 .and()
                     .authorizeRequests()
-                    .antMatchers("/v2/api-docs/**", "/swagger-ui.html", "/webjars/swagger-ui/**", "/swagger-ui/**", "/api/v1/auth/**","/exception/**").permitAll()
+                    .antMatchers("/v2/api-docs/**", "/swagger-ui.html", "/webjars/swagger-ui/**", "/swagger-ui/**", "/swagger-resources/**", "/api/v1/auth/**","/exception/**").permitAll()
                 .and()
                     .authorizeRequests()
                     .antMatchers("/api/v1/**").authenticated()

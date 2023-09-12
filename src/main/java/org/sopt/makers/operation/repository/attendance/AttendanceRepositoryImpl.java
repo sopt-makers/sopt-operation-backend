@@ -18,7 +18,6 @@ import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.QSubAttendance;
 import org.sopt.makers.operation.entity.SubAttendance;
 import org.sopt.makers.operation.entity.lecture.Lecture;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;

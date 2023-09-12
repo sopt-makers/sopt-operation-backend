@@ -14,8 +14,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import java.security.Principal;
 
 import static java.util.Objects.nonNull;
-import static org.sopt.makers.operation.common.ResponseMessage.SUCCESS_GET_ATTENDANCE_SCORE;
-import static org.sopt.makers.operation.common.ResponseMessage.SUCCESS_TOTAL_ATTENDANCE;
+import static org.sopt.makers.operation.common.ResponseMessage.*;
 
 @RestController
 @RequiredArgsConstructor
