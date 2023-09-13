@@ -8,11 +8,13 @@ import static org.sopt.makers.operation.entity.QSubLecture.*;
 import static org.sopt.makers.operation.entity.lecture.QLecture.*;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
 import lombok.val;
 
+import org.sopt.makers.operation.config.GenerationConfig;
 import org.sopt.makers.operation.entity.Attendance;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.QSubAttendance;
@@ -31,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 
 	private final JPAQueryFactory queryFactory;
+	private final GenerationConfig generationConfig;
 
 	@Override
 	public List<Attendance> findAttendanceByMemberId(Long memberId) {
@@ -97,6 +100,41 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 			.from(attendance)
 			.leftJoin(attendance.member, member).fetchJoin().distinct()
 			.where(attendance.lecture.eq(lecture))
+			.fetch();
+	}
+
+	@Override
+	public List<Attendance> findCurrentAttendanceByMember(Long playGroundId) {
+		val now = LocalDateTime.now();
+		val today = now.toLocalDate();
+		val startOfDay = today.atStartOfDay();
+		val endOfDay = LocalDateTime.of(today, LocalTime.MAX);
+
+		return queryFactory
+			.select(attendance)
+			.from(attendance)
+			.leftJoin(attendance.lecture, lecture).fetchJoin()
+			.leftJoin(attendance.member, member).fetchJoin()
+			.where(
+				lecture.part.eq(member.part).or(lecture.part.eq(Part.ALL)),
+				lecture.startDate.between(startOfDay, endOfDay),
+				member.playgroundId.eq(playGroundId),
+				member.generation.eq(generationConfig.getCurrentGeneration())
+			)
+			.orderBy(lecture.startDate.asc())
+			.fetch();
+	}
+
+	@Override
+	public List<SubAttendance> findSubAttendanceByAttendanceId(Long attendanceId) {
+		return queryFactory
+			.select(subAttendance)
+			.from(subAttendance)
+			.leftJoin(subAttendance.subLecture, subLecture).fetchJoin()
+			.where(
+				subAttendance.attendance.id.eq(attendanceId)
+			)
+			.orderBy(subAttendance.createdDate.asc())
 			.fetch();
 	}
 
