@@ -58,7 +58,6 @@ public class Member {
 		this.generation = requestDTO.generation();
 		this.obyb = requestDTO.obyb();
 		this.part = requestDTO.part();
-		this.gender = requestDTO.gender();
 		this.university = requestDTO.university();
 		this.phone = requestDTO.phone();
 		this.score = 2;

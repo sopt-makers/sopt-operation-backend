@@ -10,7 +10,6 @@ public record MemberRequestDTO(
 	int generation,
 	ObYb obyb,
 	Part part,
-	Gender gender,
 	String university,
 	String phone
 ) {
