@@ -13,6 +13,7 @@ import org.sopt.makers.operation.dto.member.MemberSearchCondition;
 import org.sopt.makers.operation.entity.Member;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.lecture.QLecture;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -27,6 +28,22 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
+	public List<Member> search(MemberSearchCondition condition, Pageable pageable) {
+		StringExpression firstName = Expressions.stringTemplate("SUBSTR({0}, 1, 1)", member.name);
+
+		return queryFactory
+			.selectFrom(member)
+			.where(
+				partEq(condition.part()),
+				member.generation.eq(condition.generation())
+			)
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+        	.orderBy(firstName.asc())
+			.fetch();
+	}
+
+	@Override
 	public List<Member> search(MemberSearchCondition condition) {
 		StringExpression firstName = Expressions.stringTemplate("SUBSTR({0}, 1, 1)", member.name);
 
@@ -36,7 +53,7 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
 				partEq(condition.part()),
 				member.generation.eq(condition.generation())
 			)
-        	.orderBy(firstName.asc())
+			.orderBy(firstName.asc())
 			.fetch();
 	}
 

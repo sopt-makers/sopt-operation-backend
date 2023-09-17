@@ -19,6 +19,7 @@ import org.sopt.makers.operation.entity.lecture.Attribute;
 import org.sopt.makers.operation.exception.MemberException;
 import org.sopt.makers.operation.repository.attendance.AttendanceRepository;
 import org.sopt.makers.operation.repository.member.MemberRepository;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.EnumMap;
@@ -33,12 +34,12 @@ public class MemberServiceImpl implements MemberService {
     private final AttendanceRepository attendanceRepository;
 
     @Override
-    public List<MemberListGetResponse> getMemberList(Part part, int generation) {
+    public List<MemberListGetResponse> getMemberList(Part part, int generation, Pageable pageable) {
         if(part.equals(Part.ALL)) {
             part = null;
         }
 
-        val members = memberRepository.search(new MemberSearchCondition(part, generation));
+        val members = memberRepository.search(new MemberSearchCondition(part, generation), pageable);
 
         return members.stream().map(member -> {
             val attendances = findAttendances(member);
