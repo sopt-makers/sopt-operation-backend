@@ -14,11 +14,9 @@ public class ScheduleController {
 
 	private final LectureService lectureService;
 
-	// @Scheduled(cron = "0 0 0 ? * 7")
-	@Scheduled(cron = "5 * * * * *")
+	@Scheduled(cron = "0 0 0 ? * 7")
 	public void endLecture() {
 		lectureService.finishLecture();
-		System.out.println("work");
 	}
 
 }
