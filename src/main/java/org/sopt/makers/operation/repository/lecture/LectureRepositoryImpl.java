@@ -7,10 +7,13 @@ import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.lecture.Lecture;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static java.util.Objects.*;
 import static org.sopt.makers.operation.entity.QAttendance.*;
+import static org.sopt.makers.operation.entity.QMember.*;
+import static org.sopt.makers.operation.entity.lecture.LectureStatus.*;
 import static org.sopt.makers.operation.entity.lecture.QLecture.*;
 
 @Repository
@@ -27,6 +30,19 @@ public class LectureRepositoryImpl implements LectureCustomRepository {
                 partEq(part)
             )
             .orderBy(lecture.startDate.desc())
+            .fetch();
+    }
+
+    @Override
+    public List<Lecture> findLecturesToBeEnd() {
+        return queryFactory
+            .selectFrom(lecture)
+            .leftJoin(lecture.attendances, attendance).fetchJoin().distinct()
+            .leftJoin(attendance.member, member).fetchJoin().distinct()
+            .where(
+                lecture.endDate.before(LocalDateTime.now()),
+                lecture.lectureStatus.ne(END)
+            )
             .fetch();
     }
 
