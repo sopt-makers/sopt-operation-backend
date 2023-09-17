@@ -20,6 +20,7 @@ import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.QSubAttendance;
 import org.sopt.makers.operation.entity.SubAttendance;
 import org.sopt.makers.operation.entity.lecture.Lecture;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -50,7 +51,7 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 	}
 
 	@Override
-	public List<Attendance> findAttendancesByLecture(Long lectureId, Part part) {
+	public List<Attendance> findAttendancesByLecture(Long lectureId, Part part, Pageable pageable) {
 		return queryFactory
 			.select(attendance)
 			.from(attendance)
@@ -63,6 +64,8 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 				partEq(part)
 			)
 			.orderBy(member.name.asc())
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
 			.fetch();
 	}
 
