@@ -15,4 +15,6 @@ public interface AttendanceCustomRepository {
 	List<Attendance> findAttendancesByMember(Long memberId);
 	Optional<Attendance> findAttendanceBySubAttendance(SubAttendance subAttendance);
 	List<Attendance> findByLecture(Lecture lecture);
+	List<Attendance> findCurrentAttendanceByMember(Long playGroundId);
+	List<SubAttendance> findSubAttendanceByAttendanceId(Long attendanceId);
 }
