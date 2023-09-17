@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface LectureCustomRepository {
     List<Lecture> findLectures(int generation, Part part);
+    List<Lecture> findLecturesToBeEnd();
 }

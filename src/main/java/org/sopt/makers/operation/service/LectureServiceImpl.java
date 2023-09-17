@@ -178,6 +178,13 @@ public class LectureServiceImpl implements LectureService {
 	}
 
 	@Override
+	@Transactional
+	public void finishLecture() {
+		val lectures = lectureRepository.findLecturesToBeEnd();
+		lectures.forEach(Lecture::finish);
+	}
+
+	@Override
 	public LectureCurrentRoundResponseDTO getCurrentLectureRound(Long lectureId) {
 		val now = LocalDateTime.now();
 		val today = now.toLocalDate();
