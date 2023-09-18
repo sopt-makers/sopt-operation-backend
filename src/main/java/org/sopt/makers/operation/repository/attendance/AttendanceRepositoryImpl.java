@@ -44,7 +44,8 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 				.from(attendance)
 				.leftJoin(attendance.lecture, lecture)
 				.where(attendance.member.id.eq(memberId),
-						lecture.endDate.before(now)
+						lecture.endDate.before(now),
+						lecture.generation.eq(generationConfig.getCurrentGeneration())
 				)
 				.orderBy(attendance.lecture.startDate.desc())
 				.fetch();
