@@ -20,6 +20,7 @@ import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.QSubAttendance;
 import org.sopt.makers.operation.entity.SubAttendance;
 import org.sopt.makers.operation.entity.lecture.Lecture;
+import org.sopt.makers.operation.entity.lecture.LectureStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -37,14 +38,13 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 
 	@Override
 	public List<Attendance> findAttendanceByMemberId(Long memberId) {
-		val now = LocalDateTime.now();
 
 		return queryFactory
 				.select(attendance)
 				.from(attendance)
 				.leftJoin(attendance.lecture, lecture)
 				.where(attendance.member.id.eq(memberId),
-						lecture.endDate.before(now),
+						lecture.lectureStatus.eq(LectureStatus.END),
 						lecture.generation.eq(generationConfig.getCurrentGeneration())
 				)
 				.orderBy(attendance.lecture.startDate.desc())
