@@ -19,6 +19,7 @@ import org.sopt.makers.operation.entity.lecture.Attribute;
 import org.sopt.makers.operation.exception.MemberException;
 import org.sopt.makers.operation.repository.attendance.AttendanceRepository;
 import org.sopt.makers.operation.repository.member.MemberRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,9 @@ import javax.transaction.Transactional;
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final AttendanceRepository attendanceRepository;
+
+    @Value("${sopt.current.generation}")
+    private int currentGeneration;
 
     @Override
     public List<MemberListGetResponse> getMemberList(Part part, int generation, Pageable pageable) {
@@ -51,7 +55,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public AttendanceTotalResponseDTO getMemberTotalAttendance(Long playGroundId) {
-        val member = memberRepository.getMemberByPlaygroundId(playGroundId)
+        val member = memberRepository.getMemberByPlaygroundIdAndGeneration(playGroundId, currentGeneration)
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
 
         val attendances = findAttendances(member);
@@ -65,7 +69,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MemberScoreGetResponse getMemberScore(Long playGroundId) {
-        val member = memberRepository.getMemberByPlaygroundId(playGroundId)
+        val member = memberRepository.getMemberByPlaygroundIdAndGeneration(playGroundId, currentGeneration)
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
 
         return MemberScoreGetResponse.of(member.getScore());

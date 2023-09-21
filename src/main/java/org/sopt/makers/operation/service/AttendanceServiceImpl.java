@@ -23,6 +23,7 @@ import org.sopt.makers.operation.repository.attendance.AttendanceRepository;
 import org.sopt.makers.operation.exception.SubLectureException;
 import org.sopt.makers.operation.repository.lecture.SubLectureRepository;
 import org.sopt.makers.operation.repository.member.MemberRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +41,9 @@ public class AttendanceServiceImpl implements AttendanceService {
 	private final MemberRepository memberRepository;
 	private final SubLectureRepository subLectureRepository;
 	private final AttendanceRepository attendanceRepository;
+
+	@Value("${sopt.current.generation}")
+	private int currentGeneration;
 
 	@Override
 	@Transactional
@@ -77,7 +81,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 	@Override
 	@Transactional
 	public AttendResponseDTO attend(Long playGroundId, AttendRequestDTO requestDTO) {
-		val member = memberRepository.getMemberByPlaygroundId(playGroundId)
+		val member = memberRepository.getMemberByPlaygroundIdAndGeneration(playGroundId, currentGeneration)
 				.orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
 
 		val memberId = member.getId();
