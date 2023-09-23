@@ -11,7 +11,6 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Objects;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -31,24 +30,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             val jwtTokenType = validateTokenType(request);
 
-            val isTokenAvailable = checkJwtAvailable(token, jwtTokenType);
+            checkJwtAvailable(token, jwtTokenType);
 
-            if (Objects.isNull(token)) {
-                throw new TokenException(ExceptionMessage.INVALID_AUTH_REQUEST.getName());
-            }
-
-            if (isTokenAvailable) {
-                val auth = jwtTokenProvider.getAuthentication(token, jwtTokenType);
-                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(auth);
-            }
+            val auth = jwtTokenProvider.getAuthentication(token, jwtTokenType);
+            auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(auth);
         }
 
         chain.doFilter(request, response);
     }
 
-    private boolean checkJwtAvailable (String token, JwtTokenType jwtTokenType) {
-        return token != null && jwtTokenProvider.validateTokenExpiration(token, jwtTokenType);
+    private void checkJwtAvailable (String token, JwtTokenType jwtTokenType) {
+        if (token == null || !jwtTokenProvider.validateTokenExpiration(token, jwtTokenType)) {
+            throw new TokenException(ExceptionMessage.INVALID_AUTH_REQUEST.getName());
+        }
     }
 
     private JwtTokenType validateTokenType(HttpServletRequest request) {

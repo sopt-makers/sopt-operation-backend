@@ -22,9 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
+@Tag(name = "Lecture", description = "세션 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/lectures")
@@ -71,10 +73,18 @@ public class LectureController {
 		return ResponseEntity.ok(ApiResponse.success(SUCCESS_UPDATE_MEMBER_SCORE.getMessage()));
 	}
 
+	@ApiOperation(value = "세션 삭제")
 	@DeleteMapping("/{lectureId}")
 	public ResponseEntity<ApiResponse> deleteLecture(@PathVariable Long lectureId) {
 		lectureService.deleteLecture(lectureId);
 		return ResponseEntity.ok(ApiResponse.success(SUCCESS_DELETE_LECTURE.getMessage()));
+	}
+
+	@ApiOperation(value = "세션 상세 조회 (팝업)")
+	@GetMapping("/detail/{lectureId}")
+	public ResponseEntity<ApiResponse> getLectureDetail(@PathVariable Long lectureId) {
+		val response = lectureService.getLectureDetail(lectureId);
+		return ResponseEntity.ok(ApiResponse.success(SUCCESS_GET_LECTURE.getMessage(), response));
 	}
 
 	private URI getURI(Long lectureId) {

@@ -1,5 +1,6 @@
 package org.sopt.makers.operation.entity;
 
+import static org.sopt.makers.operation.entity.lecture.LectureStatus.*;
 import static org.sopt.makers.operation.util.Generation32.*;
 
 import java.util.ArrayList;
@@ -14,6 +15,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import org.sopt.makers.operation.dto.member.MemberRequestDTO;
+import org.sopt.makers.operation.entity.lecture.Lecture;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -27,6 +31,7 @@ public class Member {
 	private Long id;
 
 	private Long playgroundId;
+
 	private String name;
 	private int generation;
 
@@ -46,17 +51,14 @@ public class Member {
 	@OneToMany(mappedBy = "member")
 	List<Attendance> attendances = new ArrayList<>();
 
-	public Member(Long playgroundId, String name, int generation, ObYb obyb, Part part,
-		Gender gender, String university, String phone) {
-
-		this.playgroundId = playgroundId;
-		this.name = name;
-		this.generation = generation;
-		this.obyb = obyb;
-		this.part = part;
-		this.gender = gender;
-		this.university = university;
-		this.phone = phone;
+	public Member(MemberRequestDTO requestDTO) {
+		this.playgroundId = requestDTO.playgroundId();
+		this.name = requestDTO.name();
+		this.generation = requestDTO.generation();
+		this.obyb = requestDTO.obyb();
+		this.part = requestDTO.part();
+		this.university = requestDTO.university();
+		this.phone = requestDTO.phone();
 		this.score = 2;
 	}
 
@@ -66,7 +68,12 @@ public class Member {
 
 	public void updateTotalScore() {
 		this.score = (float) (2 + this.attendances.stream()
-			.mapToDouble(attendance -> getUpdateScore(attendance.getLecture().getAttribute(), attendance.getStatus()))
+			.mapToDouble(attendance -> {
+				Lecture lecture = attendance.getLecture();
+				return lecture.getLectureStatus().equals(END)
+					? getUpdateScore(lecture.getAttribute(), attendance.getStatus())
+					: 0;
+			})
 			.sum());
 	}
 }

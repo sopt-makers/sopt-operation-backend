@@ -41,10 +41,6 @@ record SubAttendanceVO(Long subAttendanceId, int round, AttendanceStatus status,
 			subAttendance.getId(),
 			subAttendance.getSubLecture().getRound(),
 			subAttendance.getStatus(),
-			transfer(subAttendance.getLastModifiedDate()));
-	}
-
-	private static String transfer(LocalDateTime time) {
-		return time.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
+			subAttendance.getLastModifiedDate().toString());
 	}
 }

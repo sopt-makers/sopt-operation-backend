@@ -4,7 +4,6 @@ import static java.util.Objects.nonNull;
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
 import static org.sopt.makers.operation.util.Generation32.*;
 
-import java.time.ZoneId;
 import java.util.List;
 
 import org.sopt.makers.operation.dto.attendance.AttendanceMemberResponseDTO;
@@ -24,6 +23,7 @@ import org.sopt.makers.operation.repository.attendance.AttendanceRepository;
 import org.sopt.makers.operation.exception.SubLectureException;
 import org.sopt.makers.operation.repository.lecture.SubLectureRepository;
 import org.sopt.makers.operation.repository.member.MemberRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +41,9 @@ public class AttendanceServiceImpl implements AttendanceService {
 	private final MemberRepository memberRepository;
 	private final SubLectureRepository subLectureRepository;
 	private final AttendanceRepository attendanceRepository;
-	private final ZoneId KST = ZoneId.of("Asia/Seoul");
+
+	@Value("${sopt.current.generation}")
+	private int currentGeneration;
 
 	@Override
 	@Transactional
@@ -79,12 +81,12 @@ public class AttendanceServiceImpl implements AttendanceService {
 	@Override
 	@Transactional
 	public AttendResponseDTO attend(Long playGroundId, AttendRequestDTO requestDTO) {
-		val member = memberRepository.getMemberByPlaygroundId(playGroundId)
+		val member = memberRepository.getMemberByPlaygroundIdAndGeneration(playGroundId, currentGeneration)
 				.orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
 
 		val memberId = member.getId();
 
-		val now = LocalDateTime.now(KST);
+		val now = LocalDateTime.now();
 
 		val subLecture = subLectureRepository.findById(requestDTO.subLectureId())
 				.orElseThrow(() -> new SubLectureException(INVALID_SUB_LECTURE.getName()));

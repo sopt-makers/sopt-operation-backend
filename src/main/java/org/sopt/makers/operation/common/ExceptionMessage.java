@@ -24,7 +24,9 @@ public enum ExceptionMessage {
 	INVALID_CODE("코드가 일치하지 않아요!"),
 	NOT_END_TIME_YET("세션 종료 시간이 지나지 않았습니다."),
 	END_LECTURE("이미 종료된 세션입니다."),
-	NO_SUB_LECTURE_EQUAL_ROUND("해당 라운드와 일치하는 출석 세션이 없습니다.");
+	NO_SUB_LECTURE_EQUAL_ROUND("해당 라운드와 일치하는 출석 세션이 없습니다."),
+	FAULT_DATE_FORMATTER("잘못된 날짜 형식입니다."),
+	DUPLICATED_MEMBER("이미 존재하는 회원입니다.");
 
 	private final String name;
 }

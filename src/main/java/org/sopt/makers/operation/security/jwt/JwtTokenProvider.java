@@ -40,8 +40,6 @@ public class JwtTokenProvider {
     @Value("${spring.jwt.secretKey.app}")
     private String appAccessSecretKey;
 
-    private final ZoneId KST = ZoneId.of("Asia/Seoul");
-
     public String generateAccessToken(Authentication authentication) {
         val encodedKey = encodeKey(accessSecretKey);
         val secretKeyBytes = DatatypeConverter.parseBase64Binary(encodedKey);
@@ -70,14 +68,7 @@ public class JwtTokenProvider {
 
     public boolean validateTokenExpiration(String token, JwtTokenType jwtTokenType) {
         try {
-            val claims = getClaimsFromToken(token, jwtTokenType);
-
-            val now = getCurrentTime();
-            val expireTime = claims.getExpiration().toInstant().atZone(KST).toLocalDateTime();
-            if (expireTime.isBefore(now)) {
-                throw new TokenException(ExceptionMessage.EXPIRED_TOKEN.getName());
-            }
-
+            getClaimsFromToken(token, jwtTokenType);
             return true;
         } catch (ExpiredJwtException e) {
             throw new TokenException(ExceptionMessage.EXPIRED_TOKEN.getName());
@@ -97,12 +88,6 @@ public class JwtTokenProvider {
         try {
             val claims = getClaimsFromToken(token, jwtTokenType);
 
-            val now = getCurrentTime();
-            val expireTime = claims.getExpiration().toInstant().atZone(KST).toLocalDateTime();
-            if (expireTime.isBefore(now)) {
-                throw new TokenException(ExceptionMessage.EXPIRED_TOKEN.getName());
-            }
-
             return Long.parseLong(claims.get("playgroundId").toString());
         } catch (ExpiredJwtException e) {
             throw new TokenException(ExceptionMessage.EXPIRED_TOKEN.getName());
@@ -114,12 +99,6 @@ public class JwtTokenProvider {
     public Long getId(String token, JwtTokenType jwtTokenType) {
         try {
             val claims = getClaimsFromToken(token, jwtTokenType);
-
-            val now = getCurrentTime();
-            val expireTime = claims.getExpiration().toInstant().atZone(KST).toLocalDateTime();
-            if (expireTime.isBefore(now)) {
-                throw new TokenException(ExceptionMessage.EXPIRED_TOKEN.getName());
-            }
 
             return Long.parseLong(claims.getSubject());
         } catch (ExpiredJwtException e) {
@@ -149,7 +128,7 @@ public class JwtTokenProvider {
     }
 
     private LocalDateTime getCurrentTime() {
-        return LocalDateTime.now(KST);
+        return LocalDateTime.now();
     }
 
     private String setSecretKey(JwtTokenType jwtTokenType) {
