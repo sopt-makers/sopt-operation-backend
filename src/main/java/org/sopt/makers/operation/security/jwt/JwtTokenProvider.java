@@ -141,7 +141,7 @@ public class JwtTokenProvider {
 
     private LocalDateTime setExpireTime(LocalDateTime now, JwtTokenType jwtTokenType) {
         return switch (jwtTokenType) {
-            case ACCESS_TOKEN -> now.plusHours(5);
+            case ACCESS_TOKEN -> now.plusMinutes(3);
             case REFRESH_TOKEN -> now.plusWeeks(2);
             case APP_ACCESS_TOKEN -> throw new TokenException(ExceptionMessage.INVALID_TOKEN.getName());
         };
