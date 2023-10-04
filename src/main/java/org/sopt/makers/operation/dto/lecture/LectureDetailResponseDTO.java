@@ -1,7 +1,5 @@
 package org.sopt.makers.operation.dto.lecture;
 
-import java.time.LocalDateTime;
-
 import org.sopt.makers.operation.entity.lecture.Lecture;
 
 import lombok.Builder;
@@ -14,7 +12,8 @@ public record LectureDetailResponseDTO(
 	String place,
 	String attribute,
 	String startDate,
-	String endDate
+	String endDate,
+	int generation
 ) {
 	public static LectureDetailResponseDTO of(Lecture lecture) {
 		return LectureDetailResponseDTO.builder()
@@ -25,6 +24,7 @@ public record LectureDetailResponseDTO(
 			.attribute(lecture.getAttribute().getName())
 			.startDate(lecture.getStartDate().toString())
 			.endDate(lecture.getEndDate().toString())
+			.generation(lecture.getGeneration())
 			.build();
 	}
 }
