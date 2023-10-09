@@ -1,7 +1,5 @@
 package org.sopt.makers.operation.dto.attendance;
 
-import static org.sopt.makers.operation.util.Generation32.*;
-
 import java.util.List;
 
 import org.sopt.makers.operation.entity.Attendance;
@@ -36,7 +34,7 @@ record LectureVO(
 	public static LectureVO of(Attendance attendance) {
 		return new LectureVO(
 			attendance.getLecture().getName(),
-			getUpdateScore(attendance.getLecture().getAttribute(), attendance.getStatus()),
+			attendance.getScore(),
 			attendance.getStatus().getName(),
 			attendance.getSubAttendances().stream().map(AttendanceVO::of).toList());
 	}
