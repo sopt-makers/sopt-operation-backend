@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface AttendanceCustomRepository {
 	List<Attendance> findAttendanceByMemberId(Long memberId);
-	List<Attendance> findAttendancesByLecture(Long lectureId, Part part, Pageable pageable);
+	List<Attendance> findByLecture(Long lectureId, Part part, Pageable pageable);
 	List<Attendance> findByMember(Member member);
 	List<Attendance> findByLecture(Lecture lecture);
 	List<Attendance> findCurrentAttendanceByMember(Long playGroundId);
