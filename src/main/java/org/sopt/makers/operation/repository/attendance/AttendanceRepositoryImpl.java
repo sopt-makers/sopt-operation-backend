@@ -18,7 +18,6 @@ import org.sopt.makers.operation.entity.Attendance;
 import org.sopt.makers.operation.entity.Member;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.SubAttendance;
-import org.sopt.makers.operation.entity.lecture.Lecture;
 import org.sopt.makers.operation.entity.lecture.LectureStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -77,16 +76,6 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 			.leftJoin(subAttendance.subLecture, subLecture).fetchJoin()
 			.where(attendance.member.eq(member))
 			.orderBy(lecture.startDate.desc())
-			.fetch();
-	}
-
-	@Override
-	public List<Attendance> findByLecture(Lecture lecture) {
-		return queryFactory
-			.select(attendance)
-			.from(attendance)
-			.leftJoin(attendance.member, member).fetchJoin().distinct()
-			.where(attendance.lecture.eq(lecture))
 			.fetch();
 	}
 

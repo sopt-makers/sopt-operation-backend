@@ -85,6 +85,14 @@ public class Attendance {
 		};
 	}
 
+	public void updateMemberScore() {
+		this.member.updateScore(this.getScore());
+	}
+
+	public void revertMemberScore() {
+		this.member.updateScore((-1) * this.getScore());
+	}
+
 	private SubAttendance getSubAttendanceByRound(int round) {
 		return this.subAttendances.stream().filter(o -> o.getSubLecture().getRound() == round).findFirst()
 			.orElseThrow(() -> new EntityNotFoundException(INVALID_SUB_ATTENDANCE.getName()));

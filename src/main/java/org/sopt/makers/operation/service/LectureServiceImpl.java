@@ -5,7 +5,6 @@ import static org.sopt.makers.operation.common.ExceptionMessage.*;
 import static org.sopt.makers.operation.entity.AttendanceStatus.*;
 import static org.sopt.makers.operation.entity.Part.*;
 import static org.sopt.makers.operation.entity.lecture.LectureStatus.*;
-import static org.sopt.makers.operation.util.Generation32.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -236,21 +235,19 @@ public class LectureServiceImpl implements LectureService {
 	@Override
 	@Transactional
 	public void deleteLecture(Long lectureId) {
-		Lecture lecture = findLecture(lectureId);
+		val lecture = lectureRepository.find(lectureId)
+			.orElseThrow(() -> new LectureException(INVALID_LECTURE.getName()));
+
+		// 출석 종료된 세션: 출석 점수 갱신 전으로 복구
 		if (lecture.getLectureStatus().equals(END)) {
-			revertMemberScore(lecture);
+			lecture.getAttendances().forEach(Attendance::revertMemberScore);
 		}
+
+		// 연관 관계의 객체 삭제 후 세션 삭제
 		subAttendanceRepository.deleteAllBySubLectureIn(lecture.getSubLectures());
 		subLectureRepository.deleteAllByLecture(lecture);
 		attendanceRepository.deleteAllByLecture(lecture);
-		lectureRepository.deleteById(lectureId);
-	}
-
-	private void revertMemberScore(Lecture lecture) {
-		attendanceRepository.findByLecture(lecture).forEach(attendance -> {
-			float score = getUpdateScore(lecture.getAttribute(), attendance.getStatus());
-			attendance.getMember().updateScore((-1) * score);
-		});
+		lectureRepository.delete(lecture);
 	}
 
 	@Override

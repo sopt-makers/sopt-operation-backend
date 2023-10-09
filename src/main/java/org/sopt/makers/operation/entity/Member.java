@@ -1,7 +1,6 @@
 package org.sopt.makers.operation.entity;
 
 import static org.sopt.makers.operation.entity.lecture.LectureStatus.*;
-import static org.sopt.makers.operation.util.Generation32.*;
 
 import java.util.ArrayList;
 import java.util.List;
