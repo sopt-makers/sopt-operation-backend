@@ -56,7 +56,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 	@Override
 	public AttendanceMemberResponseDTO findAttendancesByMember(Long memberId) {
 		val member = findMember(memberId);
-		val attendances = attendanceRepository.findAttendancesByMember(memberId);
+		val attendances = attendanceRepository.findByMember(member);
 		return AttendanceMemberResponseDTO.of(member, attendances);
 	}
 

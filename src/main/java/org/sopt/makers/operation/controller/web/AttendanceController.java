@@ -33,7 +33,7 @@ public class AttendanceController {
 		return ResponseEntity.ok(ApiResponse.success(SUCCESS_UPDATE_ATTENDANCE_STATUS.getMessage(), response));
 	}
 
-	@ApiOperation(value = "유저별 출석 정보 조회")
+	@ApiOperation(value = "회원별 출석 정보 조회")
 	@GetMapping("/{memberId}")
 	public ResponseEntity<ApiResponse> findAttendancesByMember(@PathVariable Long memberId) {
 		val response = attendanceService.findAttendancesByMember(memberId);

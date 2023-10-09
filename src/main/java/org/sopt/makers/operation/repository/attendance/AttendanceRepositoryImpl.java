@@ -10,14 +10,13 @@ import static org.sopt.makers.operation.entity.lecture.QLecture.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
 import lombok.val;
 
 import org.sopt.makers.operation.config.GenerationConfig;
 import org.sopt.makers.operation.entity.Attendance;
+import org.sopt.makers.operation.entity.Member;
 import org.sopt.makers.operation.entity.Part;
-import org.sopt.makers.operation.entity.QSubAttendance;
 import org.sopt.makers.operation.entity.SubAttendance;
 import org.sopt.makers.operation.entity.lecture.Lecture;
 import org.sopt.makers.operation.entity.lecture.LectureStatus;
@@ -71,27 +70,15 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 	}
 
 	@Override
-	public List<Attendance> findAttendancesByMember(Long memberId) {
+	public List<Attendance> findByMember(Member member) {
 		return queryFactory
-			.select(attendance)
-			.from(attendance)
+			.selectFrom(attendance)
 			.leftJoin(attendance.subAttendances, subAttendance).fetchJoin().distinct()
 			.leftJoin(attendance.lecture, lecture).fetchJoin()
 			.leftJoin(subAttendance.subLecture, subLecture).fetchJoin()
-			.where(attendance.member.id.eq(memberId))
+			.where(attendance.member.eq(member))
 			.orderBy(lecture.startDate.desc())
 			.fetch();
-	}
-
-	@Override
-	public Optional<Attendance> findAttendanceBySubAttendance(SubAttendance subAttendance) {
-		return queryFactory
-			.select(attendance)
-			.from(attendance)
-			.join(attendance.subAttendances, QSubAttendance.subAttendance).fetchJoin()
-			.join(QSubAttendance.subAttendance.subLecture, subLecture).fetchJoin()
-			.where(attendance.subAttendances.contains(subAttendance))
-			.stream().findFirst();
 	}
 
 	@Override
