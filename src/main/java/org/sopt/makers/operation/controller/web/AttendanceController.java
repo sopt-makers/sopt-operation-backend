@@ -3,7 +3,7 @@ package org.sopt.makers.operation.controller.web;
 import static org.sopt.makers.operation.common.ResponseMessage.*;
 
 import org.sopt.makers.operation.common.ApiResponse;
-import org.sopt.makers.operation.dto.attendance.AttendUpdateRequestDTO;
+import org.sopt.makers.operation.dto.attendance.SubAttendanceUpdateRequestDTO;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.service.AttendanceService;
 import org.springframework.data.domain.Pageable;
@@ -28,8 +28,8 @@ public class AttendanceController {
 
 	@ApiOperation(value = "출석 상태 변경")
 	@PatchMapping
-	public ResponseEntity<ApiResponse> updateAttendanceStatus(@RequestBody AttendUpdateRequestDTO requestDTO) {
-		val response = attendanceService.updateAttendanceStatus(requestDTO);
+	public ResponseEntity<ApiResponse> updateSubAttendance(@RequestBody SubAttendanceUpdateRequestDTO requestDTO) {
+		val response = attendanceService.updateSubAttendance(requestDTO);
 		return ResponseEntity.ok(ApiResponse.success(SUCCESS_UPDATE_ATTENDANCE_STATUS.getMessage(), response));
 	}
 

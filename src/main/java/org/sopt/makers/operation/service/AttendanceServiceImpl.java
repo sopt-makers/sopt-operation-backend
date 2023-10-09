@@ -7,8 +7,8 @@ import static org.sopt.makers.operation.util.Generation32.*;
 import java.util.List;
 
 import org.sopt.makers.operation.dto.attendance.AttendanceMemberResponseDTO;
-import org.sopt.makers.operation.dto.attendance.AttendUpdateRequestDTO;
-import org.sopt.makers.operation.dto.attendance.AttendUpdateResponseDTO;
+import org.sopt.makers.operation.dto.attendance.SubAttendanceUpdateRequestDTO;
+import org.sopt.makers.operation.dto.attendance.SubAttendanceUpdateResponseDTO;
 import org.sopt.makers.operation.dto.attendance.MemberResponseDTO;
 import lombok.val;
 import org.sopt.makers.operation.dto.attendance.*;
@@ -47,13 +47,10 @@ public class AttendanceServiceImpl implements AttendanceService {
 
 	@Override
 	@Transactional
-	public AttendUpdateResponseDTO updateAttendanceStatus(AttendUpdateRequestDTO requestDTO) {
+	public SubAttendanceUpdateResponseDTO updateSubAttendance(SubAttendanceUpdateRequestDTO requestDTO) {
 		val subAttendance = findSubAttendance(requestDTO.subAttendanceId());
-		val attendance = attendanceRepository.findAttendanceBySubAttendance(subAttendance)
-				.orElseThrow(() -> new LectureException(INVALID_ATTENDANCE.getName()));
 		subAttendance.updateStatus(requestDTO.status());
-		attendance.updateStatus(getAttendanceStatus(requestDTO.attribute(), attendance.getSubAttendances()));
-		return AttendUpdateResponseDTO.of(subAttendance);
+		return SubAttendanceUpdateResponseDTO.of(subAttendance);
 	}
 
 	@Override
