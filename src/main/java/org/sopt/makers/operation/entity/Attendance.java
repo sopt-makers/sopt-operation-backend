@@ -73,6 +73,22 @@ public class Attendance {
 		};
 	}
 
+	public float getScore() {
+		return switch (this.lecture.getAttribute()) {
+			case SEMINAR -> {
+				if (this.status.equals(ABSENT)) {
+					yield  -1f;
+				} else if (this.status.equals(TARDY)) {
+					yield -0.5f;
+				} else {
+					yield 0f;
+				}
+			}
+			case EVENT -> this.status.equals(ATTENDANCE) ? 0.5f : 0f;
+			default -> 0f;
+		};
+	}
+
 	private SubAttendance getSubAttendanceByRound(int round) {
 		return this.subAttendances.stream().filter(o -> o.getSubLecture().getRound() == round).findFirst()
 			.orElseThrow(() -> new EntityNotFoundException(INVALID_SUB_ATTENDANCE.getName()));

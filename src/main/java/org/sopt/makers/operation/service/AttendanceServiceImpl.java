@@ -63,7 +63,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 	@Override
 	@Transactional
 	public float updateMemberScore(Long memberId) {
-		Member member = memberRepository.findMemberByIdFetchJoinAttendances(memberId)
+		Member member = memberRepository.find(memberId)
 			.orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
 		member.updateTotalScore();
 		return member.getScore();

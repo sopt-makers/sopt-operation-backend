@@ -40,7 +40,7 @@ public class AttendanceController {
 		return ResponseEntity.ok(ApiResponse.success(SUCCESS_GET_MEMBER_ATTENDANCE.getMessage(), response));
 	}
 
-	@ApiOperation(value = "출석 점수 갱신 성공")
+	@ApiOperation(value = "출석 점수 갱신")
 	@PatchMapping("/member/{memberId}")
 	public ResponseEntity<ApiResponse> updateMemberScore(@PathVariable Long memberId) {
 		val response = attendanceService.updateMemberScore(memberId);

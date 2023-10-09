@@ -68,12 +68,8 @@ public class Member {
 
 	public void updateTotalScore() {
 		this.score = (float) (2 + this.attendances.stream()
-			.mapToDouble(attendance -> {
-				Lecture lecture = attendance.getLecture();
-				return lecture.getLectureStatus().equals(END)
-					? getUpdateScore(lecture.getAttribute(), attendance.getStatus())
-					: 0;
-			})
+			.filter(attendance -> attendance.getLecture().getLectureStatus().equals(END))
+			.mapToDouble(Attendance::getScore)
 			.sum());
 	}
 }
