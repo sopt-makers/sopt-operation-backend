@@ -53,10 +53,6 @@ public class Attendance {
 		this.status = AttendanceStatus.ABSENT;
 	}
 
-	public void updateStatus(AttendanceStatus status) {
-		this.status = status;
-	}
-
 	public void updateStatus() {
 		this.status = getStatus();
 	}

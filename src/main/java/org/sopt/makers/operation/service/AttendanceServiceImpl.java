@@ -2,7 +2,6 @@ package org.sopt.makers.operation.service;
 
 import static java.util.Objects.nonNull;
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
-import static org.sopt.makers.operation.util.Generation32.*;
 
 import java.util.List;
 
@@ -117,7 +116,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 
 		currentRoundSubAttendance.updateStatus(AttendanceStatus.ATTENDANCE);
 
-		attendance.updateStatus(getAttendanceStatus(attendance.getLecture().getAttribute(), attendance.getSubAttendances()));
+		attendance.updateStatus();
 
 		return AttendResponseDTO.of(subLecture.getId());
 	}
