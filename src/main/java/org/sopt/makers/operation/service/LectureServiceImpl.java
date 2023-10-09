@@ -3,6 +3,7 @@ package org.sopt.makers.operation.service;
 import static java.util.Objects.nonNull;
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
 import static org.sopt.makers.operation.entity.AttendanceStatus.*;
+import static org.sopt.makers.operation.entity.Part.*;
 import static org.sopt.makers.operation.entity.lecture.LectureStatus.*;
 import static org.sopt.makers.operation.util.Generation32.*;
 
@@ -260,7 +261,7 @@ public class LectureServiceImpl implements LectureService {
 
 	private MemberSearchCondition getMemberSearchCondition(LectureRequestDTO requestDTO) {
 		return new MemberSearchCondition(
-			requestDTO.part() != Part.ALL ? requestDTO.part() : null,
+			!requestDTO.part().equals(ALL) ? requestDTO.part() : null,
 			requestDTO.generation()
 		);
 	}
