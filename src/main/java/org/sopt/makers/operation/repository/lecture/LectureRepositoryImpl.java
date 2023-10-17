@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Objects.*;
 import static org.sopt.makers.operation.entity.QAttendance.*;
@@ -44,6 +45,16 @@ public class LectureRepositoryImpl implements LectureCustomRepository {
                 lecture.lectureStatus.ne(END)
             )
             .fetch();
+    }
+
+    @Override
+    public Optional<Lecture> find(Long lectureId) {
+        return queryFactory
+            .selectFrom(lecture)
+            .leftJoin(lecture.attendances, attendance).fetchJoin().distinct()
+            .leftJoin(attendance.member, member).fetchJoin().distinct()
+            .where(lecture.id.eq(lectureId))
+            .stream().findFirst();
     }
 
     private BooleanExpression partEq(Part part) {

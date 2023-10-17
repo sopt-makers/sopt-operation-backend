@@ -10,16 +10,14 @@ import static org.sopt.makers.operation.entity.lecture.QLecture.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
 import lombok.val;
 
 import org.sopt.makers.operation.config.GenerationConfig;
 import org.sopt.makers.operation.entity.Attendance;
+import org.sopt.makers.operation.entity.Member;
 import org.sopt.makers.operation.entity.Part;
-import org.sopt.makers.operation.entity.QSubAttendance;
 import org.sopt.makers.operation.entity.SubAttendance;
-import org.sopt.makers.operation.entity.lecture.Lecture;
 import org.sopt.makers.operation.entity.lecture.LectureStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -52,14 +50,13 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 	}
 
 	@Override
-	public List<Attendance> findAttendancesByLecture(Long lectureId, Part part, Pageable pageable) {
+	public List<Attendance> findByLecture(Long lectureId, Part part, Pageable pageable) {
 		return queryFactory
-			.select(attendance)
-			.from(attendance)
-			.join(attendance.subAttendances, subAttendance).fetchJoin()
-			.join(subAttendance.subLecture, subLecture).fetchJoin()
-			.join(attendance.lecture, lecture).fetchJoin()
-			.join(attendance.member, member).fetchJoin().distinct()
+			.selectFrom(attendance)
+			.leftJoin(attendance.subAttendances, subAttendance).fetchJoin().distinct()
+			.leftJoin(subAttendance.subLecture, subLecture).fetchJoin()
+			.leftJoin(attendance.lecture, lecture).fetchJoin()
+			.leftJoin(attendance.member, member).fetchJoin().distinct()
 			.where(
 				attendance.lecture.id.eq(lectureId),
 				partEq(part)
@@ -71,36 +68,14 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 	}
 
 	@Override
-	public List<Attendance> findAttendancesByMember(Long memberId) {
+	public List<Attendance> findByMember(Member member) {
 		return queryFactory
-			.select(attendance)
-			.from(attendance)
+			.selectFrom(attendance)
 			.leftJoin(attendance.subAttendances, subAttendance).fetchJoin().distinct()
 			.leftJoin(attendance.lecture, lecture).fetchJoin()
 			.leftJoin(subAttendance.subLecture, subLecture).fetchJoin()
-			.where(attendance.member.id.eq(memberId))
+			.where(attendance.member.eq(member))
 			.orderBy(lecture.startDate.desc())
-			.fetch();
-	}
-
-	@Override
-	public Optional<Attendance> findAttendanceBySubAttendance(SubAttendance subAttendance) {
-		return queryFactory
-			.select(attendance)
-			.from(attendance)
-			.join(attendance.subAttendances, QSubAttendance.subAttendance).fetchJoin()
-			.join(QSubAttendance.subAttendance.subLecture, subLecture).fetchJoin()
-			.where(attendance.subAttendances.contains(subAttendance))
-			.stream().findFirst();
-	}
-
-	@Override
-	public List<Attendance> findByLecture(Lecture lecture) {
-		return queryFactory
-			.select(attendance)
-			.from(attendance)
-			.leftJoin(attendance.member, member).fetchJoin().distinct()
-			.where(attendance.lecture.eq(lecture))
 			.fetch();
 	}
 

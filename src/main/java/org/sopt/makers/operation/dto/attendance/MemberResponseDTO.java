@@ -1,9 +1,5 @@
 package org.sopt.makers.operation.dto.attendance;
 
-import static org.sopt.makers.operation.util.Generation32.*;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.sopt.makers.operation.entity.Attendance;
@@ -15,14 +11,15 @@ public record MemberResponseDTO (
 	Long attendanceId,
 	MemberVO member,
 	List<SubAttendanceVO> attendances,
-	float updatedScore) {
+	float updatedScore
+) {
 
 	public static MemberResponseDTO of(Attendance attendance) {
 		return new MemberResponseDTO(
 			attendance.getId(),
 			MemberVO.of(attendance.getMember()),
 			attendance.getSubAttendances().stream().map(SubAttendanceVO::of).toList(),
-			getUpdateScore(attendance.getLecture().getAttribute(), attendance.getStatus()));
+			attendance.getScore());
 	}
 }
 

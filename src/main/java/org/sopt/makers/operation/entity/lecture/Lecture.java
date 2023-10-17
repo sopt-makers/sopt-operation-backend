@@ -1,7 +1,6 @@
 package org.sopt.makers.operation.entity.lecture;
 
 import static javax.persistence.GenerationType.*;
-import static org.sopt.makers.operation.util.Generation32.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -16,7 +15,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import org.sopt.makers.operation.entity.Attendance;
-import org.sopt.makers.operation.entity.AttendanceStatus;
 import org.sopt.makers.operation.entity.BaseEntity;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.SubLecture;
@@ -78,12 +76,6 @@ public class Lecture extends BaseEntity {
 
 	public void finish() {
 		this.lectureStatus = LectureStatus.END;
-		attendances.forEach(this::updateScore);
-	}
-
-	private void updateScore(Attendance attendance) {
-		Attribute attribute = this.attribute;
-		AttendanceStatus status = attendance.getStatus();
-		attendance.getMember().updateScore(getUpdateScore(attribute, status));
+		attendances.forEach(Attendance::updateMemberScore);
 	}
 }

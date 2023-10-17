@@ -3,6 +3,7 @@ package org.sopt.makers.operation.repository.member;
 import static java.util.Objects.*;
 import static org.sopt.makers.operation.entity.QAttendance.*;
 import static org.sopt.makers.operation.entity.QMember.*;
+import static org.sopt.makers.operation.entity.lecture.QLecture.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +13,6 @@ import com.querydsl.core.types.dsl.StringExpression;
 import org.sopt.makers.operation.dto.member.MemberSearchCondition;
 import org.sopt.makers.operation.entity.Member;
 import org.sopt.makers.operation.entity.Part;
-import org.sopt.makers.operation.entity.lecture.QLecture;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -58,12 +58,11 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
 	}
 
 	@Override
-	public Optional<Member> findMemberByIdFetchJoinAttendances(Long memberId) {
+	public Optional<Member> find(Long memberId) {
 		return queryFactory
-			.select(member)
-			.from(member)
+			.selectFrom(member)
 			.join(member.attendances, attendance).fetchJoin().distinct()
-			.join(attendance.lecture, QLecture.lecture).fetchJoin()
+			.join(attendance.lecture, lecture).fetchJoin()
 			.where(member.id.eq(memberId))
 			.stream().findFirst();
 	}
