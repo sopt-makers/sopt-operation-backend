@@ -61,5 +61,6 @@ public class SubAttendance extends BaseEntity {
 
 	public void updateStatus(AttendanceStatus status) {
 		this.status = status;
+		this.attendance.updateStatus();
 	}
 }

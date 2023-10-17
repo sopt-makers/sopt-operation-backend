@@ -10,5 +10,5 @@ import org.springframework.data.domain.Pageable;
 public interface MemberCustomRepository {
 	List<Member> search(MemberSearchCondition condition, Pageable pageable);
 	List<Member> search(MemberSearchCondition condition);
-	Optional<Member> findMemberByIdFetchJoinAttendances(Long memberId);
+	Optional<Member> find(Long memberId);
 }
