@@ -1,5 +1,6 @@
 package org.sopt.makers.operation.repository.attendance;
 
+import static com.querydsl.core.types.dsl.Expressions.*;
 import static org.sopt.makers.operation.entity.Part.*;
 import static org.sopt.makers.operation.entity.QAttendance.*;
 import static org.sopt.makers.operation.entity.QMember.*;
@@ -53,15 +54,15 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 	public List<Attendance> findByLecture(Long lectureId, Part part, Pageable pageable) {
 		return queryFactory
 			.selectFrom(attendance)
-			.leftJoin(attendance.subAttendances, subAttendance).fetchJoin().distinct()
+			.leftJoin(attendance.subAttendances, subAttendance).fetchJoin()
 			.leftJoin(subAttendance.subLecture, subLecture).fetchJoin()
 			.leftJoin(attendance.lecture, lecture).fetchJoin()
-			.leftJoin(attendance.member, member).fetchJoin().distinct()
+			.leftJoin(attendance.member, member).fetchJoin()
 			.where(
 				attendance.lecture.id.eq(lectureId),
 				partEq(part)
 			)
-			.orderBy(member.name.asc())
+			.orderBy(stringTemplate("SUBSTR({0}, 1, 1)", member.name).asc())
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch();
