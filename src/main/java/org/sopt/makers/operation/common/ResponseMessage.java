@@ -36,7 +36,8 @@ public enum ResponseMessage {
 
 	/** alarm **/
 	SUCCESS_CREATE_ALARM("알림 생성 성공"),
-	SUCCESS_GET_ALARMS("알림 리스트 조회 성공")
+	SUCCESS_GET_ALARMS("알림 리스트 조회 성공"),
+	SUCCESS_GET_ALARM("알림 상세 조회 성공")
 	;
 
 	private final String message;

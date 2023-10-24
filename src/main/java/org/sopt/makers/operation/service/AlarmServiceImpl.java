@@ -1,6 +1,11 @@
 package org.sopt.makers.operation.service;
 
+import static org.sopt.makers.operation.common.ExceptionMessage.*;
+
+import javax.persistence.EntityNotFoundException;
+
 import org.sopt.makers.operation.dto.alarm.AlarmRequestDTO;
+import org.sopt.makers.operation.dto.alarm.AlarmResponseDTO;
 import org.sopt.makers.operation.dto.alarm.AlarmsResponseDTO;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.alarm.Status;
@@ -28,5 +33,12 @@ public class AlarmServiceImpl implements AlarmService {
 	public AlarmsResponseDTO getAlarms(Integer generation, Part part, Status status, Pageable pageable) {
 		val alarms = alarmRepository.getAlarms(generation, part, status, pageable);
 		return AlarmsResponseDTO.of(alarms);
+	}
+
+	@Override
+	public AlarmResponseDTO getAlarm(Long alarmId) {
+		val alarm = alarmRepository.findById(alarmId)
+			.orElseThrow(() -> new EntityNotFoundException(INVALID_ALARM.getName()));
+		return AlarmResponseDTO.of(alarm);
 	}
 }
