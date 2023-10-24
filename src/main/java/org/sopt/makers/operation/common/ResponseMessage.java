@@ -35,7 +35,8 @@ public enum ResponseMessage {
 	SUCCESS_DELETE_LECTURE("세션 삭제 성공"),
 
 	/** alarm **/
-	SUCCESS_CREATE_ALARM("알림 생성 성공")
+	SUCCESS_CREATE_ALARM("알림 생성 성공"),
+	SUCCESS_GET_ALARMS("알림 리스트 조회 성공")
 	;
 
 	private final String message;
