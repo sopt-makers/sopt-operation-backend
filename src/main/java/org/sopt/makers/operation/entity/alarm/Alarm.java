@@ -1,5 +1,6 @@
 package org.sopt.makers.operation.entity.alarm;
 
+import static java.util.Objects.*;
 import static javax.persistence.EnumType.*;
 import static javax.persistence.GenerationType.*;
 
@@ -43,7 +44,7 @@ public class Alarm extends BaseEntity {
 
 	private String link;
 
-	private boolean isActive;
+	private Boolean isActive;
 
 	@Enumerated(value = STRING)
 	private Part part;
@@ -64,8 +65,12 @@ public class Alarm extends BaseEntity {
 		this.title = requestDTO.title();
 		this.content = requestDTO.content();
 		this.link = requestDTO.link();
-		this.isActive = requestDTO.isActive();
-		this.part = requestDTO.part();
-		this.targetList = requestDTO.targetList();
+		if (nonNull(requestDTO.isActive()) && nonNull(requestDTO.part())) {
+			this.isActive = requestDTO.isActive();
+			this.part = requestDTO.part();
+		}
+		if (nonNull(requestDTO.targetList())) {
+			this.targetList = requestDTO.targetList();
+		}
 	}
 }
