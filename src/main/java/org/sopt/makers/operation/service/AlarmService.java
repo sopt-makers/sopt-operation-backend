@@ -12,4 +12,6 @@ public interface AlarmService {
 	AlarmsResponseDTO getAlarms(Integer generation, Part part, Status status, Pageable pageable);
 
 	AlarmResponseDTO getAlarm(Long alarmId);
+
+	void deleteAlarm(Long alarmId);
 }
