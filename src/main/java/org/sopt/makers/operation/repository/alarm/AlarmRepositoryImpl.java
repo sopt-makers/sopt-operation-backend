@@ -2,15 +2,12 @@ package org.sopt.makers.operation.repository.alarm;
 
 import static java.util.Objects.*;
 import static org.sopt.makers.operation.entity.Part.*;
-import static org.sopt.makers.operation.entity.QMember.*;
 import static org.sopt.makers.operation.entity.alarm.QAlarm.*;
 
 import java.util.List;
-import java.util.Objects;
 
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.alarm.Alarm;
-import org.sopt.makers.operation.entity.alarm.QAlarm;
 import org.sopt.makers.operation.entity.alarm.Status;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
