@@ -28,6 +28,7 @@ public enum ExceptionMessage {
 	FAULT_DATE_FORMATTER("잘못된 날짜 형식입니다."),
 	DUPLICATED_MEMBER("이미 존재하는 회원입니다."),
 	INVALID_ALARM("알림이 존재하지 않습니다."),
+	INVALID_LINK("유효하지 않는 링크입니다."),
 	FAIL_SEND_ALARM("알림 전송에 실패하였습니다");
 
 	private final String name;

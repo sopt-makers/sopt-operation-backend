@@ -17,10 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import lombok.val;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -34,22 +31,42 @@ public class AlarmServiceImpl implements AlarmService {
 
     private final AlarmRepository alarmRepository;
 
+    private final List<String> appLinkList = Arrays.asList(
+            "home", "home/notification", "home/mypage", "home/attendance",
+            "home/attendance/attendance-modal", "home/soptamp",
+            "home/soptamp/entire-ranking", "home/soptamp/current-generation-ranking"
+    );
+
+    private final List<String> webLinkList = Arrays.asList();
+
     @Override
     public void send(AlarmSendRequestDTO requestDTO) {
         val alarm = alarmRepository.findById(requestDTO.alarmId())
                 .orElseThrow(() -> new EntityNotFoundException(INVALID_ALARM.getName()));
 
+        val targetList = alarm.getTargetList();
+        val link = alarm.getLink();
+
         val alarmRequest = new HashMap<>();
         //TODO: null이면 파트와 활동기수여부로 아이디 추출
-        alarmRequest.put("userIds", alarm.getTargetList());
+        if (Objects.nonNull(targetList)) {
+            alarmRequest.put("userIds", targetList);
+        } else {
+
+        }
 
         alarmRequest.put("title", alarm.getTitle());
         alarmRequest.put("content", alarm.getContent());
         alarmRequest.put("category", alarm.getAttribute());
 
-        if (Objects.nonNull(alarm.getLink())) {
-            //TODO: 웹/앱 링크 구분 메소드 생성
-            alarmRequest.put("webLink", alarm.getLink());
+        if (Objects.nonNull(link)) {
+            if (appLinkList.contains(link)) {
+                alarmRequest.put("appLink", link);
+            } else if (webLinkList.contains(link)) {
+                alarmRequest.put("webLink", link);
+            } else {
+                throw new AlarmException(INVALID_LINK.getName());
+            }
         }
 
         val headers = new HttpHeaders();
