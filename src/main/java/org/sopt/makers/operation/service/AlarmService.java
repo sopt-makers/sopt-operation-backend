@@ -10,8 +10,6 @@ import org.springframework.data.domain.Pageable;
 public interface AlarmService {
 	Long createAlarm(AlarmRequestDTO requestDTO);
 	AlarmsResponseDTO getAlarms(Integer generation, Part part, Status status, Pageable pageable);
-
 	AlarmResponseDTO getAlarm(Long alarmId);
-
 	void deleteAlarm(Long alarmId);
 }
