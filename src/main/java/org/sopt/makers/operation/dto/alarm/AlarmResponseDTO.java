@@ -1,5 +1,7 @@
 package org.sopt.makers.operation.dto.alarm;
 
+import static java.util.Objects.*;
+
 import org.sopt.makers.operation.entity.alarm.Alarm;
 
 import lombok.Builder;
@@ -24,7 +26,7 @@ public record AlarmResponseDTO(
 			.content(alarm.getContent())
 			.link(alarm.getLink())
 			.createdAt(alarm.getCreatedDate().toString())
-			.sendAt(alarm.getSendAt().toString())
+			.sendAt(nonNull(alarm.getSendAt()) ? alarm.getSendAt().toString() : null)
 			.build();
 	}
 }

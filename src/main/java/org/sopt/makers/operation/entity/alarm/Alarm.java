@@ -72,5 +72,6 @@ public class Alarm extends BaseEntity {
 		if (nonNull(requestDTO.targetList())) {
 			this.targetList = requestDTO.targetList();
 		}
+		this.status = Status.BEFORE;
 	}
 }

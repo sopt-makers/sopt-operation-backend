@@ -28,7 +28,7 @@ public record AlarmsResponseDTO(
 		static AlarmVO of(Alarm alarm) {
 			return AlarmVO.builder()
 				.alarmId(alarm.getId())
-				.part(alarm.getPart().getName())
+				.part(nonNull(alarm.getPart()) ? alarm.getPart().getName() : null)
 				.attribute(alarm.getAttribute().getName())
 				.title(alarm.getTitle())
 				.content(alarm.getContent())

@@ -15,8 +15,7 @@ public record AlarmRequestDTO(
 	String link,
 	Boolean isActive,
 	Part part,
-	List<Long> targetList,
-	Status status
+	List<Long> targetList
 ) {
 	public Alarm toEntity() {
 		return new Alarm(this);

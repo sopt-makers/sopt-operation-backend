@@ -43,9 +43,9 @@ public class AlarmController {
 	@ApiOperation("알림 리스트 조회")
 	@GetMapping
 	public ResponseEntity<ApiResponse> getAlarms(
-		@RequestParam Integer generation,
-		@RequestParam Part part,
-		@RequestParam Status status,
+		@RequestParam(required = false) Integer generation,
+		@RequestParam(required = false) Part part,
+		@RequestParam(required = false) Status status,
 		Pageable pageable
 	) {
 		val response = alarmService.getAlarms(generation, part, status, pageable);
