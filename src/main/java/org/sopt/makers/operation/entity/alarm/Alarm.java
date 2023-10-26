@@ -58,6 +58,10 @@ public class Alarm extends BaseEntity {
 
 	private LocalDateTime sendAt;
 
+	public void updateStatus() {
+		this.status = Status.AFTER;
+	}
+
 	public Alarm(AlarmRequestDTO requestDTO) {
 		this.generation = requestDTO.generation();
 		this.attribute = requestDTO.attribute();

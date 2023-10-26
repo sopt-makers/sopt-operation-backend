@@ -9,6 +9,7 @@ import org.sopt.makers.operation.dto.alarm.AlarmSendResponseDTO;
 import org.sopt.makers.operation.dto.member.MemberSearchCondition;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.alarm.Attribute;
+import org.sopt.makers.operation.entity.alarm.Status;
 import org.sopt.makers.operation.exception.AlarmException;
 import org.sopt.makers.operation.repository.AlarmRepository;
 import org.sopt.makers.operation.repository.member.MemberRepository;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import lombok.val;
@@ -59,9 +61,14 @@ public class AlarmServiceImpl implements AlarmService {
     );
 
     @Override
+    @Transactional
     public void sendAdmin(AlarmSendRequestDTO requestDTO) {
         val alarm = alarmRepository.findById(requestDTO.alarmId())
                 .orElseThrow(() -> new EntityNotFoundException(INVALID_ALARM.getName()));
+
+        if (alarm.getStatus().equals(Status.AFTER)) {
+            throw new AlarmException(ALREADY_SEND_ALARM.getName());
+        }
 
         val targetList = alarm.getTargetList();
 
@@ -79,6 +86,7 @@ public class AlarmServiceImpl implements AlarmService {
         }
 
         send(alarm.getTitle(), alarm.getContent(), targetIdList, alarm.getAttribute(), alarm.getLink());
+        alarm.updateStatus();
     }
 
     private List<String> extractCurrentTargetList(Part part) {
