@@ -5,7 +5,6 @@ import java.util.List;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.alarm.Alarm;
 import org.sopt.makers.operation.entity.alarm.Attribute;
-import org.sopt.makers.operation.entity.alarm.Status;
 
 public record AlarmRequestDTO(
 	int generation,
@@ -15,7 +14,7 @@ public record AlarmRequestDTO(
 	String link,
 	Boolean isActive,
 	Part part,
-	List<Long> targetList
+	List<String> targetList
 ) {
 	public Alarm toEntity() {
 		return new Alarm(this);
