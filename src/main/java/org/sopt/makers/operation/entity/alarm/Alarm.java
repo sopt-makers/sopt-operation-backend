@@ -51,7 +51,7 @@ public class Alarm extends BaseEntity {
 
 	@Column(columnDefinition = "TEXT")
 	@Convert(converter = LongListConverter.class)
-	private List<Long> targetList;
+	private List<String> targetList;
 
 	@Column(nullable = false)
 	@Enumerated(value = STRING)
