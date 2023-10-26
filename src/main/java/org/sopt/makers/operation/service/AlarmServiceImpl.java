@@ -107,7 +107,7 @@ public class AlarmServiceImpl implements AlarmService {
 
             return response.getBody();
         } catch (Exception e) {
-            throw new AlarmException(FAIL_SEND_ALARM.getName());
+            throw new AlarmException(FAIL_INACTIVE_USERS.getName());
         }
     }
 
