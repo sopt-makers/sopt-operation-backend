@@ -64,7 +64,9 @@ public class Alarm extends BaseEntity {
 		this.attribute = requestDTO.attribute();
 		this.title = requestDTO.title();
 		this.content = requestDTO.content();
-		this.link = requestDTO.link();
+		if (nonNull(requestDTO.link())) {
+			this.link = requestDTO.link();
+		}
 		if (nonNull(requestDTO.isActive()) && nonNull(requestDTO.part())) {
 			this.isActive = requestDTO.isActive();
 			this.part = requestDTO.part();
