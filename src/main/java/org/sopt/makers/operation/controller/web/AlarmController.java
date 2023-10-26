@@ -25,7 +25,7 @@ public class AlarmController {
     @ApiOperation(value = "알림 전송")
     @PostMapping("/send")
     public ResponseEntity<ApiResponse> sendAlarm(@RequestBody AlarmSendRequestDTO requestDTO) {
-        alarmService.send(requestDTO);
+        alarmService.sendAdmin(requestDTO);
         return ResponseEntity.ok(ApiResponse.success(SUCCESS_SEND_ALARM.getMessage()));
     }
 }
