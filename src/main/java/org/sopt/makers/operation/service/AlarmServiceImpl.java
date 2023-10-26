@@ -72,7 +72,7 @@ public class AlarmServiceImpl implements AlarmService {
             if (alarm.isActive()) {
                 targetIdList = extractCurrentTargetList(alarm.getPart());
             } else {
-                targetIdList = extractPastTargetList(currentGeneration, alarm.getPart())
+                targetIdList = extractInactiveTargetList(currentGeneration, alarm.getPart())
                         .memberIds().stream()
                         .map(String::valueOf).toList();
             }
@@ -88,7 +88,7 @@ public class AlarmServiceImpl implements AlarmService {
                 .toList();
     }
 
-    private AlarmInactiveListResponseDTO extractPastTargetList(int generation, Part part) {
+    private AlarmInactiveListResponseDTO extractInactiveTargetList(int generation, Part part) {
         val getInactiveUserURL = playGroundURI + "/internal/api/v1/members/inactivity?generation=" + generation + "&part=" + part;
 
         val headers = new HttpHeaders();
