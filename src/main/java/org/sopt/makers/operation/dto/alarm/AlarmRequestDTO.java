@@ -14,7 +14,7 @@ public record AlarmRequestDTO(
 	String link,
 	boolean isActive,
 	Part part,
-	List<Long> targetList,
+	List<String> targetList,
 	Status status
 ) {
 }

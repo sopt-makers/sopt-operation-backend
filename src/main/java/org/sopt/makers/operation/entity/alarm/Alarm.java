@@ -13,7 +13,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-import org.sopt.makers.operation.converter.LongListConverter;
+import org.sopt.makers.operation.converter.StringListConverter;
 import org.sopt.makers.operation.dto.alarm.AlarmRequestDTO;
 import org.sopt.makers.operation.entity.BaseEntity;
 import org.sopt.makers.operation.entity.Part;
@@ -49,8 +49,8 @@ public class Alarm extends BaseEntity {
 	private Part part;
 
 	@Column(columnDefinition = "TEXT")
-	@Convert(converter = LongListConverter.class)
-	private List<Long> targetList;
+	@Convert(converter = StringListConverter.class)
+	private List<String> targetList;
 
 	@Column(nullable = false)
 	@Enumerated(value = STRING)
