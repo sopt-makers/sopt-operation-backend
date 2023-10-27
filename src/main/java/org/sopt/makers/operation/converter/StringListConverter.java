@@ -2,14 +2,14 @@ package org.sopt.makers.operation.converter;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.*;
 
-import java.io.IOException;
 import java.util.List;
+import java.io.IOException;
 
 import javax.persistence.AttributeConverter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 public class StringListConverter implements AttributeConverter<List<String>, String> {
 	private static final ObjectMapper mapper = new ObjectMapper()
@@ -20,8 +20,8 @@ public class StringListConverter implements AttributeConverter<List<String>, Str
 	public String convertToDatabaseColumn(List<String> attribute) {
 		try {
 			return mapper.writeValueAsString(attribute);
-		} catch (JsonProcessingException e) {
-			throw new IllegalArgumentException();
+		} catch (JsonProcessingException ex) {
+			throw new IllegalArgumentException(ex.getMessage());
 		}
 	}
 
@@ -32,8 +32,8 @@ public class StringListConverter implements AttributeConverter<List<String>, Str
 
 		try {
 			return mapper.readValue(dbData, typeReference);
-		} catch (IOException e) {
-			throw new IllegalArgumentException();
+		} catch (IOException ex) {
+			throw new IllegalArgumentException(ex.getMessage());
 		}
 	}
 }

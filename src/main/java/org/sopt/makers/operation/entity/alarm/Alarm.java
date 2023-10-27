@@ -1,9 +1,11 @@
 package org.sopt.makers.operation.entity.alarm;
 
+import static java.util.Objects.*;
 import static javax.persistence.EnumType.*;
 import static javax.persistence.GenerationType.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -43,12 +45,12 @@ public class Alarm extends BaseEntity {
 
 	private String link;
 
-	private boolean isActive;
+	private Boolean isActive;
 
 	@Enumerated(value = STRING)
 	private Part part;
 
-	@Column(columnDefinition = "TEXT")
+	@Column(columnDefinition = "TEXT", nullable = false)
 	@Convert(converter = StringListConverter.class)
 	private List<String> targetList;
 
@@ -67,9 +69,14 @@ public class Alarm extends BaseEntity {
 		this.attribute = requestDTO.attribute();
 		this.title = requestDTO.title();
 		this.content = requestDTO.content();
-		this.link = requestDTO.link();
-		this.isActive = requestDTO.isActive();
-		this.part = requestDTO.part();
-		this.targetList = requestDTO.targetList();
+		if (nonNull(requestDTO.link())) {
+			this.link = requestDTO.link();
+		}
+		if (nonNull(requestDTO.isActive()) && nonNull(requestDTO.part())) {
+			this.isActive = requestDTO.isActive();
+			this.part = requestDTO.part();
+		}
+		this.targetList = nonNull(requestDTO.targetList()) ? requestDTO.targetList() : new ArrayList<>();
+		this.status = Status.BEFORE;
 	}
 }

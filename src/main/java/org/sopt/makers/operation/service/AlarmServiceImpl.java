@@ -11,7 +11,7 @@ import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.alarm.Attribute;
 import org.sopt.makers.operation.entity.alarm.Status;
 import org.sopt.makers.operation.exception.AlarmException;
-import org.sopt.makers.operation.repository.AlarmRepository;
+import org.sopt.makers.operation.repository.alarm.AlarmRepository;
 import org.sopt.makers.operation.repository.member.MemberRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -26,6 +26,12 @@ import lombok.val;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.*;
+
+import org.sopt.makers.operation.dto.alarm.AlarmRequestDTO;
+import org.sopt.makers.operation.dto.alarm.AlarmResponseDTO;
+import org.sopt.makers.operation.dto.alarm.AlarmsResponseDTO;
+import org.sopt.makers.operation.entity.alarm.Alarm;
+import org.springframework.data.domain.Pageable;
 
 @Service
 @RequiredArgsConstructor
@@ -44,8 +50,8 @@ public class AlarmServiceImpl implements AlarmService {
 
     @Value("${sopt.current.generation}")
     private int currentGeneration;
-    private final RestTemplate restTemplate = new RestTemplate();
 
+    private final RestTemplate restTemplate = new RestTemplate();
     private final AlarmRepository alarmRepository;
     private final MemberRepository memberRepository;
 
@@ -76,7 +82,7 @@ public class AlarmServiceImpl implements AlarmService {
         if (targetList.size() != 0) {
             targetIdList = alarm.getTargetList();
         } else {
-            if (alarm.isActive()) {
+            if (alarm.getIsActive()) {
                 targetIdList = extractCurrentTargetList(alarm.getPart());
             } else {
                 targetIdList = extractInactiveTargetList(currentGeneration, alarm.getPart())
@@ -152,4 +158,36 @@ public class AlarmServiceImpl implements AlarmService {
             throw new AlarmException(FAIL_SEND_ALARM.getName());
         }
     }
+
+	@Override
+	@Transactional
+	public Long createAlarm(AlarmRequestDTO requestDTO) {
+		val alarmEntity = requestDTO.toEntity();
+		val savedAlarm = alarmRepository.save(alarmEntity);
+		return savedAlarm.getId();
+	}
+
+	@Override
+	public AlarmsResponseDTO getAlarms(Integer generation, Part part, Status status, Pageable pageable) {
+		val alarms = alarmRepository.getAlarms(generation, part, status, pageable);
+		return AlarmsResponseDTO.of(alarms);
+	}
+
+	@Override
+	public AlarmResponseDTO getAlarm(Long alarmId) {
+		val alarm = findAlarm(alarmId);
+		return AlarmResponseDTO.of(alarm);
+	}
+
+	@Override
+	@Transactional
+	public void deleteAlarm(Long alarmId) {
+		val alarm = findAlarm(alarmId);
+		alarmRepository.delete(alarm);
+	}
+
+	private Alarm findAlarm(Long alarmId) {
+		return alarmRepository.findById(alarmId)
+			.orElseThrow(() -> new EntityNotFoundException(INVALID_ALARM.getName()));
+	}
 }
