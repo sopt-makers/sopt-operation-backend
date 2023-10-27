@@ -49,4 +49,9 @@ public class ExceptionController {
         return ResponseEntity.status(BAD_REQUEST).body(fail(FAULT_DATE_FORMATTER.getName()));
     }
 
+    @ExceptionHandler(AlarmException.class)
+    public ResponseEntity<ApiResponse> AlarmException (AlarmException ex) {
+        return ResponseEntity.status(BAD_REQUEST).body(fail(ex.getMessage()));
+    }
+
 }

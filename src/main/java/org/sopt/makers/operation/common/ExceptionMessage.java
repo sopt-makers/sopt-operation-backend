@@ -27,7 +27,11 @@ public enum ExceptionMessage {
 	NO_SUB_LECTURE_EQUAL_ROUND("해당 라운드와 일치하는 출석 세션이 없습니다."),
 	FAULT_DATE_FORMATTER("잘못된 날짜 형식입니다."),
 	DUPLICATED_MEMBER("이미 존재하는 회원입니다."),
-	INVALID_ALARM("존재하지 않는 알림입니다.");
+	INVALID_ALARM("알림이 존재하지 않습니다."),
+	ALREADY_SEND_ALARM("이미 전송된 알림입니다."),
+	INVALID_LINK("유효하지 않는 링크입니다."),
+	FAIL_SEND_ALARM("알림 전송에 실패하였습니다."),
+	FAIL_INACTIVE_USERS("비활동 유저 불러오기에 실패하였습니다.");
 
 	private final String name;
 }
