@@ -187,7 +187,7 @@ public class LectureServiceImpl implements LectureService {
 		List<String> memberPgIds = lecture.getAttendances().stream()
 			.map(attendance -> String.valueOf(attendance.getMember().getPlaygroundId()))
 			.toList();
-		alarmService.send(ALARM_MESSAGE_TITLE, ALARM_MESSAGE_CONTENT, memberPgIds, NEWS, null);
+		alarmService.send(lecture.getName() + " " + ALARM_MESSAGE_TITLE, ALARM_MESSAGE_CONTENT, memberPgIds, NEWS, null);
 	}
 
 	@Override
@@ -196,13 +196,14 @@ public class LectureServiceImpl implements LectureService {
 		val lectures = lectureRepository.findLecturesToBeEnd();
 		lectures.forEach(Lecture::finish);
 
-		List<String> memberPgIds = new ArrayList<>();
+		List<String> memberPgIds;
 		for (val lecture : lectures) {
+			memberPgIds = new ArrayList<>();
 			for (val attendance : lecture.getAttendances()) {
 				memberPgIds.add(String.valueOf(attendance.getMember().getPlaygroundId()));
 			}
+			alarmService.send(lecture.getName() + " " + ALARM_MESSAGE_TITLE, ALARM_MESSAGE_CONTENT, memberPgIds, NEWS, null);
 		}
-		alarmService.send(ALARM_MESSAGE_TITLE, ALARM_MESSAGE_CONTENT, memberPgIds, NEWS, null);
 	}
 
 	@Override
