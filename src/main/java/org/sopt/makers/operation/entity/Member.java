@@ -15,7 +15,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import org.sopt.makers.operation.dto.member.MemberRequestDTO;
-import org.sopt.makers.operation.entity.lecture.Lecture;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,9 +38,6 @@ public class Member {
 
 	@Enumerated(EnumType.STRING)
 	private Part part;
-
-	@Enumerated(EnumType.STRING)
-	private Gender gender;
 
 	private String university;
 	private float score;
