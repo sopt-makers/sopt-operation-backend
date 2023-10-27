@@ -119,6 +119,7 @@ public class AlarmServiceImpl implements AlarmService {
         }
     }
 
+    @Override
     public void send(String title, String content, List<String> targetList, Attribute attribute, String link) {
         val alarmRequest = new HashMap<>();
         
