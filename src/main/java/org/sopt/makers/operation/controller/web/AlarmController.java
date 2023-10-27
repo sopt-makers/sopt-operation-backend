@@ -2,6 +2,7 @@ package org.sopt.makers.operation.controller.web;
 
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+
 import org.sopt.makers.operation.common.ApiResponse;
 import org.sopt.makers.operation.dto.alarm.AlarmSendRequestDTO;
 import org.sopt.makers.operation.service.AlarmService;
@@ -33,14 +34,14 @@ import lombok.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/alarms")
 public class AlarmController {
-    private final AlarmService alarmService;
+	private final AlarmService alarmService;
 
-    @ApiOperation(value = "알림 전송")
-    @PostMapping("/send")
-    public ResponseEntity<ApiResponse> sendAlarm(@RequestBody AlarmSendRequestDTO requestDTO) {
-        alarmService.sendAdmin(requestDTO);
-        return ResponseEntity.ok(ApiResponse.success(SUCCESS_SEND_ALARM.getMessage()));
-    }
+	@ApiOperation(value = "알림 전송")
+	@PostMapping("/send")
+	public ResponseEntity<ApiResponse> sendAlarm(@RequestBody AlarmSendRequestDTO requestDTO) {
+		alarmService.sendAdmin(requestDTO);
+		return ResponseEntity.ok(ApiResponse.success(SUCCESS_SEND_ALARM.getMessage()));
+	}
 
 	@ApiOperation("알림 생성")
 	@PostMapping
