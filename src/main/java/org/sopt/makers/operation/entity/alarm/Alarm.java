@@ -50,7 +50,7 @@ public class Alarm extends BaseEntity {
 	@Enumerated(value = STRING)
 	private Part part;
 
-	@Column(columnDefinition = "TEXT")
+	@Column(columnDefinition = "TEXT", nullable = false)
 	@Convert(converter = StringListConverter.class)
 	private List<String> targetList;
 
