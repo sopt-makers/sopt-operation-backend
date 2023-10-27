@@ -5,6 +5,7 @@ import static javax.persistence.EnumType.*;
 import static javax.persistence.GenerationType.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -14,7 +15,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-import org.sopt.makers.operation.converter.LongListConverter;
+import org.sopt.makers.operation.converter.StringListConverter;
 import org.sopt.makers.operation.dto.alarm.AlarmRequestDTO;
 import org.sopt.makers.operation.entity.BaseEntity;
 import org.sopt.makers.operation.entity.Part;
@@ -49,8 +50,8 @@ public class Alarm extends BaseEntity {
 	@Enumerated(value = STRING)
 	private Part part;
 
-	@Column(columnDefinition = "TEXT")
-	@Convert(converter = LongListConverter.class)
+	@Column(columnDefinition = "TEXT", nullable = false)
+	@Convert(converter = StringListConverter.class)
 	private List<String> targetList;
 
 	@Column(nullable = false)
@@ -71,9 +72,7 @@ public class Alarm extends BaseEntity {
 			this.isActive = requestDTO.isActive();
 			this.part = requestDTO.part();
 		}
-		if (nonNull(requestDTO.targetList())) {
-			this.targetList = requestDTO.targetList();
-		}
+		this.targetList = nonNull(requestDTO.targetList()) ? requestDTO.targetList() : new ArrayList<>();
 		this.status = Status.BEFORE;
 	}
 }
