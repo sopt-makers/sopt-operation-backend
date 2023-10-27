@@ -5,6 +5,7 @@ import static javax.persistence.EnumType.*;
 import static javax.persistence.GenerationType.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -71,9 +72,7 @@ public class Alarm extends BaseEntity {
 			this.isActive = requestDTO.isActive();
 			this.part = requestDTO.part();
 		}
-		if (nonNull(requestDTO.targetList())) {
-			this.targetList = requestDTO.targetList();
-		}
+		this.targetList = nonNull(requestDTO.targetList()) ? requestDTO.targetList() : new ArrayList<>();
 		this.status = Status.BEFORE;
 	}
 }
