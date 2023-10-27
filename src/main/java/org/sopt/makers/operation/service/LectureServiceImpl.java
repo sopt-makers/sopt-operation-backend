@@ -48,9 +48,9 @@ public class LectureServiceImpl implements LectureService {
 	private final MemberRepository memberRepository;
 	private final AlarmService alarmService;
 
-	@Value("${alarm.message.title_end}")
+	@Value("${sopt.alarm.message.title_end}")
 	private String ALARM_MESSAGE_TITLE;
-	@Value("${alarm.message.content_end}")
+	@Value("${sopt.alarm.message.content_end}")
 	private String ALARM_MESSAGE_CONTENT;
 
 	@Override
