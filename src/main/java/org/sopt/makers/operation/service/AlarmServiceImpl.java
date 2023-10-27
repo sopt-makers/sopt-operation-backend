@@ -2,8 +2,6 @@ package org.sopt.makers.operation.service;
 
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
 
-import lombok.RequiredArgsConstructor;
-
 import org.sopt.makers.operation.dto.alarm.AlarmInactiveListResponseDTO;
 import org.sopt.makers.operation.dto.alarm.AlarmSendRequestDTO;
 import org.sopt.makers.operation.dto.alarm.AlarmSendResponseDTO;
@@ -24,11 +22,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import lombok.val;
-
 import javax.persistence.EntityNotFoundException;
 
 import java.util.*;
+
+import lombok.*;
 
 import org.sopt.makers.operation.dto.alarm.AlarmRequestDTO;
 import org.sopt.makers.operation.dto.alarm.AlarmResponseDTO;
@@ -98,37 +96,6 @@ public class AlarmServiceImpl implements AlarmService {
 		alarm.updateStatus();
 	}
 
-	private List<String> extractCurrentTargetList(Part part) {
-		val memberList = memberRepository.search(new MemberSearchCondition(part, currentGeneration));
-		return memberList.stream()
-			.map(member -> String.valueOf(member.getPlaygroundId()))
-			.toList();
-	}
-
-	private AlarmInactiveListResponseDTO extractInactiveTargetList(int generation, Part part) {
-		val getInactiveUserURL =
-			playGroundURI + "/internal/api/v1/members/inactivity?generation=" + generation + "&part=" + part;
-
-		val headers = new HttpHeaders();
-		headers.add("content-type", "application/json;charset=UTF-8");
-		headers.add("Authorization", playGroundToken);
-
-		val entity = new HttpEntity<>(null, headers);
-
-		try {
-			val response = restTemplate.exchange(
-				getInactiveUserURL,
-				HttpMethod.GET,
-				entity,
-				AlarmInactiveListResponseDTO.class
-			);
-
-			return response.getBody();
-		} catch (Exception e) {
-			throw new AlarmException(FAIL_INACTIVE_USERS.getName());
-		}
-	}
-
 	@Override
 	public void send(String title, String content, List<String> targetList, Attribute attribute, String link) {
 		val alarmRequest = new HashMap<>();
@@ -188,6 +155,37 @@ public class AlarmServiceImpl implements AlarmService {
 	public void deleteAlarm(Long alarmId) {
 		val alarm = findAlarm(alarmId);
 		alarmRepository.delete(alarm);
+	}
+
+	private List<String> extractCurrentTargetList(Part part) {
+		val memberList = memberRepository.search(new MemberSearchCondition(part, currentGeneration));
+		return memberList.stream()
+			.map(member -> String.valueOf(member.getPlaygroundId()))
+			.toList();
+	}
+
+	private AlarmInactiveListResponseDTO extractInactiveTargetList(int generation, Part part) {
+		val getInactiveUserURL =
+			playGroundURI + "/internal/api/v1/members/inactivity?generation=" + generation + "&part=" + part;
+
+		val headers = new HttpHeaders();
+		headers.add("content-type", "application/json;charset=UTF-8");
+		headers.add("Authorization", playGroundToken);
+
+		val entity = new HttpEntity<>(null, headers);
+
+		try {
+			val response = restTemplate.exchange(
+				getInactiveUserURL,
+				HttpMethod.GET,
+				entity,
+				AlarmInactiveListResponseDTO.class
+			);
+
+			return response.getBody();
+		} catch (Exception e) {
+			throw new AlarmException(FAIL_INACTIVE_USERS.getName());
+		}
 	}
 
 	private Alarm findAlarm(Long alarmId) {
