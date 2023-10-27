@@ -4,6 +4,7 @@ import static java.util.Objects.nonNull;
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
 import static org.sopt.makers.operation.entity.AttendanceStatus.*;
 import static org.sopt.makers.operation.entity.Part.*;
+import static org.sopt.makers.operation.entity.alarm.Attribute.*;
 import static org.sopt.makers.operation.entity.lecture.LectureStatus.*;
 
 import java.time.LocalDateTime;
@@ -30,6 +31,7 @@ import org.sopt.makers.operation.repository.SubAttendanceRepository;
 import org.sopt.makers.operation.repository.lecture.LectureRepository;
 import org.sopt.makers.operation.repository.lecture.SubLectureRepository;
 import org.sopt.makers.operation.repository.member.MemberRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +46,12 @@ public class LectureServiceImpl implements LectureService {
 	private final AttendanceRepository attendanceRepository;
 	private final SubAttendanceRepository subAttendanceRepository;
 	private final MemberRepository memberRepository;
+	private final AlarmService alarmService;
+
+	@Value("${alarm.message.title_end}")
+	private String ALARM_MESSAGE_TITLE;
+	@Value("${alarm.message.content_end}")
+	private String ALARM_MESSAGE_CONTENT;
 
 	@Override
 	@Transactional
@@ -175,6 +183,11 @@ public class LectureServiceImpl implements LectureService {
 			throw new IllegalStateException(NOT_END_TIME_YET.getName());
 		}
 		lecture.finish();
+
+		List<String> memberPgIds = lecture.getAttendances().stream()
+			.map(attendance -> String.valueOf(attendance.getMember().getPlaygroundId()))
+			.toList();
+		alarmService.send(ALARM_MESSAGE_TITLE, ALARM_MESSAGE_CONTENT, memberPgIds, NEWS, null);
 	}
 
 	@Override
@@ -182,6 +195,14 @@ public class LectureServiceImpl implements LectureService {
 	public void finishLecture() {
 		val lectures = lectureRepository.findLecturesToBeEnd();
 		lectures.forEach(Lecture::finish);
+
+		List<String> memberPgIds = new ArrayList<>();
+		for (val lecture : lectures) {
+			for (val attendance : lecture.getAttendances()) {
+				memberPgIds.add(String.valueOf(attendance.getMember().getPlaygroundId()));
+			}
+		}
+		alarmService.send(ALARM_MESSAGE_TITLE, ALARM_MESSAGE_CONTENT, memberPgIds, NEWS, null);
 	}
 
 	@Override
