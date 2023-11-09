@@ -269,7 +269,8 @@ public class LectureServiceImpl implements LectureService {
 		subAttendanceRepository.deleteAllBySubLectureIn(lecture.getSubLectures());
 		subLectureRepository.deleteAllByLecture(lecture);
 		attendanceRepository.deleteAllByLecture(lecture);
-		lectureRepository.delete(lecture);
+		lectureRepository.deleteById(lectureId);
+		// lectureRepository.delete(lecture); //TODO: 에러 원인 파악 필요
 	}
 
 	@Override
