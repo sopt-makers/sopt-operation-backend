@@ -20,7 +20,7 @@ public record AlarmResponseDTO(
 	public static AlarmResponseDTO of(Alarm alarm) {
 		return AlarmResponseDTO.builder()
 			.attribute(alarm.getAttribute().getName())
-			.part(alarm.getPart().getName())
+			.part(nonNull(alarm.getPart()) ? alarm.getPart().getName() : null)
 			.isActive(alarm.getIsActive())
 			.title(alarm.getTitle())
 			.content(alarm.getContent())
