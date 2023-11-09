@@ -72,8 +72,10 @@ public class Alarm extends BaseEntity {
 		if (nonNull(requestDTO.link())) {
 			this.link = requestDTO.link();
 		}
-		if (nonNull(requestDTO.isActive()) && nonNull(requestDTO.part())) {
+		if (nonNull(requestDTO.isActive())) {
 			this.isActive = requestDTO.isActive();
+		}
+		if (nonNull(requestDTO.part())) {
 			this.part = requestDTO.part();
 		}
 		this.targetList = nonNull(requestDTO.targetList()) ? requestDTO.targetList() : new ArrayList<>();
