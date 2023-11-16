@@ -86,14 +86,19 @@ public class AlarmServiceImpl implements AlarmService {
 			if (alarm.getIsActive()) {
 				targetIdList = extractCurrentTargetList(alarm.getPart());
 			} else {
-				targetIdList = extractInactiveTargetList(currentGeneration, alarm.getPart())
+				val currentGenerationIdList = extractCurrentTargetList(alarm.getPart());
+				val inactiveGenerationIdList = extractInactiveTargetList(currentGeneration, alarm.getPart())
 					.memberIds().stream()
 					.map(String::valueOf).toList();
+				targetIdList = inactiveGenerationIdList.stream()
+						.filter(item -> !currentGenerationIdList.contains(item))
+						.toList();
 			}
 		}
 
 		send(alarm.getTitle(), alarm.getContent(), targetIdList, alarm.getAttribute(), alarm.getLink());
 		alarm.updateStatus();
+		alarm.updateSendAt();
 	}
 
 	@Override
@@ -158,15 +163,24 @@ public class AlarmServiceImpl implements AlarmService {
 	}
 
 	private List<String> extractCurrentTargetList(Part part) {
+		if (part.equals(Part.ALL)) {
+			part = null;
+		}
+
 		val memberList = memberRepository.search(new MemberSearchCondition(part, currentGeneration));
 		return memberList.stream()
+			.filter(member -> member.getPlaygroundId() != null)
 			.map(member -> String.valueOf(member.getPlaygroundId()))
 			.toList();
 	}
 
 	private AlarmInactiveListResponseDTO extractInactiveTargetList(int generation, Part part) {
 		val getInactiveUserURL =
-			playGroundURI + "/internal/api/v1/members/inactivity?generation=" + generation + "&part=" + part;
+			playGroundURI + "/internal/api/v1/members/inactivity?generation=" + generation;
+
+		if (!part.equals(Part.ALL)) {
+			getInactiveUserURL.concat("&part=" + part);
+		}
 
 		val headers = new HttpHeaders();
 		headers.add("content-type", "application/json;charset=UTF-8");

@@ -64,6 +64,10 @@ public class Alarm extends BaseEntity {
 		this.status = Status.AFTER;
 	}
 
+	public void updateSendAt() {
+		this.sendAt = LocalDateTime.now();
+	}
+
 	public Alarm(AlarmRequestDTO requestDTO) {
 		this.generation = requestDTO.generation();
 		this.attribute = requestDTO.attribute();
