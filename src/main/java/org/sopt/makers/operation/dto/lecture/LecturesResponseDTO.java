@@ -28,8 +28,10 @@ record LectureVO(
 	Part partValue,
 	String partName,
 	String startDate,
+	String endDate,
 	Attribute attributeValue,
 	String attributeName,
+	String place,
 	AttendancesStatusVO attendances
 ) {
 	public static LectureVO of(Lecture lecture) {
@@ -39,8 +41,10 @@ record LectureVO(
 			.partValue(lecture.getPart())
 			.partName(lecture.getPart().getName())
 			.startDate(lecture.getStartDate().toString())
+			.endDate(lecture.getEndDate().toString())
 			.attributeValue(lecture.getAttribute())
 			.attributeName(lecture.getAttribute().getName())
+			.place(lecture.getPlace())
 			.attendances(AttendancesStatusVO.of(lecture))
 			.build();
 	}
