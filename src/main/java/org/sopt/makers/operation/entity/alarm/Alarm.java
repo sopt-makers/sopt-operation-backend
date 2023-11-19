@@ -34,6 +34,8 @@ public class Alarm extends BaseEntity {
 
 	private int generation;
 
+	private int generationAt;
+
 	@Column(nullable = false)
 	@Enumerated(value = STRING)
 	private Attribute attribute;
@@ -70,6 +72,7 @@ public class Alarm extends BaseEntity {
 
 	public Alarm(AlarmRequestDTO requestDTO) {
 		this.generation = requestDTO.generation();
+		this.generationAt = requestDTO.generationAt();
 		this.attribute = requestDTO.attribute();
 		this.title = requestDTO.title();
 		this.content = requestDTO.content();
