@@ -186,6 +186,7 @@ public class LectureServiceImpl implements LectureService {
 
 		List<String> memberPgIds = lecture.getAttendances().stream()
 			.map(attendance -> String.valueOf(attendance.getMember().getPlaygroundId()))
+			.filter(id -> !id.equals("null"))
 			.toList();
 		alarmService.send(lecture.getName() + " " + ALARM_MESSAGE_TITLE, ALARM_MESSAGE_CONTENT, memberPgIds, NEWS, null);
 	}
@@ -200,7 +201,10 @@ public class LectureServiceImpl implements LectureService {
 		for (val lecture : lectures) {
 			memberPgIds = new ArrayList<>();
 			for (val attendance : lecture.getAttendances()) {
-				memberPgIds.add(String.valueOf(attendance.getMember().getPlaygroundId()));
+				val playgroundId = attendance.getMember().getPlaygroundId();
+				if (Objects.nonNull(playgroundId)) {
+					memberPgIds.add(String.valueOf(attendance.getMember().getPlaygroundId()));
+				}
 			}
 			alarmService.send(lecture.getName() + " " + ALARM_MESSAGE_TITLE, ALARM_MESSAGE_CONTENT, memberPgIds, NEWS, null);
 		}
