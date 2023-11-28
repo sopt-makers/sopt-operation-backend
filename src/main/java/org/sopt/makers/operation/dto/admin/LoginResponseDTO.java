@@ -1,20 +1,27 @@
 package org.sopt.makers.operation.dto.admin;
 
+import lombok.Builder;
 import org.sopt.makers.operation.entity.Admin;
+import org.sopt.makers.operation.entity.AdminStatus;
 
+@Builder
 public record LoginResponseDTO(LoginResponseVO loginResponseVO, String refreshToken) {
     public static LoginResponseDTO of(Admin admin, String accessToken, String refreshToken) {
-        return new LoginResponseDTO(
-                LoginResponseVO.of(admin.getId(), admin.getName(), accessToken),
-                refreshToken
-        );
+        return LoginResponseDTO.builder()
+                .loginResponseVO(LoginResponseVO.of(admin.getId(), admin.getName(), admin.getStatus(), accessToken))
+                .refreshToken(refreshToken)
+                .build();
     }
 }
 
-record LoginResponseVO(Long id, String name, String accessToken) {
-    public static LoginResponseVO of(Long id, String name, String accessToken) {
-        return new LoginResponseVO(
-                id, name, accessToken
-        );
+@Builder
+record LoginResponseVO(Long id, String name, AdminStatus adminStatus, String accessToken) {
+    public static LoginResponseVO of(Long id, String name, AdminStatus adminStatus, String accessToken) {
+        return LoginResponseVO.builder()
+                .id(id)
+                .name(name)
+                .adminStatus(adminStatus)
+                .accessToken(accessToken)
+                .build();
     }
 }
