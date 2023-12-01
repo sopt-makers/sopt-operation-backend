@@ -8,6 +8,7 @@ import org.sopt.makers.operation.entity.alarm.Attribute;
 
 public record AlarmRequestDTO(
 	int generation,
+	int generationAt,
 	Attribute attribute,
 	String title,
 	String content,

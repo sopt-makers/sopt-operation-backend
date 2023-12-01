@@ -23,12 +23,13 @@ public record MemberResponseDTO (
 	}
 }
 
-record MemberVO(Long memberId, String name, String university) {
+record MemberVO(Long memberId, String name, String university, String part) {
 	static MemberVO of(Member member) {
 		return new MemberVO(
 			member.getId(),
 			member.getName(),
-			member.getUniversity());
+			member.getUniversity(),
+			member.getPart().getName());
 	}
 }
 

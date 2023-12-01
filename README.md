@@ -1,5 +1,5 @@
 # sopt-operation-backend
-**메이커스 운영팀 서버** : 출석 관리 어드민 서비스, 회원 출석 체크 서비스
+**메이커스 운영팀 서버** : 출석 관리 어드민 서비스, 회원 출석 체크 서비스, 알림 전송 서비스
 
 <br/>
 
@@ -86,6 +86,7 @@
 |_ |_ 📁 entity
 |_ |_ 📁 exception
 |_ |_ 📁 repository
+|_ |_ 📁 security
 |_ |_ 📁 service
 |_ |_ 📁 util
 

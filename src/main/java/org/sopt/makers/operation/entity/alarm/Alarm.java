@@ -34,6 +34,8 @@ public class Alarm extends BaseEntity {
 
 	private int generation;
 
+	private int generationAt;
+
 	@Column(nullable = false)
 	@Enumerated(value = STRING)
 	private Attribute attribute;
@@ -64,16 +66,23 @@ public class Alarm extends BaseEntity {
 		this.status = Status.AFTER;
 	}
 
+	public void updateSendAt() {
+		this.sendAt = LocalDateTime.now();
+	}
+
 	public Alarm(AlarmRequestDTO requestDTO) {
 		this.generation = requestDTO.generation();
+		this.generationAt = requestDTO.generationAt();
 		this.attribute = requestDTO.attribute();
 		this.title = requestDTO.title();
 		this.content = requestDTO.content();
 		if (nonNull(requestDTO.link())) {
 			this.link = requestDTO.link();
 		}
-		if (nonNull(requestDTO.isActive()) && nonNull(requestDTO.part())) {
+		if (nonNull(requestDTO.isActive())) {
 			this.isActive = requestDTO.isActive();
+		}
+		if (nonNull(requestDTO.part())) {
 			this.part = requestDTO.part();
 		}
 		this.targetList = nonNull(requestDTO.targetList()) ? requestDTO.targetList() : new ArrayList<>();
