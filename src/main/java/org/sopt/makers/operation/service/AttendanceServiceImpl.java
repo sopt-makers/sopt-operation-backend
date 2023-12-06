@@ -71,9 +71,10 @@ public class AttendanceServiceImpl implements AttendanceService {
 	}
 
 	@Override
-	public List<MemberResponseDTO> findAttendancesByLecture(Long lectureId, Part part, Pageable pageable) {
+	public AttendancesResponseDTO findAttendancesByLecture(Long lectureId, Part part, Pageable pageable) {
 		val attendances = attendanceRepository.findByLecture(lectureId, part, pageable);
-		return attendances.stream().map(MemberResponseDTO::of).toList();
+		val attendancesCount = attendanceRepository.countByLectureIdAndPart(lectureId, part);
+		return AttendancesResponseDTO.of(attendances, attendancesCount);
 	}
 
 	@Override
