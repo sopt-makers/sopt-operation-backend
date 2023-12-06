@@ -12,6 +12,7 @@ import org.sopt.makers.operation.dto.member.MemberListGetResponse;
 import org.sopt.makers.operation.dto.member.MemberRequestDTO;
 import org.sopt.makers.operation.dto.member.MemberScoreGetResponse;
 import org.sopt.makers.operation.dto.member.MemberSearchCondition;
+import org.sopt.makers.operation.dto.member.MembersResponseDTO;
 import org.sopt.makers.operation.entity.AttendanceStatus;
 import org.sopt.makers.operation.entity.Member;
 import org.sopt.makers.operation.entity.Part;
@@ -38,19 +39,21 @@ public class MemberServiceImpl implements MemberService {
     private int currentGeneration;
 
     @Override
-    public List<MemberListGetResponse> getMemberList(Part part, int generation, Pageable pageable) {
-        if(part.equals(Part.ALL)) {
+    public MembersResponseDTO getMemberList(Part part, int generation, Pageable pageable) {
+        if (part.equals(Part.ALL)) {
             part = null;
         }
 
-        val members = memberRepository.search(new MemberSearchCondition(part, generation), pageable);
+        val members = memberRepository.search(new MemberSearchCondition(part, generation), pageable)
+            .stream().map(member -> {
+                val attendances = findAttendances(member);
+                val countAttendance = countAttendance(attendances);
+                val total = translateAttendanceStatus(countAttendance);
+                return MemberListGetResponse.of(member, total);
+            }).toList();
+        val membersCount = memberRepository.countByGenerationAndPart(generation, part);
 
-        return members.stream().map(member -> {
-            val attendances = findAttendances(member);
-            val countAttendance = countAttendance(attendances);
-            val total = translateAttendanceStatus(countAttendance);
-            return MemberListGetResponse.of(member, total);
-        }).toList();
+        return MembersResponseDTO.of(members, membersCount);
     }
 
     @Override
