@@ -9,10 +9,11 @@ import org.sopt.makers.operation.entity.alarm.Alarm;
 import lombok.Builder;
 
 public record AlarmsResponseDTO(
-	List<AlarmVO> alarms
+	List<AlarmVO> alarms,
+	int totalCount
 ) {
-	public static AlarmsResponseDTO of(List<Alarm> alarms) {
-		return new AlarmsResponseDTO(alarms.stream().map(AlarmVO::of).toList());
+	public static AlarmsResponseDTO of(List<Alarm> alarms, int totalCount) {
+		return new AlarmsResponseDTO(alarms.stream().map(AlarmVO::of).toList(), totalCount);
 	}
 
 	@Builder
