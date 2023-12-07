@@ -1,6 +1,7 @@
 package org.sopt.makers.operation.repository.member;
 
 import static java.util.Objects.*;
+import static org.sopt.makers.operation.entity.Part.*;
 import static org.sopt.makers.operation.entity.QAttendance.*;
 import static org.sopt.makers.operation.entity.QMember.*;
 import static org.sopt.makers.operation.entity.lecture.QLecture.*;
@@ -65,6 +66,18 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
 			.join(attendance.lecture, lecture).fetchJoin()
 			.where(member.id.eq(memberId))
 			.stream().findFirst();
+	}
+
+	@Override
+	public int countByGenerationAndPart(int generation, Part part) {
+		return Math.toIntExact(queryFactory
+			.select(member.count())
+			.from(member)
+			.where(
+				member.generation.eq(generation),
+				(nonNull(part) && !part.equals(ALL)) ? member.part.eq(part) : null
+			)
+			.fetchFirst());
 	}
 
 	private BooleanExpression partEq(Part part) {

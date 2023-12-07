@@ -146,7 +146,8 @@ public class AlarmServiceImpl implements AlarmService {
 	@Override
 	public AlarmsResponseDTO getAlarms(Integer generation, Part part, Status status, Pageable pageable) {
 		val alarms = alarmRepository.getAlarms(generation, part, status, pageable);
-		return AlarmsResponseDTO.of(alarms);
+		val alarmsCount = alarmRepository.countByGenerationAndPartAndStatus(generation, part, status);
+		return AlarmsResponseDTO.of(alarms, alarmsCount);
 	}
 
 	@Override

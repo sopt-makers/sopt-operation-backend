@@ -15,4 +15,5 @@ public interface AttendanceCustomRepository {
 	List<Attendance> findByMember(Member member);
 	List<Attendance> findCurrentAttendanceByMember(Long playGroundId);
 	List<SubAttendance> findSubAttendanceByAttendanceId(Long attendanceId);
+	int countByLectureIdAndPart(long lectureId, Part part);
 }

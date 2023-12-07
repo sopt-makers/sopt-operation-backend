@@ -9,4 +9,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface AlarmCustomRepository {
 	List<Alarm> getAlarms(Integer generation, Part part, Status status, Pageable pageable);
+	int countByGenerationAndPartAndStatus(int generation, Part part, Status status);
 }

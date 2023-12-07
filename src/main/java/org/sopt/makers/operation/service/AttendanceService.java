@@ -14,6 +14,6 @@ public interface AttendanceService {
 	SubAttendanceUpdateResponseDTO updateSubAttendance(SubAttendanceUpdateRequestDTO requestDTO);
 	AttendanceMemberResponseDTO findAttendancesByMember(Long memberId);
 	float updateMemberScore(Long memberId);
-	List<MemberResponseDTO> findAttendancesByLecture(Long lectureId, Part part, Pageable pageable);
+	AttendancesResponseDTO findAttendancesByLecture(Long lectureId, Part part, Pageable pageable);
 	AttendResponseDTO attend(Long playGroundId, AttendRequestDTO requestDTO);
 }
