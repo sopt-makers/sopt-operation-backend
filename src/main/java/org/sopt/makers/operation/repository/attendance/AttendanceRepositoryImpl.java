@@ -122,7 +122,7 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 			.from(attendance)
 			.where(
 				attendance.lecture.id.eq(lectureId),
-				nonNull(part) ? attendance.lecture.part.eq(part) : null
+				nonNull(part) ? attendance.member.part.eq(part) : null
 			)
 			.fetchFirst()
 		);
