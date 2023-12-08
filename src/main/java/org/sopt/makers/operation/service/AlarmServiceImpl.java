@@ -52,7 +52,7 @@ public class AlarmServiceImpl implements AlarmService {
 
 	@Override
 	@Transactional
-	public void sendAdmin(AlarmSendRequestDTO requestDTO) {
+	public void sendByAdmin(AlarmSendRequestDTO requestDTO) {
 		val alarm = alarmRepository.findById(requestDTO.alarmId())
 			.orElseThrow(() -> new EntityNotFoundException(INVALID_ALARM.getName()));
 
