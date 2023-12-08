@@ -1,8 +1,10 @@
 package org.sopt.makers.operation.service;
 
+import static java.util.Objects.*;
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
+import static org.sopt.makers.operation.entity.Part.*;
+import static org.sopt.makers.operation.entity.alarm.Status.*;
 
-import org.sopt.makers.operation.dto.alarm.AlarmInactiveListResponseDTO;
 import org.sopt.makers.operation.dto.alarm.AlarmSendRequestDTO;
 import org.sopt.makers.operation.dto.alarm.AlarmSenderDTO;
 import org.sopt.makers.operation.dto.member.MemberSearchCondition;
@@ -10,15 +12,12 @@ import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.alarm.Status;
 import org.sopt.makers.operation.exception.AlarmException;
 import org.sopt.makers.operation.external.api.AlarmSender;
+import org.sopt.makers.operation.external.api.PlayGroundServer;
 import org.sopt.makers.operation.repository.alarm.AlarmRepository;
 import org.sopt.makers.operation.repository.member.MemberRepository;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -35,28 +34,19 @@ import org.springframework.data.domain.Pageable;
 @Service
 @RequiredArgsConstructor
 public class AlarmServiceImpl implements AlarmService {
-
-	@Value("${sopt.makers.playground.server}")
-	private String playGroundURI;
-
-	@Value("${sopt.makers.playground.token}")
-	private String playGroundToken;
-
 	@Value("${sopt.current.generation}")
 	private int currentGeneration;
 
-	private final RestTemplate restTemplate = new RestTemplate();
 	private final AlarmRepository alarmRepository;
 	private final MemberRepository memberRepository;
 	private final AlarmSender alarmSender;
+	private final PlayGroundServer playGroundServer;
 
 	@Override
 	@Transactional
 	public void sendByAdmin(AlarmSendRequestDTO requestDTO) {
-		val alarm = alarmRepository.findById(requestDTO.alarmId())
-			.orElseThrow(() -> new EntityNotFoundException(INVALID_ALARM.getName()));
-
-		if (alarm.getStatus().equals(Status.AFTER)) {
+		val alarm = findAlarm(requestDTO.alarmId());
+		if (alarm.getStatus().equals(AFTER)) {
 			throw new AlarmException(ALREADY_SEND_ALARM.getName());
 		}
 
@@ -69,22 +59,34 @@ public class AlarmServiceImpl implements AlarmService {
 
 	private List<String> getTargetIdList(Alarm alarm) {
 		val targetList = alarm.getTargetList();
-
 		if (!targetList.isEmpty()) {
-			return alarm.getTargetList();
+			return targetList;
 		}
 
+		val activeTargetList = getActiveTargetList(alarm.getPart());
 		if (alarm.getIsActive()) {
-			return extractCurrentTargetList(alarm.getPart());
+			return activeTargetList;
 		}
 
-		val currentGenerationIdList = extractCurrentTargetList(alarm.getPart());
-		val inactiveGenerationIdList = extractInactiveTargetList(currentGeneration, alarm.getPart())
-			.memberIds().stream()
-			.map(String::valueOf).toList();
+		val inactiveTargetList = getInactiveTargetList(currentGeneration, alarm.getPart());
+		return inactiveTargetList.stream()
+			.filter(target -> !activeTargetList.contains(target))
+			.toList();
+	}
 
-		return inactiveGenerationIdList.stream()
-			.filter(item -> !currentGenerationIdList.contains(item))
+	private List<String> getActiveTargetList(Part part) {
+		part = part.equals(ALL) ? null : part;
+		val members = memberRepository.search(new MemberSearchCondition(part, currentGeneration));
+		return members.stream()
+			.filter(member -> nonNull(member.getPlaygroundId()))
+			.map(member -> String.valueOf(member.getPlaygroundId()))
+			.toList();
+	}
+
+	private List<String> getInactiveTargetList(int generation, Part part) {
+		val members = playGroundServer.getInactiveMembers(generation, part);
+		return members.memberIds().stream()
+			.map(String::valueOf)
 			.toList();
 	}
 
@@ -114,46 +116,6 @@ public class AlarmServiceImpl implements AlarmService {
 	public void deleteAlarm(Long alarmId) {
 		val alarm = findAlarm(alarmId);
 		alarmRepository.delete(alarm);
-	}
-
-	private List<String> extractCurrentTargetList(Part part) {
-		if (part.equals(Part.ALL)) {
-			part = null;
-		}
-
-		val memberList = memberRepository.search(new MemberSearchCondition(part, currentGeneration));
-		return memberList.stream()
-			.filter(member -> member.getPlaygroundId() != null)
-			.map(member -> String.valueOf(member.getPlaygroundId()))
-			.toList();
-	}
-
-	private AlarmInactiveListResponseDTO extractInactiveTargetList(int generation, Part part) {
-		val getInactiveUserURL =
-			playGroundURI + "/internal/api/v1/members/inactivity?generation=" + generation;
-
-		if (!part.equals(Part.ALL)) {
-			getInactiveUserURL.concat("&part=" + part);
-		}
-
-		val headers = new HttpHeaders();
-		headers.add("content-type", "application/json;charset=UTF-8");
-		headers.add("Authorization", playGroundToken);
-
-		val entity = new HttpEntity<>(null, headers);
-
-		try {
-			val response = restTemplate.exchange(
-				getInactiveUserURL,
-				HttpMethod.GET,
-				entity,
-				AlarmInactiveListResponseDTO.class
-			);
-
-			return response.getBody();
-		} catch (Exception e) {
-			throw new AlarmException(FAIL_INACTIVE_USERS.getName());
-		}
 	}
 
 	private Alarm findAlarm(Long alarmId) {
