@@ -4,22 +4,20 @@ import static org.sopt.makers.operation.common.ExceptionMessage.*;
 
 import org.sopt.makers.operation.dto.alarm.AlarmInactiveListResponseDTO;
 import org.sopt.makers.operation.dto.alarm.AlarmSendRequestDTO;
-import org.sopt.makers.operation.dto.alarm.AlarmSendResponseDTO;
+import org.sopt.makers.operation.dto.alarm.AlarmSenderDTO;
 import org.sopt.makers.operation.dto.member.MemberSearchCondition;
 import org.sopt.makers.operation.entity.Part;
-import org.sopt.makers.operation.entity.alarm.Attribute;
 import org.sopt.makers.operation.entity.alarm.Status;
 import org.sopt.makers.operation.exception.AlarmException;
+import org.sopt.makers.operation.external.api.AlarmSender;
 import org.sopt.makers.operation.repository.alarm.AlarmRepository;
 import org.sopt.makers.operation.repository.member.MemberRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.persistence.EntityNotFoundException;
@@ -37,11 +35,6 @@ import org.springframework.data.domain.Pageable;
 @Service
 @RequiredArgsConstructor
 public class AlarmServiceImpl implements AlarmService {
-	@Value("${notification.key}")
-	private String key;
-
-	@Value("${notification.url}")
-	private String host;
 
 	@Value("${sopt.makers.playground.server}")
 	private String playGroundURI;
@@ -55,17 +48,7 @@ public class AlarmServiceImpl implements AlarmService {
 	private final RestTemplate restTemplate = new RestTemplate();
 	private final AlarmRepository alarmRepository;
 	private final MemberRepository memberRepository;
-
-	private final List<String> appLinkList = Arrays.asList(
-		"home", "home/notification", "home/mypage", "home/attendance",
-		"home/attendance/attendance-modal", "home/soptamp",
-		"home/soptamp/entire-ranking", "home/soptamp/current-generation-ranking"
-	);
-
-	private final List<String> webLinkList = Arrays.asList(
-		"https://playground.sopt.org/members",
-		"https://playground.sopt.org/group"
-	);
+	private final AlarmSender alarmSender;
 
 	@Override
 	@Transactional
@@ -77,62 +60,32 @@ public class AlarmServiceImpl implements AlarmService {
 			throw new AlarmException(ALREADY_SEND_ALARM.getName());
 		}
 
-		val targetList = alarm.getTargetList();
+		val targetIdList = getTargetIdList(alarm);
+		alarmSender.send(AlarmSenderDTO.of(alarm, targetIdList));
 
-		List<String> targetIdList;
-		if (targetList.size() != 0) {
-			targetIdList = alarm.getTargetList();
-		} else {
-			if (alarm.getIsActive()) {
-				targetIdList = extractCurrentTargetList(alarm.getPart());
-			} else {
-				val currentGenerationIdList = extractCurrentTargetList(alarm.getPart());
-				val inactiveGenerationIdList = extractInactiveTargetList(currentGeneration, alarm.getPart())
-					.memberIds().stream()
-					.map(String::valueOf).toList();
-				targetIdList = inactiveGenerationIdList.stream()
-						.filter(item -> !currentGenerationIdList.contains(item))
-						.toList();
-			}
-		}
-
-		send(alarm.getTitle(), alarm.getContent(), targetIdList, alarm.getAttribute(), alarm.getLink());
 		alarm.updateStatus();
 		alarm.updateSendAt();
 	}
 
-	@Override
-	public void send(String title, String content, List<String> targetList, Attribute attribute, String link) {
-		val alarmRequest = new HashMap<>();
+	private List<String> getTargetIdList(Alarm alarm) {
+		val targetList = alarm.getTargetList();
 
-		alarmRequest.put("userIds", targetList);
-		alarmRequest.put("title", title);
-		alarmRequest.put("content", content);
-		alarmRequest.put("category", attribute);
-
-		if (Objects.nonNull(link)) {
-			if (appLinkList.contains(link)) {
-				alarmRequest.put("appLink", link);
-			} else {
-				alarmRequest.put("webLink", link);
-			}
+		if (!targetList.isEmpty()) {
+			return alarm.getTargetList();
 		}
 
-		val headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-		headers.add("action", "send");
-		headers.add("transactionId", UUID.randomUUID().toString());
-		headers.add("service", "operation");
-		headers.add("x-api-key", key);
-
-		val entity = new HttpEntity<>(alarmRequest, headers);
-
-		try {
-			restTemplate.postForEntity(host, entity, AlarmSendResponseDTO.class);
-		} catch (HttpClientErrorException e) {
-			throw new AlarmException(FAIL_SEND_ALARM.getName());
+		if (alarm.getIsActive()) {
+			return extractCurrentTargetList(alarm.getPart());
 		}
+
+		val currentGenerationIdList = extractCurrentTargetList(alarm.getPart());
+		val inactiveGenerationIdList = extractInactiveTargetList(currentGeneration, alarm.getPart())
+			.memberIds().stream()
+			.map(String::valueOf).toList();
+
+		return inactiveGenerationIdList.stream()
+			.filter(item -> !currentGenerationIdList.contains(item))
+			.toList();
 	}
 
 	@Override
