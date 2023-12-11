@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 
 import lombok.val;
 
+import org.sopt.makers.operation.dto.alarm.AlarmSenderDTO;
 import org.sopt.makers.operation.dto.lecture.*;
 
 import org.sopt.makers.operation.dto.lecture.AttendanceRequestDTO;
@@ -26,6 +27,7 @@ import org.sopt.makers.operation.entity.*;
 import org.sopt.makers.operation.entity.lecture.Attribute;
 import org.sopt.makers.operation.entity.lecture.Lecture;
 import org.sopt.makers.operation.exception.LectureException;
+import org.sopt.makers.operation.external.api.AlarmSender;
 import org.sopt.makers.operation.repository.attendance.AttendanceRepository;
 import org.sopt.makers.operation.repository.SubAttendanceRepository;
 import org.sopt.makers.operation.repository.lecture.LectureRepository;
@@ -46,7 +48,7 @@ public class LectureServiceImpl implements LectureService {
 	private final AttendanceRepository attendanceRepository;
 	private final SubAttendanceRepository subAttendanceRepository;
 	private final MemberRepository memberRepository;
-	private final AlarmService alarmService;
+	private final AlarmSender alarmSender;
 
 	@Value("${sopt.alarm.message.title_end}")
 	private String ALARM_MESSAGE_TITLE;
@@ -188,7 +190,9 @@ public class LectureServiceImpl implements LectureService {
 			.map(attendance -> String.valueOf(attendance.getMember().getPlaygroundId()))
 			.filter(id -> !id.equals("null"))
 			.toList();
-		alarmService.send(lecture.getName() + " " + ALARM_MESSAGE_TITLE, ALARM_MESSAGE_CONTENT, memberPgIds, NEWS, null);
+
+		val alarmTitle = lecture.getName() + " " + ALARM_MESSAGE_TITLE;
+		alarmSender.send(new AlarmSenderDTO(alarmTitle, ALARM_MESSAGE_CONTENT, memberPgIds, NEWS, null));
 	}
 
 	@Override
@@ -206,7 +210,9 @@ public class LectureServiceImpl implements LectureService {
 					memberPgIds.add(String.valueOf(attendance.getMember().getPlaygroundId()));
 				}
 			}
-			alarmService.send(lecture.getName() + " " + ALARM_MESSAGE_TITLE, ALARM_MESSAGE_CONTENT, memberPgIds, NEWS, null);
+
+			val alarmTitle = lecture.getName() + " " + ALARM_MESSAGE_TITLE;
+			alarmSender.send(new AlarmSenderDTO(alarmTitle, ALARM_MESSAGE_CONTENT, memberPgIds, NEWS, null));
 		}
 	}
 
