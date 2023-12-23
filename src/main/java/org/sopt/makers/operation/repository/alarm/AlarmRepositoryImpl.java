@@ -1,7 +1,6 @@
 package org.sopt.makers.operation.repository.alarm;
 
 import static java.util.Objects.*;
-import static org.sopt.makers.operation.entity.Part.*;
 import static org.sopt.makers.operation.entity.alarm.QAlarm.*;
 
 import java.util.List;
@@ -37,12 +36,25 @@ public class AlarmRepositoryImpl implements AlarmCustomRepository {
 			.fetch();
 	}
 
+	@Override
+	public int countByGenerationAndPartAndStatus(int generation, Part part, Status status) {
+		return Math.toIntExact(queryFactory
+			.select(alarm.count())
+			.from(alarm)
+			.where(
+				generationEq(generation),
+				partEq(part),
+				statusEq(status)
+			)
+			.fetchFirst());
+	}
+
 	private BooleanExpression generationEq(Integer generation) {
 		return nonNull(generation) ? alarm.generation.eq(generation) : null;
 	}
 
 	private BooleanExpression partEq(Part part) {
-		return (nonNull(part) && !part.equals(ALL)) ? alarm.part.eq(part) : null;
+		return nonNull(part) ? alarm.part.eq(part) : null;
 	}
 
 	private BooleanExpression statusEq(Status status) {

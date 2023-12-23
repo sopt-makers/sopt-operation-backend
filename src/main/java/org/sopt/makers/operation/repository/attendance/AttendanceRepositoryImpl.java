@@ -1,7 +1,7 @@
 package org.sopt.makers.operation.repository.attendance;
 
 import static com.querydsl.core.types.dsl.Expressions.*;
-import static org.sopt.makers.operation.entity.Part.*;
+import static java.util.Objects.*;
 import static org.sopt.makers.operation.entity.QAttendance.*;
 import static org.sopt.makers.operation.entity.QMember.*;
 import static org.sopt.makers.operation.entity.QSubAttendance.*;
@@ -115,7 +115,20 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 			.fetch();
 	}
 
+	@Override
+	public int countByLectureIdAndPart(long lectureId, Part part) {
+		return Math.toIntExact(queryFactory
+			.select(attendance.count())
+			.from(attendance)
+			.where(
+				attendance.lecture.id.eq(lectureId),
+				nonNull(part) ? attendance.member.part.eq(part) : null
+			)
+			.fetchFirst()
+		);
+	}
+
 	private BooleanExpression partEq(Part part) {
-		return (part == null || part.equals(ALL)) ? null : member.part.eq(part);
+		return nonNull(part) ? member.part.eq(part) : null;
 	}
 }
