@@ -20,7 +20,7 @@ public class Schedule extends BaseEntity {
     @Column(name = "schedule_id")
     private Long id;
 
-    private LocalDateTime date;
+    private LocalDateTime date; // TODO : 필요한 칼럼인가?
 
     private LocalDateTime startDate;
 

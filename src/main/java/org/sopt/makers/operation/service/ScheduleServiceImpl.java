@@ -7,40 +7,48 @@ import org.sopt.makers.operation.entity.schedule.Schedule;
 import org.sopt.makers.operation.repository.schedule.ScheduleRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.LongStream;
 
 
 @Service
 @RequiredArgsConstructor
 public class ScheduleServiceImpl implements ScheduleService {
 	private final ScheduleRepository scheduleRepository;
-	public Map<LocalDateTime, List<Schedule>> createCalendar(LocalDateTime start, LocalDateTime end) {
-		long days = Duration.between(start, end).toDays() + 1;
 
-		return LongStream.range(0, days)
-				.mapToObj(start::plusDays)
-				.collect(Collectors.toMap(
-						date -> date,
-						date -> new ArrayList<>()
-				));
-	}
 	@Override
 	public SchedulesResponseDTO getSchedules(LocalDateTime start, LocalDateTime end) {
-		val calendar = createCalendar(start, end);
-		val schedules = scheduleRepository.find(start, end);
+		val schedules = scheduleRepository.findBetweenStartAndEnd(start, end);
+		val scheduleMap = classifiedByDate(schedules);
+		return SchedulesResponseDTO.of(scheduleMap);
+	}
 
-		schedules.forEach(schedule -> {
-			val scheduleList = calendar.get(schedule.getDate());
-			scheduleList.add(schedule);
-			calendar.put(schedule.getDate(), scheduleList);
-		});
+	private Map<LocalDate, List<Schedule>> classifiedByDate(List<Schedule> schedules) {
+		val scheduleMap = new HashMap<LocalDate, List<Schedule>>();
+		schedules.forEach(schedule -> putScheduleMap(scheduleMap, schedule));
+		return scheduleMap;
+	}
 
-		return SchedulesResponseDTO.of(calendar);
+	private void putScheduleMap(Map<LocalDate, List<Schedule>> scheduleMap, Schedule schedule) {
+		val duration = ChronoUnit.DAYS.between(schedule.getStartDate(), schedule.getEndDate());
+		scheduleMap.computeIfAbsent(schedule.getStartDate().toLocalDate(), k -> new ArrayList<>()).add(schedule);
+		if (duration >= 1) {
+			scheduleMap.computeIfAbsent(schedule.getEndDate().toLocalDate(), k -> new ArrayList<>()).add(schedule);
+			if (duration >= 2) {
+				putScheduleMapBetween(scheduleMap, schedule, (int)duration);
+			}
+		}
+	}
+
+	private void putScheduleMapBetween(Map<LocalDate, List<Schedule>> scheduleMap, Schedule schedule, int duration) {
+		for (int i = 1; i < duration; i++) {
+			val date = schedule.getStartDate().plusDays(i).toLocalDate();
+			scheduleMap.computeIfAbsent(date, k -> new ArrayList<>()).add(schedule);
+		}
 	}
 }

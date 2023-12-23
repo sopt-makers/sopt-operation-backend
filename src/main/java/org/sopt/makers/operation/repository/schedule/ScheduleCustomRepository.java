@@ -6,5 +6,5 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ScheduleCustomRepository {
-    List<Schedule> find(LocalDateTime start, LocalDateTime end);
+    List<Schedule> findBetweenStartAndEnd(LocalDateTime start, LocalDateTime end);
 }

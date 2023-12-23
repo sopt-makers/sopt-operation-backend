@@ -16,7 +16,7 @@ import static org.sopt.makers.operation.common.ResponseMessage.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/app/schedules")
+@RequestMapping("/api/v1/schedules")
 public class AppScheduleController {
     private final ScheduleService scheduleService;
 
