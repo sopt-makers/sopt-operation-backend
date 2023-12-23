@@ -1,9 +1,9 @@
-package org.sopt.makers.operation.entity.calendar;
+package org.sopt.makers.operation.entity.schedule;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.sopt.makers.operation.entity.BaseEntity;
-import org.sopt.makers.operation.entity.alarm.Attribute;
+import org.sopt.makers.operation.entity.lecture.Attribute;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -14,10 +14,10 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @NoArgsConstructor
 @Getter
-public class Calendar extends BaseEntity {
+public class Schedule extends BaseEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "calendar_id")
+    @Column(name = "schedule_id")
     private Long id;
 
     private LocalDateTime date;
