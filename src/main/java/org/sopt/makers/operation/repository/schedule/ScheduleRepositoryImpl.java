@@ -1,7 +1,10 @@
 package org.sopt.makers.operation.repository.schedule;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+
 import lombok.RequiredArgsConstructor;
+
 import org.sopt.makers.operation.entity.schedule.Schedule;
 import org.springframework.stereotype.Repository;
 
@@ -21,7 +24,10 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
 		return queryFactory
 			.select(schedule)
 			.from(schedule)
-			.where(schedule.date.between(start, end))
+			.where(
+				schedule.startDate.between(start, end)
+					.or(schedule.endDate.between(start, end))
+			)
 			.orderBy(schedule.startDate.asc())
 			.fetch();
 	}
