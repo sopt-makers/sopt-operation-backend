@@ -20,8 +20,6 @@ public class Schedule extends BaseEntity {
     @Column(name = "schedule_id")
     private Long id;
 
-    private LocalDateTime date;
-
     private LocalDateTime startDate;
 
     private LocalDateTime endDate;

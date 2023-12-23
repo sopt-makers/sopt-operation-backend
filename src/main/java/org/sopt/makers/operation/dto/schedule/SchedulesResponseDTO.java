@@ -1,25 +1,39 @@
 package org.sopt.makers.operation.dto.schedule;
 
-import lombok.Builder;
+import lombok.*;
 import org.sopt.makers.operation.entity.lecture.Attribute;
 import org.sopt.makers.operation.entity.schedule.Schedule;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.format.TextStyle;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public record SchedulesResponseDTO(
-        Map<LocalDateTime, List<ScheduleVO>> calendar
+    List<DateVO> dates
 ) {
+    public static SchedulesResponseDTO of(Map<LocalDate, List<Schedule>> scheduleMap) {
+        return new SchedulesResponseDTO(
+            scheduleMap.keySet().stream().sorted()
+                .map(key -> DateVO.of(key, scheduleMap.get(key)))
+                .toList()
+        );
+    }
 
-    public static SchedulesResponseDTO of(Map<LocalDateTime, List<Schedule>> calendar) {
-        Map<LocalDateTime, List<ScheduleVO>> convertedCalendar = calendar.entrySet().stream()
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        entry -> entry.getValue().stream().map(ScheduleVO::of).collect(Collectors.toList())
-                ));
-        return new SchedulesResponseDTO(convertedCalendar);
+    @Builder
+    record DateVO(
+        String date,
+        String dayOfWeek,
+        List<ScheduleVO> schedules
+    ) {
+        static DateVO of(LocalDate date, List<Schedule> schedules) {
+            return DateVO.builder()
+                .date(date.toString())
+                .dayOfWeek(date.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.KOREAN))
+                .schedules(schedules.stream().map(ScheduleVO::of).toList())
+                .build();
+        }
     }
 
     @Builder
