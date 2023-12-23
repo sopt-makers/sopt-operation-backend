@@ -25,17 +25,5 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
 				.from(schedule)
 				.where(schedule.date.between(start, end))
 				.fetch();
-//		return tuples.stream()
-//				.collect(Collectors.groupingBy(
-//						tuple -> tuple.get(schedule.date),
-//						Collectors.mapping(
-//								tuple -> tuple.get(schedule),
-//								Collectors.toList()
-//						)
-//				))
-//				.entrySet()
-//				.stream()
-//				.map(entry -> Map.of(entry.getKey(), entry.getValue()))
-//				.collect(Collectors.toList());
 	}
 }
