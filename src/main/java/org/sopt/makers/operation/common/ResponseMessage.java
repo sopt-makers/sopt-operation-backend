@@ -39,7 +39,10 @@ public enum ResponseMessage {
 	SUCCESS_CREATE_ALARM("알림 생성 성공"),
 	SUCCESS_GET_ALARMS("알림 리스트 조회 성공"),
 	SUCCESS_GET_ALARM("알림 상세 조회 성공"),
-	SUCCESS_DELETE_ALARM("알림 삭제 성공")
+	SUCCESS_DELETE_ALARM("알림 삭제 성공"),
+
+	/** schedule **/
+	SUCCESS_GET_SCHEDULES("일정 리스트 조회 성공")
 	;
 
 	private final String message;
