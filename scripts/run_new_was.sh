@@ -22,7 +22,8 @@ fi
 
 if [ "$DEPLOYMENT_GROUP_NAME" == "prod" ]
 then
-   nohup java -jar -Dserver.port=${TARGET_PORT} -Dspring.profiles.active=prod /home/ubuntu/operation/build/libs/operation-0.0.1-SNAPSHOT.jar > /dev/null 2> /dev/null < /dev/null &
+   nohup java -jar -Dserver.port=${TARGET_PORT} -Dspring.profiles.active=prod /home/ubuntu/operation/build/libs/operation-0.0.1-SNAPSHOT.jar &
+   echo "> Port Check $(lsof -Fp -i TCP:${TARGET_PORT})"
    echo "> Now new WAS runs at ${TARGET_PORT}."
 fi
 
