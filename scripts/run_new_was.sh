@@ -22,7 +22,7 @@ fi
 
 if [ "$DEPLOYMENT_GROUP_NAME" == "prod" ]
 then
-   nohup java -jar -Dserver.port=${TARGET_PORT} -Dspring.profiles.active=prod /home/ubuntu/operation/build/libs/operation-0.0.1-SNAPSHOT.jar &
+   nohup java -jar -Dserver.port=${TARGET_PORT} -Dspring.profiles.active=prod /home/ubuntu/operation/build/libs/operation-0.0.1-SNAPSHOT.jar > /dev/null 2> /dev/null < /dev/null &
    echo "> Now new WAS runs at ${TARGET_PORT}."
 fi
 
