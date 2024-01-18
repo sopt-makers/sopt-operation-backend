@@ -1,6 +1,8 @@
 package org.sopt.makers.operation.dto.lecture;
 
 import static java.util.Objects.*;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.sopt.makers.operation.entity.Part;
@@ -35,16 +37,25 @@ public record LectureResponseDTO(
 			.status(lecture.getLectureStatus())
 			.build();
 	}
-}
 
-record SubLectureVO(
-	Long subLectureId,
-	int round,
-	String startAt,
-	String code
-) {
-	static SubLectureVO of(SubLecture subLecture) {
-		val startAt = nonNull(subLecture.getStartAt()) ? subLecture.getStartAt().toString() : null;
-		return new SubLectureVO(subLecture.getId(), subLecture.getRound(), startAt, subLecture.getCode());
+	@Builder
+	public record SubLectureVO(
+			Long subLectureId,
+			int round,
+			String startAt,
+			String code
+	) {
+		private static SubLectureVO of(SubLecture subLecture) {
+			return SubLectureVO.builder()
+					.subLectureId(subLecture.getId())
+					.round(subLecture.getRound())
+					.startAt(getStartAt(subLecture.getStartAt()))
+					.code(subLecture.getCode())
+					.build();
+		}
+
+		private static String getStartAt(LocalDateTime startAt) {
+			return nonNull(startAt) ? startAt.toString() : null;
+		}
 	}
 }

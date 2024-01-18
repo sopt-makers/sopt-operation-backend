@@ -9,6 +9,7 @@ import org.sopt.makers.operation.entity.Part;
 
 import lombok.*;
 
+@Builder
 public record LectureRequestDTO(
 	@NonNull Part part,
 	@NonNull String name,
