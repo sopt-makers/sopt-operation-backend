@@ -3,7 +3,6 @@ package org.sopt.makers.operation.service;
 import static java.util.Objects.nonNull;
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
 import static org.sopt.makers.operation.entity.AttendanceStatus.*;
-import static org.sopt.makers.operation.entity.Part.*;
 import static org.sopt.makers.operation.entity.alarm.Attribute.*;
 import static org.sopt.makers.operation.entity.lecture.LectureStatus.*;
 
@@ -22,7 +21,6 @@ import org.sopt.makers.operation.dto.lecture.AttendanceResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LectureRequestDTO;
 import org.sopt.makers.operation.dto.lecture.LectureResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LecturesResponseDTO;
-import org.sopt.makers.operation.dto.member.MemberSearchCondition;
 import org.sopt.makers.operation.entity.*;
 import org.sopt.makers.operation.entity.lecture.Attribute;
 import org.sopt.makers.operation.entity.lecture.Lecture;
@@ -55,28 +53,128 @@ public class LectureServiceImpl implements LectureService {
 	@Value("${sopt.alarm.message.content_end}")
 	private String ALARM_MESSAGE_CONTENT;
 
+	private final int SUB_LECTURE_MAX_ROUND = 2;
+
+	/** WEB **/
+
 	@Override
 	@Transactional
-	public Long createLecture(LectureRequestDTO requestDTO) {
-		// 세션 생성
-		Lecture savedLecture = lectureRepository.save(requestDTO.toEntity());
-
-		// 출석 세션 2개 생성
-		Stream.iterate(1, i -> i + 1).limit(2)
-			.forEach(i -> subLectureRepository.save(new SubLecture(savedLecture, i)));
-
-		// 출석 생성
-		memberRepository
-			.search(getMemberSearchCondition(requestDTO))
-			.forEach(member -> attendanceRepository.save(new Attendance(member, savedLecture)));
-
-		// 서브 출석 생성
-		savedLecture.getAttendances()
-			.forEach(attendance -> savedLecture.getSubLectures()
-					.forEach(subLecture -> subAttendanceRepository.save(new SubAttendance(attendance, subLecture))));
-
-
+	public Long createLecture(LectureRequestDTO request) {
+		val savedLecture = saveLecture(request);
+		createSubLectures(savedLecture);
+		createAttendance(request.generation(), request.part(), savedLecture);
+		createSubAttendances(savedLecture);
 		return savedLecture.getId();
+	}
+
+	private Lecture saveLecture(LectureRequestDTO request) {
+		val lecture = request.toEntity();
+		return lectureRepository.save(lecture);
+	}
+
+	private void createSubLectures(Lecture lecture) {
+		Stream.iterate(1, i -> i + 1).limit(SUB_LECTURE_MAX_ROUND)
+				.forEach(round -> saveSubLecture(lecture, round));
+	}
+
+	private void saveSubLecture(Lecture lecture, int round) {
+		subLectureRepository.save(new SubLecture(lecture, round));
+	}
+
+	private void createAttendance(int generation, Part part, Lecture lecture) {
+		memberRepository.find(generation, part).forEach(member -> saveAttendance(member, lecture));
+	}
+
+	private void saveAttendance(Member member, Lecture lecture) {
+		attendanceRepository.save(new Attendance(member, lecture));
+	}
+
+	private void createSubAttendances(Lecture lecture) {
+		lecture.getAttendances().forEach(this::saveSubAttendances);
+	}
+
+	private void saveSubAttendances(Attendance attendance) {
+		attendance.getLecture().getSubLectures().forEach(subLecture -> saveSubAttendance(attendance, subLecture));
+	}
+
+	private void saveSubAttendance(Attendance attendance, SubLecture subLecture) {
+		subAttendanceRepository.save(new SubAttendance(attendance, subLecture));
+	}
+
+	@Override
+	public LecturesResponseDTO getLecturesByGeneration(int generation, Part part) {
+		val lectures = lectureRepository.findLectures(generation, part);
+		return LecturesResponseDTO.of(generation, lectures);
+	}
+
+	@Override
+	public LectureResponseDTO getLecture(Long lectureId) {
+		Lecture lecture = findLecture(lectureId);
+		return LectureResponseDTO.of(lecture);
+	}
+
+	@Override
+	@Transactional
+	public AttendanceResponseDTO startAttendance(AttendanceRequestDTO requestDTO) {
+		Lecture lecture = findLecture(requestDTO.lectureId());
+
+		// 출석 가능 여부 유효성 체크
+		if (requestDTO.round() == 2 && lecture.getLectureStatus().equals(BEFORE)) {
+			throw new IllegalStateException(NOT_STARTED_PRE_ATTENDANCE.getName());
+		} else if (lecture.getLectureStatus().equals(END)) {
+			throw new IllegalStateException(END_LECTURE.getName());
+		}
+
+		// 출석 세션 상태 업데이트 (시작)
+		SubLecture subLecture = lecture.getSubLectures().stream()
+			.filter(session -> session.getRound() == requestDTO.round())
+			.findFirst()
+			.orElseThrow(() -> new IllegalStateException(NO_SUB_LECTURE_EQUAL_ROUND.getName()));
+		subLecture.startAttendance(requestDTO.code());
+
+		return new AttendanceResponseDTO(lecture.getId(), subLecture.getId());
+	}
+
+	@Override
+	@Transactional
+	public void finishLecture(Long lectureId) {
+		val lecture = findLecture(lectureId);
+		val now = LocalDateTime.now();
+		if (now.isBefore(lecture.getEndDate())) {
+			throw new IllegalStateException(NOT_END_TIME_YET.getName());
+		}
+		lecture.finish();
+
+		List<String> memberPgIds = lecture.getAttendances().stream()
+			.map(attendance -> String.valueOf(attendance.getMember().getPlaygroundId()))
+			.filter(id -> !id.equals("null"))
+			.toList();
+
+		val alarmTitle = lecture.getName() + " " + ALARM_MESSAGE_TITLE;
+		alarmSender.send(new AlarmSenderDTO(alarmTitle, ALARM_MESSAGE_CONTENT, memberPgIds, NEWS, null));
+	}
+
+	/** APP **/
+
+	@Override
+	@Transactional
+	public void finishLecture() {
+		val lectures = lectureRepository.findLecturesToBeEnd();
+		lectures.forEach(Lecture::finish);
+
+		List<String> memberPgIds;
+		for (val lecture : lectures) {
+			memberPgIds = new ArrayList<>();
+			for (val attendance : lecture.getAttendances()) {
+				val playgroundId = attendance.getMember().getPlaygroundId();
+				if (Objects.nonNull(playgroundId)) {
+					memberPgIds.add(String.valueOf(attendance.getMember().getPlaygroundId()));
+				}
+			}
+
+			val alarmTitle = lecture.getName() + " " + ALARM_MESSAGE_TITLE;
+			alarmSender.send(new AlarmSenderDTO(alarmTitle, ALARM_MESSAGE_CONTENT, memberPgIds, NEWS, null));
+		}
 	}
 
 	@Override
@@ -139,80 +237,6 @@ public class LectureServiceImpl implements LectureService {
 			}
 		}
 		return LectureGetResponseDTO.of(lectureType, currentLecture, message, subAttendances);
-	}
-
-	@Override
-	public LecturesResponseDTO getLecturesByGeneration(int generation, Part part) {
-		val lectures = lectureRepository.findLectures(generation, part);
-		return LecturesResponseDTO.of(generation, lectures);
-	}
-
-	@Override
-	public LectureResponseDTO getLecture(Long lectureId) {
-		Lecture lecture = findLecture(lectureId);
-		return LectureResponseDTO.of(lecture);
-	}
-
-	@Override
-	@Transactional
-	public AttendanceResponseDTO startAttendance(AttendanceRequestDTO requestDTO) {
-		Lecture lecture = findLecture(requestDTO.lectureId());
-
-		// 출석 가능 여부 유효성 체크
-		if (requestDTO.round() == 2 && lecture.getLectureStatus().equals(BEFORE)) {
-			throw new IllegalStateException(NOT_STARTED_PRE_ATTENDANCE.getName());
-		} else if (lecture.getLectureStatus().equals(END)) {
-			throw new IllegalStateException(END_LECTURE.getName());
-		}
-
-		// 출석 세션 상태 업데이트 (시작)
-		SubLecture subLecture = lecture.getSubLectures().stream()
-			.filter(session -> session.getRound() == requestDTO.round())
-			.findFirst()
-			.orElseThrow(() -> new IllegalStateException(NO_SUB_LECTURE_EQUAL_ROUND.getName()));
-		subLecture.startAttendance(requestDTO.code());
-
-		return new AttendanceResponseDTO(lecture.getId(), subLecture.getId());
-	}
-
-	@Override
-	@Transactional
-	public void finishLecture(Long lectureId) {
-		val lecture = findLecture(lectureId);
-		val now = LocalDateTime.now();
-		if (now.isBefore(lecture.getEndDate())) {
-			throw new IllegalStateException(NOT_END_TIME_YET.getName());
-		}
-		lecture.finish();
-
-		List<String> memberPgIds = lecture.getAttendances().stream()
-			.map(attendance -> String.valueOf(attendance.getMember().getPlaygroundId()))
-			.filter(id -> !id.equals("null"))
-			.toList();
-
-		val alarmTitle = lecture.getName() + " " + ALARM_MESSAGE_TITLE;
-		alarmSender.send(new AlarmSenderDTO(alarmTitle, ALARM_MESSAGE_CONTENT, memberPgIds, NEWS, null));
-	}
-
-	@Override
-	@Transactional
-	public void finishLecture() {
-		val lectures = lectureRepository.findLecturesToBeEnd();
-		lectures.forEach(Lecture::finish);
-
-		List<String> memberPgIds;
-		for (val lecture : lectures) {
-			memberPgIds = new ArrayList<>();
-			for (val attendance : lecture.getAttendances()) {
-				val playgroundId = attendance.getMember().getPlaygroundId();
-				if (Objects.nonNull(playgroundId)) {
-					memberPgIds.add(String.valueOf(attendance.getMember().getPlaygroundId()));
-				}
-			}
-
-			val alarmTitle = lecture.getName() + " " + ALARM_MESSAGE_TITLE;
-			alarmSender.send(new AlarmSenderDTO(alarmTitle, ALARM_MESSAGE_CONTENT, memberPgIds, NEWS, null));
-		}
 	}
 
 	@Override
@@ -286,13 +310,6 @@ public class LectureServiceImpl implements LectureService {
 	public LectureDetailResponseDTO getLectureDetail(Long lectureId) {
 		val lecture = findLecture(lectureId);
 		return LectureDetailResponseDTO.of(lecture);
-	}
-
-	private MemberSearchCondition getMemberSearchCondition(LectureRequestDTO requestDTO) {
-		return new MemberSearchCondition(
-			!requestDTO.part().equals(ALL) ? requestDTO.part() : null,
-			requestDTO.generation()
-		);
 	}
 
 	private Lecture findLecture(Long id) {

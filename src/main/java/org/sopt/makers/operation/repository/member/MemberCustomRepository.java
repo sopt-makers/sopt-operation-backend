@@ -13,4 +13,5 @@ public interface MemberCustomRepository {
 	List<Member> search(MemberSearchCondition condition);
 	Optional<Member> find(Long memberId);
 	int countByGenerationAndPart(int generation, Part part);
+	List<Member> find(int generation, Part part);
 }
