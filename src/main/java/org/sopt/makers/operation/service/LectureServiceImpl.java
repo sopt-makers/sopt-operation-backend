@@ -59,7 +59,7 @@ public class LectureServiceImpl implements LectureService {
 
 	@Override
 	@Transactional
-	public Long createLecture(LectureRequestDTO request) {
+	public long createLecture(LectureRequestDTO request) {
 		val savedLecture = saveLecture(request);
 		createSubLectures(savedLecture);
 		createAttendance(request.generation(), request.part(), savedLecture);
