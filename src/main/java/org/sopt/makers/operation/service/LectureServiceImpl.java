@@ -141,7 +141,6 @@ public class LectureServiceImpl implements LectureService {
 		return LectureGetResponseDTO.of(lectureType, currentLecture, message, subAttendances);
 	}
 
-
 	@Override
 	public LecturesResponseDTO getLecturesByGeneration(int generation, Part part) {
 		val lectures = lectureRepository.findLectures(generation, part);
