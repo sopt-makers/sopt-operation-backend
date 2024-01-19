@@ -1,6 +1,7 @@
 package org.sopt.makers.operation.entity.lecture;
 
 import static javax.persistence.GenerationType.*;
+import static org.sopt.makers.operation.entity.lecture.LectureStatus.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -67,7 +68,7 @@ public class Lecture extends BaseEntity {
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.attribute = attribute;
-		this.lectureStatus = LectureStatus.BEFORE;
+		this.lectureStatus = BEFORE;
 	}
 
 	public void updateStatus(LectureStatus status) {
@@ -75,15 +76,19 @@ public class Lecture extends BaseEntity {
 	}
 
 	public void updateToEnd() {
-		this.lectureStatus = LectureStatus.END;
+		this.lectureStatus = END;
 		attendances.forEach(Attendance::updateMemberScore);
 	}
 
 	public boolean isEnd() {
-		return this.lectureStatus.equals(LectureStatus.END);
+		return this.lectureStatus.equals(END);
 	}
 
 	public boolean isBefore() {
-		return this.lectureStatus.equals(LectureStatus.BEFORE);
+		return this.lectureStatus.equals(BEFORE);
+	}
+
+	public boolean isFirst() {
+		return this.lectureStatus.equals(FIRST);
 	}
 }

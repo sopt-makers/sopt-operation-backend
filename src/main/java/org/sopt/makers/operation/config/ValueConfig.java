@@ -15,4 +15,7 @@ public class ValueConfig {
 	private String ALARM_MESSAGE_CONTENT;
 
 	private final int SUB_LECTURE_MAX_ROUND = 2;
+	private final String ETC_MESSAGE = "출석 점수가 반영되지 않아요.";
+	private final String SEMINAR_MESSAGE = "";
+	private final String EVENT_MESSAGE = "행사도 참여하고, 출석점수도 받고, 일석이조!";
 }

@@ -1,6 +1,6 @@
 package org.sopt.makers.operation.service;
 
-import org.sopt.makers.operation.dto.lecture.LectureGetResponseDTO;
+import org.sopt.makers.operation.dto.lecture.TodayLectureResponseDTO;
 import org.sopt.makers.operation.dto.lecture.AttendanceRequestDTO;
 import org.sopt.makers.operation.dto.lecture.AttendanceResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LectureRequestDTO;
@@ -14,17 +14,16 @@ public interface LectureService {
 	/** WEB **/
 	long createLecture(LectureRequestDTO requestDTO);
 	LecturesResponseDTO getLectures(int generation, Part part);
+	LectureResponseDTO getLecture(Long lectureId);
 	AttendanceResponseDTO startAttendance(AttendanceRequestDTO requestDTO);
 	void endLecture(Long lectureId);
+	void deleteLecture(Long lectureId);
+	LectureDetailResponseDTO getLectureDetail(Long lectureId);
 
 	/** SCHEDULER **/
 	void endLectures();
 
 	/** APP **/
-	LectureGetResponseDTO getCurrentLecture(Long playGroundId);
-	LectureResponseDTO getLecture(Long lectureId);
+	TodayLectureResponseDTO getTodayLecture(long memberPlaygroundId);
 	LectureCurrentRoundResponseDTO getCurrentLectureRound(Long lectureId);
-	void deleteLecture(Long lectureId);
-	LectureDetailResponseDTO getLectureDetail(Long lectureId);
-
 }
