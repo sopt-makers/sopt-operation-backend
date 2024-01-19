@@ -1,0 +1,113 @@
+package org.sopt.makers.operation.fixture;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Stream;
+
+import org.sopt.makers.operation.dto.lecture.AttendanceRequestDTO;
+import org.sopt.makers.operation.dto.lecture.AttendanceResponseDTO;
+import org.sopt.makers.operation.dto.lecture.AttendancesStatusVO;
+import org.sopt.makers.operation.dto.lecture.LectureDetailResponseDTO;
+import org.sopt.makers.operation.dto.lecture.LectureResponseDTO;
+import org.sopt.makers.operation.dto.lecture.LecturesResponseDTO;
+import org.sopt.makers.operation.entity.Part;
+import org.sopt.makers.operation.entity.lecture.Attribute;
+import org.sopt.makers.operation.entity.lecture.LectureStatus;
+
+public class LectureFixture {
+
+	public static final String LECTURE_NAME = "테스트 이름";
+	public static final Part LECTURE_PART = Part.ALL;
+	public static final int LECTURE_GENERATION = 30;
+	public static final String LECTURE_PLACE = "테스트 장소";
+	public static final LocalDateTime NOW = LocalDateTime.now();
+	public static final Attribute LECTURE_ATTRIBUTE = Attribute.ETC;
+	public static final LectureStatus LECTURE_STATUS = LectureStatus.BEFORE;
+	public static final int LIST_SIZE = 5;
+	public static final String SUB_LECTURE_CODE = "code";
+
+	public static long lectureId() {
+		return 0L;
+	}
+
+	public static LecturesResponseDTO lecturesResponse() {
+		return new LecturesResponseDTO(LECTURE_GENERATION, lectures());
+	}
+
+	private static List<LecturesResponseDTO.LectureVO> lectures() {
+		return Stream.iterate(1, i -> i + 1).limit(LIST_SIZE)
+				.map(LectureFixture::lecture).toList();
+	}
+
+	private static LecturesResponseDTO.LectureVO lecture(int i) {
+		return LecturesResponseDTO.LectureVO.builder()
+				.lectureId(0L)
+				.name(LECTURE_NAME + i)
+				.partValue(Part.ALL)
+				.partName(Part.ALL.getName())
+				.startDate(NOW.plusHours(i).toString())
+				.endDate(NOW.plusHours(i + 4).toString())
+				.attributeValue(LECTURE_ATTRIBUTE)
+				.attributeName(LECTURE_ATTRIBUTE.getName())
+				.place(LECTURE_PLACE + i)
+				.attendances(attendancesStatus())
+				.build();
+	}
+
+	public static LectureResponseDTO lectureResponse() {
+		return LectureResponseDTO.builder()
+				.lectureId(0L)
+				.name(LECTURE_NAME)
+				.generation(LECTURE_GENERATION)
+				.part(LECTURE_PART)
+				.attribute(LECTURE_ATTRIBUTE)
+				.subLectures(subLectures())
+				.attendances(attendancesStatus())
+				.status(LECTURE_STATUS)
+				.build();
+	}
+
+	private static AttendancesStatusVO attendancesStatus() {
+		return AttendancesStatusVO.builder()
+				.attendance(80)
+				.absent(0)
+				.tardy(10)
+				.unknown(10)
+				.build();
+	}
+
+	private static List<LectureResponseDTO.SubLectureVO> subLectures() {
+		return Stream.iterate(1, i -> i + 1).limit(LIST_SIZE)
+				.map(LectureFixture::subLecture).toList();
+	}
+
+	private static LectureResponseDTO.SubLectureVO subLecture(int i) {
+		return LectureResponseDTO.SubLectureVO.builder()
+				.subLectureId((long)i)
+				.round(i % 2)
+				.startAt(NOW.toString())
+				.code(SUB_LECTURE_CODE)
+				.build();
+	}
+
+	public static AttendanceResponseDTO attendanceResponse() {
+		return new AttendanceResponseDTO(0L, 0L);
+	}
+
+	public static AttendanceRequestDTO attendanceRequest() {
+		return new AttendanceRequestDTO(0L, 0, SUB_LECTURE_CODE);
+	}
+
+	public static LectureDetailResponseDTO lectureDetail() {
+		return LectureDetailResponseDTO.builder()
+				.lectureId(0L)
+				.part(LECTURE_PART.getName())
+				.name(LECTURE_NAME)
+				.place(LECTURE_PLACE)
+				.attribute(LECTURE_ATTRIBUTE.getName())
+				.startDate(NOW.toString())
+				.endDate(NOW.plusHours(4).toString())
+				.generation(LECTURE_GENERATION)
+				.build();
+	}
+}
