@@ -11,13 +11,18 @@ import org.sopt.makers.operation.dto.lecture.*;
 
 public interface LectureService {
 
+	/** WEB **/
 	long createLecture(LectureRequestDTO requestDTO);
 	LecturesResponseDTO getLectures(int generation, Part part);
+	AttendanceResponseDTO startAttendance(AttendanceRequestDTO requestDTO);
+	void endLecture(Long lectureId);
+
+	/** SCHEDULER **/
+	void endLectures();
+
+	/** APP **/
 	LectureGetResponseDTO getCurrentLecture(Long playGroundId);
 	LectureResponseDTO getLecture(Long lectureId);
-	AttendanceResponseDTO startAttendance(AttendanceRequestDTO requestDTO);
-	void finishLecture(Long lectureId);
-	void finishLecture();
 	LectureCurrentRoundResponseDTO getCurrentLectureRound(Long lectureId);
 	void deleteLecture(Long lectureId);
 	LectureDetailResponseDTO getLectureDetail(Long lectureId);

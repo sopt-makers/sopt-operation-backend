@@ -74,7 +74,7 @@ public class Lecture extends BaseEntity {
 		this.lectureStatus = status;
 	}
 
-	public void finish() {
+	public void updateToEnd() {
 		this.lectureStatus = LectureStatus.END;
 		attendances.forEach(Attendance::updateMemberScore);
 	}

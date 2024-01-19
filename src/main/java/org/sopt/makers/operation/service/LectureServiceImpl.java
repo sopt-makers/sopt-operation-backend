@@ -113,13 +113,13 @@ public class LectureServiceImpl implements LectureService {
 	@Transactional
 	public AttendanceResponseDTO startAttendance(AttendanceRequestDTO requestDTO) {
 		val lecture = findLecture(requestDTO.lectureId());
-		checkValidAttendance(lecture, requestDTO.round());
+		checkStartAttendanceValidity(lecture, requestDTO.round());
 		val subLecture = getSubLecture(lecture, requestDTO.round());
 		subLecture.startAttendance(requestDTO.code());
 		return AttendanceResponseDTO.of(lecture, subLecture);
 	}
 
-	private void checkValidAttendance(Lecture lecture, int round) {
+	private void checkStartAttendanceValidity(Lecture lecture, int round) {
 		if (lecture.isEnd()) {
 			throw new LectureException(END_LECTURE.getName());
 		} else if (round == 2 && lecture.isBefore()) {
@@ -136,45 +136,48 @@ public class LectureServiceImpl implements LectureService {
 
 	@Override
 	@Transactional
-	public void finishLecture(Long lectureId) {
+	public void endLecture(Long lectureId) {
 		val lecture = findLecture(lectureId);
-		val now = LocalDateTime.now();
-		if (now.isBefore(lecture.getEndDate())) {
-			throw new IllegalStateException(NOT_END_TIME_YET.getName());
-		}
-		lecture.finish();
-
-		List<String> memberPgIds = lecture.getAttendances().stream()
-			.map(attendance -> String.valueOf(attendance.getMember().getPlaygroundId()))
-			.filter(id -> !id.equals("null"))
-			.toList();
-
-		val alarmTitle = lecture.getName() + " " + valueConfig.getALARM_MESSAGE_TITLE();
-		alarmSender.send(new AlarmSenderDTO(alarmTitle, valueConfig.getALARM_MESSAGE_CONTENT(), memberPgIds, NEWS, null));
+		checkEndLectureValidity(lecture);
+		lecture.updateToEnd();
+		sendAlarm(lecture);
 	}
 
-	/** APP **/
+	/** SCHEDULER **/
 
 	@Override
 	@Transactional
-	public void finishLecture() {
+	public void endLectures() {
 		val lectures = lectureRepository.findLecturesToBeEnd();
-		lectures.forEach(Lecture::finish);
+		lectures.forEach(lecture -> endLecture(lecture.getId()));
+	}
 
-		List<String> memberPgIds;
-		for (val lecture : lectures) {
-			memberPgIds = new ArrayList<>();
-			for (val attendance : lecture.getAttendances()) {
-				val playgroundId = attendance.getMember().getPlaygroundId();
-				if (Objects.nonNull(playgroundId)) {
-					memberPgIds.add(String.valueOf(attendance.getMember().getPlaygroundId()));
-				}
-			}
-
-			val alarmTitle = lecture.getName() + " " + valueConfig.getALARM_MESSAGE_TITLE();
-			alarmSender.send(new AlarmSenderDTO(alarmTitle, valueConfig.getALARM_MESSAGE_CONTENT(), memberPgIds, NEWS, null));
+	private void checkEndLectureValidity(Lecture lecture) {
+		val now = LocalDateTime.now();
+		if (now.isBefore(lecture.getEndDate())) {
+			throw new LectureException(NOT_END_TIME_YET.getName());
 		}
 	}
+
+	private void sendAlarm(Lecture lecture) {
+		val alarmTitle = getAlarmTitle(lecture);
+		val alarmContent = valueConfig.getALARM_MESSAGE_CONTENT();
+		val memberPlaygroundIds = getMemberPlaygroundIds(lecture);
+		alarmSender.send(new AlarmSenderDTO(alarmTitle, alarmContent, memberPlaygroundIds, NEWS, null));
+	}
+
+	private List<String> getMemberPlaygroundIds(Lecture lecture) {
+		return lecture.getAttendances().stream()
+				.map(attendance -> String.valueOf(attendance.getMember().getPlaygroundId()))
+				.filter(id -> !id.equals("null"))
+				.toList();
+	}
+
+	private String getAlarmTitle(Lecture lecture) {
+		return lecture.getName() + " " + valueConfig.getALARM_MESSAGE_TITLE();
+	}
+
+	/** APP **/
 
 	@Override
 	public LectureGetResponseDTO getCurrentLecture(Long playGroundId) {
