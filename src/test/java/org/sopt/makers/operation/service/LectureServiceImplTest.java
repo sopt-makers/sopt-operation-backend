@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.sopt.makers.operation.config.ValueConfig;
+import org.sopt.makers.operation.dto.lecture.AttendanceRequestDTO;
 import org.sopt.makers.operation.dto.lecture.LectureResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LecturesResponseDTO;
 import org.sopt.makers.operation.entity.lecture.Lecture;
@@ -67,6 +68,23 @@ class LectureServiceImplTest {
 		assertThat(response.generation(), is(equalTo(lecture.getGeneration())));
 		assertThat(response.part(), is(equalTo(lecture.getPart())));
 		assertThat(response.attribute(), is(equalTo(lecture.getAttribute())));
+
+		// verify
+		verify(lectureRepository, times(1)).findById(anyLong());
+	}
+
+	@DisplayName("출석 시작")
+	@Test
+	void startAttendance() {
+		// given
+		Lecture lecture = lectureRequest().toEntity();
+		subLecture(lecture);
+		AttendanceRequestDTO request = attendanceRequest();
+
+		doReturn(Optional.of(lecture)).when(lectureRepository).findById(anyLong());
+
+		// when
+		lectureService.startAttendance(request);
 
 		// verify
 		verify(lectureRepository, times(1)).findById(anyLong());

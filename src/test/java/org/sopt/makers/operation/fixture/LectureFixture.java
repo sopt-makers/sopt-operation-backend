@@ -14,6 +14,7 @@ import org.sopt.makers.operation.dto.lecture.LectureResponseDTO.SubLectureVO;
 import org.sopt.makers.operation.dto.lecture.LecturesResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LecturesResponseDTO.LectureVO;
 import org.sopt.makers.operation.entity.Part;
+import org.sopt.makers.operation.entity.SubLecture;
 import org.sopt.makers.operation.entity.lecture.Attribute;
 import org.sopt.makers.operation.entity.lecture.Lecture;
 import org.sopt.makers.operation.entity.lecture.LectureStatus;
@@ -111,7 +112,7 @@ public class LectureFixture {
 	}
 
 	public static AttendanceRequestDTO attendanceRequest() {
-		return new AttendanceRequestDTO(0L, 0, SUB_LECTURE_CODE);
+		return new AttendanceRequestDTO(0L, 1, SUB_LECTURE_CODE);
 	}
 
 	public static LectureDetailResponseDTO lectureDetail() {
@@ -130,5 +131,9 @@ public class LectureFixture {
 	public static List<Lecture> lectureList() {
 		return Stream.iterate(1, i -> i + 1).limit(LIST_SIZE)
 				.map(i -> lectureRequest().toEntity()).toList();
+	}
+
+	public static SubLecture subLecture(Lecture lecture) {
+		return new SubLecture(lecture, 1);
 	}
 }
