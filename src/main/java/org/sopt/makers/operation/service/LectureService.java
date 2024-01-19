@@ -10,6 +10,7 @@ import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.dto.lecture.*;
 
 public interface LectureService {
+
 	long createLecture(LectureRequestDTO requestDTO);
 	LectureGetResponseDTO getCurrentLecture(Long playGroundId);
 	LecturesResponseDTO getLecturesByGeneration(int generation, Part part);

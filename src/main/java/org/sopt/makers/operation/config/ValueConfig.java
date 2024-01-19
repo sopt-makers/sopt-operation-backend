@@ -8,6 +8,7 @@ import lombok.Getter;
 @Configuration
 @Getter
 public class ValueConfig {
+
 	@Value("${sopt.alarm.message.title_end}")
 	private String ALARM_MESSAGE_TITLE;
 	@Value("${sopt.alarm.message.content_end}")

@@ -41,6 +41,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class LectureServiceImpl implements LectureService {
+
 	private final LectureRepository lectureRepository;
 	private final SubLectureRepository subLectureRepository;
 	private final AttendanceRepository attendanceRepository;
