@@ -11,11 +11,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.sopt.makers.operation.config.ValueConfig;
+import org.sopt.makers.operation.dto.lecture.LectureResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LecturesResponseDTO;
+import org.sopt.makers.operation.entity.lecture.Lecture;
 import org.sopt.makers.operation.repository.lecture.LectureRepository;
 import org.sopt.makers.operation.repository.member.MemberRepository;
 
 import static org.mockito.Mockito.*;
+
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class LectureServiceImplTest {
@@ -44,5 +48,27 @@ class LectureServiceImplTest {
 
 		// verify
 		verify(lectureRepository, times(1)).find(anyInt(), any());
+	}
+
+	@DisplayName("세션 단건 조회")
+	@Test
+	void getLecture() {
+		// given
+		Lecture lecture = lectureRequest().toEntity();
+		long lectureId = lectureId();
+
+		doReturn(Optional.of(lecture)).when(lectureRepository).findById(anyLong());
+
+		// when
+		LectureResponseDTO response = lectureService.getLecture(lectureId);
+
+		// then
+		assertThat(response.name(), is(equalTo(lecture.getName())));
+		assertThat(response.generation(), is(equalTo(lecture.getGeneration())));
+		assertThat(response.part(), is(equalTo(lecture.getPart())));
+		assertThat(response.attribute(), is(equalTo(lecture.getAttribute())));
+
+		// verify
+		verify(lectureRepository, times(1)).findById(anyLong());
 	}
 }
