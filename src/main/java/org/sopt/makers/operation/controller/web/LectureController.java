@@ -45,8 +45,8 @@ public class LectureController {
 
 	@ApiOperation(value = "세션 리스트 조회")
 	@GetMapping
-	public ResponseEntity<ApiResponse> getLecturesByGeneration(@RequestParam int generation, @RequestParam(required = false) Part part) {
-		val response = lectureService.getLecturesByGeneration(generation, part);
+	public ResponseEntity<ApiResponse> getLectures(@RequestParam int generation, @RequestParam(required = false) Part part) {
+		val response = lectureService.getLectures(generation, part);
 		return ResponseEntity.ok(success(SUCCESS_GET_LECTURES.getMessage(), response));
 	}
 

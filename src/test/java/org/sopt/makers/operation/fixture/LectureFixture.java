@@ -8,10 +8,14 @@ import org.sopt.makers.operation.dto.lecture.AttendanceRequestDTO;
 import org.sopt.makers.operation.dto.lecture.AttendanceResponseDTO;
 import org.sopt.makers.operation.dto.lecture.AttendancesStatusVO;
 import org.sopt.makers.operation.dto.lecture.LectureDetailResponseDTO;
+import org.sopt.makers.operation.dto.lecture.LectureRequestDTO;
 import org.sopt.makers.operation.dto.lecture.LectureResponseDTO;
+import org.sopt.makers.operation.dto.lecture.LectureResponseDTO.SubLectureVO;
 import org.sopt.makers.operation.dto.lecture.LecturesResponseDTO;
+import org.sopt.makers.operation.dto.lecture.LecturesResponseDTO.LectureVO;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.lecture.Attribute;
+import org.sopt.makers.operation.entity.lecture.Lecture;
 import org.sopt.makers.operation.entity.lecture.LectureStatus;
 
 public class LectureFixture {
@@ -26,6 +30,18 @@ public class LectureFixture {
 	public static final int LIST_SIZE = 5;
 	public static final String SUB_LECTURE_CODE = "code";
 
+	public static LectureRequestDTO lectureRequest() {
+		return LectureRequestDTO.builder()
+				.part(LECTURE_PART)
+				.name(LECTURE_NAME)
+				.generation(LECTURE_GENERATION)
+				.place(LECTURE_PLACE)
+				.startDate(NOW.toString())
+				.endDate(NOW.plusHours(4).toString())
+				.attribute(LECTURE_ATTRIBUTE)
+				.build();
+	}
+
 	public static long lectureId() {
 		return 0L;
 	}
@@ -34,13 +50,13 @@ public class LectureFixture {
 		return new LecturesResponseDTO(LECTURE_GENERATION, lectures());
 	}
 
-	private static List<LecturesResponseDTO.LectureVO> lectures() {
+	private static List<LectureVO> lectures() {
 		return Stream.iterate(1, i -> i + 1).limit(LIST_SIZE)
 				.map(LectureFixture::lecture).toList();
 	}
 
-	private static LecturesResponseDTO.LectureVO lecture(int i) {
-		return LecturesResponseDTO.LectureVO.builder()
+	private static LectureVO lecture(int i) {
+		return LectureVO.builder()
 				.lectureId(0L)
 				.name(LECTURE_NAME + i)
 				.partValue(Part.ALL)
@@ -76,13 +92,13 @@ public class LectureFixture {
 				.build();
 	}
 
-	private static List<LectureResponseDTO.SubLectureVO> subLectures() {
+	private static List<SubLectureVO> subLectures() {
 		return Stream.iterate(1, i -> i + 1).limit(LIST_SIZE)
 				.map(LectureFixture::subLecture).toList();
 	}
 
-	private static LectureResponseDTO.SubLectureVO subLecture(int i) {
-		return LectureResponseDTO.SubLectureVO.builder()
+	private static SubLectureVO subLecture(int i) {
+		return SubLectureVO.builder()
 				.subLectureId((long)i)
 				.round(i % 2)
 				.startAt(NOW.toString())
@@ -109,5 +125,10 @@ public class LectureFixture {
 				.endDate(NOW.plusHours(4).toString())
 				.generation(LECTURE_GENERATION)
 				.build();
+	}
+
+	public static List<Lecture> lectureList() {
+		return Stream.iterate(1, i -> i + 1).limit(LIST_SIZE)
+				.map(i -> lectureRequest().toEntity()).toList();
 	}
 }

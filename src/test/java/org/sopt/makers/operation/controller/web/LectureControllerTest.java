@@ -30,6 +30,7 @@ import com.google.gson.Gson;
 
 @ExtendWith(MockitoExtension.class)
 class LectureControllerTest {
+
 	@InjectMocks
 	private LectureController lectureController;
 
@@ -72,7 +73,7 @@ class LectureControllerTest {
 		MultiValueMap<String, String> queries = new LinkedMultiValueMap<>();
 		queries.add("generation", String.valueOf(LECTURE_GENERATION));
 
-		doReturn(response).when(lectureService).getLecturesByGeneration(anyInt(), any());
+		doReturn(response).when(lectureService).getLectures(anyInt(), any());
 
 		// when
 		ResultActions resultActions = mockMvc.perform(
@@ -154,17 +155,5 @@ class LectureControllerTest {
 
 		// then
 		resultActions.andExpect(status().isOk());
-	}
-
-	private LectureRequestDTO lectureRequest() {
-		return LectureRequestDTO.builder()
-				.part(LECTURE_PART)
-				.name(LECTURE_NAME)
-				.generation(LECTURE_GENERATION)
-				.place(LECTURE_PLACE)
-				.startDate(NOW.toString())
-				.endDate(NOW.plusHours(4).toString())
-				.attribute(LECTURE_ATTRIBUTE)
-				.build();
 	}
 }

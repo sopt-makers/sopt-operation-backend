@@ -97,8 +97,8 @@ public class LectureServiceImpl implements LectureService {
 	}
 
 	@Override
-	public LecturesResponseDTO getLecturesByGeneration(int generation, Part part) {
-		val lectures = lectureRepository.findLectures(generation, part);
+	public LecturesResponseDTO getLectures(int generation, Part part) {
+		val lectures = lectureRepository.find(generation, part);
 		return LecturesResponseDTO.of(generation, lectures);
 	}
 
