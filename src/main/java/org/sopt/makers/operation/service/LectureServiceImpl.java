@@ -153,8 +153,7 @@ public class LectureServiceImpl implements LectureService {
 	}
 
 	private void checkEndLectureValidity(Lecture lecture) {
-		val now = LocalDateTime.now();
-		if (now.isBefore(lecture.getEndDate())) {
+		if (!lecture.isEnd()) {
 			throw new LectureException(NOT_END_TIME_YET.getName());
 		}
 	}

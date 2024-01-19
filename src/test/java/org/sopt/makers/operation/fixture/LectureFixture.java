@@ -43,6 +43,12 @@ public class LectureFixture {
 				.build();
 	}
 
+	public static Lecture lectureEnd() {
+		Lecture lecture = lectureRequest().toEntity();
+		lecture.updateToEnd();
+		return lecture;
+	}
+
 	public static long lectureId() {
 		return 0L;
 	}

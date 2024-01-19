@@ -15,6 +15,7 @@ import org.sopt.makers.operation.dto.lecture.AttendanceRequestDTO;
 import org.sopt.makers.operation.dto.lecture.LectureResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LecturesResponseDTO;
 import org.sopt.makers.operation.entity.lecture.Lecture;
+import org.sopt.makers.operation.external.api.AlarmSender;
 import org.sopt.makers.operation.repository.lecture.LectureRepository;
 import org.sopt.makers.operation.repository.member.MemberRepository;
 
@@ -32,6 +33,8 @@ class LectureServiceImplTest {
 	private LectureRepository lectureRepository;
 	@Mock
 	private MemberRepository memberRepository;
+	@Mock
+	private AlarmSender alarmSender;
 	@Mock
 	ValueConfig valueConfig;
 
@@ -85,6 +88,22 @@ class LectureServiceImplTest {
 
 		// when
 		lectureService.startAttendance(request);
+
+		// verify
+		verify(lectureRepository, times(1)).findById(anyLong());
+	}
+
+	@DisplayName("세션 종료")
+	@Test
+	void endLecture() {
+		// given
+		long lectureId = lectureId();
+		Lecture lecture = lectureEnd();
+
+		doReturn(Optional.of(lecture)).when(lectureRepository).findById(anyLong());
+
+		// when
+		lectureService.endLecture(lectureId);
 
 		// verify
 		verify(lectureRepository, times(1)).findById(anyLong());
