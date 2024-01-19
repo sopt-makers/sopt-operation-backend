@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 
 import lombok.val;
 
+import org.sopt.makers.operation.config.ValueConfig;
 import org.sopt.makers.operation.dto.alarm.AlarmSenderDTO;
 import org.sopt.makers.operation.dto.lecture.*;
 
@@ -31,7 +32,6 @@ import org.sopt.makers.operation.repository.SubAttendanceRepository;
 import org.sopt.makers.operation.repository.lecture.LectureRepository;
 import org.sopt.makers.operation.repository.lecture.SubLectureRepository;
 import org.sopt.makers.operation.repository.member.MemberRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,13 +47,7 @@ public class LectureServiceImpl implements LectureService {
 	private final SubAttendanceRepository subAttendanceRepository;
 	private final MemberRepository memberRepository;
 	private final AlarmSender alarmSender;
-
-	@Value("${sopt.alarm.message.title_end}")
-	private String ALARM_MESSAGE_TITLE;
-	@Value("${sopt.alarm.message.content_end}")
-	private String ALARM_MESSAGE_CONTENT;
-
-	private final int SUB_LECTURE_MAX_ROUND = 2;
+	private final ValueConfig valueConfig;
 
 	/** WEB **/
 
@@ -73,7 +67,7 @@ public class LectureServiceImpl implements LectureService {
 	}
 
 	private void createSubLectures(Lecture lecture) {
-		Stream.iterate(1, i -> i + 1).limit(SUB_LECTURE_MAX_ROUND)
+		Stream.iterate(1, i -> i + 1).limit(valueConfig.getSUB_LECTURE_MAX_ROUND())
 				.forEach(round -> saveSubLecture(lecture, round));
 	}
 
@@ -150,8 +144,8 @@ public class LectureServiceImpl implements LectureService {
 			.filter(id -> !id.equals("null"))
 			.toList();
 
-		val alarmTitle = lecture.getName() + " " + ALARM_MESSAGE_TITLE;
-		alarmSender.send(new AlarmSenderDTO(alarmTitle, ALARM_MESSAGE_CONTENT, memberPgIds, NEWS, null));
+		val alarmTitle = lecture.getName() + " " + valueConfig.getALARM_MESSAGE_TITLE();
+		alarmSender.send(new AlarmSenderDTO(alarmTitle, valueConfig.getALARM_MESSAGE_CONTENT(), memberPgIds, NEWS, null));
 	}
 
 	/** APP **/
@@ -172,8 +166,8 @@ public class LectureServiceImpl implements LectureService {
 				}
 			}
 
-			val alarmTitle = lecture.getName() + " " + ALARM_MESSAGE_TITLE;
-			alarmSender.send(new AlarmSenderDTO(alarmTitle, ALARM_MESSAGE_CONTENT, memberPgIds, NEWS, null));
+			val alarmTitle = lecture.getName() + " " + valueConfig.getALARM_MESSAGE_TITLE();
+			alarmSender.send(new AlarmSenderDTO(alarmTitle, valueConfig.getALARM_MESSAGE_CONTENT(), memberPgIds, NEWS, null));
 		}
 	}
 
