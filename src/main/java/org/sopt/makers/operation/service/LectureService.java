@@ -14,16 +14,16 @@ public interface LectureService {
 	/** WEB **/
 	long createLecture(LectureRequestDTO requestDTO);
 	LecturesResponseDTO getLectures(int generation, Part part);
-	LectureResponseDTO getLecture(Long lectureId);
+	LectureResponseDTO getLecture(long lectureId);
 	AttendanceResponseDTO startAttendance(AttendanceRequestDTO requestDTO);
 	void endLecture(Long lectureId);
 	void deleteLecture(Long lectureId);
-	LectureDetailResponseDTO getLectureDetail(Long lectureId);
+	LectureDetailResponseDTO getLectureDetail(long lectureId);
 
 	/** SCHEDULER **/
 	void endLectures();
 
 	/** APP **/
 	TodayLectureResponseDTO getTodayLecture(long memberPlaygroundId);
-	LectureCurrentRoundResponseDTO getCurrentLectureRound(Long lectureId);
+	LectureCurrentRoundResponseDTO getCurrentLectureRound(long lectureId);
 }

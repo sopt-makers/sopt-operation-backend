@@ -7,6 +7,7 @@ import static org.sopt.makers.operation.entity.AttendanceStatus.*;
 import static org.sopt.makers.operation.entity.alarm.Attribute.*;
 import static org.sopt.makers.operation.entity.lecture.LectureStatus.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
@@ -105,7 +106,7 @@ public class LectureServiceImpl implements LectureService {
 	}
 
 	@Override
-	public LectureResponseDTO getLecture(Long lectureId) {
+	public LectureResponseDTO getLecture(long lectureId) {
 		Lecture lecture = findLecture(lectureId);
 		return LectureResponseDTO.of(lecture);
 	}
@@ -126,13 +127,6 @@ public class LectureServiceImpl implements LectureService {
 		} else if (round == 2 && lecture.isBefore()) {
 			throw new LectureException(NOT_STARTED_PRE_ATTENDANCE.getName());
 		}
-	}
-
-	private SubLecture getSubLecture(Lecture lecture, int round) {
-		return lecture.getSubLectures().stream()
-				.filter(l -> l.getRound() == round)
-				.findFirst()
-				.orElseThrow(() -> new SubLectureException(NO_SUB_LECTURE_EQUAL_ROUND.getName()));
 	}
 
 	@Override
@@ -162,7 +156,7 @@ public class LectureServiceImpl implements LectureService {
 	}
 
 	@Override
-	public LectureDetailResponseDTO getLectureDetail(Long lectureId) {
+	public LectureDetailResponseDTO getLectureDetail(long lectureId) {
 		val lecture = findLecture(lectureId);
 		return LectureDetailResponseDTO.of(lecture);
 	}
@@ -282,50 +276,62 @@ public class LectureServiceImpl implements LectureService {
 	}
 
 	@Override
-	public LectureCurrentRoundResponseDTO getCurrentLectureRound(Long lectureId) {
-		val now = LocalDateTime.now();
-		val today = now.toLocalDate();
+	public LectureCurrentRoundResponseDTO getCurrentLectureRound(long lectureId) {
+		val lecture = findLecture(lectureId);
+		val subLecture = getSubLecture(lecture);
+		checkLectureExist(lecture);
+		checkLectureBefore(lecture);
+		checkEndAttendance(subLecture);
+		checkLectureEnd(lecture);
+		return LectureCurrentRoundResponseDTO.of(subLecture);
+	}
+
+	private SubLecture getSubLecture(Lecture lecture) {
+		val status = lecture.getLectureStatus();
+		val round = status.equals(FIRST) ? 1 : 2;
+		return getSubLecture(lecture, round);
+	}
+
+	private SubLecture getSubLecture(Lecture lecture, int round) {
+		return lecture.getSubLectures().stream()
+				.filter(l -> l.getRound() == round)
+				.findFirst()
+				.orElseThrow(() -> new SubLectureException(NO_SUB_LECTURE_EQUAL_ROUND.getName()));
+	}
+
+	private void checkLectureExist(Lecture lecture) {
+		val today = LocalDate.now();
 		val startOfDay = today.atStartOfDay();
 		val endOfDay = LocalDateTime.of(today, LocalTime.MAX);
-
-		val lecture = lectureRepository.findById(lectureId)
-				.orElseThrow(() -> new LectureException(INVALID_LECTURE.getName()));
-
-		val lectureStartDate = lecture.getStartDate();
-		val lectureStatus = lecture.getLectureStatus();
-
-		val subLectures = lecture.getSubLectures();
-		subLectures.sort(Comparator.comparing(SubLecture::getRound));
-
-		val subLecture = lectureStatus.equals(FIRST) ?
-				subLectures.get(0) : subLectures.get(1);
-
-		if (lectureStartDate.isBefore(startOfDay) || lectureStartDate.isAfter(endOfDay)) {
+		val startAt = lecture.getStartDate();
+		if (startAt.isBefore(startOfDay) || startAt.isAfter(endOfDay)) {
 			throw new LectureException(NO_SESSION.getName());
 		}
+	}
 
-		if (lectureStatus.equals(BEFORE)) {
+	private void checkLectureBefore(Lecture lecture) {
+		if (lecture.isBefore()) {
 			throw new LectureException(NOT_STARTED_ATTENDANCE.getName());
 		}
+	}
 
-		if (lectureStatus.equals(FIRST)) {
-			// 1차 출석이 마감되었을 때
-			if (now.isAfter(subLecture.getStartAt().plusMinutes(10))) {
-				throw new LectureException(subLecture.getRound() + ENDED_ATTENDANCE.getName());
-			}
+	private void checkEndAttendance(SubLecture subLecture) {
+		if (isEndAttendance(subLecture)) {
+			throw new LectureException(subLecture.getRound() + ENDED_ATTENDANCE.getName());
 		}
+	}
 
-		if (lectureStatus.equals(SECOND)) {
-			// 2차 출석이 마감되었을 때
-			if (now.isAfter(subLecture.getStartAt().plusMinutes(10))) {
-				throw new LectureException(subLecture.getRound() + ENDED_ATTENDANCE.getName());
-			}
+	private boolean isEndAttendance(SubLecture subLecture) {
+		val status = subLecture.getLecture().getLectureStatus();
+		if (LocalDateTime.now().isAfter(subLecture.getStartAt().plusMinutes(10))) {
+			return status.equals(FIRST) || status.equals(SECOND);
 		}
+		return false;
+	}
 
-		if (lectureStatus.equals(END)) {
+	private void checkLectureEnd(Lecture lecture) {
+		if (lecture.isEnd()) {
 			throw new LectureException(END_LECTURE.getName());
 		}
-
-		return LectureCurrentRoundResponseDTO.of(subLecture);
 	}
 }
