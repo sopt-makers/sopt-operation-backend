@@ -26,6 +26,7 @@ import org.sopt.makers.operation.entity.*;
 import org.sopt.makers.operation.entity.lecture.Attribute;
 import org.sopt.makers.operation.entity.lecture.Lecture;
 import org.sopt.makers.operation.exception.LectureException;
+import org.sopt.makers.operation.exception.SubLectureException;
 import org.sopt.makers.operation.external.api.AlarmSender;
 import org.sopt.makers.operation.repository.attendance.AttendanceRepository;
 import org.sopt.makers.operation.repository.SubAttendanceRepository;
@@ -111,23 +112,26 @@ public class LectureServiceImpl implements LectureService {
 	@Override
 	@Transactional
 	public AttendanceResponseDTO startAttendance(AttendanceRequestDTO requestDTO) {
-		Lecture lecture = findLecture(requestDTO.lectureId());
-
-		// 출석 가능 여부 유효성 체크
-		if (requestDTO.round() == 2 && lecture.getLectureStatus().equals(BEFORE)) {
-			throw new IllegalStateException(NOT_STARTED_PRE_ATTENDANCE.getName());
-		} else if (lecture.getLectureStatus().equals(END)) {
-			throw new IllegalStateException(END_LECTURE.getName());
-		}
-
-		// 출석 세션 상태 업데이트 (시작)
-		SubLecture subLecture = lecture.getSubLectures().stream()
-			.filter(session -> session.getRound() == requestDTO.round())
-			.findFirst()
-			.orElseThrow(() -> new IllegalStateException(NO_SUB_LECTURE_EQUAL_ROUND.getName()));
+		val lecture = findLecture(requestDTO.lectureId());
+		checkValidAttendance(lecture, requestDTO.round());
+		val subLecture = getSubLecture(lecture, requestDTO.round());
 		subLecture.startAttendance(requestDTO.code());
+		return AttendanceResponseDTO.of(lecture, subLecture);
+	}
 
-		return new AttendanceResponseDTO(lecture.getId(), subLecture.getId());
+	private void checkValidAttendance(Lecture lecture, int round) {
+		if (lecture.isEnd()) {
+			throw new LectureException(END_LECTURE.getName());
+		} else if (round == 2 && lecture.isBefore()) {
+			throw new LectureException(NOT_STARTED_PRE_ATTENDANCE.getName());
+		}
+	}
+
+	private SubLecture getSubLecture(Lecture lecture, int round) {
+		return lecture.getSubLectures().stream()
+				.filter(l -> l.getRound() == round)
+				.findFirst()
+				.orElseThrow(() -> new SubLectureException(NO_SUB_LECTURE_EQUAL_ROUND.getName()));
 	}
 
 	@Override

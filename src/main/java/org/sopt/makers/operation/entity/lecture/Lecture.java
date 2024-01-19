@@ -78,4 +78,12 @@ public class Lecture extends BaseEntity {
 		this.lectureStatus = LectureStatus.END;
 		attendances.forEach(Attendance::updateMemberScore);
 	}
+
+	public boolean isEnd() {
+		return this.lectureStatus.equals(LectureStatus.END);
+	}
+
+	public boolean isBefore() {
+		return this.lectureStatus.equals(LectureStatus.BEFORE);
+	}
 }
