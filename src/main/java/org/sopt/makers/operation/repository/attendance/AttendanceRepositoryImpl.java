@@ -16,8 +16,8 @@ import java.util.List;
 import lombok.val;
 
 import org.sopt.makers.operation.config.ValueConfig;
-import org.sopt.makers.operation.entity.Attendance;
-import org.sopt.makers.operation.entity.Member;
+import org.sopt.makers.operation.entity.attendance.Attendance;
+import org.sopt.makers.operation.entity.member.Member;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.lecture.LectureStatus;
 import org.springframework.data.domain.Pageable;

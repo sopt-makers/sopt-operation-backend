@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 
 import org.sopt.makers.operation.dto.admin.*;
-import org.sopt.makers.operation.entity.Admin;
-import org.sopt.makers.operation.entity.AdminStatus;
+import org.sopt.makers.operation.entity.admin.Admin;
+import org.sopt.makers.operation.entity.admin.AdminStatus;
 import org.sopt.makers.operation.exception.AdminFailureException;
 import org.sopt.makers.operation.repository.AdminRepository;
 import org.sopt.makers.operation.security.jwt.AdminAuthentication;

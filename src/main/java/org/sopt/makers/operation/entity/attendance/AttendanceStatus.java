@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.entity;
+package org.sopt.makers.operation.entity.attendance;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

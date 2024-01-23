@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.controller;
+package org.sopt.makers.operation.handler;
 
 import static org.sopt.makers.operation.common.ApiResponse.*;
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestControllerAdvice
-public class ExceptionController {
+public class ErrorHandler {
     @ExceptionHandler(AdminFailureException.class)
     public ResponseEntity<ApiResponse> authFailureException (AdminFailureException ex) {
         log.error(ex.getMessage());

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.sopt.makers.operation.dto.member.MemberSearchCondition;
-import org.sopt.makers.operation.entity.Member;
+import org.sopt.makers.operation.entity.member.Member;
 import org.sopt.makers.operation.entity.Part;
 import org.springframework.data.domain.Pageable;
 

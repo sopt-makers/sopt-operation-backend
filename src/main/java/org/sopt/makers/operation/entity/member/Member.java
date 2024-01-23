@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.entity;
+package org.sopt.makers.operation.entity.member;
 
 import static org.sopt.makers.operation.entity.lecture.LectureStatus.*;
 
@@ -15,6 +15,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import org.sopt.makers.operation.dto.member.MemberRequestDTO;
+import org.sopt.makers.operation.entity.Part;
+import org.sopt.makers.operation.entity.attendance.Attendance;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

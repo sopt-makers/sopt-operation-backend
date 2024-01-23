@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.entity;
+package org.sopt.makers.operation.entity.admin;
 
 import lombok.Builder;
 import lombok.Getter;
