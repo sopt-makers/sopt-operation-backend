@@ -2,11 +2,11 @@ package org.sopt.makers.operation.repository.attendance;
 
 import static com.querydsl.core.types.dsl.Expressions.*;
 import static java.util.Objects.*;
-import static org.sopt.makers.operation.entity.QAttendance.*;
-import static org.sopt.makers.operation.entity.QMember.*;
-import static org.sopt.makers.operation.entity.QSubAttendance.*;
-import static org.sopt.makers.operation.entity.QSubLecture.*;
+import static org.sopt.makers.operation.entity.attendance.QAttendance.*;
+import static org.sopt.makers.operation.entity.attendance.QSubAttendance.*;
 import static org.sopt.makers.operation.entity.lecture.QLecture.*;
+import static org.sopt.makers.operation.entity.lecture.QSubLecture.*;
+import static org.sopt.makers.operation.entity.member.QMember.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

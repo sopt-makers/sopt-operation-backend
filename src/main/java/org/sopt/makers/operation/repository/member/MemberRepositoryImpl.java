@@ -2,9 +2,9 @@ package org.sopt.makers.operation.repository.member;
 
 import static java.util.Objects.*;
 import static org.sopt.makers.operation.entity.Part.*;
-import static org.sopt.makers.operation.entity.QAttendance.*;
-import static org.sopt.makers.operation.entity.QMember.*;
+import static org.sopt.makers.operation.entity.attendance.QAttendance.*;
 import static org.sopt.makers.operation.entity.lecture.QLecture.*;
+import static org.sopt.makers.operation.entity.member.QMember.*;
 
 import java.util.List;
 import java.util.Optional;
