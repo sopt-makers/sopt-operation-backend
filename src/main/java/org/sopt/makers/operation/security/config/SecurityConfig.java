@@ -7,6 +7,7 @@ import org.sopt.makers.operation.security.jwt.JwtExceptionFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -38,25 +39,50 @@ public class SecurityConfig {
     public static PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
+
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http.antMatcher("/**")
+    @Profile("dev")
+    public SecurityFilterChain filterChainDev(HttpSecurity http) throws Exception {
+        setHttp(http);
+        authorizeRequestsDev(http);
+        return http.build();
+    }
+
+    @Profile("dev")
+    private void authorizeRequestsDev(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+                .antMatchers("/api/v1/auth/**", "/exception/**", "/swagger-ui/**").permitAll()
+                .and()
+                .authorizeRequests()
+                .antMatchers("/api/v1/**").authenticated();
+    }
+
+    @Bean
+    @Profile("prod")
+    public SecurityFilterChain filterChainProd(HttpSecurity http) throws Exception {
+        setHttp(http);
+        authorizeRequestsProd(http);
+        return http.build();
+    }
+
+    @Profile("prod")
+    private void authorizeRequestsProd(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+                .antMatchers("/api/v1/auth/**","/exception/**").permitAll()
+                .and()
+                .authorizeRequests()
+                .antMatchers("/api/v1/**", "/swagger-ui/**").authenticated();
+    }
+
+    private void setHttp(HttpSecurity http) throws Exception {
+        http.antMatcher("/**")
                 .httpBasic().disable()
                 .csrf().disable()
                 .formLogin().disable()
-                .cors().configurationSource(corsConfigurationSource())
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                    .authorizeRequests()
-                    .antMatchers("/api/v1/auth/**","/exception/**").permitAll()
-                .and()
-                    .authorizeRequests()
-                    .antMatchers("/api/v1/**", "/swagger-ui/**").authenticated()
-                .and()
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                    .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                    .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class)
-                .build();
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);
     }
 
     @Bean
