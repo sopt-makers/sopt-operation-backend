@@ -15,12 +15,10 @@ import java.util.List;
 
 import lombok.val;
 
-import org.sopt.makers.operation.config.GenerationConfig;
+import org.sopt.makers.operation.config.ValueConfig;
 import org.sopt.makers.operation.entity.Attendance;
 import org.sopt.makers.operation.entity.Member;
 import org.sopt.makers.operation.entity.Part;
-import org.sopt.makers.operation.entity.QMember;
-import org.sopt.makers.operation.entity.SubAttendance;
 import org.sopt.makers.operation.entity.lecture.LectureStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -35,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 
 	private final JPAQueryFactory queryFactory;
-	private final GenerationConfig generationConfig;
+	private final ValueConfig valueConfig;
 
 	@Override
 	public List<Attendance> findAttendanceByMemberId(Long memberId) {
@@ -46,7 +44,7 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 				.leftJoin(attendance.lecture, lecture)
 				.where(attendance.member.id.eq(memberId),
 						lecture.lectureStatus.eq(LectureStatus.END),
-						lecture.generation.eq(generationConfig.getCurrentGeneration())
+						lecture.generation.eq(valueConfig.getGENERATION())
 				)
 				.orderBy(attendance.lecture.startDate.desc())
 				.fetch();
@@ -95,7 +93,7 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 			.leftJoin(subAttendance.subLecture, subLecture).fetchJoin()
 			.where(
 				member.playgroundId.eq(memberPlaygroundId),
-				member.generation.eq(generationConfig.getCurrentGeneration()),
+				member.generation.eq(valueConfig.getGENERATION()),
 				lecture.part.eq(member.part).or(lecture.part.eq(Part.ALL)),
 				lecture.startDate.between(startOfDay, endOfDay))
 			.orderBy(lecture.startDate.asc())

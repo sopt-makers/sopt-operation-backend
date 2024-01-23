@@ -5,6 +5,7 @@ import static org.sopt.makers.operation.common.ExceptionMessage.*;
 import static org.sopt.makers.operation.entity.Part.*;
 import static org.sopt.makers.operation.entity.alarm.Status.*;
 
+import org.sopt.makers.operation.config.ValueConfig;
 import org.sopt.makers.operation.dto.alarm.AlarmSendRequestDTO;
 import org.sopt.makers.operation.dto.alarm.AlarmSenderDTO;
 import org.sopt.makers.operation.dto.member.MemberSearchCondition;
@@ -15,7 +16,6 @@ import org.sopt.makers.operation.external.api.AlarmSender;
 import org.sopt.makers.operation.external.api.PlayGroundServer;
 import org.sopt.makers.operation.repository.alarm.AlarmRepository;
 import org.sopt.makers.operation.repository.member.MemberRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,13 +34,12 @@ import org.springframework.data.domain.Pageable;
 @Service
 @RequiredArgsConstructor
 public class AlarmServiceImpl implements AlarmService {
-	@Value("${sopt.current.generation}")
-	private int currentGeneration;
 
 	private final AlarmRepository alarmRepository;
 	private final MemberRepository memberRepository;
 	private final AlarmSender alarmSender;
 	private final PlayGroundServer playGroundServer;
+	private final ValueConfig valueConfig;
 
 	@Override
 	@Transactional
@@ -68,7 +67,7 @@ public class AlarmServiceImpl implements AlarmService {
 			return activeTargetList;
 		}
 
-		val inactiveTargetList = getInactiveTargetList(currentGeneration, alarm.getPart());
+		val inactiveTargetList = getInactiveTargetList(valueConfig.getGENERATION(), alarm.getPart());
 		return inactiveTargetList.stream()
 			.filter(target -> !activeTargetList.contains(target))
 			.toList();
@@ -76,7 +75,7 @@ public class AlarmServiceImpl implements AlarmService {
 
 	private List<String> getActiveTargetList(Part part) {
 		part = part.equals(ALL) ? null : part;
-		val members = memberRepository.search(new MemberSearchCondition(part, currentGeneration));
+		val members = memberRepository.search(new MemberSearchCondition(part, valueConfig.getGENERATION()));
 		return members.stream()
 			.filter(member -> nonNull(member.getPlaygroundId()))
 			.map(member -> String.valueOf(member.getPlaygroundId()))

@@ -13,6 +13,8 @@ public class ValueConfig {
 	private String ALARM_MESSAGE_TITLE;
 	@Value("${sopt.alarm.message.content_end}")
 	private String ALARM_MESSAGE_CONTENT;
+	@Value("${sopt.current.generation}")
+	private int GENERATION;
 
 	private final int SUB_LECTURE_MAX_ROUND = 2;
 	private final String ETC_MESSAGE = "출석 점수가 반영되지 않아요.";
