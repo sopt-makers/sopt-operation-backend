@@ -13,7 +13,6 @@ public interface AttendanceCustomRepository {
 	List<Attendance> findAttendanceByMemberId(Long memberId);
 	List<Attendance> findByLecture(Long lectureId, Part part, Pageable pageable);
 	List<Attendance> findByMember(Member member);
-	List<Attendance> findCurrentAttendanceByMember(Long playGroundId);
-	List<SubAttendance> findSubAttendanceByAttendanceId(Long attendanceId);
+	List<Attendance> findToday(long memberPlaygroundId);
 	int countByLectureIdAndPart(long lectureId, Part part);
 }

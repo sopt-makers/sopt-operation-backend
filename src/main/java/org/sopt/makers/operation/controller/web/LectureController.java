@@ -1,5 +1,6 @@
 package org.sopt.makers.operation.controller.web;
 
+import static org.sopt.makers.operation.common.ApiResponse.*;
 import static org.sopt.makers.operation.common.ResponseMessage.*;
 
 import java.net.URI;
@@ -39,22 +40,21 @@ public class LectureController {
 		val lectureId = lectureService.createLecture(requestDTO);
 		return ResponseEntity
 			.created(getURI(lectureId))
-			.body(ApiResponse.success(SUCCESS_CREATE_LECTURE.getMessage(), lectureId));
+			.body(success(SUCCESS_CREATE_LECTURE.getMessage(), lectureId));
 	}
 
 	@ApiOperation(value = "세션 리스트 조회")
 	@GetMapping
-	public ResponseEntity<ApiResponse> getLecturesByGeneration(
-		@RequestParam("generation") int generation, @RequestParam(required = false) Part part) {
-		val response = lectureService.getLecturesByGeneration(generation, part);
-		return ResponseEntity.ok(ApiResponse.success(SUCCESS_GET_LECTURES.getMessage(), response));
+	public ResponseEntity<ApiResponse> getLectures(@RequestParam int generation, @RequestParam(required = false) Part part) {
+		val response = lectureService.getLectures(generation, part);
+		return ResponseEntity.ok(success(SUCCESS_GET_LECTURES.getMessage(), response));
 	}
 
-	@ApiOperation(value = "세션 상세 조회")
+	@ApiOperation(value = "세션 단일 조회")
 	@GetMapping("/{lectureId}")
 	public ResponseEntity<ApiResponse> getLecture(@PathVariable Long lectureId) {
 		val response = lectureService.getLecture(lectureId);
-		return ResponseEntity.ok(ApiResponse.success(SUCCESS_GET_LECTURE.getMessage(), response));
+		return ResponseEntity.ok(success(SUCCESS_GET_LECTURE.getMessage(), response));
 	}
 
 	@ApiOperation(value = "출석 시작")
@@ -63,35 +63,35 @@ public class LectureController {
 		val response = lectureService.startAttendance(requestDTO);
 		return ResponseEntity
 			.created(getURI(requestDTO.lectureId()))
-			.body(ApiResponse.success(SUCCESS_START_ATTENDANCE.getMessage(), response));
+			.body(success(SUCCESS_START_ATTENDANCE.getMessage(), response));
 	}
 
-	@ApiOperation(value = "출석 점수 갱신 트리거 (출석 종료)")
+	private URI getURI(Long lectureId) {
+		return ServletUriComponentsBuilder
+				.fromCurrentRequest()
+				.path("/{lectureId}")
+				.buildAndExpand(lectureId)
+				.toUri();
+	}
+
+	@ApiOperation(value = "세션 종료 후 출석 점수 갱신")
 	@PatchMapping("/{lectureId}")
-	public ResponseEntity<ApiResponse> finishLecture(@PathVariable("lectureId") Long lectureId) {
-		lectureService.finishLecture(lectureId);
-		return ResponseEntity.ok(ApiResponse.success(SUCCESS_UPDATE_MEMBER_SCORE.getMessage()));
+	public ResponseEntity<ApiResponse> endLecture(@PathVariable Long lectureId) {
+		lectureService.endLecture(lectureId);
+		return ResponseEntity.ok(success(SUCCESS_UPDATE_MEMBER_SCORE.getMessage()));
 	}
 
 	@ApiOperation(value = "세션 삭제")
 	@DeleteMapping("/{lectureId}")
 	public ResponseEntity<ApiResponse> deleteLecture(@PathVariable Long lectureId) {
 		lectureService.deleteLecture(lectureId);
-		return ResponseEntity.ok(ApiResponse.success(SUCCESS_DELETE_LECTURE.getMessage()));
+		return ResponseEntity.ok(success(SUCCESS_DELETE_LECTURE.getMessage()));
 	}
 
-	@ApiOperation(value = "세션 상세 조회 (팝업)")
+	@ApiOperation(value = "세션 팝업용 상세 조회")
 	@GetMapping("/detail/{lectureId}")
 	public ResponseEntity<ApiResponse> getLectureDetail(@PathVariable Long lectureId) {
 		val response = lectureService.getLectureDetail(lectureId);
-		return ResponseEntity.ok(ApiResponse.success(SUCCESS_GET_LECTURE.getMessage(), response));
-	}
-
-	private URI getURI(Long lectureId) {
-		return ServletUriComponentsBuilder
-			.fromCurrentRequest()
-			.path("/{lectureId}")
-			.buildAndExpand(lectureId)
-			.toUri();
+		return ResponseEntity.ok(success(SUCCESS_GET_LECTURE.getMessage(), response));
 	}
 }

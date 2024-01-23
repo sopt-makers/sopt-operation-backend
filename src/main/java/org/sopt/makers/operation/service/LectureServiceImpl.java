@@ -1,12 +1,13 @@
 package org.sopt.makers.operation.service;
 
-import static java.util.Objects.nonNull;
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
+import static org.sopt.makers.operation.common.ExceptionMessage.NO_SESSION;
+import static org.sopt.makers.operation.dto.lecture.LectureResponseType.*;
 import static org.sopt.makers.operation.entity.AttendanceStatus.*;
-import static org.sopt.makers.operation.entity.Part.*;
 import static org.sopt.makers.operation.entity.alarm.Attribute.*;
 import static org.sopt.makers.operation.entity.lecture.LectureStatus.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
@@ -14,6 +15,7 @@ import java.util.stream.Stream;
 
 import lombok.val;
 
+import org.sopt.makers.operation.config.ValueConfig;
 import org.sopt.makers.operation.dto.alarm.AlarmSenderDTO;
 import org.sopt.makers.operation.dto.lecture.*;
 
@@ -22,18 +24,17 @@ import org.sopt.makers.operation.dto.lecture.AttendanceResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LectureRequestDTO;
 import org.sopt.makers.operation.dto.lecture.LectureResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LecturesResponseDTO;
-import org.sopt.makers.operation.dto.member.MemberSearchCondition;
 import org.sopt.makers.operation.entity.*;
 import org.sopt.makers.operation.entity.lecture.Attribute;
 import org.sopt.makers.operation.entity.lecture.Lecture;
 import org.sopt.makers.operation.exception.LectureException;
+import org.sopt.makers.operation.exception.SubLectureException;
 import org.sopt.makers.operation.external.api.AlarmSender;
 import org.sopt.makers.operation.repository.attendance.AttendanceRepository;
 import org.sopt.makers.operation.repository.SubAttendanceRepository;
 import org.sopt.makers.operation.repository.lecture.LectureRepository;
 import org.sopt.makers.operation.repository.lecture.SubLectureRepository;
 import org.sopt.makers.operation.repository.member.MemberRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,113 +44,69 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class LectureServiceImpl implements LectureService {
+
 	private final LectureRepository lectureRepository;
 	private final SubLectureRepository subLectureRepository;
 	private final AttendanceRepository attendanceRepository;
 	private final SubAttendanceRepository subAttendanceRepository;
 	private final MemberRepository memberRepository;
 	private final AlarmSender alarmSender;
+	private final ValueConfig valueConfig;
 
-	@Value("${sopt.alarm.message.title_end}")
-	private String ALARM_MESSAGE_TITLE;
-	@Value("${sopt.alarm.message.content_end}")
-	private String ALARM_MESSAGE_CONTENT;
+	/** WEB **/
 
 	@Override
 	@Transactional
-	public Long createLecture(LectureRequestDTO requestDTO) {
-		// 세션 생성
-		Lecture savedLecture = lectureRepository.save(requestDTO.toEntity());
-
-		// 출석 세션 2개 생성
-		Stream.iterate(1, i -> i + 1).limit(2)
-			.forEach(i -> subLectureRepository.save(new SubLecture(savedLecture, i)));
-
-		// 출석 생성
-		memberRepository
-			.search(getMemberSearchCondition(requestDTO))
-			.forEach(member -> attendanceRepository.save(new Attendance(member, savedLecture)));
-
-		// 서브 출석 생성
-		savedLecture.getAttendances()
-			.forEach(attendance -> savedLecture.getSubLectures()
-					.forEach(subLecture -> subAttendanceRepository.save(new SubAttendance(attendance, subLecture))));
-
-
+	public long createLecture(LectureRequestDTO request) {
+		val savedLecture = saveLecture(request);
+		createSubLectures(savedLecture);
+		createAttendance(request.generation(), request.part(), savedLecture);
+		createSubAttendances(savedLecture);
 		return savedLecture.getId();
 	}
 
-	@Override
-	public LectureGetResponseDTO getCurrentLecture(Long playGroundId) {
-		val now = LocalDateTime.now();
-
-		val attendances = attendanceRepository.findCurrentAttendanceByMember(playGroundId);
-
-		if (attendances.isEmpty()) {
-			return new LectureGetResponseDTO(LectureResponseType.NO_SESSION, 0L, "", "", "", "", "", Collections.emptyList());
-		}
-
-		if (attendances.size() > 2) {
-			throw new LectureException(INVALID_COUNT_SESSION.getName());
-		}
-
-		// 현재 출석과 Lecture 가져오기
-		val currentAttendance = getCurrentAttendance(attendances, now);
-		val currentLecture = currentAttendance.getLecture();
-		val lectureType = getLectureResponseType(currentLecture);
-
-		if (lectureType.equals(LectureResponseType.NO_ATTENDANCE)) {
-			val message = "출석 점수가 반영되지 않아요.";
-			return LectureGetResponseDTO.of(lectureType, currentLecture, message, Collections.emptyList());
-		}
-
-		val subAttendances = attendanceRepository.findSubAttendanceByAttendanceId(currentAttendance.getId());
-
-		val firstSubLectureAttendance = subAttendances.get(0);
-		val secondSubLectureAttendance = subAttendances.get(1);
-
-		val firstSubLectureAttendanceStatus = firstSubLectureAttendance.getStatus();
-		val secondSubLectureAttendanceStatus = secondSubLectureAttendance.getStatus();
-
-		val firstSessionStart = firstSubLectureAttendance.getSubLecture().getStartAt();
-		val secondSessionStart = secondSubLectureAttendance.getSubLecture().getStartAt();
-
-		val message = (currentLecture.getAttribute() == Attribute.SEMINAR) ? "" : "행사도 참여하고, 출석점수도 받고, 일석이조!";
-
-		// Lecture 시작 전 혹은 1차 출석 시작 전
-		if (now.isBefore(currentLecture.getStartDate()) || !nonNull(firstSessionStart)) {
-			return LectureGetResponseDTO.of(lectureType, currentLecture, message, Collections.emptyList());
-		}
-
-		// 1차 출석 시작, 2차 출석 시작 전
-		if (now.isAfter(firstSessionStart) && !nonNull(secondSessionStart)) {
-			// 1차 출석 중 결석인 상태
-			if (now.isBefore(firstSessionStart.plusMinutes(10)) && firstSubLectureAttendanceStatus.equals(ABSENT)) {
-				return LectureGetResponseDTO.of(lectureType, currentLecture, message, Collections.emptyList());
-			}
-
-			return LectureGetResponseDTO.of(lectureType, currentLecture, message, Collections.singletonList(firstSubLectureAttendance));
-		}
-
-		// 2차 출석 시작 이후
-		if (now.isAfter(secondSessionStart)) {
-			// 2차 출석 중 결석인 상태
-			if (now.isBefore(secondSessionStart.plusMinutes(10)) && secondSubLectureAttendanceStatus.equals(ABSENT)) {
-				return LectureGetResponseDTO.of(lectureType, currentLecture, message, Collections.singletonList(firstSubLectureAttendance));
-			}
-		}
-		return LectureGetResponseDTO.of(lectureType, currentLecture, message, subAttendances);
+	private Lecture saveLecture(LectureRequestDTO request) {
+		val lecture = request.toEntity();
+		return lectureRepository.save(lecture);
 	}
 
+	private void createSubLectures(Lecture lecture) {
+		Stream.iterate(1, i -> i + 1).limit(valueConfig.getSUB_LECTURE_MAX_ROUND())
+				.forEach(round -> saveSubLecture(lecture, round));
+	}
+
+	private void saveSubLecture(Lecture lecture, int round) {
+		subLectureRepository.save(new SubLecture(lecture, round));
+	}
+
+	private void createAttendance(int generation, Part part, Lecture lecture) {
+		memberRepository.find(generation, part).forEach(member -> saveAttendance(member, lecture));
+	}
+
+	private void saveAttendance(Member member, Lecture lecture) {
+		attendanceRepository.save(new Attendance(member, lecture));
+	}
+
+	private void createSubAttendances(Lecture lecture) {
+		lecture.getAttendances().forEach(this::saveSubAttendances);
+	}
+
+	private void saveSubAttendances(Attendance attendance) {
+		attendance.getLecture().getSubLectures().forEach(subLecture -> saveSubAttendance(attendance, subLecture));
+	}
+
+	private void saveSubAttendance(Attendance attendance, SubLecture subLecture) {
+		subAttendanceRepository.save(new SubAttendance(attendance, subLecture));
+	}
 
 	@Override
-	public LecturesResponseDTO getLecturesByGeneration(int generation, Part part) {
-		val lectures = lectureRepository.findLectures(generation, part);
+	public LecturesResponseDTO getLectures(int generation, Part part) {
+		val lectures = lectureRepository.find(generation, part);
 		return LecturesResponseDTO.of(generation, lectures);
 	}
 
 	@Override
-	public LectureResponseDTO getLecture(Long lectureId) {
+	public LectureResponseDTO getLecture(long lectureId) {
 		Lecture lecture = findLecture(lectureId);
 		return LectureResponseDTO.of(lecture);
 	}
@@ -157,159 +114,224 @@ public class LectureServiceImpl implements LectureService {
 	@Override
 	@Transactional
 	public AttendanceResponseDTO startAttendance(AttendanceRequestDTO requestDTO) {
-		Lecture lecture = findLecture(requestDTO.lectureId());
-
-		// 출석 가능 여부 유효성 체크
-		if (requestDTO.round() == 2 && lecture.getLectureStatus().equals(BEFORE)) {
-			throw new IllegalStateException(NOT_STARTED_PRE_ATTENDANCE.getName());
-		} else if (lecture.getLectureStatus().equals(END)) {
-			throw new IllegalStateException(END_LECTURE.getName());
-		}
-
-		// 출석 세션 상태 업데이트 (시작)
-		SubLecture subLecture = lecture.getSubLectures().stream()
-			.filter(session -> session.getRound() == requestDTO.round())
-			.findFirst()
-			.orElseThrow(() -> new IllegalStateException(NO_SUB_LECTURE_EQUAL_ROUND.getName()));
+		val lecture = findLecture(requestDTO.lectureId());
+		checkStartAttendanceValidity(lecture, requestDTO.round());
+		val subLecture = getSubLecture(lecture, requestDTO.round());
 		subLecture.startAttendance(requestDTO.code());
-
-		return new AttendanceResponseDTO(lecture.getId(), subLecture.getId());
+		return AttendanceResponseDTO.of(lecture, subLecture);
 	}
 
-	@Override
-	@Transactional
-	public void finishLecture(Long lectureId) {
-		val lecture = findLecture(lectureId);
-		val now = LocalDateTime.now();
-		if (now.isBefore(lecture.getEndDate())) {
-			throw new IllegalStateException(NOT_END_TIME_YET.getName());
-		}
-		lecture.finish();
-
-		List<String> memberPgIds = lecture.getAttendances().stream()
-			.map(attendance -> String.valueOf(attendance.getMember().getPlaygroundId()))
-			.filter(id -> !id.equals("null"))
-			.toList();
-
-		val alarmTitle = lecture.getName() + " " + ALARM_MESSAGE_TITLE;
-		alarmSender.send(new AlarmSenderDTO(alarmTitle, ALARM_MESSAGE_CONTENT, memberPgIds, NEWS, null));
-	}
-
-	@Override
-	@Transactional
-	public void finishLecture() {
-		val lectures = lectureRepository.findLecturesToBeEnd();
-		lectures.forEach(Lecture::finish);
-
-		List<String> memberPgIds;
-		for (val lecture : lectures) {
-			memberPgIds = new ArrayList<>();
-			for (val attendance : lecture.getAttendances()) {
-				val playgroundId = attendance.getMember().getPlaygroundId();
-				if (Objects.nonNull(playgroundId)) {
-					memberPgIds.add(String.valueOf(attendance.getMember().getPlaygroundId()));
-				}
-			}
-
-			val alarmTitle = lecture.getName() + " " + ALARM_MESSAGE_TITLE;
-			alarmSender.send(new AlarmSenderDTO(alarmTitle, ALARM_MESSAGE_CONTENT, memberPgIds, NEWS, null));
-		}
-	}
-
-	@Override
-	public LectureCurrentRoundResponseDTO getCurrentLectureRound(Long lectureId) {
-		val now = LocalDateTime.now();
-		val today = now.toLocalDate();
-		val startOfDay = today.atStartOfDay();
-		val endOfDay = LocalDateTime.of(today, LocalTime.MAX);
-
-		val lecture = lectureRepository.findById(lectureId)
-				.orElseThrow(() -> new LectureException(INVALID_LECTURE.getName()));
-
-		val lectureStartDate = lecture.getStartDate();
-		val lectureStatus = lecture.getLectureStatus();
-
-		val subLectures = lecture.getSubLectures();
-		subLectures.sort(Comparator.comparing(SubLecture::getRound));
-
-		val subLecture = lectureStatus.equals(FIRST) ?
-				subLectures.get(0) : subLectures.get(1);
-
-		if (lectureStartDate.isBefore(startOfDay) || lectureStartDate.isAfter(endOfDay)) {
-			throw new LectureException(NO_SESSION.getName());
-		}
-
-		if (lectureStatus.equals(BEFORE)) {
-			throw new LectureException(NOT_STARTED_ATTENDANCE.getName());
-		}
-
-		if (lectureStatus.equals(FIRST)) {
-			// 1차 출석이 마감되었을 때
-			if (now.isAfter(subLecture.getStartAt().plusMinutes(10))) {
-				throw new LectureException(subLecture.getRound() + ENDED_ATTENDANCE.getName());
-			}
-		}
-
-		if (lectureStatus.equals(SECOND)) {
-			// 2차 출석이 마감되었을 때
-			if (now.isAfter(subLecture.getStartAt().plusMinutes(10))) {
-				throw new LectureException(subLecture.getRound() + ENDED_ATTENDANCE.getName());
-			}
-		}
-
-		if (lectureStatus.equals(END)) {
+	private void checkStartAttendanceValidity(Lecture lecture, int round) {
+		if (lecture.isEnd()) {
 			throw new LectureException(END_LECTURE.getName());
+		} else if (round == 2 && lecture.isBefore()) {
+			throw new LectureException(NOT_STARTED_PRE_ATTENDANCE.getName());
 		}
+	}
 
-		return LectureCurrentRoundResponseDTO.of(subLecture);
+	@Override
+	@Transactional
+	public void endLecture(Long lectureId) {
+		val lecture = findLecture(lectureId);
+		checkEndLectureValidity(lecture);
+		lecture.updateToEnd();
+		sendAlarm(lecture);
 	}
 
 	@Override
 	@Transactional
 	public void deleteLecture(Long lectureId) {
-		val lecture = lectureRepository.find(lectureId)
-			.orElseThrow(() -> new LectureException(INVALID_LECTURE.getName()));
-
-		// 출석 종료된 세션: 출석 점수 갱신 전으로 복구
-		if (lecture.getLectureStatus().equals(END)) {
-			lecture.getAttendances().forEach(Attendance::revertMemberScore);
+		val lecture = findLecture(lectureId);
+		if (lecture.isEnd()) {
+			restoreAttendances(lecture.getAttendances());
 		}
-
-		// 연관 관계의 객체 삭제 후 세션 삭제
 		subAttendanceRepository.deleteAllBySubLectureIn(lecture.getSubLectures());
 		subLectureRepository.deleteAllByLecture(lecture);
 		attendanceRepository.deleteAllByLecture(lecture);
 		lectureRepository.deleteById(lectureId);
-		// lectureRepository.delete(lecture); //TODO: 에러 원인 파악 필요
+	}
+
+	private void restoreAttendances(List<Attendance> attendances) {
+		attendances.forEach(Attendance::revertMemberScore);
 	}
 
 	@Override
-	public LectureDetailResponseDTO getLectureDetail(Long lectureId) {
+	public LectureDetailResponseDTO getLectureDetail(long lectureId) {
 		val lecture = findLecture(lectureId);
 		return LectureDetailResponseDTO.of(lecture);
 	}
 
-	private MemberSearchCondition getMemberSearchCondition(LectureRequestDTO requestDTO) {
-		return new MemberSearchCondition(
-			!requestDTO.part().equals(ALL) ? requestDTO.part() : null,
-			requestDTO.generation()
-		);
-	}
-
 	private Lecture findLecture(Long id) {
 		return lectureRepository.findById(id)
-			.orElseThrow(() -> new LectureException(INVALID_LECTURE.getName()));
+				.orElseThrow(() -> new LectureException(INVALID_LECTURE.getName()));
 	}
 
-	private Attendance getCurrentAttendance(List<Attendance> attendances, LocalDateTime now) {
-		val lectureSize = attendances.size();
-		val currentHour = now.getHour();
+	/** SCHEDULER **/
 
-		val attendanceIndex = (lectureSize == 2 && currentHour >= 16) ? 1 : 0;
-		return attendances.get(attendanceIndex);
+	@Override
+	@Transactional
+	public void endLectures() {
+		val lectures = lectureRepository.findLecturesToBeEnd();
+		lectures.forEach(lecture -> endLecture(lecture.getId()));
 	}
 
-	private LectureResponseType getLectureResponseType(Lecture currentLecture) {
-		return (currentLecture.getAttribute() != Attribute.ETC) ? LectureResponseType.HAS_ATTENDANCE : LectureResponseType.NO_ATTENDANCE;
+	private void checkEndLectureValidity(Lecture lecture) {
+		if (!lecture.isEnd()) {
+			throw new LectureException(NOT_END_TIME_YET.getName());
+		}
+	}
+
+	private void sendAlarm(Lecture lecture) {
+		val alarmTitle = getAlarmTitle(lecture);
+		val alarmContent = valueConfig.getALARM_MESSAGE_CONTENT();
+		val memberPlaygroundIds = getMemberPlaygroundIds(lecture);
+		alarmSender.send(new AlarmSenderDTO(alarmTitle, alarmContent, memberPlaygroundIds, NEWS, null));
+	}
+
+	private List<String> getMemberPlaygroundIds(Lecture lecture) {
+		return lecture.getAttendances().stream()
+				.map(attendance -> String.valueOf(attendance.getMember().getPlaygroundId()))
+				.filter(id -> !id.equals("null"))
+				.toList();
+	}
+
+	private String getAlarmTitle(Lecture lecture) {
+		return lecture.getName() + " " + valueConfig.getALARM_MESSAGE_TITLE();
+	}
+
+	/** APP **/
+
+	@Override
+	public TodayLectureResponseDTO getTodayLecture(long memberPlaygroundId) {
+		val attendances = attendanceRepository.findToday(memberPlaygroundId);
+		checkAttendancesSize(attendances);
+
+		if (attendances.isEmpty()) {
+			return getEmptyResponse();
+		}
+
+		val attendance = getNowAttendance(attendances);
+		val lecture = attendance.getLecture();
+		val responseType = getResponseType(lecture);
+		val message = getMessage(lecture.getAttribute());
+
+		if (responseType.equals(NO_ATTENDANCE) || lecture.isBefore()) {
+			return TodayLectureResponseDTO.of(responseType, lecture, message, Collections.emptyList());
+		}
+
+		val subAttendances = attendance.getSubAttendances();
+		val subAttendance = lecture.isFirst() ? subAttendances.get(0) : subAttendances.get(1);
+		return getTodayLectureResponse(subAttendance, responseType, lecture);
+	}
+
+	private TodayLectureResponseDTO getEmptyResponse() {
+		return TodayLectureResponseDTO.builder()
+				.type(LectureResponseType.NO_SESSION)
+				.id(0L)
+				.location("")
+				.name("")
+				.startDate("")
+				.endDate("")
+				.message("")
+				.attendances(Collections.emptyList())
+				.build();
+	}
+
+	private void checkAttendancesSize(List<Attendance> attendances) {
+		if (attendances.size() > valueConfig.getSUB_LECTURE_MAX_ROUND()) {
+			throw new LectureException(INVALID_COUNT_SESSION.getName());
+		}
+	}
+
+	private Attendance getNowAttendance(List<Attendance> attendances) {
+		val index = getAttendanceIndex();
+		return attendances.get(index);
+	}
+
+	private int getAttendanceIndex() {
+		return (LocalDateTime.now().getHour() >= 16) ? 1 : 0;
+	}
+
+	private LectureResponseType getResponseType(Lecture lecture) {
+		val attribute = lecture.getAttribute();
+		return attribute.equals(Attribute.ETC) ? NO_ATTENDANCE : HAS_ATTENDANCE;
+	}
+
+	private String getMessage(Attribute attribute) {
+		return switch (attribute) {
+			case SEMINAR -> valueConfig.getSEMINAR_MESSAGE();
+			case EVENT -> valueConfig.getEVENT_MESSAGE();
+			case ETC -> valueConfig.getETC_MESSAGE();
+		};
+	}
+
+	private TodayLectureResponseDTO getTodayLectureResponse(SubAttendance subAttendance, LectureResponseType responseType, Lecture lecture) {
+		val subLecture = subAttendance.getSubLecture();
+		val isOnAttendanceCheck = LocalDateTime.now().isBefore(subLecture.getStartAt().plusMinutes(10));
+		val message = getMessage(lecture.getAttribute());
+		if (isOnAttendanceCheck && subAttendance.getStatus().equals(ABSENT)) {
+			return TodayLectureResponseDTO.of(responseType, lecture, message, Collections.emptyList());
+		}
+		return TodayLectureResponseDTO.of(responseType, lecture, message, Collections.singletonList(subAttendance));
+	}
+
+	@Override
+	public LectureCurrentRoundResponseDTO getCurrentLectureRound(long lectureId) {
+		val lecture = findLecture(lectureId);
+		val subLecture = getSubLecture(lecture);
+		checkLectureExist(lecture);
+		checkLectureBefore(lecture);
+		checkEndAttendance(subLecture);
+		checkLectureEnd(lecture);
+		return LectureCurrentRoundResponseDTO.of(subLecture);
+	}
+
+	private SubLecture getSubLecture(Lecture lecture) {
+		val status = lecture.getLectureStatus();
+		val round = status.equals(FIRST) ? 1 : 2;
+		return getSubLecture(lecture, round);
+	}
+
+	private SubLecture getSubLecture(Lecture lecture, int round) {
+		return lecture.getSubLectures().stream()
+				.filter(l -> l.getRound() == round)
+				.findFirst()
+				.orElseThrow(() -> new SubLectureException(NO_SUB_LECTURE_EQUAL_ROUND.getName()));
+	}
+
+	private void checkLectureExist(Lecture lecture) {
+		val today = LocalDate.now();
+		val startOfDay = today.atStartOfDay();
+		val endOfDay = LocalDateTime.of(today, LocalTime.MAX);
+		val startAt = lecture.getStartDate();
+		if (startAt.isBefore(startOfDay) || startAt.isAfter(endOfDay)) {
+			throw new LectureException(NO_SESSION.getName());
+		}
+	}
+
+	private void checkLectureBefore(Lecture lecture) {
+		if (lecture.isBefore()) {
+			throw new LectureException(NOT_STARTED_ATTENDANCE.getName());
+		}
+	}
+
+	private void checkEndAttendance(SubLecture subLecture) {
+		if (isEndAttendance(subLecture)) {
+			throw new LectureException(subLecture.getRound() + ENDED_ATTENDANCE.getName());
+		}
+	}
+
+	private boolean isEndAttendance(SubLecture subLecture) {
+		val status = subLecture.getLecture().getLectureStatus();
+		if (LocalDateTime.now().isAfter(subLecture.getStartAt().plusMinutes(10))) {
+			return status.equals(FIRST) || status.equals(SECOND);
+		}
+		return false;
+	}
+
+	private void checkLectureEnd(Lecture lecture) {
+		if (lecture.isEnd()) {
+			throw new LectureException(END_LECTURE.getName());
+		}
 	}
 }

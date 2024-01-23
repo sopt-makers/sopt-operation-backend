@@ -1,7 +1,5 @@
 package org.sopt.makers.operation.controller.app;
 
-
-import static java.util.Objects.*;
 import static org.sopt.makers.operation.common.ResponseMessage.*;
 
 import io.swagger.annotations.ApiOperation;
@@ -19,11 +17,14 @@ import java.security.Principal;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/app/lectures")
 public class AppLectureController {
+
     private final LectureService lectureService;
-    @ApiOperation(value = "단일 세미나 상태 조회")
+
+    @ApiOperation(value = "진행 중인 세미나 상태 조회")
     @GetMapping
     public ResponseEntity<ApiResponse> getLecture(@ApiIgnore Principal principal) {
-        val response = lectureService.getCurrentLecture(getMemberId(principal));
+        val memberPlaygroundId = Long.parseLong(principal.getName());
+        val response = lectureService.getTodayLecture(memberPlaygroundId);
         return ResponseEntity.ok(ApiResponse.success(SUCCESS_SINGLE_GET_LECTURE.getMessage(), response));
     }
 
@@ -32,9 +33,5 @@ public class AppLectureController {
     public ResponseEntity<ApiResponse> getRound(@PathVariable("lectureId") Long lectureId) {
         val response = lectureService.getCurrentLectureRound(lectureId);
         return ResponseEntity.ok(ApiResponse.success(SUCCESS_GET_LECTURE_ROUND.getMessage(), response));
-    }
-
-    private Long getMemberId(Principal principal) {
-        return nonNull(principal) ? Long.valueOf(principal.getName()) : null;
     }
 }

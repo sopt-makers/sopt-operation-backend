@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Builder
-public record LectureGetResponseDTO(
+public record TodayLectureResponseDTO(
         LectureResponseType type,
         Long id,
         String location,
@@ -21,9 +21,9 @@ public record LectureGetResponseDTO(
         String message,
         List<LectureGetResponseVO> attendances
 ) {
-    public static LectureGetResponseDTO of(LectureResponseType type, Lecture lecture, String message, List<SubAttendance> attendances) {
+    public static TodayLectureResponseDTO of(LectureResponseType type, Lecture lecture, String message, List<SubAttendance> attendances) {
 
-        return LectureGetResponseDTO.builder()
+        return TodayLectureResponseDTO.builder()
                 .type(type)
                 .id(lecture.getId())
                 .location(lecture.getPlace())
@@ -40,22 +40,22 @@ public record LectureGetResponseDTO(
     private static DateTimeFormatter convertFormat() {
         return DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     }
-}
 
-@Builder
-record LectureGetResponseVO(
-        AttendanceStatus status,
-        String attendedAt
+    @Builder
+    record LectureGetResponseVO(
+            AttendanceStatus status,
+            String attendedAt
 
-) {
-    public static LectureGetResponseVO of(AttendanceStatus status, LocalDateTime attendedAt) {
-        return LectureGetResponseVO.builder()
-                .status(status)
-                .attendedAt(attendedAt.format((convertFormat())))
-                .build();
-    }
+    ) {
+        public static LectureGetResponseVO of(AttendanceStatus status, LocalDateTime attendedAt) {
+            return LectureGetResponseVO.builder()
+                    .status(status)
+                    .attendedAt(attendedAt.format((convertFormat())))
+                    .build();
+        }
 
-    private static DateTimeFormatter convertFormat() {
-        return DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        private static DateTimeFormatter convertFormat() {
+            return DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        }
     }
 }

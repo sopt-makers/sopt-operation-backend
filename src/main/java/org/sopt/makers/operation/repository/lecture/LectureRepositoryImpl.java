@@ -22,7 +22,7 @@ import static org.sopt.makers.operation.entity.lecture.QLecture.*;
 public class LectureRepositoryImpl implements LectureCustomRepository {
     private final JPAQueryFactory queryFactory;
     @Override
-    public List<Lecture> findLectures(int generation, Part part) {
+    public List<Lecture> find(int generation, Part part) {
         return queryFactory
             .selectFrom(lecture)
             .leftJoin(lecture.attendances, attendance).fetchJoin().distinct()

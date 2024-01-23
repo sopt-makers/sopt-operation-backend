@@ -80,7 +80,20 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
 			.fetchFirst());
 	}
 
+	@Override
+	public List<Member> find(int generation, Part part) {
+		StringExpression firstName = Expressions.stringTemplate("SUBSTR({0}, 1, 1)", member.name);
+
+		return queryFactory
+				.selectFrom(member)
+				.where(
+						member.generation.eq(generation),
+						partEq(part))
+				.orderBy(firstName.asc())
+				.fetch();
+	}
+
 	private BooleanExpression partEq(Part part) {
-		return nonNull(part) ? member.part.eq(part) : null;
+		return (isNull(part) || part.equals(ALL)) ? null : member.part.eq(part);
 	}
 }

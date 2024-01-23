@@ -3,12 +3,10 @@ package org.sopt.makers.operation.service;
 import static java.util.Objects.nonNull;
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
 
-import java.util.List;
-
+import org.sopt.makers.operation.config.ValueConfig;
 import org.sopt.makers.operation.dto.attendance.AttendanceMemberResponseDTO;
 import org.sopt.makers.operation.dto.attendance.SubAttendanceUpdateRequestDTO;
 import org.sopt.makers.operation.dto.attendance.SubAttendanceUpdateResponseDTO;
-import org.sopt.makers.operation.dto.attendance.MemberResponseDTO;
 import lombok.val;
 import org.sopt.makers.operation.dto.attendance.*;
 import org.sopt.makers.operation.entity.AttendanceStatus;
@@ -22,7 +20,6 @@ import org.sopt.makers.operation.repository.attendance.AttendanceRepository;
 import org.sopt.makers.operation.exception.SubLectureException;
 import org.sopt.makers.operation.repository.lecture.SubLectureRepository;
 import org.sopt.makers.operation.repository.member.MemberRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,9 +39,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 	private final MemberRepository memberRepository;
 	private final SubLectureRepository subLectureRepository;
 	private final AttendanceRepository attendanceRepository;
-
-	@Value("${sopt.current.generation}")
-	private int currentGeneration;
+	private final ValueConfig valueConfig;
 
 	@Override
 	@Transactional
@@ -81,7 +76,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 	@Transactional
 	public AttendResponseDTO attend(Long playGroundId, AttendRequestDTO requestDTO) {
 		log.info("[Attendance: attend start] id: " + playGroundId);
-		val member = memberRepository.getMemberByPlaygroundIdAndGeneration(playGroundId, currentGeneration)
+		val member = memberRepository.getMemberByPlaygroundIdAndGeneration(playGroundId, valueConfig.getGENERATION())
 				.orElseThrow(() -> new MemberException(INVALID_MEMBER.getName()));
 
 		val memberId = member.getId();

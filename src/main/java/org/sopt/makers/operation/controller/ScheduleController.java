@@ -16,7 +16,7 @@ public class ScheduleController {
 
 	@Scheduled(cron = "0 0 0 ? * SUN")
 	public void endLecture() {
-		lectureService.finishLecture();
+		lectureService.endLectures();
 	}
 
 }

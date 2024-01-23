@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LectureCustomRepository {
-    List<Lecture> findLectures(int generation, Part part);
+    List<Lecture> find(int generation, Part part);
     List<Lecture> findLecturesToBeEnd();
     Optional<Lecture> find(Long lectureId);
 }
