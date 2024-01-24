@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.entity;
+package org.sopt.makers.operation.entity.lecture;
 
 import static javax.persistence.GenerationType.*;
 import static org.sopt.makers.operation.entity.lecture.LectureStatus.*;
@@ -17,6 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import org.sopt.makers.operation.entity.attendance.SubAttendance;
 import org.sopt.makers.operation.entity.lecture.Lecture;
 import org.sopt.makers.operation.entity.lecture.LectureStatus;
 

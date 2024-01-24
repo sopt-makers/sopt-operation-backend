@@ -1,8 +1,8 @@
 package org.sopt.makers.operation.dto.lecture;
 
 import lombok.Builder;
-import org.sopt.makers.operation.entity.AttendanceStatus;
-import org.sopt.makers.operation.entity.SubAttendance;
+import org.sopt.makers.operation.entity.attendance.AttendanceStatus;
+import org.sopt.makers.operation.entity.attendance.SubAttendance;
 import org.sopt.makers.operation.entity.lecture.Lecture;
 
 import java.time.LocalDateTime;

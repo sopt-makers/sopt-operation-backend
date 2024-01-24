@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.security.config;
+package org.sopt.makers.operation.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;

@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.entity;
+package org.sopt.makers.operation.entity.attendance;
 
 import static javax.persistence.GenerationType.*;
 
@@ -13,6 +13,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
+import org.sopt.makers.operation.entity.BaseEntity;
+import org.sopt.makers.operation.entity.lecture.SubLecture;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

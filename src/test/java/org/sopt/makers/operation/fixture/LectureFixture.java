@@ -14,7 +14,7 @@ import org.sopt.makers.operation.dto.lecture.LectureResponseDTO.SubLectureVO;
 import org.sopt.makers.operation.dto.lecture.LecturesResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LecturesResponseDTO.LectureVO;
 import org.sopt.makers.operation.entity.Part;
-import org.sopt.makers.operation.entity.SubLecture;
+import org.sopt.makers.operation.entity.lecture.SubLecture;
 import org.sopt.makers.operation.entity.lecture.Attribute;
 import org.sopt.makers.operation.entity.lecture.Lecture;
 import org.sopt.makers.operation.entity.lecture.LectureStatus;

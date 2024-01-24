@@ -1,6 +1,6 @@
 package org.sopt.makers.operation.repository.attendance;
 
-import org.sopt.makers.operation.entity.Attendance;
+import org.sopt.makers.operation.entity.attendance.Attendance;
 import org.sopt.makers.operation.entity.lecture.Lecture;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

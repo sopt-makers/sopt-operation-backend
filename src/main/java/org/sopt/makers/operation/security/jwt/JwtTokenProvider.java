@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.sopt.makers.operation.common.ExceptionMessage;
 import org.sopt.makers.operation.exception.TokenException;
+import org.sopt.makers.operation.security.AdminAuthentication;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;

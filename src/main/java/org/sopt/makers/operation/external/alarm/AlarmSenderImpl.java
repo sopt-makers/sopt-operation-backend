@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.external.api;
+package org.sopt.makers.operation.external.alarm;
 
 import static java.util.Objects.*;
 import static java.util.UUID.*;
