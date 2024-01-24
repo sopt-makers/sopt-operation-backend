@@ -10,7 +10,7 @@ import org.sopt.makers.operation.entity.admin.Admin;
 import org.sopt.makers.operation.entity.admin.AdminStatus;
 import org.sopt.makers.operation.exception.AdminFailureException;
 import org.sopt.makers.operation.repository.AdminRepository;
-import org.sopt.makers.operation.security.jwt.AdminAuthentication;
+import org.sopt.makers.operation.security.AdminAuthentication;
 import org.sopt.makers.operation.security.jwt.JwtTokenProvider;
 import org.sopt.makers.operation.security.jwt.JwtTokenType;
 import org.springframework.security.crypto.password.PasswordEncoder;

@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.security.jwt;
+package org.sopt.makers.operation.security;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
