@@ -2,9 +2,10 @@ package org.sopt.makers.operation.security.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+
+import org.sopt.makers.operation.config.ValueConfig;
 import org.sopt.makers.operation.security.jwt.JwtAuthenticationFilter;
 import org.sopt.makers.operation.security.jwt.JwtExceptionFilter;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -25,15 +26,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtExceptionFilter jwtExceptionFilter;
-
-    @Value("${admin.url.prod}")
-    private String ADMIN_PROD_URL;
-
-    @Value("${admin.url.dev}")
-    private String ADMIN_DEV_URL;
-
-    @Value("${admin.url.local}")
-    private String ADMIN_LOCAL_URL;
+    private final ValueConfig valueConfig;
 
     @Bean
     public static PasswordEncoder passwordEncoder() {
@@ -44,34 +37,16 @@ public class SecurityConfig {
     @Profile("dev")
     public SecurityFilterChain filterChainDev(HttpSecurity http) throws Exception {
         setHttp(http);
-        authorizeRequestsDev(http);
+        http.authorizeRequests().antMatchers(valueConfig.getSWAGGER_URI()).permitAll();
         return http.build();
-    }
-
-    @Profile("dev")
-    private void authorizeRequestsDev(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers("/api/v1/auth/**", "/exception/**", "/swagger-ui/**").permitAll()
-                .and()
-                .authorizeRequests()
-                .antMatchers("/api/v1/**").authenticated();
     }
 
     @Bean
     @Profile("prod")
     public SecurityFilterChain filterChainProd(HttpSecurity http) throws Exception {
         setHttp(http);
-        authorizeRequestsProd(http);
+        http.authorizeRequests().antMatchers(valueConfig.getSWAGGER_URI()).authenticated();
         return http.build();
-    }
-
-    @Profile("prod")
-    private void authorizeRequestsProd(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers("/api/v1/auth/**","/exception/**").permitAll()
-                .and()
-                .authorizeRequests()
-                .antMatchers("/api/v1/**", "/swagger-ui/**").authenticated();
     }
 
     private void setHttp(HttpSecurity http) throws Exception {
@@ -79,6 +54,12 @@ public class SecurityConfig {
                 .httpBasic().disable()
                 .csrf().disable()
                 .formLogin().disable()
+                .authorizeRequests()
+                .antMatchers("/api/v1/auth/**", "/exception/**").permitAll()
+                .and()
+                .authorizeRequests()
+                .antMatchers("/api/v1/**").authenticated()
+                .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
@@ -89,9 +70,9 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         val configuration = new CorsConfiguration();
 
-        configuration.addAllowedOrigin(ADMIN_PROD_URL);
-        configuration.addAllowedOrigin(ADMIN_DEV_URL);
-        configuration.addAllowedOrigin(ADMIN_LOCAL_URL);
+        configuration.addAllowedOrigin(valueConfig.getADMIN_PROD_URL());
+        configuration.addAllowedOrigin(valueConfig.getADMIN_DEV_URL());
+        configuration.addAllowedOrigin(valueConfig.getADMIN_LOCAL_URL());
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         configuration.setAllowCredentials(true);
