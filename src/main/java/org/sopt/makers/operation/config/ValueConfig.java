@@ -15,9 +15,16 @@ public class ValueConfig {
 	private String ALARM_MESSAGE_CONTENT;
 	@Value("${sopt.current.generation}")
 	private int GENERATION;
+	@Value("${admin.url.prod}")
+	private String ADMIN_PROD_URL;
+	@Value("${admin.url.dev}")
+	private String ADMIN_DEV_URL;
+	@Value("${admin.url.local}")
+	private String ADMIN_LOCAL_URL;
 
 	private final int SUB_LECTURE_MAX_ROUND = 2;
 	private final String ETC_MESSAGE = "출석 점수가 반영되지 않아요.";
 	private final String SEMINAR_MESSAGE = "";
 	private final String EVENT_MESSAGE = "행사도 참여하고, 출석점수도 받고, 일석이조!";
+	private final String SWAGGER_URI = "/swagger-ui/**";
 }
