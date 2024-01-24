@@ -15,7 +15,7 @@ import org.sopt.makers.operation.dto.lecture.AttendanceRequestDTO;
 import org.sopt.makers.operation.dto.lecture.LectureResponseDTO;
 import org.sopt.makers.operation.dto.lecture.LecturesResponseDTO;
 import org.sopt.makers.operation.entity.lecture.Lecture;
-import org.sopt.makers.operation.external.api.AlarmSender;
+import org.sopt.makers.operation.external.alarm.AlarmSender;
 import org.sopt.makers.operation.repository.lecture.LectureRepository;
 import org.sopt.makers.operation.repository.member.MemberRepository;
 

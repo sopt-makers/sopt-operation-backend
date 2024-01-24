@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.Objects.*;
-import static org.sopt.makers.operation.entity.QAttendance.*;
-import static org.sopt.makers.operation.entity.QMember.*;
+import static org.sopt.makers.operation.entity.attendance.QAttendance.*;
 import static org.sopt.makers.operation.entity.lecture.LectureStatus.*;
 import static org.sopt.makers.operation.entity.lecture.QLecture.*;
+import static org.sopt.makers.operation.entity.member.QMember.*;
 
 @Repository
 @RequiredArgsConstructor

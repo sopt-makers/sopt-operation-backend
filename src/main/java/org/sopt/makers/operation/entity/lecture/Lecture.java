@@ -15,10 +15,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
-import org.sopt.makers.operation.entity.Attendance;
+import org.sopt.makers.operation.entity.attendance.Attendance;
 import org.sopt.makers.operation.entity.BaseEntity;
 import org.sopt.makers.operation.entity.Part;
-import org.sopt.makers.operation.entity.SubLecture;
 
 import lombok.Builder;
 import lombok.Getter;

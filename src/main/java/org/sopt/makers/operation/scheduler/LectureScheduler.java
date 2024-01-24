@@ -1,16 +1,16 @@
-package org.sopt.makers.operation.controller;
+package org.sopt.makers.operation.scheduler;
 
 import org.sopt.makers.operation.service.LectureService;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 
-@RestController
+@Component
 @EnableScheduling
 @RequiredArgsConstructor
-public class ScheduleController {
+public class LectureScheduler {
 
 	private final LectureService lectureService;
 

@@ -1,6 +1,6 @@
 package org.sopt.makers.operation.dto.admin;
 
-import org.sopt.makers.operation.entity.Role;
+import org.sopt.makers.operation.entity.admin.Role;
 
 public record SignUpResponseDTO(
         Long id,

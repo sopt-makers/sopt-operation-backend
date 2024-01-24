@@ -1,8 +1,8 @@
-package org.sopt.makers.operation.entity;
+package org.sopt.makers.operation.entity.attendance;
 
 import static javax.persistence.GenerationType.*;
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
-import static org.sopt.makers.operation.entity.AttendanceStatus.*;
+import static org.sopt.makers.operation.entity.attendance.AttendanceStatus.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +20,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import org.sopt.makers.operation.entity.member.Member;
 import org.sopt.makers.operation.entity.lecture.Lecture;
 
 import lombok.*;

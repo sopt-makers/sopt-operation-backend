@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.external.api;
+package org.sopt.makers.operation.external.alarm;
 
 import org.sopt.makers.operation.dto.alarm.AlarmSenderDTO;
 

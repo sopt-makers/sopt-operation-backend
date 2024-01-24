@@ -1,8 +1,8 @@
 package org.sopt.makers.operation.dto.admin;
 
 import lombok.Builder;
-import org.sopt.makers.operation.entity.Admin;
-import org.sopt.makers.operation.entity.AdminStatus;
+import org.sopt.makers.operation.entity.admin.Admin;
+import org.sopt.makers.operation.entity.admin.AdminStatus;
 
 @Builder
 public record LoginResponseDTO(LoginResponseVO loginResponseVO, String refreshToken) {

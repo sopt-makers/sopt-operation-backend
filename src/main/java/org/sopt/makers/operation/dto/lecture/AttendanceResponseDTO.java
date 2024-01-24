@@ -1,6 +1,6 @@
 package org.sopt.makers.operation.dto.lecture;
 
-import org.sopt.makers.operation.entity.SubLecture;
+import org.sopt.makers.operation.entity.lecture.SubLecture;
 import org.sopt.makers.operation.entity.lecture.Lecture;
 
 import lombok.Builder;
