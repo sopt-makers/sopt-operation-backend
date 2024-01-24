@@ -54,16 +54,18 @@ public class SecurityConfig {
                 .httpBasic().disable()
                 .csrf().disable()
                 .formLogin().disable()
-                .authorizeRequests()
-                .antMatchers("/api/v1/auth/**", "/exception/**").permitAll()
+                .cors().configurationSource(corsConfigurationSource())
                 .and()
-                .authorizeRequests()
-                .antMatchers("/api/v1/**").authenticated()
+                    .authorizeRequests()
+                    .antMatchers("/api/v1/auth/**", "/exception/**").permitAll()
                 .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    .authorizeRequests()
+                    .antMatchers("/api/v1/**").authenticated()
                 .and()
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                    .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                    .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);
     }
 
     @Bean
