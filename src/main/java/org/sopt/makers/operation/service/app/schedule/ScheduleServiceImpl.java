@@ -1,11 +1,4 @@
-package org.sopt.makers.operation.service;
-
-import lombok.RequiredArgsConstructor;
-import lombok.val;
-import org.sopt.makers.operation.dto.schedule.response.SchedulesResponseDTO;
-import org.sopt.makers.operation.entity.schedule.Schedule;
-import org.sopt.makers.operation.repository.schedule.ScheduleRepository;
-import org.springframework.stereotype.Service;
+package org.sopt.makers.operation.service.app.schedule;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -16,6 +9,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
+
+import org.sopt.makers.operation.dto.schedule.response.SchedulesResponseDTO;
+import org.sopt.makers.operation.entity.schedule.Schedule;
+import org.sopt.makers.operation.repository.schedule.ScheduleRepository;
+import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
+import lombok.val;
 
 @Service
 @RequiredArgsConstructor
