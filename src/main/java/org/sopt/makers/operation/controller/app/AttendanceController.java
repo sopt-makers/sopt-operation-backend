@@ -6,7 +6,7 @@ import static org.sopt.makers.operation.common.ResponseMessage.*;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.sopt.makers.operation.common.ApiResponse;
+import org.sopt.makers.operation.dto.ResponseDTO;
 import org.sopt.makers.operation.dto.attendance.request.AttendRequestDTO;
 import org.sopt.makers.operation.service.app.attendance.AttendanceService;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +23,9 @@ public class AttendanceController {
 
     @ApiOperation(value = "출석 하기")
     @PostMapping("/attend")
-    public ResponseEntity<ApiResponse> attend(@RequestBody AttendRequestDTO requestDTO, @ApiIgnore Principal principal) {
+    public ResponseEntity<ResponseDTO> attend(@RequestBody AttendRequestDTO requestDTO, @ApiIgnore Principal principal) {
         val response = attendanceService.attend(getMemberId(principal), requestDTO);
-        return ResponseEntity.ok(ApiResponse.success(SUCCESS_ATTEND.getMessage(), response));
+        return ResponseEntity.ok(ResponseDTO.success(SUCCESS_ATTEND.getMessage(), response));
     }
 
     private Long getMemberId(Principal principal) {

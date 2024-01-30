@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
-import org.sopt.makers.operation.common.ApiResponse;
+import org.sopt.makers.operation.dto.ResponseDTO;
 import org.sopt.makers.operation.dto.admin.request.LoginRequestDTO;
 import org.sopt.makers.operation.dto.admin.request.SignUpRequestDTO;
 import org.sopt.makers.operation.service.web.admin.AdminServiceImpl;
@@ -24,29 +24,29 @@ public class AdminController {
 
     @ApiOperation(value = "회원가입")
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse> signup(@RequestBody SignUpRequestDTO signUpRequestDTO) {
+    public ResponseEntity<ResponseDTO> signup(@RequestBody SignUpRequestDTO signUpRequestDTO) {
         val response = authService.signUp(signUpRequestDTO);
-        return ResponseEntity.ok(ApiResponse.success(SUCCESS_SIGN_UP.getMessage(), response));
+        return ResponseEntity.ok(ResponseDTO.success(SUCCESS_SIGN_UP.getMessage(), response));
     }
 
     @ApiOperation(value = "로그인")
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse> login(@RequestBody LoginRequestDTO userLoginRequestDTO) {
+    public ResponseEntity<ResponseDTO> login(@RequestBody LoginRequestDTO userLoginRequestDTO) {
         val response = authService.login(userLoginRequestDTO);
         val headers = cookie.setRefreshToken(response.refreshToken());
 
         return ResponseEntity.status(OK)
             .headers(headers)
-            .body(ApiResponse.success(SUCCESS_LOGIN_UP.getMessage(), response.loginResponseVO()));
+            .body(ResponseDTO.success(SUCCESS_LOGIN_UP.getMessage(), response.loginResponseVO()));
     }
 
     @ApiOperation(value = "토큰 재발급")
     @PatchMapping("/refresh")
-    public ResponseEntity<ApiResponse> refresh(@CookieValue String refreshToken) {
+    public ResponseEntity<ResponseDTO> refresh(@CookieValue String refreshToken) {
         val response = authService.refresh(refreshToken);
         val headers = cookie.setRefreshToken(response.refreshToken());
 
         return ResponseEntity.status(OK).headers(headers)
-            .body(ApiResponse.success(SUCCESS_GET_REFRESH_TOKEN.getMessage(), response.accessToken()));
+            .body(ResponseDTO.success(SUCCESS_GET_REFRESH_TOKEN.getMessage(), response.accessToken()));
     }
 }

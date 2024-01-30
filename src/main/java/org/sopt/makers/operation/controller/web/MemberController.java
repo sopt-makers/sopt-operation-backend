@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
-import org.sopt.makers.operation.common.ApiResponse;
+import org.sopt.makers.operation.dto.ResponseDTO;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.service.web.member.MemberService;
 import org.springframework.data.domain.Pageable;
@@ -21,9 +21,9 @@ public class MemberController {
 
     @ApiOperation(value = "멤버 리스트 조회")
     @GetMapping("/list")
-    public ResponseEntity<ApiResponse> getMemberList(
+    public ResponseEntity<ResponseDTO> getMemberList(
         @RequestParam(required = false) Part part, @RequestParam(required = false) Integer generation, Pageable pageable) {
         val memberList = memberService.getMemberList(part, generation, pageable);
-        return ResponseEntity.ok(ApiResponse.success(SUCCESS_GET_MEMBERS.getMessage(), memberList));
+        return ResponseEntity.ok(ResponseDTO.success(SUCCESS_GET_MEMBERS.getMessage(), memberList));
     }
 }

@@ -1,6 +1,6 @@
 package org.sopt.makers.operation.security.jwt;
 
-import org.sopt.makers.operation.common.ApiResponse;
+import org.sopt.makers.operation.dto.ResponseDTO;
 import org.sopt.makers.operation.exception.TokenException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -28,7 +28,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             filterChain.doFilter(httpServletRequest, httpServletResponse);
         } catch(TokenException e) {
             val objectMapper = new ObjectMapper();
-            val jsonResponse = objectMapper.writeValueAsString(ApiResponse.fail(e.getMessage()));
+            val jsonResponse = objectMapper.writeValueAsString(ResponseDTO.fail(e.getMessage()));
 
             httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
             httpServletResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);

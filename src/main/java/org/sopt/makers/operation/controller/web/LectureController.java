@@ -1,11 +1,11 @@
 package org.sopt.makers.operation.controller.web;
 
-import static org.sopt.makers.operation.common.ApiResponse.*;
+import static org.sopt.makers.operation.dto.ResponseDTO.*;
 import static org.sopt.makers.operation.common.ResponseMessage.*;
 
 import java.net.URI;
 
-import org.sopt.makers.operation.common.ApiResponse;
+import org.sopt.makers.operation.dto.ResponseDTO;
 import org.sopt.makers.operation.dto.lecture.request.AttendanceRequestDTO;
 import org.sopt.makers.operation.dto.lecture.request.LectureRequestDTO;
 import org.sopt.makers.operation.entity.Part;
@@ -36,7 +36,7 @@ public class LectureController {
 
 	@ApiOperation(value = "세션 생성")
 	@PostMapping
-	public ResponseEntity<ApiResponse> createLecture(@RequestBody LectureRequestDTO requestDTO) {
+	public ResponseEntity<ResponseDTO> createLecture(@RequestBody LectureRequestDTO requestDTO) {
 		val lectureId = lectureService.createLecture(requestDTO);
 		return ResponseEntity
 			.created(getURI(lectureId))
@@ -45,21 +45,21 @@ public class LectureController {
 
 	@ApiOperation(value = "세션 리스트 조회")
 	@GetMapping
-	public ResponseEntity<ApiResponse> getLectures(@RequestParam int generation, @RequestParam(required = false) Part part) {
+	public ResponseEntity<ResponseDTO> getLectures(@RequestParam int generation, @RequestParam(required = false) Part part) {
 		val response = lectureService.getLectures(generation, part);
 		return ResponseEntity.ok(success(SUCCESS_GET_LECTURES.getMessage(), response));
 	}
 
 	@ApiOperation(value = "세션 단일 조회")
 	@GetMapping("/{lectureId}")
-	public ResponseEntity<ApiResponse> getLecture(@PathVariable Long lectureId) {
+	public ResponseEntity<ResponseDTO> getLecture(@PathVariable Long lectureId) {
 		val response = lectureService.getLecture(lectureId);
 		return ResponseEntity.ok(success(SUCCESS_GET_LECTURE.getMessage(), response));
 	}
 
 	@ApiOperation(value = "출석 시작")
 	@PatchMapping("/attendance")
-	public ResponseEntity<ApiResponse> startAttendance(@RequestBody AttendanceRequestDTO requestDTO) {
+	public ResponseEntity<ResponseDTO> startAttendance(@RequestBody AttendanceRequestDTO requestDTO) {
 		val response = lectureService.startAttendance(requestDTO);
 		return ResponseEntity
 			.created(getURI(requestDTO.lectureId()))
@@ -76,21 +76,21 @@ public class LectureController {
 
 	@ApiOperation(value = "세션 종료 후 출석 점수 갱신")
 	@PatchMapping("/{lectureId}")
-	public ResponseEntity<ApiResponse> endLecture(@PathVariable Long lectureId) {
+	public ResponseEntity<ResponseDTO> endLecture(@PathVariable Long lectureId) {
 		lectureService.endLecture(lectureId);
 		return ResponseEntity.ok(success(SUCCESS_UPDATE_MEMBER_SCORE.getMessage()));
 	}
 
 	@ApiOperation(value = "세션 삭제")
 	@DeleteMapping("/{lectureId}")
-	public ResponseEntity<ApiResponse> deleteLecture(@PathVariable Long lectureId) {
+	public ResponseEntity<ResponseDTO> deleteLecture(@PathVariable Long lectureId) {
 		lectureService.deleteLecture(lectureId);
 		return ResponseEntity.ok(success(SUCCESS_DELETE_LECTURE.getMessage()));
 	}
 
 	@ApiOperation(value = "세션 팝업용 상세 조회")
 	@GetMapping("/detail/{lectureId}")
-	public ResponseEntity<ApiResponse> getLectureDetail(@PathVariable Long lectureId) {
+	public ResponseEntity<ResponseDTO> getLectureDetail(@PathVariable Long lectureId) {
 		val response = lectureService.getLectureDetail(lectureId);
 		return ResponseEntity.ok(success(SUCCESS_GET_LECTURE.getMessage(), response));
 	}
