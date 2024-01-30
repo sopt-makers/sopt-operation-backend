@@ -6,7 +6,7 @@ import lombok.val;
 
 import org.sopt.makers.operation.common.ApiResponse;
 import org.sopt.makers.operation.entity.Part;
-import org.sopt.makers.operation.service.MemberService;
+import org.sopt.makers.operation.service.web.member.MemberService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

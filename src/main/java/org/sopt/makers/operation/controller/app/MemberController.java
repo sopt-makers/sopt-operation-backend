@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.sopt.makers.operation.common.ApiResponse;
-import org.sopt.makers.operation.service.MemberService;
+import org.sopt.makers.operation.service.app.member.MemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,8 +19,9 @@ import static org.sopt.makers.operation.common.ResponseMessage.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/app/members")
-public class AppMemberController {
+public class MemberController {
     private final MemberService memberService;
+
     @ApiOperation(value = "전체 출석 정보 조회")
     @GetMapping("/attendances")
     public ResponseEntity<ApiResponse> getMemberTotalAttendance(@ApiIgnore Principal principal) {
