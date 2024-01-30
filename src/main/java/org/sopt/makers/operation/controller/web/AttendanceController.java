@@ -5,7 +5,7 @@ import static org.sopt.makers.operation.common.ResponseMessage.*;
 import org.sopt.makers.operation.common.ApiResponse;
 import org.sopt.makers.operation.dto.attendance.request.SubAttendanceUpdateRequestDTO;
 import org.sopt.makers.operation.entity.Part;
-import org.sopt.makers.operation.service.AttendanceService;
+import org.sopt.makers.operation.service.web.attendance.AttendanceService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
