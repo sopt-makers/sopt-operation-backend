@@ -11,7 +11,7 @@ import java.util.Optional;
 
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.StringExpression;
-import org.sopt.makers.operation.dto.member.MemberSearchCondition;
+import org.sopt.makers.operation.dto.member.response.MemberSearchCondition;
 import org.sopt.makers.operation.entity.member.Member;
 import org.sopt.makers.operation.entity.Part;
 import org.springframework.data.domain.Pageable;

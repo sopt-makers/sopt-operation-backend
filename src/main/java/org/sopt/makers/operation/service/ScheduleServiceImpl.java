@@ -2,7 +2,7 @@ package org.sopt.makers.operation.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.sopt.makers.operation.dto.schedule.SchedulesResponseDTO;
+import org.sopt.makers.operation.dto.schedule.response.SchedulesResponseDTO;
 import org.sopt.makers.operation.entity.schedule.Schedule;
 import org.sopt.makers.operation.repository.schedule.ScheduleRepository;
 import org.springframework.stereotype.Service;

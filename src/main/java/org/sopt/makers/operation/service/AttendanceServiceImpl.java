@@ -4,11 +4,14 @@ import static java.util.Objects.nonNull;
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
 
 import org.sopt.makers.operation.config.ValueConfig;
-import org.sopt.makers.operation.dto.attendance.AttendanceMemberResponseDTO;
-import org.sopt.makers.operation.dto.attendance.SubAttendanceUpdateRequestDTO;
-import org.sopt.makers.operation.dto.attendance.SubAttendanceUpdateResponseDTO;
+import org.sopt.makers.operation.dto.attendance.request.AttendRequestDTO;
+import org.sopt.makers.operation.dto.attendance.response.AttendResponseDTO;
+import org.sopt.makers.operation.dto.attendance.response.AttendanceMemberResponseDTO;
+import org.sopt.makers.operation.dto.attendance.request.SubAttendanceUpdateRequestDTO;
+import org.sopt.makers.operation.dto.attendance.response.AttendancesResponseDTO;
+import org.sopt.makers.operation.dto.attendance.response.SubAttendanceUpdateResponseDTO;
 import lombok.val;
-import org.sopt.makers.operation.dto.attendance.*;
+
 import org.sopt.makers.operation.entity.attendance.AttendanceStatus;
 import org.sopt.makers.operation.entity.member.Member;
 import org.sopt.makers.operation.entity.Part;

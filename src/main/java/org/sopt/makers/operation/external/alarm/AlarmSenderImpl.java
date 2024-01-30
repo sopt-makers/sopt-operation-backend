@@ -11,8 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.sopt.makers.operation.dto.alarm.AlarmSendResponseDTO;
-import org.sopt.makers.operation.dto.alarm.AlarmSenderDTO;
+import org.sopt.makers.operation.dto.alarm.response.AlarmSendResponseDTO;
+import org.sopt.makers.operation.dto.alarm.request.AlarmSenderDTO;
 import org.sopt.makers.operation.exception.AlarmException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;

@@ -1,6 +1,10 @@
 package org.sopt.makers.operation.service;
 
-import org.sopt.makers.operation.dto.admin.*;
+import org.sopt.makers.operation.dto.admin.request.LoginRequestDTO;
+import org.sopt.makers.operation.dto.admin.request.SignUpRequestDTO;
+import org.sopt.makers.operation.dto.admin.response.LoginResponseDTO;
+import org.sopt.makers.operation.dto.admin.response.RefreshResponseDTO;
+import org.sopt.makers.operation.dto.admin.response.SignUpResponseDTO;
 
 public interface AdminService {
     SignUpResponseDTO signUp(SignUpRequestDTO signUpRequestDTO);

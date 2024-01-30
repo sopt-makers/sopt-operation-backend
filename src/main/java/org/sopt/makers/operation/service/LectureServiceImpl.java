@@ -2,7 +2,7 @@ package org.sopt.makers.operation.service;
 
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
 import static org.sopt.makers.operation.common.ExceptionMessage.NO_SESSION;
-import static org.sopt.makers.operation.dto.lecture.LectureResponseType.*;
+import static org.sopt.makers.operation.dto.lecture.response.LectureResponseType.*;
 import static org.sopt.makers.operation.entity.attendance.AttendanceStatus.*;
 import static org.sopt.makers.operation.entity.alarm.Attribute.*;
 import static org.sopt.makers.operation.entity.lecture.LectureStatus.*;
@@ -16,14 +16,17 @@ import java.util.stream.Stream;
 import lombok.val;
 
 import org.sopt.makers.operation.config.ValueConfig;
-import org.sopt.makers.operation.dto.alarm.AlarmSenderDTO;
-import org.sopt.makers.operation.dto.lecture.*;
+import org.sopt.makers.operation.dto.alarm.request.AlarmSenderDTO;
 
-import org.sopt.makers.operation.dto.lecture.AttendanceRequestDTO;
-import org.sopt.makers.operation.dto.lecture.AttendanceResponseDTO;
-import org.sopt.makers.operation.dto.lecture.LectureRequestDTO;
-import org.sopt.makers.operation.dto.lecture.LectureResponseDTO;
-import org.sopt.makers.operation.dto.lecture.LecturesResponseDTO;
+import org.sopt.makers.operation.dto.lecture.request.AttendanceRequestDTO;
+import org.sopt.makers.operation.dto.lecture.response.AttendanceResponseDTO;
+import org.sopt.makers.operation.dto.lecture.request.LectureRequestDTO;
+import org.sopt.makers.operation.dto.lecture.response.LectureCurrentRoundResponseDTO;
+import org.sopt.makers.operation.dto.lecture.response.LectureDetailResponseDTO;
+import org.sopt.makers.operation.dto.lecture.response.LectureResponseDTO;
+import org.sopt.makers.operation.dto.lecture.response.LectureResponseType;
+import org.sopt.makers.operation.dto.lecture.response.LecturesResponseDTO;
+import org.sopt.makers.operation.dto.lecture.response.TodayLectureResponseDTO;
 import org.sopt.makers.operation.entity.*;
 import org.sopt.makers.operation.entity.attendance.Attendance;
 import org.sopt.makers.operation.entity.attendance.SubAttendance;

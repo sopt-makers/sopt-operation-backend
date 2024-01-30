@@ -6,9 +6,9 @@ import static org.sopt.makers.operation.entity.Part.*;
 import static org.sopt.makers.operation.entity.alarm.Status.*;
 
 import org.sopt.makers.operation.config.ValueConfig;
-import org.sopt.makers.operation.dto.alarm.AlarmSendRequestDTO;
-import org.sopt.makers.operation.dto.alarm.AlarmSenderDTO;
-import org.sopt.makers.operation.dto.member.MemberSearchCondition;
+import org.sopt.makers.operation.dto.alarm.request.AlarmSendRequestDTO;
+import org.sopt.makers.operation.dto.alarm.request.AlarmSenderDTO;
+import org.sopt.makers.operation.dto.member.response.MemberSearchCondition;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.alarm.Status;
 import org.sopt.makers.operation.exception.AlarmException;
@@ -25,9 +25,9 @@ import java.util.*;
 
 import lombok.*;
 
-import org.sopt.makers.operation.dto.alarm.AlarmRequestDTO;
-import org.sopt.makers.operation.dto.alarm.AlarmResponseDTO;
-import org.sopt.makers.operation.dto.alarm.AlarmsResponseDTO;
+import org.sopt.makers.operation.dto.alarm.request.AlarmRequestDTO;
+import org.sopt.makers.operation.dto.alarm.response.AlarmResponseDTO;
+import org.sopt.makers.operation.dto.alarm.response.AlarmsResponseDTO;
 import org.sopt.makers.operation.entity.alarm.Alarm;
 import org.springframework.data.domain.Pageable;
 

@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.sopt.makers.operation.common.ApiResponse;
-import org.sopt.makers.operation.dto.attendance.AttendRequestDTO;
+import org.sopt.makers.operation.dto.attendance.request.AttendRequestDTO;
 import org.sopt.makers.operation.service.AttendanceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -6,8 +6,8 @@ import static org.sopt.makers.operation.common.ResponseMessage.*;
 import java.net.URI;
 
 import org.sopt.makers.operation.common.ApiResponse;
-import org.sopt.makers.operation.dto.lecture.AttendanceRequestDTO;
-import org.sopt.makers.operation.dto.lecture.LectureRequestDTO;
+import org.sopt.makers.operation.dto.lecture.request.AttendanceRequestDTO;
+import org.sopt.makers.operation.dto.lecture.request.LectureRequestDTO;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.service.LectureService;
 import org.springframework.http.ResponseEntity;

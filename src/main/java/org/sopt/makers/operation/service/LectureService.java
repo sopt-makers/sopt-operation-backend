@@ -1,13 +1,14 @@
 package org.sopt.makers.operation.service;
 
-import org.sopt.makers.operation.dto.lecture.TodayLectureResponseDTO;
-import org.sopt.makers.operation.dto.lecture.AttendanceRequestDTO;
-import org.sopt.makers.operation.dto.lecture.AttendanceResponseDTO;
-import org.sopt.makers.operation.dto.lecture.LectureRequestDTO;
-import org.sopt.makers.operation.dto.lecture.LectureResponseDTO;
-import org.sopt.makers.operation.dto.lecture.LecturesResponseDTO;
+import org.sopt.makers.operation.dto.lecture.response.LectureCurrentRoundResponseDTO;
+import org.sopt.makers.operation.dto.lecture.response.LectureDetailResponseDTO;
+import org.sopt.makers.operation.dto.lecture.response.TodayLectureResponseDTO;
+import org.sopt.makers.operation.dto.lecture.request.AttendanceRequestDTO;
+import org.sopt.makers.operation.dto.lecture.response.AttendanceResponseDTO;
+import org.sopt.makers.operation.dto.lecture.request.LectureRequestDTO;
+import org.sopt.makers.operation.dto.lecture.response.LectureResponseDTO;
+import org.sopt.makers.operation.dto.lecture.response.LecturesResponseDTO;
 import org.sopt.makers.operation.entity.Part;
-import org.sopt.makers.operation.dto.lecture.*;
 
 public interface LectureService {
 

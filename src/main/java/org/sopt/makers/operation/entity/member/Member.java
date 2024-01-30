@@ -14,7 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
-import org.sopt.makers.operation.dto.member.MemberRequestDTO;
+import org.sopt.makers.operation.dto.member.request.MemberRequestDTO;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.attendance.Attendance;
 

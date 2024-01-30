@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 
 import org.sopt.makers.operation.common.ApiResponse;
-import org.sopt.makers.operation.dto.alarm.AlarmSendRequestDTO;
+import org.sopt.makers.operation.dto.alarm.request.AlarmSendRequestDTO;
 import org.sopt.makers.operation.service.AlarmService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +18,7 @@ import static org.sopt.makers.operation.common.ResponseMessage.*;
 
 import java.net.URI;
 
-import org.sopt.makers.operation.dto.alarm.AlarmRequestDTO;
+import org.sopt.makers.operation.dto.alarm.request.AlarmRequestDTO;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.alarm.Status;
 import org.springframework.data.domain.Pageable;

@@ -4,7 +4,7 @@ import static org.sopt.makers.operation.common.ExceptionMessage.*;
 import static org.sopt.makers.operation.entity.Part.*;
 import static org.springframework.http.HttpMethod.*;
 
-import org.sopt.makers.operation.dto.alarm.AlarmInactiveListResponseDTO;
+import org.sopt.makers.operation.dto.alarm.response.AlarmInactiveListResponseDTO;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.exception.AlarmException;
 import org.springframework.beans.factory.annotation.Value;

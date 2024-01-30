@@ -3,7 +3,7 @@ package org.sopt.makers.operation.controller.web;
 import static org.sopt.makers.operation.common.ResponseMessage.*;
 
 import org.sopt.makers.operation.common.ApiResponse;
-import org.sopt.makers.operation.dto.attendance.SubAttendanceUpdateRequestDTO;
+import org.sopt.makers.operation.dto.attendance.request.SubAttendanceUpdateRequestDTO;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.service.AttendanceService;
 import org.springframework.data.domain.Pageable;

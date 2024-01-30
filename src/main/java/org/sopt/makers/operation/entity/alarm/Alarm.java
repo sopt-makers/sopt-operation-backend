@@ -16,7 +16,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import org.sopt.makers.operation.converter.StringListConverter;
-import org.sopt.makers.operation.dto.alarm.AlarmRequestDTO;
+import org.sopt.makers.operation.dto.alarm.request.AlarmRequestDTO;
 import org.sopt.makers.operation.entity.BaseEntity;
 import org.sopt.makers.operation.entity.Part;
 

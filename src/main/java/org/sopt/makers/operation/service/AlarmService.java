@@ -1,13 +1,10 @@
 package org.sopt.makers.operation.service;
 
-import java.util.List;
+import org.sopt.makers.operation.dto.alarm.request.AlarmSendRequestDTO;
 
-import org.sopt.makers.operation.dto.alarm.AlarmSendRequestDTO;
-import org.sopt.makers.operation.entity.alarm.Attribute;
-
-import org.sopt.makers.operation.dto.alarm.AlarmRequestDTO;
-import org.sopt.makers.operation.dto.alarm.AlarmResponseDTO;
-import org.sopt.makers.operation.dto.alarm.AlarmsResponseDTO;
+import org.sopt.makers.operation.dto.alarm.request.AlarmRequestDTO;
+import org.sopt.makers.operation.dto.alarm.response.AlarmResponseDTO;
+import org.sopt.makers.operation.dto.alarm.response.AlarmsResponseDTO;
 import org.sopt.makers.operation.entity.Part;
 import org.sopt.makers.operation.entity.alarm.Status;
 import org.springframework.data.domain.Pageable;
