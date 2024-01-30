@@ -13,7 +13,7 @@ import org.sopt.makers.operation.dto.lecture.response.LectureDetailResponseDTO;
 import org.sopt.makers.operation.dto.lecture.request.LectureRequestDTO;
 import org.sopt.makers.operation.dto.lecture.response.LectureResponseDTO;
 import org.sopt.makers.operation.dto.lecture.response.LecturesResponseDTO;
-import org.sopt.makers.operation.service.LectureService;
+import org.sopt.makers.operation.service.web.lecture.LectureService;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;

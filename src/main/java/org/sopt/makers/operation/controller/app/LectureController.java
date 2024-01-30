@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.sopt.makers.operation.common.ApiResponse;
-import org.sopt.makers.operation.service.LectureService;
+import org.sopt.makers.operation.service.app.lecture.LectureService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -16,7 +16,7 @@ import java.security.Principal;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/app/lectures")
-public class AppLectureController {
+public class LectureController {
 
     private final LectureService lectureService;
 

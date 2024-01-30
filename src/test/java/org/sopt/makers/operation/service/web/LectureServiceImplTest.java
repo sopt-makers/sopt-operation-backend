@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.service;
+package org.sopt.makers.operation.service.web;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
@@ -18,6 +18,7 @@ import org.sopt.makers.operation.entity.lecture.Lecture;
 import org.sopt.makers.operation.external.alarm.AlarmSender;
 import org.sopt.makers.operation.repository.lecture.LectureRepository;
 import org.sopt.makers.operation.repository.member.MemberRepository;
+import org.sopt.makers.operation.service.web.lecture.LectureServiceImpl;
 
 import static org.mockito.Mockito.*;
 

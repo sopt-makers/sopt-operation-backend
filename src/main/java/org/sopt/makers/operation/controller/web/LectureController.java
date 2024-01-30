@@ -9,7 +9,7 @@ import org.sopt.makers.operation.common.ApiResponse;
 import org.sopt.makers.operation.dto.lecture.request.AttendanceRequestDTO;
 import org.sopt.makers.operation.dto.lecture.request.LectureRequestDTO;
 import org.sopt.makers.operation.entity.Part;
-import org.sopt.makers.operation.service.LectureService;
+import org.sopt.makers.operation.service.web.lecture.LectureService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
