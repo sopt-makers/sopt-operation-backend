@@ -10,7 +10,7 @@ import lombok.val;
 import org.sopt.makers.operation.common.ApiResponse;
 import org.sopt.makers.operation.dto.admin.request.LoginRequestDTO;
 import org.sopt.makers.operation.dto.admin.request.SignUpRequestDTO;
-import org.sopt.makers.operation.service.AdminServiceImpl;
+import org.sopt.makers.operation.service.web.admin.AdminServiceImpl;
 import org.sopt.makers.operation.util.Cookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

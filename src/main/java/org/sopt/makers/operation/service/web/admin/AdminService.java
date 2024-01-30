@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.service;
+package org.sopt.makers.operation.service.web.admin;
 
 import org.sopt.makers.operation.dto.admin.request.LoginRequestDTO;
 import org.sopt.makers.operation.dto.admin.request.SignUpRequestDTO;
