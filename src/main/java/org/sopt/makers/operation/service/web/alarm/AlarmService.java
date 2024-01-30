@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.service;
+package org.sopt.makers.operation.service.web.alarm;
 
 import org.sopt.makers.operation.dto.alarm.request.AlarmSendRequestDTO;
 

@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.sopt.makers.operation.common.ApiResponse;
 import org.sopt.makers.operation.dto.alarm.request.AlarmSendRequestDTO;
-import org.sopt.makers.operation.service.AlarmService;
+import org.sopt.makers.operation.service.web.alarm.AlarmService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

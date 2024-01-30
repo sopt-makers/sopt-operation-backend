@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.service;
+package org.sopt.makers.operation.service.web.alarm;
 
 import static java.util.Objects.*;
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
