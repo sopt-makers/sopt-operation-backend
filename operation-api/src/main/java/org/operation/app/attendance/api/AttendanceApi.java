@@ -11,7 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
+import lombok.NonNull;
 
 @Tag(name = "앱 출석 관련 API")
 public interface AttendanceApi {
@@ -34,6 +34,6 @@ public interface AttendanceApi {
 	)
 	ResponseEntity<BaseResponse<?>> attend(
 			@RequestBody AttendanceRequest request,
-			@Parameter(hidden = true) Principal principal
+			@Parameter(hidden = true) @NonNull Principal principal
 	);
 }

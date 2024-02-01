@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
@@ -26,7 +27,7 @@ public class AttendanceApiController implements AttendanceApi {
 
 	@Override
 	@PostMapping("/attend")
-	public ResponseEntity<BaseResponse<?>> attend(@RequestBody AttendanceRequest request, Principal principal) {
+	public ResponseEntity<BaseResponse<?>> attend(@RequestBody AttendanceRequest request, @NonNull Principal principal) {
 		val memberId = utils.getMemberId(principal);
 		val response = memberId + ""; // attendanceService.attend(memberId, requestDTO);
 		return ApiResponseUtil.ok(SUCCESS_GET_ATTENDANCE.getContent(), response);
