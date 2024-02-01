@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.controller.app;
+package org.operation.app;
 
 import static org.sopt.makers.operation.common.ResponseMessage.*;
 
@@ -25,13 +25,13 @@ public class LectureController {
     public ResponseEntity<ResponseDTO> getLecture(@ApiIgnore Principal principal) {
         val memberPlaygroundId = Long.parseLong(principal.getName());
         val response = lectureService.getTodayLecture(memberPlaygroundId);
-        return ResponseEntity.ok(ResponseDTO.success(SUCCESS_SINGLE_GET_LECTURE.getMessage(), response));
+        return ResponseEntity.ok(ResponseDTO.success(ResponseMessage.SUCCESS_SINGLE_GET_LECTURE.getMessage(), response));
     }
 
     @ApiOperation(value = "출석 차수 조회")
     @GetMapping("/round/{lectureId}")
     public ResponseEntity<ResponseDTO> getRound(@PathVariable("lectureId") Long lectureId) {
         val response = lectureService.getCurrentLectureRound(lectureId);
-        return ResponseEntity.ok(ResponseDTO.success(SUCCESS_GET_LECTURE_ROUND.getMessage(), response));
+        return ResponseEntity.ok(ResponseDTO.success(ResponseMessage.SUCCESS_GET_LECTURE_ROUND.getMessage(), response));
     }
 }

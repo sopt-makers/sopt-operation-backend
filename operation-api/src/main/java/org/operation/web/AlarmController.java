@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.controller.web;
+package org.operation.web;
 
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +40,7 @@ public class AlarmController {
 	@PostMapping("/send")
 	public ResponseEntity<ResponseDTO> sendAlarm(@RequestBody AlarmSendRequestDTO requestDTO) {
 		alarmService.sendByAdmin(requestDTO);
-		return ResponseEntity.ok(ResponseDTO.success(SUCCESS_SEND_ALARM.getMessage()));
+		return ResponseEntity.ok(ResponseDTO.success(ResponseMessage.SUCCESS_SEND_ALARM.getMessage()));
 	}
 
 	@ApiOperation("알림 생성")
@@ -49,7 +49,7 @@ public class AlarmController {
 		val alarmId = alarmService.createAlarm(requestDTO);
 		return ResponseEntity
 			.created(getURI(alarmId))
-			.body(success(SUCCESS_CREATE_ALARM.getMessage(), alarmId));
+			.body(ResponseDTO.success(ResponseMessage.SUCCESS_CREATE_ALARM.getMessage(), alarmId));
 	}
 
 	@ApiOperation("알림 리스트 조회")
@@ -61,21 +61,21 @@ public class AlarmController {
 		Pageable pageable
 	) {
 		val response = alarmService.getAlarms(generation, part, status, pageable);
-		return ResponseEntity.ok(success(SUCCESS_GET_ALARMS.getMessage(), response));
+		return ResponseEntity.ok(ResponseDTO.success(ResponseMessage.SUCCESS_GET_ALARMS.getMessage(), response));
 	}
 
 	@ApiOperation("알림 상세 조회")
 	@GetMapping("/{alarmId}")
 	public ResponseEntity<ResponseDTO> getAlarm(@PathVariable Long alarmId) {
 		val response = alarmService.getAlarm(alarmId);
-		return ResponseEntity.ok(success(SUCCESS_GET_ALARM.getMessage(), response));
+		return ResponseEntity.ok(ResponseDTO.success(ResponseMessage.SUCCESS_GET_ALARM.getMessage(), response));
 	}
 
 	@ApiOperation("알림 삭제")
 	@DeleteMapping("/{alarmId}")
 	public ResponseEntity<ResponseDTO> deleteAlarm(@PathVariable Long alarmId) {
 		alarmService.deleteAlarm(alarmId);
-		return ResponseEntity.ok(success(SUCCESS_DELETE_ALARM.getMessage()));
+		return ResponseEntity.ok(ResponseDTO.success(ResponseMessage.SUCCESS_DELETE_ALARM.getMessage()));
 	}
 
 	private URI getURI(Long alarmId) {

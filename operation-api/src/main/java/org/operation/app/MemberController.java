@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.controller.app;
+package org.operation.app;
 
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -26,14 +26,14 @@ public class MemberController {
     @GetMapping("/attendances")
     public ResponseEntity<ResponseDTO> getMemberTotalAttendance(@ApiIgnore Principal principal) {
         val response = memberService.getMemberTotalAttendance(getMemberId(principal));
-        return ResponseEntity.ok(ResponseDTO.success(SUCCESS_TOTAL_ATTENDANCE.getMessage(), response));
+        return ResponseEntity.ok(ResponseDTO.success(ResponseMessage.SUCCESS_TOTAL_ATTENDANCE.getMessage(), response));
     }
 
     @ApiOperation(value = "출석 점수 조회")
     @GetMapping("/score")
     public ResponseEntity<ResponseDTO> getScore(@ApiIgnore Principal principal) {
         val response = memberService.getMemberScore(getMemberId(principal));
-        return ResponseEntity.ok(ResponseDTO.success(SUCCESS_GET_ATTENDANCE_SCORE.getMessage(), response));
+        return ResponseEntity.ok(ResponseDTO.success(ResponseMessage.SUCCESS_GET_ATTENDANCE_SCORE.getMessage(), response));
     }
 
     private Long getMemberId(Principal principal) {

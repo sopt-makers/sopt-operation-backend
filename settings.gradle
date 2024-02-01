@@ -1,1 +1,7 @@
 rootProject.name = 'operation'
+include 'operation-api'
+include 'operation-auth'
+include 'operation-domain'
+include 'operation-external'
+include 'operation-storage'
+

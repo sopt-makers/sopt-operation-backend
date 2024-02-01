@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.controller.web;
+package org.operation.web;
 
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +24,6 @@ public class MemberController {
     public ResponseEntity<ResponseDTO> getMemberList(
         @RequestParam(required = false) Part part, @RequestParam(required = false) Integer generation, Pageable pageable) {
         val memberList = memberService.getMemberList(part, generation, pageable);
-        return ResponseEntity.ok(ResponseDTO.success(SUCCESS_GET_MEMBERS.getMessage(), memberList));
+        return ResponseEntity.ok(ResponseDTO.success(ResponseMessage.SUCCESS_GET_MEMBERS.getMessage(), memberList));
     }
 }

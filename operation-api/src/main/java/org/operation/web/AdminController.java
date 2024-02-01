@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.controller.web;
+package org.operation.web;
 
 import static org.sopt.makers.operation.common.ResponseMessage.*;
 import static org.springframework.http.HttpStatus.*;
@@ -26,7 +26,7 @@ public class AdminController {
     @PostMapping("/signup")
     public ResponseEntity<ResponseDTO> signup(@RequestBody SignUpRequestDTO signUpRequestDTO) {
         val response = authService.signUp(signUpRequestDTO);
-        return ResponseEntity.ok(ResponseDTO.success(SUCCESS_SIGN_UP.getMessage(), response));
+        return ResponseEntity.ok(ResponseDTO.success(ResponseMessage.SUCCESS_SIGN_UP.getMessage(), response));
     }
 
     @ApiOperation(value = "로그인")
@@ -37,7 +37,7 @@ public class AdminController {
 
         return ResponseEntity.status(OK)
             .headers(headers)
-            .body(ResponseDTO.success(SUCCESS_LOGIN_UP.getMessage(), response.loginResponseVO()));
+            .body(ResponseDTO.success(ResponseMessage.SUCCESS_LOGIN_UP.getMessage(), response.loginResponseVO()));
     }
 
     @ApiOperation(value = "토큰 재발급")
@@ -47,6 +47,6 @@ public class AdminController {
         val headers = cookie.setRefreshToken(response.refreshToken());
 
         return ResponseEntity.status(OK).headers(headers)
-            .body(ResponseDTO.success(SUCCESS_GET_REFRESH_TOKEN.getMessage(), response.accessToken()));
+            .body(ResponseDTO.success(ResponseMessage.SUCCESS_GET_REFRESH_TOKEN.getMessage(), response.accessToken()));
     }
 }

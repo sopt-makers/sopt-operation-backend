@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.controller.web;
+package org.operation.web;
 
 import static org.sopt.makers.operation.dto.ResponseDTO.*;
 import static org.sopt.makers.operation.common.ResponseMessage.*;
@@ -40,21 +40,21 @@ public class LectureController {
 		val lectureId = lectureService.createLecture(requestDTO);
 		return ResponseEntity
 			.created(getURI(lectureId))
-			.body(success(SUCCESS_CREATE_LECTURE.getMessage(), lectureId));
+			.body(ResponseDTO.success(ResponseMessage.SUCCESS_CREATE_LECTURE.getMessage(), lectureId));
 	}
 
 	@ApiOperation(value = "세션 리스트 조회")
 	@GetMapping
 	public ResponseEntity<ResponseDTO> getLectures(@RequestParam int generation, @RequestParam(required = false) Part part) {
 		val response = lectureService.getLectures(generation, part);
-		return ResponseEntity.ok(success(SUCCESS_GET_LECTURES.getMessage(), response));
+		return ResponseEntity.ok(ResponseDTO.success(ResponseMessage.SUCCESS_GET_LECTURES.getMessage(), response));
 	}
 
 	@ApiOperation(value = "세션 단일 조회")
 	@GetMapping("/{lectureId}")
 	public ResponseEntity<ResponseDTO> getLecture(@PathVariable Long lectureId) {
 		val response = lectureService.getLecture(lectureId);
-		return ResponseEntity.ok(success(SUCCESS_GET_LECTURE.getMessage(), response));
+		return ResponseEntity.ok(ResponseDTO.success(ResponseMessage.SUCCESS_GET_LECTURE.getMessage(), response));
 	}
 
 	@ApiOperation(value = "출석 시작")
@@ -63,7 +63,7 @@ public class LectureController {
 		val response = lectureService.startAttendance(requestDTO);
 		return ResponseEntity
 			.created(getURI(requestDTO.lectureId()))
-			.body(success(SUCCESS_START_ATTENDANCE.getMessage(), response));
+			.body(ResponseDTO.success(ResponseMessage.SUCCESS_START_ATTENDANCE.getMessage(), response));
 	}
 
 	private URI getURI(Long lectureId) {
@@ -78,20 +78,20 @@ public class LectureController {
 	@PatchMapping("/{lectureId}")
 	public ResponseEntity<ResponseDTO> endLecture(@PathVariable Long lectureId) {
 		lectureService.endLecture(lectureId);
-		return ResponseEntity.ok(success(SUCCESS_UPDATE_MEMBER_SCORE.getMessage()));
+		return ResponseEntity.ok(ResponseDTO.success(ResponseMessage.SUCCESS_UPDATE_MEMBER_SCORE.getMessage()));
 	}
 
 	@ApiOperation(value = "세션 삭제")
 	@DeleteMapping("/{lectureId}")
 	public ResponseEntity<ResponseDTO> deleteLecture(@PathVariable Long lectureId) {
 		lectureService.deleteLecture(lectureId);
-		return ResponseEntity.ok(success(SUCCESS_DELETE_LECTURE.getMessage()));
+		return ResponseEntity.ok(ResponseDTO.success(ResponseMessage.SUCCESS_DELETE_LECTURE.getMessage()));
 	}
 
 	@ApiOperation(value = "세션 팝업용 상세 조회")
 	@GetMapping("/detail/{lectureId}")
 	public ResponseEntity<ResponseDTO> getLectureDetail(@PathVariable Long lectureId) {
 		val response = lectureService.getLectureDetail(lectureId);
-		return ResponseEntity.ok(success(SUCCESS_GET_LECTURE.getMessage(), response));
+		return ResponseEntity.ok(ResponseDTO.success(ResponseMessage.SUCCESS_GET_LECTURE.getMessage(), response));
 	}
 }

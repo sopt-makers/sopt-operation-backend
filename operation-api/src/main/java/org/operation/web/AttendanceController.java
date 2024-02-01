@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.controller.web;
+package org.operation.web;
 
 import static org.sopt.makers.operation.common.ResponseMessage.*;
 
@@ -30,21 +30,21 @@ public class AttendanceController {
 	@PatchMapping
 	public ResponseEntity<ResponseDTO> updateSubAttendance(@RequestBody SubAttendanceUpdateRequestDTO requestDTO) {
 		val response = attendanceService.updateSubAttendance(requestDTO);
-		return ResponseEntity.ok(ResponseDTO.success(SUCCESS_UPDATE_ATTENDANCE_STATUS.getMessage(), response));
+		return ResponseEntity.ok(ResponseDTO.success(ResponseMessage.SUCCESS_UPDATE_ATTENDANCE_STATUS.getMessage(), response));
 	}
 
 	@ApiOperation(value = "회원별 출석 정보 조회")
 	@GetMapping("/{memberId}")
 	public ResponseEntity<ResponseDTO> findAttendancesByMember(@PathVariable Long memberId) {
 		val response = attendanceService.findAttendancesByMember(memberId);
-		return ResponseEntity.ok(ResponseDTO.success(SUCCESS_GET_MEMBER_ATTENDANCE.getMessage(), response));
+		return ResponseEntity.ok(ResponseDTO.success(ResponseMessage.SUCCESS_GET_MEMBER_ATTENDANCE.getMessage(), response));
 	}
 
 	@ApiOperation(value = "출석 점수 갱신")
 	@PatchMapping("/member/{memberId}")
 	public ResponseEntity<ResponseDTO> updateMemberScore(@PathVariable Long memberId) {
 		val response = attendanceService.updateMemberScore(memberId);
-		return ResponseEntity.ok(ResponseDTO.success(SUCCESS_UPDATE_MEMBER_SCORE.getMessage(), response));
+		return ResponseEntity.ok(ResponseDTO.success(ResponseMessage.SUCCESS_UPDATE_MEMBER_SCORE.getMessage(), response));
 	}
 
 	@ApiOperation(value = "세션별 출석 정보 조회")
@@ -52,6 +52,6 @@ public class AttendanceController {
 	public ResponseEntity<ResponseDTO> findAttendancesByLecture(
 		@PathVariable Long lectureId, @RequestParam(required = false) Part part, Pageable pageable) {
 		val response = attendanceService.findAttendancesByLecture(lectureId, part, pageable);
-		return ResponseEntity.ok(ResponseDTO.success(SUCCESS_GET_ATTENDANCES.getMessage(), response));
+		return ResponseEntity.ok(ResponseDTO.success(ResponseMessage.SUCCESS_GET_ATTENDANCES.getMessage(), response));
 	}
 }

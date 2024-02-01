@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.controller.app;
+package org.operation.app;
 
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +27,6 @@ public class ScheduleController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end
     ) {
         val response = scheduleService.getSchedules(start, end);
-        return ResponseEntity.ok(success(SUCCESS_GET_SCHEDULES.getMessage(), response));
+        return ResponseEntity.ok(ResponseDTO.success(ResponseMessage.SUCCESS_GET_SCHEDULES.getMessage(), response));
     }
 }
