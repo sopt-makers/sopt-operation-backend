@@ -1,8 +1,8 @@
 package org.sopt.makers.operation.dto.schedule.response;
 
 import lombok.*;
-import org.sopt.makers.operation.entity.lecture.Attribute;
-import org.sopt.makers.operation.entity.schedule.Schedule;
+import org.operation.lecture.Attribute;
+import org.operation.schedule.Schedule;
 
 import java.time.LocalDate;
 import java.time.format.TextStyle;

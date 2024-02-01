@@ -1,6 +1,6 @@
 package org.sopt.makers.operation.repository.member;
 
-import org.sopt.makers.operation.entity.member.Member;
+import org.operation.member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

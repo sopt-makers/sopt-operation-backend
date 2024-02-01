@@ -3,8 +3,8 @@ package org.sopt.makers.operation.dto.lecture.response;
 import java.util.List;
 
 import org.sopt.makers.operation.entity.Part;
-import org.sopt.makers.operation.entity.lecture.Attribute;
-import org.sopt.makers.operation.entity.lecture.Lecture;
+import org.operation.lecture.Attribute;
+import org.operation.lecture.Lecture;
 
 import lombok.*;
 

@@ -1,7 +1,7 @@
 package org.sopt.makers.operation.service.web.lecture;
 
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
-import static org.sopt.makers.operation.entity.alarm.Attribute.*;
+import static org.operation.alarm.Attribute.*;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -15,11 +15,11 @@ import org.sopt.makers.operation.dto.lecture.response.LectureDetailResponseDTO;
 import org.sopt.makers.operation.dto.lecture.response.LectureResponseDTO;
 import org.sopt.makers.operation.dto.lecture.response.LecturesResponseDTO;
 import org.sopt.makers.operation.entity.Part;
-import org.sopt.makers.operation.entity.attendance.Attendance;
-import org.sopt.makers.operation.entity.attendance.SubAttendance;
-import org.sopt.makers.operation.entity.lecture.Lecture;
-import org.sopt.makers.operation.entity.lecture.SubLecture;
-import org.sopt.makers.operation.entity.member.Member;
+import org.operation.attendance.Attendance;
+import org.operation.attendance.SubAttendance;
+import org.operation.lecture.Lecture;
+import org.operation.lecture.SubLecture;
+import org.operation.member.Member;
 import org.sopt.makers.operation.exception.LectureException;
 import org.sopt.makers.operation.exception.SubLectureException;
 import org.sopt.makers.operation.external.alarm.AlarmSender;

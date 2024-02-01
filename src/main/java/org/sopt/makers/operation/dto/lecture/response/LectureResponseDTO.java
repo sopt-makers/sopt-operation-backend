@@ -6,10 +6,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.sopt.makers.operation.entity.Part;
-import org.sopt.makers.operation.entity.lecture.SubLecture;
-import org.sopt.makers.operation.entity.lecture.Attribute;
-import org.sopt.makers.operation.entity.lecture.Lecture;
-import org.sopt.makers.operation.entity.lecture.LectureStatus;
+import org.operation.lecture.SubLecture;
+import org.operation.lecture.Attribute;
+import org.operation.lecture.Lecture;
+import org.operation.lecture.LectureStatus;
 
 import lombok.*;
 

@@ -1,8 +1,8 @@
 package org.sopt.makers.operation.dto.attendance.response;
 
-import org.sopt.makers.operation.entity.attendance.Attendance;
-import org.sopt.makers.operation.entity.attendance.AttendanceStatus;
-import org.sopt.makers.operation.entity.lecture.Attribute;
+import org.operation.attendance.Attendance;
+import org.operation.attendance.AttendanceStatus;
+import org.operation.lecture.Attribute;
 
 import java.time.format.DateTimeFormatter;
 

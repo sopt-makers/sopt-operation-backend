@@ -2,9 +2,9 @@ package org.sopt.makers.operation.dto.attendance.response;
 
 import java.util.List;
 
-import org.sopt.makers.operation.entity.attendance.Attendance;
-import org.sopt.makers.operation.entity.member.Member;
-import org.sopt.makers.operation.entity.attendance.SubAttendance;
+import org.operation.attendance.Attendance;
+import org.operation.member.Member;
+import org.operation.attendance.SubAttendance;
 
 public record AttendanceMemberResponseDTO(
 	String name,

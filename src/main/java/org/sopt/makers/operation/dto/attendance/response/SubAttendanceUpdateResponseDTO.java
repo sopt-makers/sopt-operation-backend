@@ -1,7 +1,7 @@
 package org.sopt.makers.operation.dto.attendance.response;
 
-import org.sopt.makers.operation.entity.attendance.AttendanceStatus;
-import org.sopt.makers.operation.entity.attendance.SubAttendance;
+import org.operation.attendance.AttendanceStatus;
+import org.operation.attendance.SubAttendance;
 
 public record SubAttendanceUpdateResponseDTO(
 	Long subAttendanceId,

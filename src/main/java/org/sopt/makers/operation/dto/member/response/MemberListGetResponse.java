@@ -1,7 +1,7 @@
 package org.sopt.makers.operation.dto.member.response;
 
 import org.sopt.makers.operation.dto.attendance.response.AttendanceTotalCountVO;
-import org.sopt.makers.operation.entity.member.Member;
+import org.operation.member.Member;
 import org.sopt.makers.operation.entity.Part;
 
 public record MemberListGetResponse(

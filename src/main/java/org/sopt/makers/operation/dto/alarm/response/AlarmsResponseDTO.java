@@ -4,7 +4,7 @@ import static java.util.Objects.*;
 
 import java.util.List;
 
-import org.sopt.makers.operation.entity.alarm.Alarm;
+import org.operation.alarm.Alarm;
 
 import lombok.Builder;
 

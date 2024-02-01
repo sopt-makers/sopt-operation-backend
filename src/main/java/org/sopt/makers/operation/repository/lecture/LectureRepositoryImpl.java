@@ -4,7 +4,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.sopt.makers.operation.entity.Part;
-import org.sopt.makers.operation.entity.lecture.Lecture;
+import org.operation.lecture.Lecture;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.Objects.*;
-import static org.sopt.makers.operation.entity.attendance.QAttendance.*;
-import static org.sopt.makers.operation.entity.lecture.LectureStatus.*;
-import static org.sopt.makers.operation.entity.lecture.QLecture.*;
-import static org.sopt.makers.operation.entity.member.QMember.*;
+import static org.operation.attendance.QAttendance.*;
+import static org.operation.lecture.LectureStatus.*;
+import static org.operation.lecture.QLecture.*;
+import static org.operation.member.QMember.*;
 
 @Repository
 @RequiredArgsConstructor

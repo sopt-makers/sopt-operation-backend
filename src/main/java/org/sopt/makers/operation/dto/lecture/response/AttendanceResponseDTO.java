@@ -1,7 +1,7 @@
 package org.sopt.makers.operation.dto.lecture.response;
 
-import org.sopt.makers.operation.entity.lecture.SubLecture;
-import org.sopt.makers.operation.entity.lecture.Lecture;
+import org.operation.lecture.SubLecture;
+import org.operation.lecture.Lecture;
 
 import lombok.Builder;
 

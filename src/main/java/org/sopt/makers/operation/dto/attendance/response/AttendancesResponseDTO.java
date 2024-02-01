@@ -2,7 +2,7 @@ package org.sopt.makers.operation.dto.attendance.response;
 
 import java.util.List;
 
-import org.sopt.makers.operation.entity.attendance.Attendance;
+import org.operation.attendance.Attendance;
 
 public record AttendancesResponseDTO(
 	List<MemberResponseDTO> attendances,

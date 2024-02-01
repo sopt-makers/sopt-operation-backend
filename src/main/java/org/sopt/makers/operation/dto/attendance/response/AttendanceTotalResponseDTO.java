@@ -1,6 +1,6 @@
 package org.sopt.makers.operation.dto.attendance.response;
 
-import org.sopt.makers.operation.entity.member.Member;
+import org.operation.member.Member;
 import org.sopt.makers.operation.entity.Part;
 
 import java.util.List;

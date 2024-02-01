@@ -1,11 +1,11 @@
 package org.sopt.makers.operation.dto.lecture.response;
 
-import static org.sopt.makers.operation.entity.attendance.AttendanceStatus.*;
+import static org.operation.attendance.AttendanceStatus.*;
 
 import java.time.LocalDateTime;
 
-import org.sopt.makers.operation.entity.attendance.AttendanceStatus;
-import org.sopt.makers.operation.entity.lecture.Lecture;
+import org.operation.attendance.AttendanceStatus;
+import org.operation.lecture.Lecture;
 
 import lombok.Builder;
 

@@ -1,7 +1,7 @@
 package org.sopt.makers.operation.repository.lecture;
 
-import org.sopt.makers.operation.entity.lecture.SubLecture;
-import org.sopt.makers.operation.entity.lecture.Lecture;
+import org.operation.lecture.SubLecture;
+import org.operation.lecture.Lecture;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

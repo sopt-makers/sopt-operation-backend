@@ -1,6 +1,6 @@
 package org.sopt.makers.operation.repository.schedule;
 
-import org.sopt.makers.operation.entity.schedule.Schedule;
+import org.operation.schedule.Schedule;
 
 import java.time.LocalDateTime;
 import java.util.List;

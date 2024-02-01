@@ -2,7 +2,7 @@ package org.operation.app.attendance.api;
 
 import java.security.Principal;
 
-import org.operation.app.attendance.dto.AttendanceRequest;
+import org.operation.app.attendance.dto.request.AttendanceRequest;
 import org.operation.common.dto.BaseResponse;
 import org.springframework.http.ResponseEntity;
 

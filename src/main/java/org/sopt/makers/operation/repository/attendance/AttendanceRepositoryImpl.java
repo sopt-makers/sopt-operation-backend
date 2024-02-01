@@ -2,11 +2,11 @@ package org.sopt.makers.operation.repository.attendance;
 
 import static com.querydsl.core.types.dsl.Expressions.*;
 import static java.util.Objects.*;
-import static org.sopt.makers.operation.entity.attendance.QAttendance.*;
-import static org.sopt.makers.operation.entity.attendance.QSubAttendance.*;
-import static org.sopt.makers.operation.entity.lecture.QLecture.*;
-import static org.sopt.makers.operation.entity.lecture.QSubLecture.*;
-import static org.sopt.makers.operation.entity.member.QMember.*;
+import static org.operation.attendance.QAttendance.*;
+import static org.operation.attendance.QSubAttendance.*;
+import static org.operation.lecture.QLecture.*;
+import static org.operation.lecture.QSubLecture.*;
+import static org.operation.member.QMember.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,10 +16,10 @@ import java.util.List;
 import lombok.val;
 
 import org.sopt.makers.operation.config.ValueConfig;
-import org.sopt.makers.operation.entity.attendance.Attendance;
-import org.sopt.makers.operation.entity.member.Member;
+import org.operation.attendance.Attendance;
+import org.operation.member.Member;
 import org.sopt.makers.operation.entity.Part;
-import org.sopt.makers.operation.entity.lecture.LectureStatus;
+import org.operation.lecture.LectureStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 

@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 import org.sopt.makers.operation.config.ValueConfig;
 import org.sopt.makers.operation.dto.attendance.response.AttendResponseDTO;
-import org.sopt.makers.operation.entity.attendance.AttendanceStatus;
+import org.operation.attendance.AttendanceStatus;
 import org.sopt.makers.operation.exception.LectureException;
 import org.sopt.makers.operation.exception.MemberException;
 import org.sopt.makers.operation.exception.SubLectureException;

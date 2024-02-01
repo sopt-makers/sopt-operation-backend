@@ -5,13 +5,13 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
 
-import org.sopt.makers.operation.entity.schedule.Schedule;
+import org.operation.schedule.Schedule;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.sopt.makers.operation.entity.schedule.QSchedule.schedule;
+import static org.operation.schedule.QSchedule.schedule;
 
 @Repository
 @RequiredArgsConstructor

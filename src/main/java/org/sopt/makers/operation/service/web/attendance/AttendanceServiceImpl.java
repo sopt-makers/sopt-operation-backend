@@ -7,8 +7,8 @@ import org.sopt.makers.operation.dto.attendance.response.AttendanceMemberRespons
 import org.sopt.makers.operation.dto.attendance.response.AttendancesResponseDTO;
 import org.sopt.makers.operation.dto.attendance.response.SubAttendanceUpdateResponseDTO;
 import org.sopt.makers.operation.entity.Part;
-import org.sopt.makers.operation.entity.attendance.SubAttendance;
-import org.sopt.makers.operation.entity.member.Member;
+import org.operation.attendance.SubAttendance;
+import org.operation.member.Member;
 import org.sopt.makers.operation.exception.LectureException;
 import org.sopt.makers.operation.exception.MemberException;
 import org.sopt.makers.operation.repository.attendance.AttendanceRepository;

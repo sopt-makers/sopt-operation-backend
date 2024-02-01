@@ -2,8 +2,8 @@ package org.sopt.makers.operation.dto.alarm.request;
 
 import java.util.List;
 
-import org.sopt.makers.operation.entity.alarm.Alarm;
-import org.sopt.makers.operation.entity.alarm.Attribute;
+import org.operation.alarm.Alarm;
+import org.operation.alarm.Attribute;
 
 import lombok.Builder;
 

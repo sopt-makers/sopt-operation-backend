@@ -3,14 +3,14 @@ package org.sopt.makers.operation.service.web.alarm;
 import static java.util.Objects.*;
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
 import static org.sopt.makers.operation.entity.Part.*;
-import static org.sopt.makers.operation.entity.alarm.Status.*;
+import static org.operation.alarm.Status.*;
 
 import org.sopt.makers.operation.config.ValueConfig;
 import org.sopt.makers.operation.dto.alarm.request.AlarmSendRequestDTO;
 import org.sopt.makers.operation.dto.alarm.request.AlarmSenderDTO;
 import org.sopt.makers.operation.dto.member.response.MemberSearchCondition;
 import org.sopt.makers.operation.entity.Part;
-import org.sopt.makers.operation.entity.alarm.Status;
+import org.operation.alarm.Status;
 import org.sopt.makers.operation.exception.AlarmException;
 import org.sopt.makers.operation.external.alarm.AlarmSender;
 import org.sopt.makers.operation.external.playground.PlayGroundServer;
@@ -28,7 +28,7 @@ import lombok.*;
 import org.sopt.makers.operation.dto.alarm.request.AlarmRequestDTO;
 import org.sopt.makers.operation.dto.alarm.response.AlarmResponseDTO;
 import org.sopt.makers.operation.dto.alarm.response.AlarmsResponseDTO;
-import org.sopt.makers.operation.entity.alarm.Alarm;
+import org.operation.alarm.Alarm;
 import org.springframework.data.domain.Pageable;
 
 @Service

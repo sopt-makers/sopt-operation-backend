@@ -3,8 +3,8 @@ package org.sopt.makers.operation.dto.lecture.request;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 
-import org.sopt.makers.operation.entity.lecture.Attribute;
-import org.sopt.makers.operation.entity.lecture.Lecture;
+import org.operation.lecture.Attribute;
+import org.operation.lecture.Lecture;
 import org.sopt.makers.operation.entity.Part;
 
 import lombok.*;

@@ -2,8 +2,8 @@ package org.sopt.makers.operation.repository.attendance;
 
 import java.util.List;
 
-import org.sopt.makers.operation.entity.attendance.Attendance;
-import org.sopt.makers.operation.entity.member.Member;
+import org.operation.attendance.Attendance;
+import org.operation.member.Member;
 import org.sopt.makers.operation.entity.Part;
 import org.springframework.data.domain.Pageable;
 

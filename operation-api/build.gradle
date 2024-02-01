@@ -7,8 +7,7 @@ tasks.named('jar') {
 }
 
 dependencies {
-    implementation project(path: ':operation-domain')
+    implementation project(path: ':operation-business')
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
 }

@@ -1,7 +1,7 @@
 package org.sopt.makers.operation.service.batch;
 
 import static org.sopt.makers.operation.common.ExceptionMessage.*;
-import static org.sopt.makers.operation.entity.alarm.Attribute.*;
+import static org.operation.alarm.Attribute.*;
 
 import java.util.*;
 
@@ -10,7 +10,7 @@ import lombok.val;
 import org.sopt.makers.operation.config.ValueConfig;
 import org.sopt.makers.operation.dto.alarm.request.AlarmSenderDTO;
 
-import org.sopt.makers.operation.entity.lecture.Lecture;
+import org.operation.lecture.Lecture;
 import org.sopt.makers.operation.exception.LectureException;
 import org.sopt.makers.operation.external.alarm.AlarmSender;
 import org.sopt.makers.operation.repository.lecture.LectureRepository;
