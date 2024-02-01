@@ -1,4 +1,4 @@
-package org.operation.app.attendance;
+package org.operation.app.attendance.api;
 
 import static java.util.Objects.*;
 import static org.operation.app.attendance.message.SuccessMessage.*;
