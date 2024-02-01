@@ -2,7 +2,7 @@ package org.operation.schedule;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.operation.BaseEntity;
+import org.operation.common.domain.BaseEntity;
 import org.operation.lecture.Attribute;
 
 import javax.persistence.*;

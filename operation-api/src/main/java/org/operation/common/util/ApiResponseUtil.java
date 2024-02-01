@@ -20,4 +20,9 @@ public interface ApiResponseUtil {
 				.headers(headers)
 				.body(BaseResponse.of(message, data));
 	}
+
+	static <T> ResponseEntity<BaseResponse<?>> failure(HttpStatus status, String message) {
+		return ResponseEntity.status(status)
+				.body(BaseResponse.of(message, false));
+	}
 }

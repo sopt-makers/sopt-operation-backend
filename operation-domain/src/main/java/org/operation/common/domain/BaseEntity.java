@@ -1,4 +1,4 @@
-package org.operation;
+package org.operation.common.domain;
 
 import java.time.LocalDateTime;
 

@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.config;
+package org.operation.common.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;

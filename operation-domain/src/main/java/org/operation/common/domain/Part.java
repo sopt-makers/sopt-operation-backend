@@ -1,4 +1,4 @@
-package org.operation;
+package org.operation.common.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

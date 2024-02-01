@@ -17,8 +17,8 @@ import javax.persistence.Id;
 
 import org.sopt.makers.operation.converter.StringListConverter;
 import org.sopt.makers.operation.dto.alarm.request.AlarmRequestDTO;
-import org.operation.BaseEntity;
-import org.operation.Part;
+import org.operation.common.domain.BaseEntity;
+import org.operation.common.domain.Part;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

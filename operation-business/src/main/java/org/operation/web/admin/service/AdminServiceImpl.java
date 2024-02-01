@@ -1,12 +1,12 @@
 package org.operation.web.admin.service;
 
 import org.operation.admin.domain.Admin;
-import org.operation.admin.domain.AdminStatus;
 import org.operation.web.admin.dto.request.LoginRequest;
 import org.operation.web.admin.dto.request.SignUpRequest;
 import org.operation.web.admin.dto.response.LoginResponse;
 import org.operation.web.admin.dto.response.RefreshResponse;
 import org.operation.web.admin.dto.response.SignUpResponse;
+import org.operation.common.exception.AdminFailureException;
 import org.operation.web.admin.repository.AdminRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,7 +90,7 @@ public class AdminServiceImpl implements AdminService {
         val newRefreshToken = jwtTokenProvider.generateRefreshToken(adminAuthentication);
         admin.updateRefreshToken(newRefreshToken);*/
 
-        return RefreshResponse.of((String)newAccessToken);
+        return RefreshResponse.of(newAccessToken);
     }
 
     public void validateRefreshToken(Admin admin, String refreshToken) {

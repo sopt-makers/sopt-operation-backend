@@ -16,8 +16,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import org.operation.attendance.Attendance;
-import org.operation.BaseEntity;
-import org.operation.Part;
+import org.operation.common.domain.BaseEntity;
+import org.operation.common.domain.Part;
 
 import lombok.Builder;
 import lombok.Getter;

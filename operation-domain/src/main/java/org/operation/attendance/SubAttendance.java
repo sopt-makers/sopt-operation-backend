@@ -14,7 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import org.operation.BaseEntity;
+import org.operation.common.domain.BaseEntity;
 import org.operation.lecture.SubLecture;
 
 import lombok.Getter;

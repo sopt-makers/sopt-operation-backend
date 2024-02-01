@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.exception;
+package org.operation.common.exception;
 
 public class MemberException extends RuntimeException {
     public MemberException(String message) {

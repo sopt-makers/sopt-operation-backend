@@ -15,7 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import org.sopt.makers.operation.dto.member.request.MemberRequestDTO;
-import org.operation.Part;
+import org.operation.common.domain.Part;
 import org.operation.attendance.Attendance;
 
 import lombok.Getter;

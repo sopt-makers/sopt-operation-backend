@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.config;
+package org.operation.common.config;
 
 import javax.persistence.EntityManager;
 
