@@ -9,5 +9,5 @@ public enum SuccessMessage {
 	SUCCESS_GET_ATTENDANCE("출석 성공"),
 	;
 
-	private final String message;
+	private final String content;
 }

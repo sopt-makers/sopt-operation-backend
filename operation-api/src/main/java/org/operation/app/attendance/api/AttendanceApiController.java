@@ -1,12 +1,12 @@
 package org.operation.app.attendance.api;
 
-import static java.util.Objects.*;
 import static org.operation.app.attendance.message.SuccessMessage.*;
-import static org.operation.common.dto.BaseResponse.*;
 
 import java.security.Principal;
 
 import org.operation.app.attendance.dto.request.AttendanceRequest;
+import org.operation.common.util.CommonUtils;
+import org.operation.common.util.ApiResponseUtil;
 import org.operation.common.dto.BaseResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,16 +22,13 @@ import lombok.val;
 @RequestMapping("/api/v1/app/attendances")
 public class AttendanceApiController implements AttendanceApi {
 	// private final AttendanceService attendanceService;
+	private final CommonUtils utils;
 
 	@Override
 	@PostMapping("/attend")
 	public ResponseEntity<BaseResponse<?>> attend(@RequestBody AttendanceRequest request, Principal principal) {
-		val memberId = getMemberId(principal);
-		val response = memberId + ""; // attendanceService.attend(getMemberId(principal), requestDTO);
-		return ResponseEntity.ok(success(SUCCESS_GET_ATTENDANCE.getMessage(), response));
-	}
-
-	private Long getMemberId(Principal principal) {
-		return nonNull(principal) ? Long.valueOf(principal.getName()) : null;
+		val memberId = utils.getMemberId(principal);
+		val response = memberId + ""; // attendanceService.attend(memberId, requestDTO);
+		return ApiResponseUtil.ok(SUCCESS_GET_ATTENDANCE.getContent(), response);
 	}
 }
