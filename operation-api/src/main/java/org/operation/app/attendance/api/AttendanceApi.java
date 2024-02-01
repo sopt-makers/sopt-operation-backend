@@ -15,6 +15,7 @@ import lombok.NonNull;
 
 @Tag(name = "앱 출석 관련 API")
 public interface AttendanceApi {
+
 	@Operation(
 		summary = "앱 출석 API",
 		responses = {
@@ -34,6 +35,5 @@ public interface AttendanceApi {
 	)
 	ResponseEntity<BaseResponse<?>> attend(
 			@RequestBody AttendanceRequest request,
-			@Parameter(hidden = true) @NonNull Principal principal
-	);
+			@Parameter(hidden = true) @NonNull Principal principal);
 }
