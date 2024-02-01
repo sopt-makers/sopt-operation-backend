@@ -4,7 +4,7 @@ import static org.operation.app.attendance.message.SuccessMessage.*;
 
 import java.security.Principal;
 
-import org.operation.app.attendance.dto.request.AttendanceRequest;
+import org.operation.app.attendance.dto.AttendanceRequest;
 import org.operation.common.util.CommonUtils;
 import org.operation.common.util.ApiResponseUtil;
 import org.operation.common.dto.BaseResponse;

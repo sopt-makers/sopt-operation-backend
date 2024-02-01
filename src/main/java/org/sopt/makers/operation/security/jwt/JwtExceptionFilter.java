@@ -1,6 +1,5 @@
 package org.sopt.makers.operation.security.jwt;
 
-import org.sopt.makers.operation.dto.ResponseDTO;
 import org.sopt.makers.operation.exception.TokenException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

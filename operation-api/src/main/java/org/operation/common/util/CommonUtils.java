@@ -1,14 +1,14 @@
 package org.operation.common.util;
 
-import static java.util.Objects.*;
-
 import java.security.Principal;
 
 import org.springframework.context.annotation.Configuration;
 
+import lombok.NonNull;
+
 @Configuration
 public class CommonUtils {
-	public Long getMemberId(Principal principal) {
-		return nonNull(principal) ? Long.valueOf(principal.getName()) : null;
+	public long getMemberId(@NonNull Principal principal) {
+		return Long.parseLong(principal.getName());
 	}
 }

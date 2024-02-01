@@ -6,7 +6,6 @@ import static org.springframework.http.HttpStatus.*;
 
 import java.time.format.DateTimeParseException;
 
-import org.sopt.makers.operation.dto.ResponseDTO;
 import org.sopt.makers.operation.exception.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

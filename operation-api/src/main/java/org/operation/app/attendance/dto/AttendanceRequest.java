@@ -1,4 +1,4 @@
-package org.operation.app.attendance.dto.request;
+package org.operation.app.attendance.dto;
 
 public record AttendanceRequest(
         Long subLectureId,

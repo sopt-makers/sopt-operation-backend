@@ -6,7 +6,6 @@ import static org.sopt.makers.operation.common.ExceptionMessage.*;
 import java.time.LocalDateTime;
 
 import org.sopt.makers.operation.config.ValueConfig;
-import org.sopt.makers.operation.dto.attendance.request.AttendRequestDTO;
 import org.sopt.makers.operation.dto.attendance.response.AttendResponseDTO;
 import org.sopt.makers.operation.entity.attendance.AttendanceStatus;
 import org.sopt.makers.operation.exception.LectureException;
