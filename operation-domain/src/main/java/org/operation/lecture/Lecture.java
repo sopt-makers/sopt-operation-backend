@@ -15,7 +15,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
-import org.operation.attendance.Attendance;
+import org.operation.attendance.domain.Attendance;
 import org.operation.common.domain.BaseEntity;
 import org.operation.common.domain.Part;
 

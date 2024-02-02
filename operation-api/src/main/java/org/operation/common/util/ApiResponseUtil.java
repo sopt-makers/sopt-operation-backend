@@ -1,5 +1,7 @@
 package org.operation.common.util;
 
+import java.net.URI;
+
 import org.operation.common.dto.BaseResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,12 @@ public interface ApiResponseUtil {
 	static <T> ResponseEntity<BaseResponse<?>> ok(HttpHeaders headers, String message, T data) {
 		return ResponseEntity.status(HttpStatus.OK)
 				.headers(headers)
+				.body(BaseResponse.of(message, data));
+	}
+
+	static <T> ResponseEntity<BaseResponse<?>> created(URI uri, String message, T data) {
+		return ResponseEntity
+				.created(uri)
 				.body(BaseResponse.of(message, data));
 	}
 

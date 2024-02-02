@@ -5,6 +5,7 @@ import static org.operation.app.attendance.message.SuccessMessage.*;
 import java.security.Principal;
 
 import org.operation.app.attendance.dto.request.AttendanceRequest;
+import org.operation.app.attendance.service.AttendanceService;
 import org.operation.common.util.CommonUtils;
 import org.operation.common.util.ApiResponseUtil;
 import org.operation.common.dto.BaseResponse;
@@ -22,14 +23,14 @@ import lombok.val;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/app/attendances")
 public class AttendanceApiController implements AttendanceApi {
-	// private final AttendanceService attendanceService;
+	private final AttendanceService attendanceService;
 	private final CommonUtils utils;
 
 	@Override
 	@PostMapping("/attend")
 	public ResponseEntity<BaseResponse<?>> attend(@RequestBody AttendanceRequest request, @NonNull Principal principal) {
 		val memberId = utils.getMemberId(principal);
-		val response = memberId + ""; // attendanceService.attend(memberId, requestDTO);
+		val response = attendanceService.attend(memberId, request);
 		return ApiResponseUtil.ok(SUCCESS_GET_ATTENDANCE.getContent(), response);
 	}
 }

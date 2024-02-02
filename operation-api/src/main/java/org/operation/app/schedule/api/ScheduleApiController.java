@@ -4,6 +4,7 @@ import static org.operation.app.schedule.message.SuccessMessage.*;
 
 import java.time.LocalDateTime;
 
+import org.operation.app.schedule.service.ScheduleService;
 import org.operation.common.dto.BaseResponse;
 import org.operation.common.util.ApiResponseUtil;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -21,7 +22,7 @@ import lombok.val;
 @RequestMapping("/api/v1/app/schedules")
 public class ScheduleApiController implements ScheduleApi {
 
-	// private final ScheduleService scheduleService;
+	private final ScheduleService scheduleService;
 
 	@Override
 	@GetMapping
@@ -29,7 +30,7 @@ public class ScheduleApiController implements ScheduleApi {
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end
 	) {
-		val response = ""; // scheduleService.getSchedules(start, end);
+		val response = scheduleService.getSchedules(start, end);
 		return ApiResponseUtil.ok(SUCCESS_GET_SCHEDULES.getContent(), response);
 	}
 }

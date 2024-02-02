@@ -1,5 +1,6 @@
 package org.operation.lecture;
 
+import static java.util.Objects.*;
 import static javax.persistence.GenerationType.*;
 import static org.operation.lecture.LectureStatus.*;
 
@@ -17,7 +18,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
-import org.operation.attendance.SubAttendance;
+import org.operation.attendance.domain.SubAttendance;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -68,5 +69,17 @@ public class SubLecture {
 		}
 		this.lecture = lecture;
 		lecture.getSubLectures().add(this);
+	}
+
+	public boolean isNotStarted() {
+		return isNull(this.startAt) || isNull(this.code) || this.startAt.isAfter(LocalDateTime.now());
+	}
+
+	public boolean isEnded(int attendanceMinute) {
+		return this.startAt.plusMinutes(attendanceMinute).isBefore(LocalDateTime.now());
+	}
+
+	public boolean isMatchCode(String code) {
+		return this.code.equals(code);
 	}
 }
