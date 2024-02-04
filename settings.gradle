@@ -5,4 +5,5 @@ include 'operation-domain'
 include 'operation-external'
 include 'operation-storage'
 include 'operation-service'
+include 'operation-common'
 
