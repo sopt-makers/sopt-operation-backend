@@ -1,7 +1,16 @@
 package org.sopt.makers.operation.exception;
 
+import org.sopt.makers.operation.code.failure.FailureCode;
+
+import lombok.Getter;
+
+@Getter
 public class SubLectureException extends RuntimeException {
-    public SubLectureException(String message) {
-        super("[SubLectureException] : " + message);
+
+    private final FailureCode failureCode;
+
+    public SubLectureException(FailureCode failureCode) {
+        super("[SubLectureException] : " + failureCode.getMessage());
+        this.failureCode = failureCode;
     }
 }
