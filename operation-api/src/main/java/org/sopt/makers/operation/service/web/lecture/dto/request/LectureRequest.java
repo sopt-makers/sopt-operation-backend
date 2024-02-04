@@ -1,11 +1,14 @@
 package org.sopt.makers.operation.service.web.lecture.dto.request;
 
+import static org.sopt.makers.operation.code.failure.LectureFailureCode.*;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 
 import org.sopt.makers.operation.domain.Part;
-import org.operation.lecture.Attribute;
-import org.operation.lecture.Lecture;
+import org.sopt.makers.operation.domain.lecture.Attribute;
+import org.sopt.makers.operation.domain.lecture.Lecture;
+import org.sopt.makers.operation.exception.DateTimeParseCustomException;
 
 import lombok.Builder;
 import lombok.NonNull;
@@ -33,7 +36,11 @@ public record LectureRequest(
 			.build();
 	}
 
-	private LocalDateTime convertLocalDateTime(String date) throws DateTimeParseException {
-		return LocalDateTime.parse(date);
+	private LocalDateTime convertLocalDateTime(String date) {
+		try {
+			return LocalDateTime.parse(date);
+		} catch (DateTimeParseException exception) {
+			throw new DateTimeParseCustomException(INVALID_DATE_PATTERN, date, exception.getErrorIndex());
+		}
 	}
 }
