@@ -1,8 +1,8 @@
 package org.sopt.makers.operation.web.alarm.api;
 
-import org.operation.alarm.domain.Status;
 import org.sopt.makers.operation.domain.Part;
 import org.sopt.makers.operation.common.dto.BaseResponse;
+import org.sopt.makers.operation.domain.alarm.domain.Status;
 import org.sopt.makers.operation.dto.AlarmRequest;
 import org.sopt.makers.operation.web.alarm.dto.request.AlarmSendRequest;
 import org.springframework.data.domain.Pageable;

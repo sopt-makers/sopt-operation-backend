@@ -1,12 +1,11 @@
 package org.sopt.makers.operation.web.alarm.api;
 
-import static org.sopt.makers.operation.web.alarm.message.SuccessMessage.*;
+import static org.sopt.makers.operation.code.success.web.AlarmSuccessCode.*;
 
-import org.operation.alarm.domain.Status;
 import org.sopt.makers.operation.domain.Part;
 import org.sopt.makers.operation.common.dto.BaseResponse;
 import org.sopt.makers.operation.common.util.ApiResponseUtil;
-import org.sopt.makers.operation.common.util.CommonUtils;
+import org.sopt.makers.operation.domain.alarm.domain.Status;
 import org.sopt.makers.operation.dto.AlarmRequest;
 import org.sopt.makers.operation.web.alarm.dto.request.AlarmSendRequest;
 import org.sopt.makers.operation.web.alarm.service.AlarmService;
@@ -29,21 +28,19 @@ import lombok.val;
 public class AlarmApiController implements AlarmApi {
 
 	private final AlarmService alarmService;
-	private final CommonUtils utils;
 
 	@Override
 	@PostMapping("/send")
 	public ResponseEntity<BaseResponse<?>> sendAlarm(AlarmSendRequest request) {
 		alarmService.sendByAdmin(request);
-		return ApiResponseUtil.ok(SUCCESS_SEND_ALARM.getContent());
+		return ApiResponseUtil.success(SUCCESS_SEND_ALARM);
 	}
 
 	@Override
 	@PostMapping
 	public ResponseEntity<BaseResponse<?>> createAlarm(AlarmRequest request) {
-		val alarmId = alarmService.createAlarm(request);
-		val uri = utils.getURI("/{alarmId}", alarmId);
-		return ApiResponseUtil.created(uri, SUCCESS_CREATE_ALARM.getContent(), alarmId);
+		val response = alarmService.createAlarm(request);
+		return ApiResponseUtil.success(SUCCESS_CREATE_ALARM, response);
 	}
 
 	@Override
@@ -55,20 +52,20 @@ public class AlarmApiController implements AlarmApi {
 			Pageable pageable
 	) {
 		val response = alarmService.getAlarms(generation, part, status, pageable);
-		return ApiResponseUtil.ok(SUCCESS_GET_ALARMS.getContent(), response);
+		return ApiResponseUtil.success(SUCCESS_GET_ALARMS, response);
 	}
 
 	@Override
 	@GetMapping("/{alarmId}")
 	public ResponseEntity<BaseResponse<?>> getAlarm(@PathVariable long alarmId) {
 		val response = alarmService.getAlarm(alarmId);
-		return ApiResponseUtil.ok(SUCCESS_GET_ALARM.getContent(), response);
+		return ApiResponseUtil.success(SUCCESS_GET_ALARM, response);
 	}
 
 	@Override
 	@DeleteMapping("/{alarmId}")
 	public ResponseEntity<BaseResponse<?>> deleteAlarm(@PathVariable long alarmId) {
 		alarmService.deleteAlarm(alarmId);
-		return ApiResponseUtil.ok(SUCCESS_DELETE_ALARM.getContent());
+		return ApiResponseUtil.success(SUCCESS_DELETE_ALARM);
 	}
 }
