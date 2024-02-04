@@ -10,8 +10,8 @@ repositories {
 }
 
 dependencies {
-//    implementation project(path: ':operation-service')
     implementation project(path: ':operation-domain')
+    implementation project(path: ':operation-common')
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
 }

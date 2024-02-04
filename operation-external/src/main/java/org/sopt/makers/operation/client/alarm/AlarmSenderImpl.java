@@ -2,16 +2,16 @@ package org.sopt.makers.operation.client.alarm;
 
 import static java.util.Objects.*;
 import static java.util.UUID.*;
-import static org.operation.alarm.message.ErrorMessage.*;
+import static org.sopt.makers.operation.domain.alarm.message.ErrorMessage.*;
 import static org.springframework.http.MediaType.*;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.sopt.makers.operation.common.config.ValueConfig;
-import org.sopt.makers.operation.common.exception.AlarmException;
-import org.sopt.makers.operation.web.alarm.dto.request.AlarmSenderRequest;
+import org.sopt.makers.operation.config.ValueConfig;
+import org.sopt.makers.operation.dto.AlarmSenderRequest;
+import org.sopt.makers.operation.exception.AlarmException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;

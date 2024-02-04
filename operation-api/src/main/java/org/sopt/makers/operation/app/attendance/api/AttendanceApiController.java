@@ -1,6 +1,6 @@
 package org.sopt.makers.operation.app.attendance.api;
 
-import static org.sopt.makers.operation.app.attendance.message.SuccessMessage.*;
+import static org.sopt.makers.operation.code.success.app.AttendanceSuccessCode.*;
 
 import java.security.Principal;
 
@@ -23,6 +23,7 @@ import lombok.val;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/app/attendances")
 public class AttendanceApiController implements AttendanceApi {
+
 	private final AttendanceService attendanceService;
 	private final CommonUtils utils;
 
@@ -31,6 +32,6 @@ public class AttendanceApiController implements AttendanceApi {
 	public ResponseEntity<BaseResponse<?>> attend(@RequestBody AttendanceRequest request, @NonNull Principal principal) {
 		val memberId = utils.getMemberId(principal);
 		val response = attendanceService.attend(memberId, request);
-		return ApiResponseUtil.ok(SUCCESS_GET_ATTENDANCE.getContent(), response);
+		return ApiResponseUtil.success(SUCCESS_GET_ATTENDANCE, response);
 	}
 }

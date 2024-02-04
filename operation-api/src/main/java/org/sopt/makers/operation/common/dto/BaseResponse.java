@@ -23,7 +23,7 @@ public record BaseResponse<T> (
 				.build();
 	}
 
-	public static BaseResponse<?> of(String message, boolean isSuccess) {
+	public static BaseResponse<?> of(boolean isSuccess, String message) {
 		return BaseResponse.builder()
 				.success(isSuccess)
 				.message(message)
