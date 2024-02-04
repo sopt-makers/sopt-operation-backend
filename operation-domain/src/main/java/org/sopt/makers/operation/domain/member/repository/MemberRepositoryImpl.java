@@ -81,7 +81,7 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
 	}
 
 	@Override
-	public List<Member> find(int generation, Part part) {
+	public List<Member> findOrderByName(int generation, Part part) {
 		StringExpression firstName = Expressions.stringTemplate("SUBSTR({0}, 1, 1)", member.name);
 
 		return queryFactory
@@ -90,6 +90,16 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
 						member.generation.eq(generation),
 						partEq(part))
 				.orderBy(firstName.asc())
+				.fetch();
+	}
+
+	@Override
+	public List<Member> find(int generation, Part part) {
+		return queryFactory
+				.selectFrom(member)
+				.where(
+						member.generation.eq(generation),
+						partEq(part))
 				.fetch();
 	}
 

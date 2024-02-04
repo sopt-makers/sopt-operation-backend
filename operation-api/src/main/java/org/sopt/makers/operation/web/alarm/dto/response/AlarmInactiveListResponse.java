@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.service.web.alarm.dto.response;
+package org.sopt.makers.operation.web.alarm.dto.response;
 
 import java.util.List;
 

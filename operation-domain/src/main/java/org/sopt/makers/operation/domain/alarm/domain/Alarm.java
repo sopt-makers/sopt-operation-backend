@@ -3,6 +3,7 @@ package org.sopt.makers.operation.domain.alarm.domain;
 import static java.util.Objects.*;
 import static javax.persistence.EnumType.*;
 import static javax.persistence.GenerationType.*;
+import static org.sopt.makers.operation.domain.alarm.domain.Status.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -62,14 +63,6 @@ public class Alarm extends BaseEntity {
 
 	private LocalDateTime sendAt;
 
-	public void updateStatus() {
-		this.status = Status.AFTER;
-	}
-
-	public void updateSendAt() {
-		this.sendAt = LocalDateTime.now();
-	}
-
 	public Alarm(AlarmRequest request) {
 		this.generation = request.generation();
 		this.generationAt = request.generationAt();
@@ -86,6 +79,19 @@ public class Alarm extends BaseEntity {
 			this.part = request.part();
 		}
 		this.targetList = nonNull(request.targetList()) ? request.targetList() : new ArrayList<>();
-		this.status = Status.BEFORE;
+		this.status = BEFORE;
+	}
+
+	public boolean isSent() {
+		return this.status.equals(AFTER);
+	}
+
+	public boolean hasEmptyTargetList() {
+		return this.targetList.isEmpty();
+	}
+
+	public void updateToSent() {
+		this.status = AFTER;
+		this.sendAt = LocalDateTime.now();
 	}
 }

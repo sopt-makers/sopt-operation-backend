@@ -1,12 +1,12 @@
 package org.sopt.makers.operation.client.playground;
 
-import static org.operation.alarm.message.ErrorMessage.*;
+import static org.sopt.makers.operation.code.failure.AlarmFailureCode.*;
 import static org.sopt.makers.operation.domain.Part.*;
 import static org.springframework.http.HttpMethod.*;
 
-import org.sopt.makers.operation.common.exception.AlarmException;
+import org.sopt.makers.operation.client.playground.dto.InactiveMemberListResponse;
 import org.sopt.makers.operation.domain.Part;
-import org.sopt.makers.operation.web.alarm.dto.response.AlarmInactiveListResponse;
+import org.sopt.makers.operation.exception.AlarmException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -27,16 +27,16 @@ public class PlayGroundServerImpl implements PlayGroundServer {
 	private String playGroundToken;
 
 	@Override
-	public AlarmInactiveListResponse getInactiveMembers(int generation, Part part) {
+	public InactiveMemberListResponse getInactiveMembers(int generation, Part part) {
 		val uri = getInactiveUserURI(part, generation);
 		val headers = getHeaders();
 		val entity = new HttpEntity<>(null, headers);
 
 		try {
-			val response = restTemplate.exchange(uri, GET, entity, AlarmInactiveListResponse.class);
+			val response = restTemplate.exchange(uri, GET, entity, InactiveMemberListResponse.class);
 			return response.getBody();
 		} catch (Exception e) {
-			throw new AlarmException(FAIL_INACTIVE_USERS.getContent());
+			throw new AlarmException(FAIL_INACTIVE_USERS);
 		}
 	}
 
