@@ -1,5 +1,7 @@
 package org.sopt.makers.operation.service.app.schedule.service;
 
+import static org.sopt.makers.operation.code.failure.ScheduleFailureCode.*;
+
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,9 +12,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
+import org.sopt.makers.operation.app.schedule.service.ScheduleService;
+import org.sopt.makers.operation.domain.schedule.domain.Schedule;
+import org.sopt.makers.operation.domain.schedule.repository.ScheduleRepository;
+import org.sopt.makers.operation.exception.ScheduleException;
 import org.sopt.makers.operation.service.app.schedule.dto.response.SchedulesResponseDTO;
-import org.operation.schedule.domain.Schedule;
-import org.operation.schedule.repository.ScheduleRepository;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -21,6 +25,7 @@ import lombok.val;
 @Service
 @RequiredArgsConstructor
 public class ScheduleServiceImpl implements ScheduleService {
+
 	private final ScheduleRepository scheduleRepository;
 
 	@Override
@@ -50,7 +55,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 	private void validDuration(long duration) {
 		//TODO: 추후 응답 값 형식 변경 후 삭제될 수 있는 메소드
 		if (duration > 50) {
-			throw new IllegalStateException("조회할 날짜 기간은 50일을 넘길 수 없습니다.");
+			throw new ScheduleException(INVALID_DATE_PERM);
 		}
 	}
 
