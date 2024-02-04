@@ -1,9 +1,9 @@
-package org.sopt.makers.operation.security.jwt;
+package org.sopt.makers.operation.filter;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.sopt.makers.operation.common.ExceptionMessage;
-import org.sopt.makers.operation.exception.TokenException;
+import org.sopt.makers.operation.jwt.JwtTokenProvider;
+import org.sopt.makers.operation.jwt.JwtTokenType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 
@@ -42,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private void checkJwtAvailable (String token, JwtTokenType jwtTokenType) {
         if (token == null || !jwtTokenProvider.validateTokenExpiration(token, jwtTokenType)) {
-            throw new TokenException(ExceptionMessage.INVALID_AUTH_REQUEST.getName());
+            throw new IllegalArgumentException("빈 토큰입니다.");
         }
     }
 

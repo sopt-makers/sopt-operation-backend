@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.security.jwt;
+package org.sopt.makers.operation.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -7,13 +7,12 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.sopt.makers.operation.common.ExceptionMessage;
-import org.sopt.makers.operation.exception.TokenException;
-import org.sopt.makers.operation.security.AdminAuthentication;
+import org.sopt.makers.operation.authentication.AdminAuthentication;
+//import org.sopt.makers.operation.common.ExceptionMessage;
+//import org.sopt.makers.operation.exception.TokenException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -28,7 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 @Service
 public class JwtTokenProvider {
 
@@ -41,7 +39,7 @@ public class JwtTokenProvider {
     @Value("${spring.jwt.secretKey.app}")
     private String appAccessSecretKey;
 
-    public String generateAccessToken(Authentication authentication) {
+    public String generateAccessToken(final Authentication authentication) {
         val encodedKey = encodeKey(accessSecretKey);
         val secretKeyBytes = DatatypeConverter.parseBase64Binary(encodedKey);
         val accessKey = new SecretKeySpec(secretKeyBytes, SignatureAlgorithm.HS256.getJcaName());
@@ -54,7 +52,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String generateRefreshToken(Authentication authentication) {
+    public String generateRefreshToken(final Authentication authentication) {
         val encodedKey = encodeKey(refreshSecretKey);
         val secretKeyBytes = DatatypeConverter.parseBase64Binary(encodedKey);
         val refreshKey = new SecretKeySpec(secretKeyBytes, SignatureAlgorithm.HS256.getJcaName());
@@ -71,10 +69,8 @@ public class JwtTokenProvider {
         try {
             getClaimsFromToken(token, jwtTokenType);
             return true;
-        } catch (ExpiredJwtException e) {
-            throw new TokenException(ExceptionMessage.EXPIRED_TOKEN.getName());
-        } catch (SignatureException e) {
-            throw new TokenException(ExceptionMessage.INVALID_SIGNATURE.getName());
+        } catch (ExpiredJwtException | SignatureException e) {
+            return false;
         }
     }
 
@@ -90,10 +86,8 @@ public class JwtTokenProvider {
             val claims = getClaimsFromToken(token, jwtTokenType);
 
             return Long.parseLong(claims.get("playgroundId").toString());
-        } catch (ExpiredJwtException e) {
-            throw new TokenException(ExceptionMessage.EXPIRED_TOKEN.getName());
-        } catch (SignatureException e) {
-            throw new TokenException(ExceptionMessage.INVALID_SIGNATURE.getName());
+        } catch (ExpiredJwtException | SignatureException ignored) {
+            throw new RuntimeException("유효하지 않은 토큰입니다.");
         }
     }
 
@@ -102,10 +96,8 @@ public class JwtTokenProvider {
             val claims = getClaimsFromToken(token, jwtTokenType);
 
             return Long.parseLong(claims.getSubject());
-        } catch (ExpiredJwtException e) {
-            throw new TokenException(ExceptionMessage.EXPIRED_TOKEN.getName());
-        } catch (SecurityException e) {
-            throw new TokenException(ExceptionMessage.INVALID_SIGNATURE.getName());
+        } catch (ExpiredJwtException | SignatureException ignored) {
+            throw new RuntimeException("유효하지 않은 토큰입니다.");
         }
     }
 
@@ -144,7 +136,7 @@ public class JwtTokenProvider {
         return switch (jwtTokenType) {
             case ACCESS_TOKEN -> now.plusHours(5);
             case REFRESH_TOKEN -> now.plusWeeks(2);
-            case APP_ACCESS_TOKEN -> throw new TokenException(ExceptionMessage.INVALID_TOKEN.getName());
+            case APP_ACCESS_TOKEN -> null;
         };
     }
 

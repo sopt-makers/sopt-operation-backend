@@ -2,10 +2,8 @@ package org.sopt.makers.operation.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-
-import org.sopt.makers.operation.config.ValueConfig;
-import org.sopt.makers.operation.security.jwt.JwtAuthenticationFilter;
-import org.sopt.makers.operation.security.jwt.JwtExceptionFilter;
+import org.sopt.makers.operation.filter.JwtAuthenticationFilter;
+import org.sopt.makers.operation.filter.JwtExceptionFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -26,7 +24,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtExceptionFilter jwtExceptionFilter;
-    private final ValueConfig valueConfig;
+    //private final ValueConfig valueConfig;
 
     @Bean
     public static PasswordEncoder passwordEncoder() {
@@ -37,7 +35,7 @@ public class SecurityConfig {
     @Profile("dev")
     public SecurityFilterChain filterChainDev(HttpSecurity http) throws Exception {
         setHttp(http);
-        http.authorizeRequests().antMatchers(valueConfig.getSWAGGER_URI()).permitAll();
+        http.authorizeRequests().antMatchers("/swagger-ui/**").permitAll();
         return http.build();
     }
 
@@ -45,10 +43,9 @@ public class SecurityConfig {
     @Profile("prod")
     public SecurityFilterChain filterChainProd(HttpSecurity http) throws Exception {
         setHttp(http);
-        http.authorizeRequests().antMatchers(valueConfig.getSWAGGER_URI()).authenticated();
+        http.authorizeRequests().antMatchers("/swagger-ui/**").authenticated();
         return http.build();
     }
-
     private void setHttp(HttpSecurity http) throws Exception {
         http.antMatcher("/**")
                 .httpBasic().disable()
@@ -72,9 +69,9 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         val configuration = new CorsConfiguration();
 
-        configuration.addAllowedOrigin(valueConfig.getADMIN_PROD_URL());
-        configuration.addAllowedOrigin(valueConfig.getADMIN_DEV_URL());
-        configuration.addAllowedOrigin(valueConfig.getADMIN_LOCAL_URL());
+        //configuration.addAllowedOrigin(valueConfig.getADMIN_PROD_URL());
+        //configuration.addAllowedOrigin(valueConfig.getADMIN_DEV_URL());
+        //configuration.addAllowedOrigin(valueConfig.getADMIN_LOCAL_URL());
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         configuration.setAllowCredentials(true);

@@ -1,7 +1,5 @@
-package org.sopt.makers.operation.security.jwt;
+package org.sopt.makers.operation.filter;
 
-import org.sopt.makers.operation.dto.ResponseDTO;
-import org.sopt.makers.operation.exception.TokenException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -24,16 +22,16 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             HttpServletResponse httpServletResponse,
             FilterChain filterChain
     ) throws ServletException, IOException {
-        try {
-            filterChain.doFilter(httpServletRequest, httpServletResponse);
-        } catch(TokenException e) {
-            val objectMapper = new ObjectMapper();
-            val jsonResponse = objectMapper.writeValueAsString(ResponseDTO.fail(e.getMessage()));
-
-            httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-            httpServletResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            httpServletResponse.setCharacterEncoding("UTF-8");
-            httpServletResponse.getWriter().write(jsonResponse);
-        }
+//        try {
+//            filterChain.doFilter(httpServletRequest, httpServletResponse);
+//        } catch(TokenException e) {
+//            val objectMapper = new ObjectMapper();
+//            //val jsonResponse = objectMapper.writeValueAsString(ResponseDTO.fail(e.getMessage()));
+//
+//            httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+//            httpServletResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
+//            httpServletResponse.setCharacterEncoding("UTF-8");
+//            //httpServletResponse.getWriter().write(jsonResponse);
+//        }
     }
 }
