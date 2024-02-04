@@ -43,7 +43,7 @@ public class AlarmServiceImpl implements AlarmService {
 		val targetIdList = getTargets(alarm);
 		sendAlarmToTargets(alarm, targetIdList);
 	}
-리
+
 	private Alarm getAlarmReadyToSend(long alarmId) {
 		val alarm = findAlarm(alarmId);
 		checkAlarmReadyToSend(alarm);
