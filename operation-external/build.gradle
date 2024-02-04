@@ -10,8 +10,10 @@ repositories {
 }
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.9.1')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+    implementation project(path: ':operation-service')
+    implementation project(path: ':operation-domain')
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 }
 
 test {
