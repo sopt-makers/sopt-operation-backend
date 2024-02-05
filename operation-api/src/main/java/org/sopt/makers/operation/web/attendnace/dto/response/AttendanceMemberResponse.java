@@ -1,10 +1,10 @@
-package org.sopt.makers.operation.service.web.attendance.dto.response;
+package org.sopt.makers.operation.web.attendnace.dto.response;
 
 import java.util.List;
 
-import org.operation.attendance.domain.Attendance;
-import org.operation.attendance.domain.SubAttendance;
-import org.operation.member.domain.Member;
+import org.sopt.makers.operation.domain.attendance.domain.Attendance;
+import org.sopt.makers.operation.domain.attendance.domain.SubAttendance;
+import org.sopt.makers.operation.domain.member.domain.Member;
 
 public record AttendanceMemberResponse(
 	String name,
