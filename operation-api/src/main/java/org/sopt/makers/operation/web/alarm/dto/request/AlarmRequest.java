@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.dto;
+package org.sopt.makers.operation.web.alarm.dto.request;
 
 import java.util.List;
 
@@ -18,6 +18,16 @@ public record AlarmRequest(
 	List<String> targetList
 ) {
 	public Alarm toEntity() {
-		return new Alarm(this);
+		return Alarm.builder()
+				.generation(this.generation)
+				.generationAt(this.generationAt)
+				.attribute(this.attribute)
+				.title(this.title)
+				.content(this.content)
+				.link(this.link)
+				.isActive(this.isActive)
+				.part(this.part)
+				.targetList(this.targetList)
+				.build();
 	}
 }

@@ -14,7 +14,7 @@ import org.sopt.makers.operation.domain.alarm.domain.Alarm;
 import org.sopt.makers.operation.domain.alarm.domain.Status;
 import org.sopt.makers.operation.domain.alarm.repository.AlarmRepository;
 import org.sopt.makers.operation.domain.member.repository.MemberRepository;
-import org.sopt.makers.operation.dto.AlarmRequest;
+import org.sopt.makers.operation.web.alarm.dto.request.AlarmRequest;
 import org.sopt.makers.operation.exception.AlarmException;
 import org.sopt.makers.operation.web.alarm.dto.request.AlarmSendRequest;
 import org.sopt.makers.operation.web.alarm.dto.response.AlarmResponse;
@@ -109,7 +109,7 @@ public class AlarmServiceImpl implements AlarmService {
 
 	@Override
 	@Transactional
-	public Long createAlarm(AlarmRequest request) {
+	public long createAlarm(AlarmRequest request) {
 		val alarmEntity = request.toEntity();
 		val savedAlarm = alarmRepository.save(alarmEntity);
 		return savedAlarm.getId();

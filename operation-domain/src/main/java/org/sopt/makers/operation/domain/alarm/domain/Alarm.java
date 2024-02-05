@@ -19,8 +19,8 @@ import javax.persistence.Id;
 import org.sopt.makers.operation.domain.BaseEntity;
 import org.sopt.makers.operation.domain.Part;
 import org.sopt.makers.operation.domain.converter.StringListConverter;
-import org.sopt.makers.operation.dto.AlarmRequest;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -63,23 +63,42 @@ public class Alarm extends BaseEntity {
 
 	private LocalDateTime sendAt;
 
-	public Alarm(AlarmRequest request) {
-		this.generation = request.generation();
-		this.generationAt = request.generationAt();
-		this.attribute = request.attribute();
-		this.title = request.title();
-		this.content = request.content();
-		if (nonNull(request.link())) {
-			this.link = request.link();
-		}
-		if (nonNull(request.isActive())) {
-			this.isActive = request.isActive();
-		}
-		if (nonNull(request.part())) {
-			this.part = request.part();
-		}
-		this.targetList = nonNull(request.targetList()) ? request.targetList() : new ArrayList<>();
+	@Builder
+	public Alarm(
+			int generation,
+			int generationAt,
+			Attribute attribute,
+			String title,
+			String content,
+			String link,
+			Boolean isActive,
+			Part part,
+			List<String> targetList
+	) {
+		this.generation = generation;
+		this.generationAt = generationAt;
+		this.attribute = attribute;
+		this.title = title;
+		this.content = content;
+		setLink(link);
+		setTargetsInfo(isActive, part, targetList);
 		this.status = BEFORE;
+	}
+
+	private void setLink(String link) {
+		if (nonNull(link)) {
+			this.link = link;
+		}
+	}
+
+	private void setTargetsInfo(Boolean isActive, Part part, List<String> targetList) {
+		if (nonNull(targetList)) {
+			this.targetList = targetList;
+		} else {
+			this.isActive = isActive;
+			this.part = part;
+			this.targetList = new ArrayList<>();
+		}
 	}
 
 	public boolean isSent() {
