@@ -1,7 +1,5 @@
 package org.sopt.makers.operation.domain.member.domain;
 
-import static org.sopt.makers.operation.domain.lecture.LectureStatus.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,9 +50,13 @@ public class Member {
 	}
 
 	public void updateTotalScore() {
-		this.score = (float) (2 + this.attendances.stream()
-			.filter(attendance -> attendance.getLecture().getLectureStatus().equals(END))
-			.mapToDouble(Attendance::getScore)
-			.sum());
+		this.score = calcAllAttendances();
+	}
+
+	private float calcAllAttendances() {
+		return (float) (2 + this.attendances.stream()
+				.filter(Attendance::isEnd)
+				.mapToDouble(Attendance::getScore)
+				.sum());
 	}
 }

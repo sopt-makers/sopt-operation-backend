@@ -1,8 +1,8 @@
 package org.sopt.makers.operation.domain.attendance.domain;
 
 import static javax.persistence.GenerationType.*;
+import static org.sopt.makers.operation.code.failure.AttendanceFailureCode.*;
 import static org.sopt.makers.operation.domain.attendance.domain.AttendanceStatus.*;
-import static org.sopt.makers.operation.domain.attendance.message.ErrorMessage.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,6 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
@@ -22,6 +21,7 @@ import javax.persistence.OneToMany;
 
 import org.sopt.makers.operation.domain.lecture.Lecture;
 import org.sopt.makers.operation.domain.member.domain.Member;
+import org.sopt.makers.operation.exception.AttendanceException;
 
 import lombok.*;
 
@@ -71,7 +71,8 @@ public class Attendance {
 	}
 
 	public float getScore() {
-		return switch (this.lecture.getAttribute()) {
+		val lectureAttribute = this.lecture.getAttribute();
+		return switch (lectureAttribute) {
 			case SEMINAR -> {
 				if (this.status.equals(ABSENT)) {
 					yield  -1f;
@@ -96,7 +97,7 @@ public class Attendance {
 
 	private SubAttendance getSubAttendanceByRound(int round) {
 		return this.subAttendances.stream().filter(o -> o.getSubLecture().getRound() == round).findFirst()
-			.orElseThrow(() -> new EntityNotFoundException(INVALID_SUB_ATTENDANCE.getContent()));
+			.orElseThrow(() -> new AttendanceException(INVALID_SUB_ATTENDANCE));
 	}
 
 	private void setMember(Member member) {
@@ -113,5 +114,9 @@ public class Attendance {
 		}
 		this.lecture = lecture;
 		lecture.getAttendances().add(this);
+	}
+
+	public boolean isEnd() {
+		return this.lecture.isEnd();
 	}
 }

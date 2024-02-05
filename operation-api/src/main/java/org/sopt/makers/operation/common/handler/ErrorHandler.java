@@ -4,6 +4,7 @@ import org.sopt.makers.operation.common.dto.BaseResponse;
 import org.sopt.makers.operation.common.util.ApiResponseUtil;
 import org.sopt.makers.operation.exception.AdminFailureException;
 import org.sopt.makers.operation.exception.AlarmException;
+import org.sopt.makers.operation.exception.AttendanceException;
 import org.sopt.makers.operation.exception.DateTimeParseCustomException;
 import org.sopt.makers.operation.exception.LectureException;
 import org.sopt.makers.operation.exception.MemberException;
@@ -63,6 +64,12 @@ public class ErrorHandler {
 
     @ExceptionHandler(AlarmException.class)
     public ResponseEntity<BaseResponse<?>> alarmException(AlarmException ex) {
+        log.error(ex.getMessage());
+        return ApiResponseUtil.failure(ex.getFailureCode());
+    }
+
+    @ExceptionHandler(AttendanceException.class)
+    public ResponseEntity<BaseResponse<?>> attendanceException(AttendanceException ex) {
         log.error(ex.getMessage());
         return ApiResponseUtil.failure(ex.getFailureCode());
     }

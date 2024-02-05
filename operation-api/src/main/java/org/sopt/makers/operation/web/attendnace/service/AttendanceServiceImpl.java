@@ -60,7 +60,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 
 	@Override
 	@Transactional
-	public float updateMemberScore(Long memberId) {
+	public float updateMemberAllScore(long memberId) {
 		val member = findMember(memberId);
 		member.updateTotalScore();
 		return member.getScore();

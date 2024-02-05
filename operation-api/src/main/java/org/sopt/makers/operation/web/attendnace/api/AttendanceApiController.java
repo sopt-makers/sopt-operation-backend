@@ -44,7 +44,7 @@ public class AttendanceApiController implements AttendanceApi {
 	@Override
 	@PatchMapping("/member/{memberId}")
 	public ResponseEntity<BaseResponse<?>> updateMemberScore(@PathVariable long memberId) {
-		val response = attendanceService.updateMemberScore(memberId);
+		val response = attendanceService.updateMemberAllScore(memberId);
 		return ApiResponseUtil.success(SUCCESS_UPDATE_MEMBER_SCORE, response);
 	}
 

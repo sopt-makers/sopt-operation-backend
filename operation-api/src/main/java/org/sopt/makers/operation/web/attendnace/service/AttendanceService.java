@@ -10,6 +10,6 @@ import org.springframework.data.domain.Pageable;
 public interface AttendanceService {
 	UpdatedSubAttendanceResponse updateSubAttendance(UpdatedSubAttendanceRequest request);
 	AttendanceMemberResponse findAttendancesByMember(long memberId);
-	float updateMemberScore(Long memberId);
+	float updateMemberAllScore(long memberId);
 	AttendanceListResponse findAttendancesByLecture(long lectureId, Part part, Pageable pageable);
 }
