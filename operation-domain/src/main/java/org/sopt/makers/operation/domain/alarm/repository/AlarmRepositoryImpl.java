@@ -22,7 +22,7 @@ public class AlarmRepositoryImpl implements AlarmCustomRepository {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public List<Alarm> getAlarms(Integer generation, Part part, Status status, Pageable pageable) {
+	public List<Alarm> findOrderByCreatedDate(Integer generation, Part part, Status status, Pageable pageable) {
 		return queryFactory
 			.selectFrom(alarm)
 			.where(
@@ -37,7 +37,7 @@ public class AlarmRepositoryImpl implements AlarmCustomRepository {
 	}
 
 	@Override
-	public int countByGenerationAndPartAndStatus(int generation, Part part, Status status) {
+	public int count(int generation, Part part, Status status) {
 		return Math.toIntExact(queryFactory
 			.select(alarm.count())
 			.from(alarm)

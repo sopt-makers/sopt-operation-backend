@@ -8,6 +8,6 @@ import org.sopt.makers.operation.domain.alarm.domain.Status;
 import org.springframework.data.domain.Pageable;
 
 public interface AlarmCustomRepository {
-	List<Alarm> getAlarms(Integer generation, Part part, Status status, Pageable pageable);
-	int countByGenerationAndPartAndStatus(int generation, Part part, Status status);
+	List<Alarm> findOrderByCreatedDate(Integer generation, Part part, Status status, Pageable pageable);
+	int count(int generation, Part part, Status status);
 }
