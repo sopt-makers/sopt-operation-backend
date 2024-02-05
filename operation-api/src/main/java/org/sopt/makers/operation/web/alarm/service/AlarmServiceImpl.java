@@ -130,7 +130,7 @@ public class AlarmServiceImpl implements AlarmService {
 
 	@Override
 	@Transactional
-	public void deleteAlarm(Long alarmId) {
+	public void deleteAlarm(long alarmId) {
 		val alarm = findAlarm(alarmId);
 		alarmRepository.delete(alarm);
 	}
