@@ -18,7 +18,7 @@ import org.sopt.makers.operation.web.alarm.dto.request.AlarmRequest;
 import org.sopt.makers.operation.exception.AlarmException;
 import org.sopt.makers.operation.web.alarm.dto.request.AlarmSendRequest;
 import org.sopt.makers.operation.web.alarm.dto.response.AlarmResponse;
-import org.sopt.makers.operation.web.alarm.dto.response.AlarmsResponse;
+import org.sopt.makers.operation.web.alarm.dto.response.AlarmListResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -116,10 +116,10 @@ public class AlarmServiceImpl implements AlarmService {
 	}
 
 	@Override
-	public AlarmsResponse getAlarms(Integer generation, Part part, Status status, Pageable pageable) {
-		val alarms = alarmRepository.getAlarms(generation, part, status, pageable);
-		val alarmsCount = alarmRepository.countByGenerationAndPartAndStatus(generation, part, status);
-		return AlarmsResponse.of(alarms, alarmsCount);
+	public AlarmListResponse getAlarms(Integer generation, Part part, Status status, Pageable pageable) {
+		val alarmList = alarmRepository.findOrderByCreatedDate(generation, part, status, pageable);
+		val totalCount = alarmRepository.count(generation, part, status);
+		return AlarmListResponse.of(alarmList, totalCount);
 	}
 
 	@Override

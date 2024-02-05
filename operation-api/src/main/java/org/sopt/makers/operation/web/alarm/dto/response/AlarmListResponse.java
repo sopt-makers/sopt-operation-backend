@@ -2,8 +2,10 @@ package org.sopt.makers.operation.web.alarm.dto.response;
 
 import static java.util.Objects.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import org.sopt.makers.operation.domain.Part;
 import org.sopt.makers.operation.domain.alarm.domain.Alarm;
 
 import lombok.AccessLevel;
@@ -34,21 +36,21 @@ public record AlarmListResponse(
 		private static AlarmVO of(Alarm alarm) {
 			return AlarmVO.builder()
 				.alarmId(alarm.getId())
-				.part(getPartName(alarm))
+				.part(getPartName(alarm.getPart()))
 				.attribute(alarm.getAttribute().getName())
 				.title(alarm.getTitle())
 				.content(alarm.getContent())
-				.sendAt(getSendAt(alarm))
+				.sendAt(getSendAt(alarm.getSendAt()))
 				.status(alarm.getStatus().getName())
 				.build();
 		}
 
-		private static String getPartName(Alarm alarm) {
-			return nonNull(alarm.getPart()) ? alarm.getPart().getName() : null;
+		private static String getPartName(Part part) {
+			return nonNull(part) ? part.getName() : null;
 		}
 
-		private static String getSendAt(Alarm alarm) {
-			return nonNull(alarm.getSendAt()) ? alarm.getSendAt().toString() : null;
+		private static String getSendAt(LocalDateTime sendAt) {
+			return nonNull(sendAt) ? sendAt.toString() : null;
 		}
 	}
 }
