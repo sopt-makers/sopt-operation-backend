@@ -67,7 +67,7 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 	}
 
 	@Override
-	public List<Attendance> findByMember(Member member) {
+	public List<Attendance> findFetchJoin(Member member) {
 		return queryFactory
 			.selectFrom(attendance)
 			.leftJoin(attendance.subAttendances, subAttendance).fetchJoin().distinct()

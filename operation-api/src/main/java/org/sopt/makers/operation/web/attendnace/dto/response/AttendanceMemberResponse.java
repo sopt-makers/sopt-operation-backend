@@ -14,14 +14,14 @@ public record AttendanceMemberResponse(
 	String phone,
 	List<LectureVO> lectures
 ) {
-	public static AttendanceMemberResponse of(Member member, List<Attendance> attendances) {
+	public static AttendanceMemberResponse of(Member member, List<Attendance> attendanceList) {
 		return new AttendanceMemberResponse(
 			member.getName(),
 			member.getScore(),
 			member.getPart().getName(),
 			member.getUniversity(),
 			member.getPhone(),
-			attendances.stream().map(LectureVO::of).toList());
+			attendanceList.stream().map(LectureVO::of).toList());
 	}
 
 	record LectureVO(

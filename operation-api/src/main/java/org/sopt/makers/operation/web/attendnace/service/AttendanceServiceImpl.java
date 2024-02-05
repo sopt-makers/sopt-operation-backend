@@ -1,13 +1,16 @@
 package org.sopt.makers.operation.web.attendnace.service;
 
 import static org.sopt.makers.operation.code.failure.AttendanceFailureCode.*;
+import static org.sopt.makers.operation.code.failure.MemberFailureCode.*;
 
 import org.sopt.makers.operation.domain.Part;
 import org.sopt.makers.operation.domain.attendance.domain.SubAttendance;
 import org.sopt.makers.operation.domain.attendance.repository.attendance.AttendanceRepository;
 import org.sopt.makers.operation.domain.attendance.repository.subAttendance.SubAttendanceRepository;
+import org.sopt.makers.operation.domain.member.domain.Member;
 import org.sopt.makers.operation.domain.member.repository.MemberRepository;
 import org.sopt.makers.operation.exception.LectureException;
+import org.sopt.makers.operation.exception.MemberException;
 import org.sopt.makers.operation.web.attendnace.dto.request.UpdatedSubAttendanceRequest;
 import org.sopt.makers.operation.web.attendnace.dto.response.AttendanceMemberResponse;
 import org.sopt.makers.operation.web.attendnace.dto.response.AttendanceListResponse;
@@ -46,20 +49,19 @@ public class AttendanceServiceImpl implements AttendanceService {
 	@Override
 	public AttendanceMemberResponse findAttendancesByMember(long memberId) {
 		val member = findMember(memberId);
-		val attendances = attendanceRepository.findByMember(member);
-		return AttendanceMemberResponse.of(member, attendances);
+		val attendanceList = attendanceRepository.findFetchJoin(member);
+		return AttendanceMemberResponse.of(member, attendanceList);
 	}
 
-	private Member findMember(Long id) {
+	private Member findMember(long id) {
 		return memberRepository.findById(id)
-				.orElseThrow(() -> new MemberException(INVALID_MEMBER.getContent()));
+				.orElseThrow(() -> new MemberException(INVALID_MEMBER));
 	}
 
 	@Override
 	@Transactional
 	public float updateMemberScore(Long memberId) {
-		val member = memberRepository.find(memberId)
-			.orElseThrow(() -> new MemberException(INVALID_MEMBER.getContent()));
+		val member = findMember(memberId);
 		member.updateTotalScore();
 		return member.getScore();
 	}
