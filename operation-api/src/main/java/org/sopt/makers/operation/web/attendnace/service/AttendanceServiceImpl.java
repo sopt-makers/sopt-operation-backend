@@ -1,12 +1,16 @@
 package org.sopt.makers.operation.web.attendnace.service;
 
 import static org.sopt.makers.operation.code.failure.AttendanceFailureCode.*;
+import static org.sopt.makers.operation.code.failure.LectureFailureCode.*;
 import static org.sopt.makers.operation.code.failure.MemberFailureCode.*;
 
+import org.sopt.makers.operation.code.failure.LectureFailureCode;
 import org.sopt.makers.operation.domain.Part;
 import org.sopt.makers.operation.domain.attendance.domain.SubAttendance;
 import org.sopt.makers.operation.domain.attendance.repository.attendance.AttendanceRepository;
 import org.sopt.makers.operation.domain.attendance.repository.subAttendance.SubAttendanceRepository;
+import org.sopt.makers.operation.domain.lecture.Lecture;
+import org.sopt.makers.operation.domain.lecture.repository.lecture.LectureRepository;
 import org.sopt.makers.operation.domain.member.domain.Member;
 import org.sopt.makers.operation.domain.member.repository.MemberRepository;
 import org.sopt.makers.operation.exception.LectureException;
@@ -32,6 +36,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 	private final AttendanceRepository attendanceRepository;
 	private final SubAttendanceRepository subAttendanceRepository;
 	private final MemberRepository memberRepository;
+	private final LectureRepository lectureRepository;
 
 	@Override
 	@Transactional
@@ -68,8 +73,14 @@ public class AttendanceServiceImpl implements AttendanceService {
 
 	@Override
 	public AttendanceListResponse findAttendancesByLecture(long lectureId, Part part, Pageable pageable) {
-		val attendances = attendanceRepository.findByLecture(lectureId, part, pageable);
-		val attendancesCount = attendanceRepository.countByLectureIdAndPart(lectureId, part);
-		return AttendanceListResponse.of(attendances, attendancesCount);
+		val lecture = findLecture(lectureId);
+		val attendanceList = attendanceRepository.findFetchJoin(lecture, part, pageable);
+		val totalCount = attendanceRepository.count(lecture, part);
+		return AttendanceListResponse.of(attendanceList, totalCount);
+	}
+
+	private Lecture findLecture(long id) {
+		return lectureRepository.findById(id)
+				.orElseThrow(() -> new LectureException(INVALID_LECTURE));
 	}
 }

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum LectureFailureCode implements FailureCode {
 	INVALID_DATE_PATTERN(BAD_REQUEST, "유효하지 않은 날짜 형식입니다."),
+	INVALID_LECTURE(NOT_FOUND, "유효하지 않은 세션입니다."),
 	;
 
 	private final HttpStatus status;
