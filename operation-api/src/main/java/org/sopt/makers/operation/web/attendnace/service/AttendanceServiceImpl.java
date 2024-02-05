@@ -1,21 +1,17 @@
-package org.sopt.makers.operation.service.web.attendance.service;
+package org.sopt.makers.operation.web.attendnace.service;
 
-import static org.operation.attendance.message.ErrorMessage.*;
-import static org.operation.member.message.ErrorMessage.*;
+import static org.sopt.makers.operation.code.failure.AttendanceFailureCode.*;
 
-import org.operation.attendance.domain.SubAttendance;
-import org.operation.attendance.repository.attendance.AttendanceRepository;
-import org.operation.attendance.repository.subAttendance.SubAttendanceRepository;
 import org.sopt.makers.operation.domain.Part;
-import org.sopt.makers.operation.common.exception.LectureException;
-import org.sopt.makers.operation.common.exception.MemberException;
-import org.operation.member.domain.Member;
-import org.operation.member.repository.MemberRepository;
-import org.sopt.makers.operation.service.web.attendance.dto.request.SubAttendanceUpdateRequest;
-import org.sopt.makers.operation.service.web.attendance.dto.response.AttendanceMemberResponse;
-import org.sopt.makers.operation.service.web.attendance.dto.response.AttendancesResponse;
-import org.sopt.makers.operation.service.web.attendance.dto.response.SubAttendanceUpdateResponse;
-import org.sopt.makers.operation.web.attendnace.service.AttendanceService;
+import org.sopt.makers.operation.domain.attendance.domain.SubAttendance;
+import org.sopt.makers.operation.domain.attendance.repository.attendance.AttendanceRepository;
+import org.sopt.makers.operation.domain.attendance.repository.subAttendance.SubAttendanceRepository;
+import org.sopt.makers.operation.domain.member.repository.MemberRepository;
+import org.sopt.makers.operation.exception.LectureException;
+import org.sopt.makers.operation.web.attendnace.dto.request.UpdatedSubAttendanceRequest;
+import org.sopt.makers.operation.web.attendnace.dto.response.AttendanceMemberResponse;
+import org.sopt.makers.operation.web.attendnace.dto.response.AttendanceListResponse;
+import org.sopt.makers.operation.web.attendnace.dto.response.UpdatedSubAttendanceResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,21 +26,21 @@ import lombok.val;
 @Transactional(readOnly = true)
 public class AttendanceServiceImpl implements AttendanceService {
 
+	private final AttendanceRepository attendanceRepository;
 	private final SubAttendanceRepository subAttendanceRepository;
 	private final MemberRepository memberRepository;
-	private final AttendanceRepository attendanceRepository;
 
 	@Override
 	@Transactional
-	public SubAttendanceUpdateResponse updateSubAttendance(SubAttendanceUpdateRequest request) {
+	public UpdatedSubAttendanceResponse updateSubAttendance(UpdatedSubAttendanceRequest request) {
 		val subAttendance = findSubAttendance(request.subAttendanceId());
 		subAttendance.updateStatus(request.status());
-		return SubAttendanceUpdateResponse.of(subAttendance);
+		return UpdatedSubAttendanceResponse.of(subAttendance);
 	}
 
-	private SubAttendance findSubAttendance(Long id) {
+	private SubAttendance findSubAttendance(long id) {
 		return subAttendanceRepository.findById(id)
-				.orElseThrow(() -> new LectureException(INVALID_ATTENDANCE.getContent()));
+				.orElseThrow(() -> new LectureException(INVALID_ATTENDANCE));
 	}
 
 	@Override
@@ -69,9 +65,9 @@ public class AttendanceServiceImpl implements AttendanceService {
 	}
 
 	@Override
-	public AttendancesResponse findAttendancesByLecture(long lectureId, Part part, Pageable pageable) {
+	public AttendanceListResponse findAttendancesByLecture(long lectureId, Part part, Pageable pageable) {
 		val attendances = attendanceRepository.findByLecture(lectureId, part, pageable);
 		val attendancesCount = attendanceRepository.countByLectureIdAndPart(lectureId, part);
-		return AttendancesResponse.of(attendances, attendancesCount);
+		return AttendanceListResponse.of(attendances, attendancesCount);
 	}
 }
