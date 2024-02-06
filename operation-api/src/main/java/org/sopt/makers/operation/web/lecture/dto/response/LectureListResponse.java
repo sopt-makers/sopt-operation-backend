@@ -3,21 +3,23 @@ package org.sopt.makers.operation.web.lecture.dto.response;
 import java.util.List;
 
 import org.sopt.makers.operation.domain.Part;
-import org.operation.lecture.Attribute;
-import org.operation.lecture.Lecture;
+import org.sopt.makers.operation.domain.lecture.Attribute;
+import org.sopt.makers.operation.domain.lecture.Lecture;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 
-public record LecturesResponse(
+@Builder(access = AccessLevel.PRIVATE)
+public record LectureListResponse(
 		int generation,
 		List<LectureVO> lectures
 ) {
 
-	public static LecturesResponse of(int generation, List<Lecture> lectures) {
-		return new LecturesResponse(
-				generation,
-				lectures.stream().map(LectureVO::of).toList()
-		);
+	public static LectureListResponse of(int generation, List<Lecture> lectureList) {
+		return LectureListResponse.builder()
+				.generation(generation)
+				.lectures(lectureList.stream().map(LectureVO::of).toList())
+				.build();
 	}
 
 	@Builder
@@ -31,7 +33,7 @@ public record LecturesResponse(
 			Attribute attributeValue,
 			String attributeName,
 			String place,
-			AttendancesStatusVO attendances
+			AttendanceStatusListVO attendances
 	) {
 		private static LectureVO of(Lecture lecture) {
 			return LectureVO.builder()
@@ -44,9 +46,8 @@ public record LecturesResponse(
 					.attributeValue(lecture.getAttribute())
 					.attributeName(lecture.getAttribute().getName())
 					.place(lecture.getPlace())
-					.attendances(AttendancesStatusVO.of(lecture))
+					.attendances(AttendanceStatusListVO.of(lecture))
 					.build();
 		}
 	}
 }
-

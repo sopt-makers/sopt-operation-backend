@@ -91,7 +91,7 @@ public class Attendance {
 		this.member.updateScore(this.getScore());
 	}
 
-	public void revertMemberScore() {
+	public void restoreMemberScore() {
 		this.member.updateScore((-1) * this.getScore());
 	}
 

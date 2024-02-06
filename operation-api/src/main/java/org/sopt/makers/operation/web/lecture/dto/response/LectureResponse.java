@@ -6,10 +6,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.sopt.makers.operation.domain.Part;
-import org.operation.lecture.Attribute;
-import org.operation.lecture.Lecture;
-import org.operation.lecture.LectureStatus;
-import org.operation.lecture.SubLecture;
+import org.sopt.makers.operation.domain.lecture.Attribute;
+import org.sopt.makers.operation.domain.lecture.Lecture;
+import org.sopt.makers.operation.domain.lecture.LectureStatus;
+import org.sopt.makers.operation.domain.lecture.SubLecture;
 
 import lombok.Builder;
 
@@ -21,7 +21,7 @@ public record LectureResponse(
 	Part part,
 	Attribute attribute,
 	List<SubLectureVO> subLectures,
-	AttendancesStatusVO attendances,
+	AttendanceStatusListVO attendances,
 	LectureStatus status
 
 ) {
@@ -33,7 +33,7 @@ public record LectureResponse(
 			.part(lecture.getPart())
 			.attribute(lecture.getAttribute())
 			.subLectures(lecture.getSubLectures().stream().map(SubLectureVO::of).toList())
-			.attendances(AttendancesStatusVO.of(lecture))
+			.attendances(AttendanceStatusListVO.of(lecture))
 			.status(lecture.getLectureStatus())
 			.build();
 	}
