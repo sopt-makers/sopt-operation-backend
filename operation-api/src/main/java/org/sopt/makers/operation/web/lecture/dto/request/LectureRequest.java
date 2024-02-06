@@ -5,9 +5,9 @@ import static org.sopt.makers.operation.code.failure.LectureFailureCode.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 
-import org.sopt.makers.operation.domain.Part;
-import org.sopt.makers.operation.domain.lecture.Attribute;
-import org.sopt.makers.operation.domain.lecture.Lecture;
+import org.sopt.makers.operation.common.domain.Part;
+import org.sopt.makers.operation.lecture.domain.Attribute;
+import org.sopt.makers.operation.lecture.domain.Lecture;
 import org.sopt.makers.operation.exception.DateTimeParseCustomException;
 
 import lombok.Builder;

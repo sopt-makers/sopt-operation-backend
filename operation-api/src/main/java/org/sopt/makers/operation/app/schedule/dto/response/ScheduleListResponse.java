@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.sopt.makers.operation.domain.lecture.Attribute;
-import org.sopt.makers.operation.domain.schedule.domain.Schedule;
+import org.sopt.makers.operation.lecture.domain.Attribute;
+import org.sopt.makers.operation.schedule.domain.Schedule;
 
 import lombok.Builder;
 

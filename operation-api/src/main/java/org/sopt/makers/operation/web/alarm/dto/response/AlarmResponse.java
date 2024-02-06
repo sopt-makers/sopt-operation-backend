@@ -4,8 +4,8 @@ import static java.util.Objects.*;
 
 import java.time.LocalDateTime;
 
-import org.sopt.makers.operation.domain.Part;
-import org.sopt.makers.operation.domain.alarm.domain.Alarm;
+import org.sopt.makers.operation.common.domain.Part;
+import org.sopt.makers.operation.alarm.domain.Alarm;
 
 import lombok.Builder;
 

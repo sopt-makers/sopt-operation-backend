@@ -12,8 +12,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.sopt.makers.operation.domain.schedule.domain.Schedule;
-import org.sopt.makers.operation.domain.schedule.repository.ScheduleRepository;
+import org.sopt.makers.operation.schedule.domain.Schedule;
+import org.sopt.makers.operation.schedule.repository.ScheduleRepository;
 import org.sopt.makers.operation.exception.ScheduleException;
 import org.sopt.makers.operation.app.schedule.dto.response.ScheduleListResponse;
 import org.springframework.stereotype.Service;

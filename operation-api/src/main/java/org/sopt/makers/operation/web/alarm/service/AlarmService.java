@@ -1,7 +1,7 @@
 package org.sopt.makers.operation.web.alarm.service;
 
-import org.sopt.makers.operation.domain.Part;
-import org.sopt.makers.operation.domain.alarm.domain.Status;
+import org.sopt.makers.operation.common.domain.Part;
+import org.sopt.makers.operation.alarm.domain.Status;
 import org.sopt.makers.operation.web.alarm.dto.request.AlarmRequest;
 import org.sopt.makers.operation.web.alarm.dto.request.AlarmSendRequest;
 import org.sopt.makers.operation.web.alarm.dto.response.AlarmResponse;

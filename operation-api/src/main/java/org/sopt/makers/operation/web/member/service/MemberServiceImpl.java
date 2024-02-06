@@ -1,7 +1,7 @@
 package org.sopt.makers.operation.web.member.service;
 
-import org.sopt.makers.operation.domain.Part;
-import org.sopt.makers.operation.domain.member.repository.MemberRepository;
+import org.sopt.makers.operation.common.domain.Part;
+import org.sopt.makers.operation.member.repository.MemberRepository;
 import org.sopt.makers.operation.web.member.dto.response.MemberListResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

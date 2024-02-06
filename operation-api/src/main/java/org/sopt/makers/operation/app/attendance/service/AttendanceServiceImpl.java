@@ -1,13 +1,13 @@
 package org.sopt.makers.operation.app.attendance.service;
 
-import static org.sopt.makers.operation.domain.attendance.domain.AttendanceStatus.*;
+import static org.sopt.makers.operation.attendance.domain.AttendanceStatus.*;
 
 import org.sopt.makers.operation.app.attendance.dto.request.AttendanceRequest;
 import org.sopt.makers.operation.app.attendance.dto.response.AttendanceResponse;
 import org.sopt.makers.operation.config.ValueConfig;
-import org.sopt.makers.operation.domain.attendance.repository.attendance.AttendanceRepository;
-import org.sopt.makers.operation.domain.lecture.repository.subLecture.SubLectureRepository;
-import org.sopt.makers.operation.domain.member.repository.MemberRepository;
+import org.sopt.makers.operation.attendance.repository.attendance.AttendanceRepository;
+import org.sopt.makers.operation.lecture.repository.subLecture.SubLectureRepository;
+import org.sopt.makers.operation.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

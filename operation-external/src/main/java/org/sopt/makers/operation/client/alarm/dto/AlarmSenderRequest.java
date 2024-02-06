@@ -1,13 +1,13 @@
 package org.sopt.makers.operation.client.alarm.dto;
 
-import static org.sopt.makers.operation.domain.alarm.domain.Attribute.*;
+import static org.sopt.makers.operation.alarm.domain.Attribute.*;
 
 import java.util.List;
 
 import org.sopt.makers.operation.config.ValueConfig;
-import org.sopt.makers.operation.domain.alarm.domain.Alarm;
-import org.sopt.makers.operation.domain.alarm.domain.Attribute;
-import org.sopt.makers.operation.domain.lecture.Lecture;
+import org.sopt.makers.operation.alarm.domain.Alarm;
+import org.sopt.makers.operation.alarm.domain.Attribute;
+import org.sopt.makers.operation.lecture.domain.Lecture;
 
 import lombok.AccessLevel;
 import lombok.Builder;

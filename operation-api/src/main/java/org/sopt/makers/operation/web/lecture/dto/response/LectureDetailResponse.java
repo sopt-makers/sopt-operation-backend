@@ -1,6 +1,6 @@
 package org.sopt.makers.operation.web.lecture.dto.response;
 
-import org.sopt.makers.operation.domain.lecture.Lecture;
+import org.sopt.makers.operation.lecture.domain.Lecture;
 
 import lombok.Builder;
 

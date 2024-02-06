@@ -1,9 +1,9 @@
 package org.sopt.makers.operation.web.lecture.dto.response;
 
-import static org.sopt.makers.operation.domain.attendance.domain.AttendanceStatus.*;
+import static org.sopt.makers.operation.attendance.domain.AttendanceStatus.*;
 
-import org.sopt.makers.operation.domain.attendance.domain.AttendanceStatus;
-import org.sopt.makers.operation.domain.lecture.Lecture;
+import org.sopt.makers.operation.attendance.domain.AttendanceStatus;
+import org.sopt.makers.operation.lecture.domain.Lecture;
 
 import lombok.Builder;
 

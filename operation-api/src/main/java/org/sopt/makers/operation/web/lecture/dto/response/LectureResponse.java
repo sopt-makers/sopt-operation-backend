@@ -5,11 +5,11 @@ import static java.util.Objects.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.sopt.makers.operation.domain.Part;
-import org.sopt.makers.operation.domain.lecture.Attribute;
-import org.sopt.makers.operation.domain.lecture.Lecture;
-import org.sopt.makers.operation.domain.lecture.LectureStatus;
-import org.sopt.makers.operation.domain.lecture.SubLecture;
+import org.sopt.makers.operation.common.domain.Part;
+import org.sopt.makers.operation.lecture.domain.Attribute;
+import org.sopt.makers.operation.lecture.domain.Lecture;
+import org.sopt.makers.operation.lecture.domain.LectureStatus;
+import org.sopt.makers.operation.lecture.domain.SubLecture;
 
 import lombok.Builder;
 

@@ -2,10 +2,10 @@ package org.sopt.makers.operation.web.attendnace.dto.response;
 
 import java.util.List;
 
-import org.sopt.makers.operation.domain.attendance.domain.Attendance;
-import org.sopt.makers.operation.domain.attendance.domain.AttendanceStatus;
-import org.sopt.makers.operation.domain.attendance.domain.SubAttendance;
-import org.sopt.makers.operation.domain.member.domain.Member;
+import org.sopt.makers.operation.attendance.domain.Attendance;
+import org.sopt.makers.operation.attendance.domain.AttendanceStatus;
+import org.sopt.makers.operation.attendance.domain.SubAttendance;
+import org.sopt.makers.operation.member.domain.Member;
 
 import lombok.AccessLevel;
 import lombok.Builder;

@@ -1,6 +1,6 @@
 package org.sopt.makers.operation.web.attendnace.api;
 
-import org.sopt.makers.operation.domain.Part;
+import org.sopt.makers.operation.common.domain.Part;
 import org.sopt.makers.operation.common.dto.BaseResponse;
 import org.sopt.makers.operation.web.attendnace.dto.request.UpdatedSubAttendanceRequest;
 import org.springframework.data.domain.Pageable;

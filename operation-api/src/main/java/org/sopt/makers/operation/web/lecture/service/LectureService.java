@@ -1,6 +1,6 @@
 package org.sopt.makers.operation.web.lecture.service;
 
-import org.sopt.makers.operation.domain.Part;
+import org.sopt.makers.operation.common.domain.Part;
 import org.sopt.makers.operation.web.lecture.dto.request.AttendanceRequest;
 import org.sopt.makers.operation.web.lecture.dto.request.LectureRequest;
 import org.sopt.makers.operation.web.lecture.dto.response.AttendanceResponse;
