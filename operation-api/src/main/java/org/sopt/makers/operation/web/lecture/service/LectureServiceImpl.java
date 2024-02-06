@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.service.web.lecture.service;
+package org.sopt.makers.operation.web.lecture.service;
 
 import static org.operation.alarm.domain.Attribute.*;
 import static org.operation.lecture.message.ErrorMessage.*;
@@ -21,12 +21,12 @@ import org.operation.lecture.repository.lecture.LectureRepository;
 import org.operation.lecture.repository.subLecture.SubLectureRepository;
 import org.operation.member.domain.Member;
 import org.operation.member.repository.MemberRepository;
-import org.sopt.makers.operation.service.web.lecture.dto.request.AttendanceRequest;
-import org.sopt.makers.operation.service.web.lecture.dto.request.LectureRequest;
-import org.sopt.makers.operation.service.web.lecture.dto.response.AttendanceResponse;
-import org.sopt.makers.operation.service.web.lecture.dto.response.LectureDetailResponse;
-import org.sopt.makers.operation.service.web.lecture.dto.response.LectureResponse;
-import org.sopt.makers.operation.service.web.lecture.dto.response.LecturesResponse;
+import org.sopt.makers.operation.web.lecture.dto.request.AttendanceRequest;
+import org.sopt.makers.operation.web.lecture.dto.request.LectureRequest;
+import org.sopt.makers.operation.web.lecture.dto.response.AttendanceResponse;
+import org.sopt.makers.operation.web.lecture.dto.response.LectureDetailResponse;
+import org.sopt.makers.operation.web.lecture.dto.response.LectureResponse;
+import org.sopt.makers.operation.web.lecture.dto.response.LecturesResponse;
 import org.sopt.makers.operation.web.alarm.dto.request.AlarmSenderRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

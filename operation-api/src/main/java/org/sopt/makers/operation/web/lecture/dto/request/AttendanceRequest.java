@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.service.web.lecture.dto.request;
+package org.sopt.makers.operation.web.lecture.dto.request;
 
 public record AttendanceRequest(
 	Long lectureId,

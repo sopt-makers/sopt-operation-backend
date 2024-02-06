@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.service.web.lecture.dto.request;
+package org.sopt.makers.operation.web.lecture.dto.request;
 
 import static org.sopt.makers.operation.code.failure.LectureFailureCode.*;
 
