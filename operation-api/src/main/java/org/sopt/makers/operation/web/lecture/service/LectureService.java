@@ -14,6 +14,7 @@ public interface LectureService {
 	LectureResponse getLecture(long lectureId);
 	AttendanceResponse startAttendance(AttendanceRequest request);
 	void endLecture(long lectureId);
+	void endLectures();
 	void deleteLecture(long lectureId);
 	LectureDetailResponse getLectureDetail(long lectureId);
 }

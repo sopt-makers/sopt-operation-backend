@@ -167,6 +167,13 @@ public class LectureServiceImpl implements LectureService {
 
 	@Override
 	@Transactional
+	public void endLectures() {
+		val lectures = lectureRepository.findLecturesToBeEnd();
+		lectures.forEach(lecture -> endLecture(lecture.getId()));
+	}
+
+	@Override
+	@Transactional
 	public void deleteLecture(long lectureId) {
 		val lecture = getLectureToDelete(lectureId);
 		deleteRelationship(lecture);

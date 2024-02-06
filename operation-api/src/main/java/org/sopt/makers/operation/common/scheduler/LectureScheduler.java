@@ -1,6 +1,6 @@
 package org.sopt.makers.operation.common.scheduler;
 
-import org.sopt.makers.operation.common.scheduler.service.LectureService;
+import org.sopt.makers.operation.web.lecture.service.LectureService;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
