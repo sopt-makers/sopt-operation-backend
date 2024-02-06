@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.common.scheduler;
+package org.sopt.makers.operation.scheduler;
 
 import org.sopt.makers.operation.web.lecture.service.LectureService;
 import org.springframework.scheduling.annotation.EnableScheduling;
