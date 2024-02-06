@@ -30,7 +30,7 @@ public class MemberApiController implements MemberApi {
 			@RequestParam(required = false) Integer generation,
 			Pageable pageable
 	) {
-		val response = memberService.getMemberList(part, generation, pageable);
+		val response = memberService.getMembers(part, generation, pageable);
 		return ApiResponseUtil.success(SUCCESS_GET_MEMBERS, response);
 	}
 }
