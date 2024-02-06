@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.service.app.schedule.dto.response;
+package org.sopt.makers.operation.app.schedule.dto.response;
 
 import java.time.LocalDate;
 import java.time.format.TextStyle;
@@ -11,11 +11,11 @@ import org.sopt.makers.operation.domain.schedule.domain.Schedule;
 
 import lombok.Builder;
 
-public record SchedulesResponseDTO(
+public record ScheduleListResponse(
     List<DateVO> dates
 ) {
-    public static SchedulesResponseDTO of(Map<LocalDate, List<Schedule>> scheduleMap) {
-        return new SchedulesResponseDTO(
+    public static ScheduleListResponse of(Map<LocalDate, List<Schedule>> scheduleMap) {
+        return new ScheduleListResponse(
             scheduleMap.keySet().stream().sorted()
                 .map(key -> DateVO.of(key, scheduleMap.get(key)))
                 .toList()

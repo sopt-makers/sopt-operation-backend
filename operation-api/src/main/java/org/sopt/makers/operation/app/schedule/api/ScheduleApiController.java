@@ -1,6 +1,6 @@
 package org.sopt.makers.operation.app.schedule.api;
 
-import static org.sopt.makers.operation.app.schedule.message.SuccessMessage.*;
+import static org.sopt.makers.operation.code.success.app.ScheduleSuccessCode.*;
 
 import java.time.LocalDateTime;
 
@@ -31,6 +31,6 @@ public class ScheduleApiController implements ScheduleApi {
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end
 	) {
 		val response = scheduleService.getSchedules(start, end);
-		return ApiResponseUtil.ok(SUCCESS_GET_SCHEDULES.getContent(), response);
+		return ApiResponseUtil.success(SUCCESS_GET_SCHEDULES, response);
 	}
 }

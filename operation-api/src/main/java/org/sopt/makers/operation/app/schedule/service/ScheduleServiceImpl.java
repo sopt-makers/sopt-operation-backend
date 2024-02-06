@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.service.app.schedule.service;
+package org.sopt.makers.operation.app.schedule.service;
 
 import static org.sopt.makers.operation.code.failure.ScheduleFailureCode.*;
 
@@ -10,13 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.LongStream;
+import java.util.stream.IntStream;
 
-import org.sopt.makers.operation.app.schedule.service.ScheduleService;
 import org.sopt.makers.operation.domain.schedule.domain.Schedule;
 import org.sopt.makers.operation.domain.schedule.repository.ScheduleRepository;
 import org.sopt.makers.operation.exception.ScheduleException;
-import org.sopt.makers.operation.service.app.schedule.dto.response.SchedulesResponseDTO;
+import org.sopt.makers.operation.app.schedule.dto.response.ScheduleListResponse;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -29,10 +28,10 @@ public class ScheduleServiceImpl implements ScheduleService {
 	private final ScheduleRepository scheduleRepository;
 
 	@Override
-	public SchedulesResponseDTO getSchedules(LocalDateTime start, LocalDateTime end) {
-		val schedules = scheduleRepository.findBetweenStartAndEnd(start, end);
-		val scheduleMap = classifiedByDate(schedules, start, end);
-		return SchedulesResponseDTO.of(scheduleMap);
+	public ScheduleListResponse getSchedules(LocalDateTime start, LocalDateTime end) {
+		val scheduleList = scheduleRepository.findBetweenStartAndEnd(start, end);
+		val scheduleMap = classifiedByDate(scheduleList, start, end);
+		return ScheduleListResponse.of(scheduleMap);
 	}
 
 	private Map<LocalDate, List<Schedule>> classifiedByDate(List<Schedule> schedules, LocalDateTime startAt, LocalDateTime endAt) {
@@ -43,18 +42,21 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 	private Map<LocalDate, List<Schedule>> initScheduleMap(LocalDateTime startAt, LocalDateTime endAt) {
 		//TODO: 클라이언트 개발 시간 리소스 절약을 위해 해당 메소드 활용, 가능한 일정이 존재하는 날짜만 key로 가지는 HashMap로 변경 요망
+		val duration = getDuration(startAt, endAt);
+		return IntStream.range(0, duration)
+			.mapToObj(startAt::plusDays)
+			.collect(Collectors.toMap(LocalDateTime::toLocalDate, date -> new ArrayList<>()));
+	}
+
+	private int getDuration(LocalDateTime startAt, LocalDateTime endAt) {
 		val duration = Duration.between(startAt, endAt).toDays() + 1;
 		validDuration(duration);
-		return LongStream.range(0, duration)
-			.mapToObj(startAt::plusDays)
-			.collect(Collectors.toMap(
-				LocalDateTime::toLocalDate,
-				date -> new ArrayList<>()));
+		return (int)duration;
 	}
 
 	private void validDuration(long duration) {
 		//TODO: 추후 응답 값 형식 변경 후 삭제될 수 있는 메소드
-		if (duration > 50) {
+		if (duration <= 0|| duration > 50) {
 			throw new ScheduleException(INVALID_DATE_PERM);
 		}
 	}
