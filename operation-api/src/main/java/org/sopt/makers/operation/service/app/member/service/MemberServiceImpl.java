@@ -15,7 +15,6 @@ import org.sopt.makers.operation.common.exception.MemberException;
 import org.operation.lecture.Attribute;
 import org.operation.member.domain.Member;
 import org.operation.member.repository.MemberRepository;
-import org.sopt.makers.operation.service.web.member.dto.response.AttendanceTotalCountVO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

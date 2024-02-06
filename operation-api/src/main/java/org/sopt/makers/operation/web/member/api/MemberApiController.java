@@ -1,6 +1,6 @@
 package org.sopt.makers.operation.web.member.api;
 
-import static org.sopt.makers.operation.web.member.message.SuccessMessage.*;
+import static org.sopt.makers.operation.code.success.web.MemberSuccessCode.*;
 
 import org.sopt.makers.operation.domain.Part;
 import org.sopt.makers.operation.common.dto.BaseResponse;
@@ -31,6 +31,6 @@ public class MemberApiController implements MemberApi {
 			Pageable pageable
 	) {
 		val response = memberService.getMemberList(part, generation, pageable);
-		return ApiResponseUtil.ok(SUCCESS_GET_MEMBERS.getContent(), response);
+		return ApiResponseUtil.success(SUCCESS_GET_MEMBERS, response);
 	}
 }

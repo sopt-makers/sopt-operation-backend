@@ -69,13 +69,13 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
 	}
 
 	@Override
-	public int countByGenerationAndPart(int generation, Part part) {
+	public int count(int generation, Part part) {
 		return Math.toIntExact(queryFactory
 			.select(member.count())
 			.from(member)
 			.where(
 				member.generation.eq(generation),
-				(nonNull(part) && !part.equals(ALL)) ? member.part.eq(part) : null
+				partEq(part)
 			)
 			.fetchFirst());
 	}
@@ -83,7 +83,6 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
 	@Override
 	public List<Member> findOrderByName(int generation, Part part) {
 		StringExpression firstName = Expressions.stringTemplate("SUBSTR({0}, 1, 1)", member.name);
-
 		return queryFactory
 				.selectFrom(member)
 				.where(
@@ -105,5 +104,20 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
 
 	private BooleanExpression partEq(Part part) {
 		return (isNull(part) || part.equals(ALL)) ? null : member.part.eq(part);
+	}
+
+	@Override
+	public List<Member> find(int generation, Part part, Pageable pageable) {
+		StringExpression firstName = Expressions.stringTemplate("SUBSTR({0}, 1, 1)", member.name);
+		return queryFactory
+				.selectFrom(member)
+				.where(
+						partEq(part),
+						member.generation.eq(generation)
+				)
+				.offset(pageable.getOffset())
+				.limit(pageable.getPageSize())
+				.orderBy(firstName.asc())
+				.fetch();
 	}
 }
