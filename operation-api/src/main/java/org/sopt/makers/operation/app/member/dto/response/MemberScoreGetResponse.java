@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.service.app.member.dto.response;
+package org.sopt.makers.operation.app.member.dto.response;
 
 public record MemberScoreGetResponse(
 		float score

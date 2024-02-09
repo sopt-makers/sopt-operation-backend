@@ -1,7 +1,7 @@
 package org.sopt.makers.operation.service.web.member.dto.response;
 
 import org.sopt.makers.operation.domain.Part;
-import org.operation.member.domain.Member;
+import org.sopt.makers.operation.domain.member.domain.Member;
 
 public record MemberListGetResponse(
 		Long id,
