@@ -1,10 +1,10 @@
-package org.sopt.makers.operation.service.app.member.dto.response;
+package org.sopt.makers.operation.app.member.dto.response;
 
 import java.time.format.DateTimeFormatter;
 
-import org.operation.attendance.domain.Attendance;
-import org.operation.attendance.domain.AttendanceStatus;
-import org.operation.lecture.Attribute;
+import org.sopt.makers.operation.domain.attendance.domain.Attendance;
+import org.sopt.makers.operation.domain.attendance.domain.AttendanceStatus;
+import org.sopt.makers.operation.domain.lecture.Attribute;
 
 public record AttendanceTotalVO(
         Attribute attribute,

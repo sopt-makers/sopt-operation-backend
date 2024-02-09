@@ -32,6 +32,6 @@ public class AttendanceApiController implements AttendanceApi {
 	public ResponseEntity<BaseResponse<?>> attend(@RequestBody AttendanceRequest request, @NonNull Principal principal) {
 		val memberId = utils.getMemberId(principal);
 		val response = attendanceService.attend(memberId, request);
-		return ApiResponseUtil.success(SUCCESS_GET_ATTENDANCE, response);
+		return ApiResponseUtil.success(SUCCESS_ATTEND, response);
 	}
 }

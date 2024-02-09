@@ -1,9 +1,9 @@
-package org.sopt.makers.operation.service.app.member.dto.response;
+package org.sopt.makers.operation.app.member.dto.response;
 
 import java.util.List;
 
 import org.sopt.makers.operation.domain.Part;
-import org.operation.member.domain.Member;
+import org.sopt.makers.operation.domain.member.domain.Member;
 import org.sopt.makers.operation.service.web.member.dto.response.AttendanceTotalCountVO;
 
 public record AttendanceTotalResponseDTO(
