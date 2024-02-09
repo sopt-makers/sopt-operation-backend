@@ -1,7 +1,7 @@
-package org.sopt.makers.operation.service.web.admin.dto.request;
+package org.sopt.makers.operation.web.admin.dto.request;
 
-import org.operation.admin.domain.Admin;
-import org.operation.admin.domain.Role;
+import org.sopt.makers.operation.domain.admin.domain.Admin;
+import org.sopt.makers.operation.domain.admin.domain.Role;
 
 public record SignUpRequest(
         String email,

@@ -1,15 +1,20 @@
-package org.sopt.makers.operation.service.web.admin.service;
+package org.sopt.makers.operation.web.admin.service;
 
-import org.operation.admin.domain.Admin;
-import org.operation.security.AdminAuthentication;
-import org.operation.security.jwt.JwtTokenProvider;
-import org.sopt.makers.operation.service.web.admin.dto.request.SignUpRequest;
-import org.sopt.makers.operation.service.web.admin.dto.response.SignUpResponse;
-import org.sopt.makers.operation.service.web.admin.dto.request.LoginRequest;
-import org.sopt.makers.operation.service.web.admin.dto.response.LoginResponse;
-import org.sopt.makers.operation.service.web.admin.dto.response.RefreshResponse;
-import org.sopt.makers.operation.common.exception.AdminFailureException;
-import org.sopt.makers.operation.service.web.admin.repository.AdminRepository;
+import static org.sopt.makers.operation.code.failure.member.memberFailureCode.*;
+import static org.sopt.makers.operation.code.failure.admin.AdminFailureCode.*;
+
+import org.sopt.makers.operation.authentication.AdminAuthentication;
+import org.sopt.makers.operation.domain.admin.domain.Admin;
+import org.sopt.makers.operation.exception.AdminFailureException;
+import org.sopt.makers.operation.jwt.JwtTokenProvider;
+import org.sopt.makers.operation.jwt.JwtTokenType;
+import org.sopt.makers.operation.web.admin.dto.request.SignUpRequest;
+import org.sopt.makers.operation.web.admin.dto.response.SignUpResponse;
+import org.sopt.makers.operation.web.admin.dto.request.LoginRequest;
+import org.sopt.makers.operation.web.admin.dto.response.LoginResponse;
+import org.sopt.makers.operation.web.admin.dto.response.RefreshResponse;
+import org.sopt.makers.operation.domain.admin.repository.AdminRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,8 +26,8 @@ import lombok.val;
 @Transactional(readOnly = true)
 public class AdminServiceImpl implements AdminService {
 
-    private final JwtTokenProvider jwtTokenProvider; //TODO auth
-    private final PasswordEncoder passwordEncoder; //TODO auth
+    private final JwtTokenProvider jwtTokenProvider;
+    private final PasswordEncoder passwordEncoder;
     private final AdminRepository adminRepository;
 
     @Override
@@ -36,7 +41,7 @@ public class AdminServiceImpl implements AdminService {
     private void checkEmailDuplicated(String email) {
         val isExist = adminRepository.existsByEmail(email);
         if (isExist) {
-            throw new AdminFailureException("중복되는 이메일입니다"); //TODO: ExceptionMessage
+            throw new AdminFailureException(DUPLICATED_EMAIL.getMessage());
         }
     }
 
@@ -46,7 +51,7 @@ public class AdminServiceImpl implements AdminService {
         val admin = findByEmail(request.email());
         checkPasswordMatched(request.password(), admin);
         checkAdminAllowed(admin);
-        val refreshToken = generateRefreshToken();
+        val refreshToken = generateRefreshToken(admin);
         admin.updateRefreshToken(refreshToken);
         val accessToken = generateAccessToken(admin);
         return LoginResponse.of(admin, accessToken);
@@ -57,25 +62,25 @@ public class AdminServiceImpl implements AdminService {
         return jwtTokenProvider.generateAccessToken(adminAuthentication);
     }
 
-    private String generateRefreshToken() {
+    private String generateRefreshToken(Admin admin) {
         val authentication = new AdminAuthentication(admin.getId(), null, null);
         return jwtTokenProvider.generateRefreshToken(authentication);
     }
 
     private Admin findByEmail(String email) {
         return adminRepository.findByEmail(email)
-                .orElseThrow(() -> new AdminFailureException("이메일이 존재하지 않습니다")); //TODO: message
+                .orElseThrow(() -> new AdminFailureException(INVALID_EMAIL.getMessage()));
     }
 
     private void checkPasswordMatched(String password, Admin admin) { // TODO: admin 내부로 옮기는 게 좋지 않을까..?
         if (!passwordEncoder.matches(password, admin.getPassword())) {
-            throw new AdminFailureException("비밀번호가 일치하지 않습니다");
+            throw new AdminFailureException(INVALID_PASSWORD.getMessage());
         }
     }
 
     private void checkAdminAllowed(Admin admin) {
         if (admin.isNotAllowed()) {
-            throw new AdminFailureException("승인되지 않은 계정입니다");
+            throw new AdminFailureException(NOT_APPROVED_ACCOUNT.getMessage());
         }
     }
 
@@ -83,26 +88,21 @@ public class AdminServiceImpl implements AdminService {
     @Transactional
     public RefreshResponse refresh(String refreshToken) {
         val adminId = jwtTokenProvider.getId(refreshToken, JwtTokenType.REFRESH_TOKEN);
-        val admin = findById((Long)adminId);
+        val admin = findById(adminId);
         validateRefreshToken(admin, refreshToken);
-        val newAccessToken = generateAccessToken();
-
-        //TODO: 재발급 때 access만 해주지 않나??
-        /*
-        val newRefreshToken = jwtTokenProvider.generateRefreshToken(adminAuthentication);
-        admin.updateRefreshToken(newRefreshToken);*/
+        val newAccessToken = generateAccessToken(admin);
 
         return RefreshResponse.of(newAccessToken, admin);
     }
 
     public void validateRefreshToken(Admin admin, String refreshToken) {
         if(!admin.getRefreshToken().equals(refreshToken)) {
-            throw new AdminFailureException("토큰이 일치하지 않습니다"); //TODO: message
+            throw new AdminFailureException(INVALID_TOKEN.getMessage());
         }
     }
 
     private Admin findById(Long adminId) {
         return adminRepository.findById(adminId)
-                .orElseThrow(() -> new AdminFailureException(INVALID_MEMBER.getName()));
+                .orElseThrow(() -> new AdminFailureException(INVALID_MEMBER.getMessage()));
     }
 }

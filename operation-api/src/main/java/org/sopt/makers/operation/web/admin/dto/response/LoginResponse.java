@@ -1,9 +1,10 @@
-package org.sopt.makers.operation.service.web.admin.dto.response;
+package org.sopt.makers.operation.web.admin.dto.response;
 
 import lombok.AccessLevel;
 import lombok.Builder;
-import org.operation.admin.domain.Admin;
-import org.operation.admin.domain.AdminStatus;
+
+import org.sopt.makers.operation.domain.admin.domain.Admin;
+import org.sopt.makers.operation.domain.admin.domain.AdminStatus;
 
 @Builder(access = AccessLevel.PRIVATE)
 public record LoginResponse(

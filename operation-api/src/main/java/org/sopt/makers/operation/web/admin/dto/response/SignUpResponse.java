@@ -1,10 +1,9 @@
-package org.sopt.makers.operation.service.web.admin.dto.response;
-
-import org.operation.admin.domain.Admin;
-import org.operation.admin.domain.Role;
+package org.sopt.makers.operation.web.admin.dto.response;
 
 import lombok.AccessLevel;
 import lombok.Builder;
+import org.sopt.makers.operation.domain.admin.domain.Admin;
+import org.sopt.makers.operation.domain.admin.domain.Role;
 
 @Builder(access = AccessLevel.PRIVATE)
 public record SignUpResponse(

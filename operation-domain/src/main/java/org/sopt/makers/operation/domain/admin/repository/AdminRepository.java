@@ -1,8 +1,8 @@
-package org.sopt.makers.operation.service.web.admin.repository;
+package org.sopt.makers.operation.domain.admin.repository;
 
 import java.util.Optional;
 
-import org.operation.admin.domain.Admin;
+import org.sopt.makers.operation.domain.admin.domain.Admin;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

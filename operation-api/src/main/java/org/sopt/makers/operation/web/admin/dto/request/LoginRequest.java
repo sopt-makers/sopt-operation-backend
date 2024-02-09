@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.service.web.admin.dto.request;
+package org.sopt.makers.operation.web.admin.dto.request;
 
 public record LoginRequest(
 		String email,
