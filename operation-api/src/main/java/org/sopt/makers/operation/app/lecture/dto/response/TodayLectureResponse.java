@@ -1,15 +1,14 @@
-package org.sopt.makers.operation.service.app.lecture.dto.response;
+package org.sopt.makers.operation.app.lecture.dto.response;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.operation.attendance.domain.AttendanceStatus;
-import org.operation.attendance.domain.SubAttendance;
-import org.operation.lecture.Lecture;
-
 import lombok.Builder;
+import org.sopt.makers.operation.domain.attendance.domain.AttendanceStatus;
+import org.sopt.makers.operation.domain.attendance.domain.SubAttendance;
+import org.sopt.makers.operation.domain.lecture.Lecture;
 
 @Builder
 public record TodayLectureResponse(
