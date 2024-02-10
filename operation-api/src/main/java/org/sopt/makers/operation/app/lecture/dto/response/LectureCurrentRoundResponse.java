@@ -1,6 +1,6 @@
 package org.sopt.makers.operation.app.lecture.dto.response;
 
-import org.sopt.makers.operation.domain.lecture.SubLecture;
+import org.sopt.makers.operation.lecture.domain.SubLecture;
 
 public record LectureCurrentRoundResponse(
         Long id,

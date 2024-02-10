@@ -1,17 +1,16 @@
 package org.sopt.makers.operation.common.handler;
 
-import static org.springframework.http.HttpStatus.*;
-
-import java.time.format.DateTimeParseException;
-
 import org.sopt.makers.operation.common.dto.BaseResponse;
-import org.sopt.makers.operation.common.exception.MemberException;
 import org.sopt.makers.operation.common.util.ApiResponseUtil;
-import org.sopt.makers.operation.common.exception.AdminFailureException;
-import org.sopt.makers.operation.common.exception.TokenException;
-import org.sopt.makers.operation.common.exception.AlarmException;
-import org.sopt.makers.operation.common.exception.LectureException;
-import org.sopt.makers.operation.common.exception.SubLectureException;
+import org.sopt.makers.operation.exception.AdminFailureException;
+import org.sopt.makers.operation.exception.AlarmException;
+import org.sopt.makers.operation.exception.AttendanceException;
+import org.sopt.makers.operation.exception.DateTimeParseCustomException;
+import org.sopt.makers.operation.exception.LectureException;
+import org.sopt.makers.operation.exception.MemberException;
+import org.sopt.makers.operation.exception.ScheduleException;
+import org.sopt.makers.operation.exception.SubLectureException;
+import org.sopt.makers.operation.exception.TokenException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -25,48 +24,54 @@ public class ErrorHandler {
     @ExceptionHandler(AdminFailureException.class)
     public ResponseEntity<BaseResponse<?>> authFailureException(AdminFailureException ex) {
         log.error(ex.getMessage());
-        return ApiResponseUtil.failure(BAD_REQUEST, ex.getMessage());
+        return ApiResponseUtil.failure(ex.getFailureCode());
     }
 
     @ExceptionHandler(TokenException.class)
     public ResponseEntity<BaseResponse<?>> tokenException(TokenException ex) {
         log.error(ex.getMessage());
-        return ApiResponseUtil.failure(BAD_REQUEST, ex.getMessage());
+        return ApiResponseUtil.failure(ex.getFailureCode());
     }
 
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<BaseResponse<?>> illegalStateExceptionException(IllegalStateException ex) {
+    @ExceptionHandler(ScheduleException.class)
+    public ResponseEntity<BaseResponse<?>> scheduleException(ScheduleException ex) {
         log.error(ex.getMessage());
-        return ApiResponseUtil.failure(BAD_REQUEST, ex.getMessage());
+        return ApiResponseUtil.failure(ex.getFailureCode());
     }
 
     @ExceptionHandler(MemberException.class)
     public ResponseEntity<BaseResponse<?>> memberException(MemberException ex) {
         log.error(ex.getMessage());
-        return ApiResponseUtil.failure(NOT_FOUND, ex.getMessage());
+        return ApiResponseUtil.failure(ex.getFailureCode());
     }
 
     @ExceptionHandler(LectureException.class)
     public ResponseEntity<BaseResponse<?>> lectureException(LectureException ex) {
         log.error(ex.getMessage());
-        return ApiResponseUtil.failure(NOT_FOUND, ex.getMessage());
+        return ApiResponseUtil.failure(ex.getFailureCode());
     }
 
     @ExceptionHandler(SubLectureException.class)
     public ResponseEntity<BaseResponse<?>> subLectureException(SubLectureException ex) {
         log.error(ex.getMessage());
-        return ApiResponseUtil.failure(NOT_FOUND, ex.getMessage());
+        return ApiResponseUtil.failure(ex.getFailureCode());
     }
 
-    @ExceptionHandler(DateTimeParseException.class)
-    public ResponseEntity<BaseResponse<?>> dateTimeParseException(DateTimeParseException ex) {
-        return ApiResponseUtil.failure(BAD_REQUEST, ex.getMessage());
+    @ExceptionHandler(DateTimeParseCustomException.class)
+    public ResponseEntity<BaseResponse<?>> dateTimeParseException(DateTimeParseCustomException ex) {
+        return ApiResponseUtil.failure(ex.getFailureCode());
     }
 
     @ExceptionHandler(AlarmException.class)
     public ResponseEntity<BaseResponse<?>> alarmException(AlarmException ex) {
         log.error(ex.getMessage());
-        return ApiResponseUtil.failure(BAD_REQUEST, ex.getMessage());
+        return ApiResponseUtil.failure(ex.getFailureCode());
+    }
+
+    @ExceptionHandler(AttendanceException.class)
+    public ResponseEntity<BaseResponse<?>> attendanceException(AttendanceException ex) {
+        log.error(ex.getMessage());
+        return ApiResponseUtil.failure(ex.getFailureCode());
     }
 
 }

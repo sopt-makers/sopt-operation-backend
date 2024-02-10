@@ -2,27 +2,30 @@ package org.sopt.makers.operation.app.member.dto.response;
 
 import java.util.List;
 
-import org.sopt.makers.operation.domain.Part;
-import org.sopt.makers.operation.domain.member.domain.Member;
-import org.sopt.makers.operation.service.web.member.dto.response.AttendanceTotalCountVO;
+import org.sopt.makers.operation.app.attendance.dto.response.AttendanceTotalVO;
+import org.sopt.makers.operation.common.domain.Part;
+import org.sopt.makers.operation.member.domain.Member;
 
 public record AttendanceTotalResponseDTO(
         Part part,
         int generation,
         String name,
         float score,
-        AttendanceTotalCountVO total,
+        AttendanceStatusListVO total,
         List<AttendanceTotalVO> attendances
-)
-{
-    public static AttendanceTotalResponseDTO of(Member member, AttendanceTotalCountVO total, List<AttendanceTotalVO> attendances){
+) {
+    public static AttendanceTotalResponseDTO of(Member member, List<AttendanceTotalVO> attendances){
         return new AttendanceTotalResponseDTO(
                 member.getPart(),
                 member.getGeneration(),
                 member.getName(),
                 member.getScore(),
-                total,
+                getTotal(member),
                 attendances
         );
+    }
+
+    private static AttendanceStatusListVO getTotal(Member member) {
+        return AttendanceStatusListVO.of(member);
     }
 }

@@ -1,21 +1,19 @@
 package org.sopt.makers.operation.app.member.service;
 
-import static org.sopt.makers.operation.domain.lecture.Attribute.*;
+import static org.sopt.makers.operation.attendance.domain.AttendanceStatus.*;
 import static org.sopt.makers.operation.code.failure.member.memberFailureCode.*;
+import static org.sopt.makers.operation.lecture.domain.Attribute.*;
 
-import java.util.EnumMap;
 import java.util.List;
 
 import org.sopt.makers.operation.app.member.dto.response.AttendanceTotalResponseDTO;
-import org.sopt.makers.operation.app.member.dto.response.AttendanceTotalVO;
+import org.sopt.makers.operation.app.attendance.dto.response.AttendanceTotalVO;
 import org.sopt.makers.operation.app.member.dto.response.MemberScoreGetResponse;
+import org.sopt.makers.operation.attendance.repository.attendance.AttendanceRepository;
 import org.sopt.makers.operation.config.ValueConfig;
-import org.sopt.makers.operation.domain.attendance.domain.AttendanceStatus;
-import org.sopt.makers.operation.domain.attendance.repository.attendance.AttendanceRepository;
-import org.sopt.makers.operation.domain.member.domain.Member;
-import org.sopt.makers.operation.domain.member.repository.MemberRepository;
 import org.sopt.makers.operation.exception.MemberException;
-import org.sopt.makers.operation.service.web.member.dto.response.AttendanceTotalCountVO;
+import org.sopt.makers.operation.member.domain.Member;
+import org.sopt.makers.operation.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,21 +31,19 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public AttendanceTotalResponseDTO getMemberTotalAttendance(Long playGroundId) {
         val member = memberRepository.getMemberByPlaygroundIdAndGeneration(playGroundId, valueConfig.getGENERATION())
-                .orElseThrow(() -> new MemberException(INVALID_MEMBER.getMessage()));
+                .orElseThrow(() -> new MemberException(INVALID_MEMBER));
 
         val attendances = findAttendances(member);
-        val countAttendance = countAttendance(attendances);
-        val total = translateAttendanceStatus(countAttendance);
 
         val filteredAttendances = filterEtcNoAppearance(attendances);
 
-        return AttendanceTotalResponseDTO.of(member, total, filteredAttendances);
+        return AttendanceTotalResponseDTO.of(member, filteredAttendances);
     }
 
     @Override
     public MemberScoreGetResponse getMemberScore(Long playGroundId) {
         val member = memberRepository.getMemberByPlaygroundIdAndGeneration(playGroundId, valueConfig.getGENERATION())
-                .orElseThrow(() -> new MemberException(INVALID_MEMBER.getMessage()));
+                .orElseThrow(() -> new MemberException(INVALID_MEMBER));
 
         return MemberScoreGetResponse.of(member.getScore());
     }
@@ -56,7 +52,7 @@ public class MemberServiceImpl implements MemberService {
         return attendances.stream()
             .filter(attendanceTotalVO ->
                 !(attendanceTotalVO.attribute().equals(ETC)
-                && attendanceTotalVO.status().equals(AttendanceStatus.NOT_PARTICIPATE))
+                && attendanceTotalVO.status().equals(NOT_PARTICIPATE))
             )
             .toList();
     }
@@ -65,24 +61,5 @@ public class MemberServiceImpl implements MemberService {
         return attendanceRepository.findAttendanceByMemberId(member.getId())
                 .stream().map(AttendanceTotalVO::getTotalAttendanceVO)
                 .toList();
-    }
-
-    private EnumMap<AttendanceStatus, Integer> countAttendance(List<AttendanceTotalVO> attendances) {
-        return attendances.stream()
-            .map(AttendanceTotalVO::getAttendanceStatus)
-            .collect(
-                () -> new EnumMap<>(AttendanceStatus.class),
-                (map, status) -> map.merge(status, 1, Integer::sum),
-                (map1, map2) -> map2.forEach((status, count) -> map1.merge(status, count, Integer::sum))
-            );
-    }
-
-    private AttendanceTotalCountVO translateAttendanceStatus(EnumMap<AttendanceStatus, Integer> countAttendance) {
-        return AttendanceTotalCountVO.of(
-            countAttendance.getOrDefault(AttendanceStatus.ATTENDANCE, 0),
-            countAttendance.getOrDefault(AttendanceStatus.ABSENT, 0),
-            countAttendance.getOrDefault(AttendanceStatus.TARDY, 0),
-            countAttendance.getOrDefault(AttendanceStatus.PARTICIPATE, 0)
-        );
     }
 }

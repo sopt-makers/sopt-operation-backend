@@ -1,11 +1,11 @@
 package org.sopt.makers.operation.web.attendnace.api;
 
-import static org.sopt.makers.operation.web.attendnace.message.SuccessMessage.*;
+import static org.sopt.makers.operation.code.success.web.AttendanceSuccessCode.*;
 
-import org.sopt.makers.operation.domain.Part;
+import org.sopt.makers.operation.common.domain.Part;
 import org.sopt.makers.operation.common.dto.BaseResponse;
 import org.sopt.makers.operation.common.util.ApiResponseUtil;
-import org.sopt.makers.operation.web.attendance.dto.request.SubAttendanceUpdateRequest;
+import org.sopt.makers.operation.web.attendnace.dto.request.UpdatedSubAttendanceRequest;
 import org.sopt.makers.operation.web.attendnace.service.AttendanceService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -29,23 +29,23 @@ public class AttendanceApiController implements AttendanceApi {
 
 	@Override
 	@PatchMapping
-	public ResponseEntity<BaseResponse<?>> updateSubAttendance(@RequestBody SubAttendanceUpdateRequest request) {
+	public ResponseEntity<BaseResponse<?>> updateSubAttendance(@RequestBody UpdatedSubAttendanceRequest request) {
 		val response = attendanceService.updateSubAttendance(request);
-		return ApiResponseUtil.ok(SUCCESS_UPDATE_ATTENDANCE_STATUS.getContent(), response);
+		return ApiResponseUtil.success(SUCCESS_UPDATE_ATTENDANCE_STATUS, response);
 	}
 
 	@Override
 	@GetMapping("/{memberId}")
 	public ResponseEntity<BaseResponse<?>> findAttendancesByMember(@PathVariable long memberId) {
 		val response = attendanceService.findAttendancesByMember(memberId);
-		return ApiResponseUtil.ok(SUCCESS_GET_MEMBER_ATTENDANCE.getContent(), response);
+		return ApiResponseUtil.success(SUCCESS_GET_MEMBER_ATTENDANCE, response);
 	}
 
 	@Override
 	@PatchMapping("/member/{memberId}")
 	public ResponseEntity<BaseResponse<?>> updateMemberScore(@PathVariable long memberId) {
-		val response = attendanceService.updateMemberScore(memberId);
-		return ApiResponseUtil.ok(SUCCESS_UPDATE_MEMBER_SCORE.getContent(), response);
+		val response = attendanceService.updateMemberAllScore(memberId);
+		return ApiResponseUtil.success(SUCCESS_UPDATE_MEMBER_SCORE, response);
 	}
 
 	@Override
@@ -56,6 +56,6 @@ public class AttendanceApiController implements AttendanceApi {
 			Pageable pageable
 	) {
 		val response = attendanceService.findAttendancesByLecture(lectureId, part, pageable);
-		return ApiResponseUtil.ok(SUCCESS_GET_ATTENDANCES.getContent(), response);
+		return ApiResponseUtil.success(SUCCESS_GET_ATTENDANCES, response);
 	}
 }

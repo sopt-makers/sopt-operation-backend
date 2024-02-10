@@ -1,11 +1,10 @@
 package org.sopt.makers.operation.web.lecture.api;
 
-import static org.sopt.makers.operation.web.lecture.message.SuccessMessage.*;
+import static org.sopt.makers.operation.code.success.web.LectureSuccessCode.*;
 
-import org.sopt.makers.operation.domain.Part;
+import org.sopt.makers.operation.common.domain.Part;
 import org.sopt.makers.operation.common.dto.BaseResponse;
 import org.sopt.makers.operation.common.util.ApiResponseUtil;
-import org.sopt.makers.operation.common.util.CommonUtils;
 import org.sopt.makers.operation.web.lecture.dto.request.AttendanceRequest;
 import org.sopt.makers.operation.web.lecture.dto.request.LectureRequest;
 import org.sopt.makers.operation.web.lecture.service.LectureService;
@@ -29,14 +28,12 @@ import lombok.val;
 public class LectureApiController implements LectureApi {
 
 	private final LectureService lectureService;
-	private final CommonUtils utils;
 
 	@Override
 	@PostMapping
 	public ResponseEntity<BaseResponse<?>> createLecture(@RequestBody LectureRequest request) {
 		val lectureId = lectureService.createLecture(request);
-		val uri = utils.getURI("/{lectureId}", lectureId);
-		return ApiResponseUtil.created(uri, SUCCESS_CREATE_LECTURE.getContent(), lectureId);
+		return ApiResponseUtil.success(SUCCESS_CREATE_LECTURE, lectureId);
 	}
 
 	@Override
@@ -46,42 +43,41 @@ public class LectureApiController implements LectureApi {
 			@RequestParam(required = false) Part part
 	) {
 		val response = lectureService.getLectures(generation, part);
-		return ApiResponseUtil.ok(SUCCESS_GET_LECTURES.getContent(), response);
+		return ApiResponseUtil.success(SUCCESS_GET_LECTURES, response);
 	}
 
 	@Override
 	@GetMapping("/{lectureId}")
 	public ResponseEntity<BaseResponse<?>> getLecture(@PathVariable long lectureId) {
 		val response = lectureService.getLecture(lectureId);
-		return ApiResponseUtil.ok(SUCCESS_GET_LECTURE.getContent(), response);
+		return ApiResponseUtil.success(SUCCESS_GET_LECTURE, response);
 	}
 
 	@Override
 	@PatchMapping("/attendance")
 	public ResponseEntity<BaseResponse<?>> startAttendance(AttendanceRequest request) {
 		val response = lectureService.startAttendance(request);
-		val uri = utils.getURI("/{lectureId}", response.lectureId());
-		return ApiResponseUtil.created(uri, SUCCESS_START_ATTENDANCE.getContent(), response);
+		return ApiResponseUtil.success(SUCCESS_START_ATTENDANCE, response);
 	}
 
 	@Override
 	@PatchMapping("/{lectureId}")
 	public ResponseEntity<BaseResponse<?>> endLecture(@PathVariable long lectureId) {
 		lectureService.endLecture(lectureId);
-		return ApiResponseUtil.ok(SUCCESS_UPDATE_MEMBER_SCORE.getContent(), lectureService);
+		return ApiResponseUtil.success(SUCCESS_UPDATE_MEMBER_SCORE);
 	}
 
 	@Override
 	@DeleteMapping("/{lectureId}")
 	public ResponseEntity<BaseResponse<?>> deleteLecture(@PathVariable long lectureId) {
 		lectureService.deleteLecture(lectureId);
-		return ApiResponseUtil.ok(SUCCESS_DELETE_LECTURE.getContent());
+		return ApiResponseUtil.success(SUCCESS_DELETE_LECTURE);
 	}
 
 	@Override
 	@GetMapping("/detail/{lectureId}")
 	public ResponseEntity<BaseResponse<?>> getLectureDetail(@PathVariable long lectureId) {
 		val response = lectureService.getLectureDetail(lectureId);
-		return ApiResponseUtil.ok(SUCCESS_GET_LECTURE.getContent(), response);
+		return ApiResponseUtil.success(SUCCESS_GET_LECTURE, response);
 	}
 }

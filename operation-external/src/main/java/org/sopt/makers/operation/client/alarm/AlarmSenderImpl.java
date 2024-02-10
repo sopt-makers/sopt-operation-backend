@@ -2,15 +2,15 @@ package org.sopt.makers.operation.client.alarm;
 
 import static java.util.Objects.*;
 import static java.util.UUID.*;
-import static org.sopt.makers.operation.domain.alarm.message.ErrorMessage.*;
+import static org.sopt.makers.operation.code.failure.AlarmFailureCode.*;
 import static org.springframework.http.MediaType.*;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.sopt.makers.operation.client.alarm.dto.AlarmSenderRequest;
 import org.sopt.makers.operation.config.ValueConfig;
-import org.sopt.makers.operation.dto.AlarmSenderRequest;
 import org.sopt.makers.operation.exception.AlarmException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -35,7 +35,7 @@ public class AlarmSenderImpl implements AlarmSender {
 			val entity = getEntity(request);
 			restTemplate.postForEntity(host, entity, AlarmSenderRequest.class);
 		} catch (HttpClientErrorException e) {
-			throw new AlarmException(FAIL_SEND_ALARM.getContent());
+			throw new AlarmException(FAIL_SEND_ALARM);
 		}
 	}
 

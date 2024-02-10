@@ -1,6 +1,6 @@
 package org.sopt.makers.operation.web.member.api;
 
-import org.sopt.makers.operation.domain.Part;
+import org.sopt.makers.operation.common.domain.Part;
 import org.sopt.makers.operation.common.dto.BaseResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;

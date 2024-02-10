@@ -5,10 +5,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.sopt.makers.operation.attendance.domain.AttendanceStatus;
+import org.sopt.makers.operation.attendance.domain.SubAttendance;
+import org.sopt.makers.operation.lecture.domain.Lecture;
+
 import lombok.Builder;
-import org.sopt.makers.operation.domain.attendance.domain.AttendanceStatus;
-import org.sopt.makers.operation.domain.attendance.domain.SubAttendance;
-import org.sopt.makers.operation.domain.lecture.Lecture;
 
 @Builder
 public record TodayLectureResponse(
@@ -32,8 +33,8 @@ public record TodayLectureResponse(
                 .endDate(lecture.getEndDate().format(convertFormat()))
                 .message(message)
                 .attendances(attendances.stream()
-                .map(subAttendance -> LectureGetResponseVO.of(subAttendance.getStatus(), subAttendance.getLastModifiedDate()))
-                .collect(Collectors.toList()))
+                        .map(subAttendance -> LectureGetResponseVO.of(subAttendance.getStatus(), subAttendance.getLastModifiedDate()))
+                        .collect(Collectors.toList()))
                 .build();
     }
 

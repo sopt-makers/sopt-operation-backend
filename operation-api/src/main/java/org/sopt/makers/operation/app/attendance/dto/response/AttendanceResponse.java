@@ -1,6 +1,6 @@
 package org.sopt.makers.operation.app.attendance.dto.response;
 
-import org.sopt.makers.operation.domain.attendance.domain.SubAttendance;
+import org.sopt.makers.operation.attendance.domain.SubAttendance;
 
 public record AttendanceResponse(
         Long subLectureId

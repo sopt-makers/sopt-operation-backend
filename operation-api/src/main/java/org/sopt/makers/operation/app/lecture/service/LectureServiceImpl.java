@@ -8,7 +8,7 @@ import java.util.List;
 
 import static org.sopt.makers.operation.domain.attendance.domain.AttendanceStatus.*;
 import static org.sopt.makers.operation.domain.lecture.LectureStatus.*;
-import static org.sopt.makers.operation.code.failure.lecture.lectureFailureCode.*;
+import static org.sopt.makers.operation.code.failure.lecture.LectureFailureCode.*;
 import static org.sopt.makers.operation.code.failure.subLecture.subLectureFailureCode.*;
 
 import org.sopt.makers.operation.app.lecture.dto.response.LectureCurrentRoundResponse;
