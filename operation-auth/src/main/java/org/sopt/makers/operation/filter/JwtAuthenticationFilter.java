@@ -1,11 +1,14 @@
 package org.sopt.makers.operation.filter;
 
+import static org.sopt.makers.operation.code.failure.TokenFailureCode.*;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.sopt.makers.operation.exception.TokenException;
 import org.sopt.makers.operation.jwt.JwtTokenProvider;
 import org.sopt.makers.operation.jwt.JwtTokenType;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,8 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
-    public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
+    public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         val uri = request.getRequestURI();
 
         if ((uri.startsWith("/api/v1")) && !uri.contains("auth")) {
@@ -44,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private void checkJwtAvailable (String token, JwtTokenType jwtTokenType) {
         if (token == null || !jwtTokenProvider.validateTokenExpiration(token, jwtTokenType)) {
-            throw new IllegalArgumentException("빈 토큰입니다.");
+            throw new TokenException(EMPTY_TOKEN);
         }
     }
 

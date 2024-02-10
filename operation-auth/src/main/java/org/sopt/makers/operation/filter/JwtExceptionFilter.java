@@ -1,8 +1,6 @@
 package org.sopt.makers.operation.filter;
 
-import static org.sopt.makers.operation.code.failure.admin.AdminFailureCode.*;
-
-import org.sopt.makers.operation.code.failure.admin.AdminFailureCode;
+import org.sopt.makers.operation.code.failure.FailureCode;
 import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.exception.TokenException;
 import org.sopt.makers.operation.util.ApiResponseUtil;
@@ -33,7 +31,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
            filterChain.doFilter(httpServletRequest, httpServletResponse);
        } catch(TokenException e) {
            val objectMapper = new ObjectMapper();
-           val jsonResponse = objectMapper.writeValueAsString(getFailureResponse());
+           val jsonResponse = objectMapper.writeValueAsString(getFailureResponse(e.getFailureCode()));
 
            httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
            httpServletResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -42,7 +40,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
        }
     }
 
-    private ResponseEntity<BaseResponse<?>> getFailureResponse() {
-        return ApiResponseUtil.failure(INVALID_TOKEN);
+    private ResponseEntity<BaseResponse<?>> getFailureResponse(FailureCode failureCode) {
+        return ApiResponseUtil.failure(failureCode);
     }
 }

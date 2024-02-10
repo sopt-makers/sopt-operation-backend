@@ -25,7 +25,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtExceptionFilter jwtExceptionFilter;
-    //private final ValueConfig valueConfig;
+    private final ValueConfig valueConfig;
 
     @Bean
     public static PasswordEncoder passwordEncoder() {
@@ -55,8 +55,7 @@ public class SecurityConfig {
                 .and()
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
-                                .requestMatchers(new AntPathRequestMatcher("/api/v1/auth", "POST")).permitAll()
-                                .requestMatchers(new AntPathRequestMatcher("/api/v1/test", "GET")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/*")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/error")).permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -69,9 +68,9 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         val configuration = new CorsConfiguration();
 
-        //configuration.addAllowedOrigin(valueConfig.getADMIN_PROD_URL());
-        //configuration.addAllowedOrigin(valueConfig.getADMIN_DEV_URL());
-        //configuration.addAllowedOrigin(valueConfig.getADMIN_LOCAL_URL());
+        configuration.addAllowedOrigin(valueConfig.getADMIN_PROD_URL());
+        configuration.addAllowedOrigin(valueConfig.getADMIN_DEV_URL());
+        configuration.addAllowedOrigin(valueConfig.getADMIN_LOCAL_URL());
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         configuration.setAllowCredentials(true);

@@ -1,5 +1,7 @@
 package org.sopt.makers.operation.jwt;
 
+import static org.sopt.makers.operation.code.failure.TokenFailureCode.*;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -9,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.sopt.makers.operation.authentication.AdminAuthentication;
+import org.sopt.makers.operation.exception.TokenException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -85,8 +88,8 @@ public class JwtTokenProvider {
             val claims = getClaimsFromToken(token, jwtTokenType);
 
             return Long.parseLong(claims.get("playgroundId").toString());
-        } catch (ExpiredJwtException | SignatureException ignored) {
-            throw new RuntimeException("유효하지 않은 토큰입니다.");
+        } catch (ExpiredJwtException | SignatureException e) {
+            throw new TokenException(INVALID_TOKEN);
         }
     }
 
@@ -95,8 +98,8 @@ public class JwtTokenProvider {
             val claims = getClaimsFromToken(token, jwtTokenType);
 
             return Long.parseLong(claims.getSubject());
-        } catch (ExpiredJwtException | SignatureException ignored) {
-            throw new RuntimeException("유효하지 않은 토큰입니다.");
+        } catch (ExpiredJwtException | SignatureException e) {
+            throw new TokenException(INVALID_TOKEN);
         }
     }
 
@@ -135,7 +138,7 @@ public class JwtTokenProvider {
         return switch (jwtTokenType) {
             case ACCESS_TOKEN -> now.plusHours(5);
             case REFRESH_TOKEN -> now.plusWeeks(2);
-            case APP_ACCESS_TOKEN -> null;
+            case APP_ACCESS_TOKEN -> throw new TokenException(INVALID_TOKEN);
         };
     }
 
