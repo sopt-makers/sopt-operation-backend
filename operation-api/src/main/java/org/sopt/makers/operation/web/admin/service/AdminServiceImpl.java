@@ -97,7 +97,7 @@ public class AdminServiceImpl implements AdminService {
 
 	public void validateRefreshToken(Admin admin, String refreshToken) {
 		if(!admin.getRefreshToken().equals(refreshToken)) {
-			throw new AdminFailureException(INVALID_TOKEN);
+			throw new AdminFailureException(INVALID_REFRESH_TOKEN);
 		}
 	}
 
