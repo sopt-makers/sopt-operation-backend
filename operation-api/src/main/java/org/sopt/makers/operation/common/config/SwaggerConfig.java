@@ -20,9 +20,9 @@ public class SwaggerConfig {
 	@Bean
 	public OpenAPI api() {
 		Info info = new Info()
-				.title("Doorip API Docs")
-				.version("v1.0")
-				.description("Doorip 서비스 API 명세서 입니다.");
+				.title("Makers Operation API Docs")
+				.version("v2.0")
+				.description("운영 프로덕트 API 명세서 입니다.");
 		return new OpenAPI()
 				.info(info);
 	}
