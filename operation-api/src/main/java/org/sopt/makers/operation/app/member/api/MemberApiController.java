@@ -1,6 +1,6 @@
 package org.sopt.makers.operation.app.member.api;
 
-import static org.sopt.makers.operation.app.member.message.SuccessMessage.*;
+import static org.sopt.makers.operation.code.success.app.MemberSuccessCode.*;
 
 import java.security.Principal;
 
@@ -30,7 +30,7 @@ public class MemberApiController implements MemberApi {
 	public ResponseEntity<BaseResponse<?>> getMemberTotalAttendance(@NonNull Principal principal) {
 		val memberId = utils.getMemberId(principal);
 		val response = memberService.getMemberTotalAttendance(memberId);
-		return ApiResponseUtil.ok(SUCCESS_TOTAL_ATTENDANCE.getContent(), response);
+		return ApiResponseUtil.success(SUCCESS_GET_TOTAL_ATTENDANCE, response);
 	}
 
 	@Override
@@ -38,6 +38,6 @@ public class MemberApiController implements MemberApi {
 	public ResponseEntity<BaseResponse<?>> getScore(@NonNull Principal principal) {
 		val memberId = utils.getMemberId(principal);
 		val response = memberService.getMemberScore(memberId);
-		return ApiResponseUtil.ok(SUCCESS_GET_ATTENDANCE_SCORE.getContent(), response);
+		return ApiResponseUtil.success(SUCCESS_GET_ATTENDANCE_SCORE, response);
 	}
 }
