@@ -1,6 +1,6 @@
 package org.sopt.makers.operation.web.admin.api;
 
-import static org.sopt.makers.operation.web.admin.message.SuccessMessage.*;
+import static org.sopt.makers.operation.code.success.web.AdminSuccessCode.*;
 
 import org.sopt.makers.operation.common.dto.BaseResponse;
 import org.sopt.makers.operation.common.util.ApiResponseUtil;
@@ -31,7 +31,7 @@ public class AdminApiController implements AdminApi {
 	@PostMapping("/signup")
 	public ResponseEntity<BaseResponse<?>> signup(SignUpRequest signUpRequestDTO) {
 		val response = authService.signUp(signUpRequestDTO);
-		return ApiResponseUtil.ok(SUCCESS_SIGN_UP.getContent(), response);
+		return ApiResponseUtil.success(SUCCESS_SIGN_UP, response);
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class AdminApiController implements AdminApi {
 	public ResponseEntity<BaseResponse<?>> login(LoginRequest userLoginRequestDTO) {
 		val response = authService.login(userLoginRequestDTO);
 		val headers = cookie.setRefreshToken(response.refreshToken());
-		return ApiResponseUtil.ok(headers, SUCCESS_LOGIN_UP.getContent(), response.loginResponseVO());
+		return ApiResponseUtil.success(SUCCESS_LOGIN_UP, headers, response.loginResponseVO());
 	}
 
 	@Override
@@ -47,6 +47,6 @@ public class AdminApiController implements AdminApi {
 	public ResponseEntity<BaseResponse<?>> refresh(String refreshToken) {
 		val response = authService.refresh(refreshToken);
 		val headers = cookie.setRefreshToken(response.refreshToken());
-		return ApiResponseUtil.ok(headers, SUCCESS_GET_REFRESH_TOKEN.getContent(), response.accessToken());
+		return ApiResponseUtil.success(SUCCESS_GET_REFRESH_TOKEN, headers, response.accessToken());
 	}
 }

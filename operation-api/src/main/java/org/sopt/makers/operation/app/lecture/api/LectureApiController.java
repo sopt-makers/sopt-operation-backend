@@ -1,6 +1,6 @@
 package org.sopt.makers.operation.app.lecture.api;
 
-import static org.sopt.makers.operation.app.lecture.message.SuccessMessage.*;
+import static org.sopt.makers.operation.code.success.app.LectureSuccessCode.*;
 
 import java.security.Principal;
 
@@ -8,10 +8,7 @@ import org.sopt.makers.operation.app.lecture.service.LectureService;
 import org.sopt.makers.operation.common.dto.BaseResponse;
 import org.sopt.makers.operation.common.util.ApiResponseUtil;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -29,13 +26,13 @@ public class LectureApiController implements LectureApi {
 	public ResponseEntity<BaseResponse<?>> getTodayLecture(@NonNull Principal principal) {
 		val memberId = Long.parseLong(principal.getName());
 		val response = lectureService.getTodayLecture(memberId);
-		return ApiResponseUtil.ok(SUCCESS_SINGLE_GET_LECTURE.getContent(), response);
+		return ApiResponseUtil.success(SUCCESS_SINGLE_GET_LECTURE, response);
 	}
 
 	@Override
 	@GetMapping("/round/{lectureId}")
 	public ResponseEntity<BaseResponse<?>> getRound(@PathVariable long lectureId) {
 		val response = lectureService.getCurrentLectureRound(lectureId);
-		return ApiResponseUtil.ok(SUCCESS_GET_LECTURE_ROUND.getContent(), response);
+		return ApiResponseUtil.success(SUCCESS_GET_LECTURE_ROUND, response);
 	}
 }
