@@ -1,7 +1,7 @@
 package org.sopt.makers.operation.alarm.repository;
 
 import static java.util.Objects.*;
-import static org.sopt.makers.operation.domain.alarm.domain.QAlarm.*;
+import static org.sopt.makers.operation.alarm.domain.QAlarm.*;
 
 import java.util.List;
 

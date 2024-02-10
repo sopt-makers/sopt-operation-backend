@@ -3,11 +3,9 @@ package org.sopt.makers.operation.common.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 
 @Builder(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public record BaseResponse<T> (
 	boolean success,
 	String message,

@@ -1,9 +1,9 @@
 package org.sopt.makers.operation.lecture.repository.lecture;
 
 import static java.util.Objects.*;
-import static org.sopt.makers.operation.domain.attendance.domain.QAttendance.*;
-import static org.sopt.makers.operation.domain.lecture.QLecture.*;
-import static org.sopt.makers.operation.domain.member.domain.QMember.*;
+import static org.sopt.makers.operation.attendance.domain.QAttendance.*;
+import static org.sopt.makers.operation.lecture.domain.QLecture.*;
+import static org.sopt.makers.operation.member.domain.QMember.*;
 
 import java.time.LocalDateTime;
 import java.util.List;

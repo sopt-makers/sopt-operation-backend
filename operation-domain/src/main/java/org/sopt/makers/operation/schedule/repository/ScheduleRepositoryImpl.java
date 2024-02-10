@@ -1,6 +1,6 @@
 package org.sopt.makers.operation.schedule.repository;
 
-import static org.sopt.makers.operation.domain.schedule.domain.QSchedule.*;
+import static org.sopt.makers.operation.schedule.domain.QSchedule.*;
 
 import java.time.LocalDateTime;
 import java.util.List;

@@ -2,16 +2,12 @@ package org.sopt.makers.operation.member.repository;
 
 import static java.util.Objects.*;
 import static org.sopt.makers.operation.common.domain.Part.*;
-import static org.sopt.makers.operation.domain.attendance.domain.QAttendance.*;
-import static org.sopt.makers.operation.domain.lecture.QLecture.*;
-import static org.sopt.makers.operation.domain.member.domain.QMember.*;
+import static org.sopt.makers.operation.member.domain.QMember.*;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.sopt.makers.operation.common.domain.Part;
 import org.sopt.makers.operation.member.domain.Member;
-import org.sopt.makers.operation.common.dto.MemberSearchCondition;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -29,46 +25,6 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public List<Member> search(MemberSearchCondition condition, Pageable pageable) {
-		StringExpression firstName = Expressions.stringTemplate("SUBSTR({0}, 1, 1)", member.name);
-
-		return queryFactory
-			.selectFrom(member)
-			.where(
-				partEq(condition.part()),
-				member.generation.eq(condition.generation())
-			)
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize())
-        	.orderBy(firstName.asc())
-			.fetch();
-	}
-
-	@Override
-	public List<Member> search(MemberSearchCondition condition) {
-		StringExpression firstName = Expressions.stringTemplate("SUBSTR({0}, 1, 1)", member.name);
-
-		return queryFactory
-			.selectFrom(member)
-			.where(
-				partEq(condition.part()),
-				member.generation.eq(condition.generation())
-			)
-			.orderBy(firstName.asc())
-			.fetch();
-	}
-
-	@Override
-	public Optional<Member> find(Long memberId) {
-		return queryFactory
-			.selectFrom(member)
-			.join(member.attendances, attendance).fetchJoin().distinct()
-			.join(attendance.lecture, lecture).fetchJoin()
-			.where(member.id.eq(memberId))
-			.stream().findFirst();
-	}
-
-	@Override
 	public int count(int generation, Part part) {
 		return Math.toIntExact(queryFactory
 			.select(member.count())
@@ -78,18 +34,6 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
 				partEq(part)
 			)
 			.fetchFirst());
-	}
-
-	@Override
-	public List<Member> findOrderByName(int generation, Part part) {
-		StringExpression firstName = Expressions.stringTemplate("SUBSTR({0}, 1, 1)", member.name);
-		return queryFactory
-				.selectFrom(member)
-				.where(
-						member.generation.eq(generation),
-						partEq(part))
-				.orderBy(firstName.asc())
-				.fetch();
 	}
 
 	@Override
