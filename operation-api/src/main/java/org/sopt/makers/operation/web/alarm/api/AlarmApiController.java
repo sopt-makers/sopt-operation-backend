@@ -3,8 +3,8 @@ package org.sopt.makers.operation.web.alarm.api;
 import static org.sopt.makers.operation.code.success.web.AlarmSuccessCode.*;
 
 import org.sopt.makers.operation.common.domain.Part;
-import org.sopt.makers.operation.common.dto.BaseResponse;
-import org.sopt.makers.operation.common.util.ApiResponseUtil;
+import org.sopt.makers.operation.dto.BaseResponse;
+import org.sopt.makers.operation.util.ApiResponseUtil;
 import org.sopt.makers.operation.alarm.domain.Status;
 import org.sopt.makers.operation.web.alarm.dto.request.AlarmRequest;
 import org.sopt.makers.operation.web.alarm.dto.request.AlarmSendRequest;

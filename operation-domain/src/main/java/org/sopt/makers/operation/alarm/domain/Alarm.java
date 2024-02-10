@@ -1,24 +1,23 @@
 package org.sopt.makers.operation.alarm.domain;
 
 import static java.util.Objects.*;
-import static javax.persistence.EnumType.*;
-import static javax.persistence.GenerationType.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-
 import org.sopt.makers.operation.common.domain.BaseEntity;
 import org.sopt.makers.operation.common.domain.Part;
 import org.sopt.makers.operation.schedule.converter.StringListConverter;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,7 +27,7 @@ import lombok.NoArgsConstructor;
 @Getter
 public class Alarm extends BaseEntity {
 	@Id
-	@GeneratedValue(strategy = IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "alarm_id")
 	private Long id;
 
@@ -37,7 +36,7 @@ public class Alarm extends BaseEntity {
 	private int generationAt;
 
 	@Column(nullable = false)
-	@Enumerated(value = STRING)
+	@Enumerated(value = EnumType.STRING)
 	private Attribute attribute;
 
 	private String title;
@@ -49,7 +48,7 @@ public class Alarm extends BaseEntity {
 
 	private Boolean isActive;
 
-	@Enumerated(value = STRING)
+	@Enumerated(value = EnumType.STRING)
 	private Part part;
 
 	@Column(columnDefinition = "TEXT", nullable = false)
@@ -57,7 +56,7 @@ public class Alarm extends BaseEntity {
 	private List<String> targetList;
 
 	@Column(nullable = false)
-	@Enumerated(value = STRING)
+	@Enumerated(value = EnumType.STRING)
 	private Status status;
 
 	private LocalDateTime sendAt;

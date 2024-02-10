@@ -1,24 +1,23 @@
 package org.sopt.makers.operation.lecture.domain;
 
-import static javax.persistence.GenerationType.*;
 import static org.sopt.makers.operation.lecture.domain.LectureStatus.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-
 import org.sopt.makers.operation.common.domain.BaseEntity;
 import org.sopt.makers.operation.common.domain.Part;
 import org.sopt.makers.operation.attendance.domain.Attendance;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,7 +27,8 @@ import lombok.NoArgsConstructor;
 @Getter
 public class Lecture extends BaseEntity {
 
-	@Id @GeneratedValue(strategy = IDENTITY)
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "lecture_id")
 	private Long id;
 

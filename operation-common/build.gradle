@@ -1,18 +1,11 @@
-plugins {
-    id 'java'
+jar {
+    enabled = true
 }
 
-group = 'org.sopt.makers'
-version = '0.0.1-SNAPSHOT'
-
-repositories {
-    mavenCentral()
+bootJar {
+    enabled = false
 }
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
-}
-
-test {
-    useJUnitPlatform()
 }

@@ -1,19 +1,24 @@
-tasks.named('bootJar') {
-    enabled = true
-}
-
-tasks.named('jar') {
+jar {
     enabled = false
 }
 
+bootJar {
+    enabled = true
+}
+
 dependencies {
+    // module
     implementation project(path: ':operation-auth')
     implementation project(path: ':operation-common')
     implementation project(path: ':operation-domain')
     implementation project(path: ':operation-external')
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // swagger
+    implementation 'io.springfox:springfox-boot-starter:3.0.0'
+    implementation 'io.springfox:springfox-swagger-ui:3.0.0'
+
 }

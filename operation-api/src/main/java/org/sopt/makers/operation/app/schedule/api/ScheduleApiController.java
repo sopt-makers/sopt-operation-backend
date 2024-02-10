@@ -5,8 +5,8 @@ import static org.sopt.makers.operation.code.success.app.ScheduleSuccessCode.*;
 import java.time.LocalDateTime;
 
 import org.sopt.makers.operation.app.schedule.service.ScheduleService;
-import org.sopt.makers.operation.common.dto.BaseResponse;
-import org.sopt.makers.operation.common.util.ApiResponseUtil;
+import org.sopt.makers.operation.dto.BaseResponse;
+import org.sopt.makers.operation.util.ApiResponseUtil;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

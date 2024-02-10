@@ -1,6 +1,6 @@
 package org.sopt.makers.operation.attendance.domain;
 
-import static javax.persistence.GenerationType.*;
+import static jakarta.persistence.GenerationType.*;
 import static org.sopt.makers.operation.code.failure.AttendanceFailureCode.*;
 import static org.sopt.makers.operation.attendance.domain.AttendanceStatus.*;
 
@@ -8,21 +8,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-
 import org.sopt.makers.operation.lecture.domain.Lecture;
 import org.sopt.makers.operation.member.domain.Member;
 import org.sopt.makers.operation.exception.AttendanceException;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.*;
 
 @Entity
@@ -30,7 +29,8 @@ import lombok.*;
 @Getter
 public class Attendance {
 
-	@Id @GeneratedValue(strategy = IDENTITY)
+	@Id
+	@GeneratedValue(strategy = IDENTITY)
 	@Column(name = "attendance_id")
 	private Long id;
 

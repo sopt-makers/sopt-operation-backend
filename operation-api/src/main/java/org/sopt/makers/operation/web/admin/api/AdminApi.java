@@ -1,6 +1,6 @@
 package org.sopt.makers.operation.web.admin.api;
 
-import org.sopt.makers.operation.common.dto.BaseResponse;
+import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.web.admin.dto.request.LoginRequest;
 import org.sopt.makers.operation.web.admin.dto.request.SignUpRequest;
 import org.springframework.http.ResponseEntity;

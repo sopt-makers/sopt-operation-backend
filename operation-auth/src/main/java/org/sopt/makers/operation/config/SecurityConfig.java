@@ -14,6 +14,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -34,8 +35,9 @@ public class SecurityConfig {
     @Bean
     @Profile("dev")
     public SecurityFilterChain filterChainDev(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+                .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")).permitAll());
         setHttp(http);
-        http.authorizeRequests().antMatchers("/swagger-ui/**").permitAll();
         return http.build();
     }
 
@@ -43,23 +45,20 @@ public class SecurityConfig {
     @Profile("prod")
     public SecurityFilterChain filterChainProd(HttpSecurity http) throws Exception {
         setHttp(http);
-        http.authorizeRequests().antMatchers("/swagger-ui/**").authenticated();
         return http.build();
     }
     private void setHttp(HttpSecurity http) throws Exception {
-        http.antMatcher("/**")
-                .httpBasic().disable()
+        http.httpBasic().disable()
                 .csrf().disable()
                 .formLogin().disable()
                 .cors().configurationSource(corsConfigurationSource())
                 .and()
-                    .authorizeRequests()
-                    .antMatchers("/api/v1/auth/**", "/exception/**").permitAll()
-                .and()
-                    .authorizeRequests()
-                    .antMatchers("/api/v1/**").authenticated()
-                .and()
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .authorizeHttpRequests(authorizeHttpRequests ->
+                        authorizeHttpRequests
+                                .requestMatchers(new AntPathRequestMatcher("/api/v1/auth", "POST")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/error")).permitAll()
+                                .anyRequest().authenticated())
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                     .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                     .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);

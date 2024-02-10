@@ -1,7 +1,7 @@
 package org.sopt.makers.operation.common.handler;
 
-import org.sopt.makers.operation.common.dto.BaseResponse;
-import org.sopt.makers.operation.common.util.ApiResponseUtil;
+import org.sopt.makers.operation.dto.BaseResponse;
+import org.sopt.makers.operation.util.ApiResponseUtil;
 import org.sopt.makers.operation.exception.AdminFailureException;
 import org.sopt.makers.operation.exception.AlarmException;
 import org.sopt.makers.operation.exception.AttendanceException;

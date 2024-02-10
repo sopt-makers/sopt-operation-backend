@@ -1,23 +1,22 @@
 package org.sopt.makers.operation.attendance.domain;
 
-import static javax.persistence.GenerationType.*;
 import static org.sopt.makers.operation.attendance.domain.AttendanceStatus.*;
 
 import java.util.Objects;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-
 import org.sopt.makers.operation.common.domain.BaseEntity;
 import org.sopt.makers.operation.lecture.domain.SubLecture;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,7 +25,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SubAttendance extends BaseEntity {
 
-	@Id @GeneratedValue(strategy = IDENTITY)
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "sub_attendance_id")
 	private Long id;
 

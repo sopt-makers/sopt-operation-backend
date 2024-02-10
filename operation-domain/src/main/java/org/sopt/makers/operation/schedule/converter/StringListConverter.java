@@ -5,10 +5,10 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.*;
 import java.io.IOException;
 import java.util.List;
 
-import javax.persistence.AttributeConverter;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.persistence.AttributeConverter;
 
 public class StringListConverter implements AttributeConverter<List<String>, String> {
 	private static final ObjectMapper mapper = new ObjectMapper()
