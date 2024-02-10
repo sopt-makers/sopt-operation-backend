@@ -36,7 +36,9 @@ public class SecurityConfig {
     @Profile("dev")
     public SecurityFilterChain filterChainDev(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")).permitAll());
+                .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/v3/**")).permitAll()
+        );
         setHttp(http);
         return http.build();
     }
