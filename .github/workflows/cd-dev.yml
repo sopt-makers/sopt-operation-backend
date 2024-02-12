@@ -26,7 +26,7 @@ jobs:
       - name: Create application.yml
         run: |
           pwd
-          touch src/main/resources/application-dev.yml
+          touch ./module-api/src/main/resources/application-dev.yml
           echo "${{ secrets.APPLICATION_DEV }}" >> src/main/resources/application-dev.yml
           cat src/main/resources/application-dev.yml
 
