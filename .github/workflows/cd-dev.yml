@@ -26,9 +26,10 @@ jobs:
       - name: Create application.yml
         run: |
           pwd
-          touch ./module-api/src/main/resources/application-dev.yml
-          echo "${{ secrets.APPLICATION_DEV }}" >> src/main/resources/application-dev.yml
-          cat src/main/resources/application-dev.yml
+          cd ./operation-api/src/main/resources
+          touch ./application-dev.yml
+          echo "${{ secrets.APPLICATION_DEV }}" >> ./application-dev.yml
+          cat ./application-dev.yml
 
       - name: Build with Gradle
         run: ./gradlew build
