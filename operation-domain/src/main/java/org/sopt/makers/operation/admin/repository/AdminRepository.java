@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.domain.admin.repository;
+package org.sopt.makers.operation.admin.repository;
 
 import java.util.Optional;
 

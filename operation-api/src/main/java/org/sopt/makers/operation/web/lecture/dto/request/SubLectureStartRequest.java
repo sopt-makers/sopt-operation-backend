@@ -1,8 +1,10 @@
 package org.sopt.makers.operation.web.lecture.dto.request;
 
-public record AttendanceRequest(
+import lombok.NonNull;
+
+public record SubLectureStartRequest(
 	long lectureId,
 	int round,
-	String code
+	@NonNull String code
 ) {
 }

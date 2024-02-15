@@ -6,5 +6,5 @@ import java.util.List;
 import org.sopt.makers.operation.schedule.domain.Schedule;
 
 public interface ScheduleCustomRepository {
-    List<Schedule> findBetweenStartAndEnd(LocalDateTime start, LocalDateTime end);
+    List<Schedule> findBetween(LocalDateTime startDate, LocalDateTime endDate);
 }

@@ -1,15 +1,16 @@
 package org.sopt.makers.operation.web.attendnace.service;
 
 import org.sopt.makers.operation.common.domain.Part;
-import org.sopt.makers.operation.web.attendnace.dto.request.UpdatedSubAttendanceRequest;
-import org.sopt.makers.operation.web.attendnace.dto.response.AttendanceListResponse;
-import org.sopt.makers.operation.web.attendnace.dto.response.AttendanceMemberResponse;
-import org.sopt.makers.operation.web.attendnace.dto.response.UpdatedSubAttendanceResponse;
+import org.sopt.makers.operation.web.attendnace.dto.request.SubAttendanceUpdateRequest;
+import org.sopt.makers.operation.web.attendnace.dto.response.AttendanceListByLectureGetResponse;
+import org.sopt.makers.operation.web.attendnace.dto.response.AttendanceListByMemberGetResponse;
+import org.sopt.makers.operation.web.attendnace.dto.response.MemberScoreUpdateResponse;
+import org.sopt.makers.operation.web.attendnace.dto.response.SubAttendanceUpdateResponse;
 import org.springframework.data.domain.Pageable;
 
 public interface WebAttendanceService {
-	UpdatedSubAttendanceResponse updateSubAttendance(UpdatedSubAttendanceRequest request);
-	AttendanceMemberResponse findAttendancesByMember(long memberId);
-	float updateMemberAllScore(long memberId);
-	AttendanceListResponse findAttendancesByLecture(long lectureId, Part part, Pageable pageable);
+	SubAttendanceUpdateResponse updateSubAttendance(SubAttendanceUpdateRequest request);
+	AttendanceListByMemberGetResponse getAttendancesByMember(long memberId);
+	MemberScoreUpdateResponse updateMemberAllScore(long memberId);
+	AttendanceListByLectureGetResponse getAttendancesByLecture(long lectureId, Part part, Pageable pageable);
 }

@@ -25,9 +25,9 @@ public class WebMemberApiController implements WebMemberApi {
 
 	@Override
 	@GetMapping("/list")
-	public ResponseEntity<BaseResponse<?>> getMemberList(
+	public ResponseEntity<BaseResponse<?>> getMembers(
 			@RequestParam(required = false) Part part,
-			@RequestParam(required = false) Integer generation,
+			@RequestParam int generation,
 			Pageable pageable
 	) {
 		val response = memberService.getMembers(part, generation, pageable);

@@ -4,10 +4,10 @@ import static org.sopt.makers.operation.code.failure.AlarmFailureCode.*;
 import static org.sopt.makers.operation.common.domain.Part.*;
 import static org.springframework.http.HttpMethod.*;
 
-import org.sopt.makers.operation.client.playground.dto.InactiveMemberListResponse;
+import org.sopt.makers.operation.client.playground.dto.MemberListGetResponse;
 import org.sopt.makers.operation.common.domain.Part;
+import org.sopt.makers.operation.config.ValueConfig;
 import org.sopt.makers.operation.exception.AlarmException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
@@ -19,31 +19,29 @@ import lombok.val;
 @Component
 @RequiredArgsConstructor
 public class PlayGroundServerImpl implements PlayGroundServer {
-	private final RestTemplate restTemplate;
 
-	@Value("${sopt.makers.playground.server}")
-	private String playGroundURI;
-	@Value("${sopt.makers.playground.token}")
-	private String playGroundToken;
+	private final RestTemplate restTemplate;
+	private final ValueConfig valueConfig;
 
 	@Override
-	public InactiveMemberListResponse getInactiveMembers(int generation, Part part) {
-		val uri = getInactiveUserURI(part, generation);
+	public MemberListGetResponse getMembers(int generation, Part part) {
+		val uri = getPlaygroundMemberUri(part, generation);
 		val headers = getHeaders();
 		val entity = new HttpEntity<>(null, headers);
 
 		try {
-			val response = restTemplate.exchange(uri, GET, entity, InactiveMemberListResponse.class);
+			val response = restTemplate.exchange(uri, GET, entity, MemberListGetResponse.class);
 			return response.getBody();
 		} catch (Exception e) {
 			throw new AlarmException(FAIL_INACTIVE_USERS);
 		}
 	}
 
-	private String getInactiveUserURI(Part part, int generation) {
+	private String getPlaygroundMemberUri(Part part, int generation) {
 		val uri = new StringBuilder();
+		val playGroundUri = valueConfig.getPlayGroundURI();
 
-		uri.append(playGroundURI)
+		uri.append(playGroundUri)
 			.append("/internal/api/v1/members/inactivity?generation=")
 			.append(generation);
 
@@ -56,8 +54,11 @@ public class PlayGroundServerImpl implements PlayGroundServer {
 
 	private HttpHeaders getHeaders() {
 		val headers = new HttpHeaders();
+		val playGroundToken = valueConfig.getPlayGroundToken();
+
 		headers.add("content-type", "application/json;charset=UTF-8");
 		headers.add("Authorization", playGroundToken);
+
 		return headers;
 	}
 }

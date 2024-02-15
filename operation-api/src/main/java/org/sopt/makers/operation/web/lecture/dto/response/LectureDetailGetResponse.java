@@ -1,12 +1,14 @@
 package org.sopt.makers.operation.web.lecture.dto.response;
 
+import static lombok.AccessLevel.*;
+
 import org.sopt.makers.operation.lecture.domain.Lecture;
 
 import lombok.Builder;
 
-@Builder
-public record LectureDetailResponse(
-	Long lectureId,
+@Builder(access = PRIVATE)
+public record LectureDetailGetResponse(
+	long lectureId,
 	String part,
 	String name,
 	String place,
@@ -15,8 +17,9 @@ public record LectureDetailResponse(
 	String endDate,
 	int generation
 ) {
-	public static LectureDetailResponse of(Lecture lecture) {
-		return LectureDetailResponse.builder()
+
+	public static LectureDetailGetResponse of(Lecture lecture) {
+		return LectureDetailGetResponse.builder()
 			.lectureId(lecture.getId())
 			.part(lecture.getPart().getName())
 			.name(lecture.getName())

@@ -5,6 +5,7 @@ import static java.util.Objects.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.sopt.makers.operation.common.domain.BaseEntity;
 import org.sopt.makers.operation.common.domain.Part;
@@ -26,6 +27,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class Alarm extends BaseEntity {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "alarm_id")
@@ -103,12 +105,12 @@ public class Alarm extends BaseEntity {
 		return this.status.equals(Status.AFTER);
 	}
 
-	public boolean hasEmptyTargetList() {
-		return this.targetList.isEmpty();
-	}
-
 	public void updateToSent() {
 		this.status = Status.AFTER;
 		this.sendAt = LocalDateTime.now();
+	}
+
+	public boolean hasTargets() {
+		return Objects.isNull(this.isActive) || Objects.isNull(this.part);
 	}
 }

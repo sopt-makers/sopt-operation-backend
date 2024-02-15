@@ -5,8 +5,8 @@ import static org.sopt.makers.operation.code.success.web.LectureSuccessCode.*;
 import org.sopt.makers.operation.common.domain.Part;
 import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.util.ApiResponseUtil;
-import org.sopt.makers.operation.web.lecture.dto.request.AttendanceRequest;
-import org.sopt.makers.operation.web.lecture.dto.request.LectureRequest;
+import org.sopt.makers.operation.web.lecture.dto.request.SubLectureStartRequest;
+import org.sopt.makers.operation.web.lecture.dto.request.LectureCreateRequest;
 import org.sopt.makers.operation.web.lecture.service.WebLectureService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,9 +31,9 @@ public class WebLectureApiController implements WebLectureApi {
 
 	@Override
 	@PostMapping
-	public ResponseEntity<BaseResponse<?>> createLecture(@RequestBody LectureRequest request) {
-		val lectureId = lectureService.createLecture(request);
-		return ApiResponseUtil.success(SUCCESS_CREATE_LECTURE, lectureId);
+	public ResponseEntity<BaseResponse<?>> createLecture(@RequestBody LectureCreateRequest request) {
+		val response = lectureService.createLecture(request);
+		return ApiResponseUtil.success(SUCCESS_CREATE_LECTURE, response.lectureId());
 	}
 
 	@Override
@@ -55,8 +55,8 @@ public class WebLectureApiController implements WebLectureApi {
 
 	@Override
 	@PatchMapping("/attendance")
-	public ResponseEntity<BaseResponse<?>> startAttendance(AttendanceRequest request) {
-		val response = lectureService.startAttendance(request);
+	public ResponseEntity<BaseResponse<?>> startSubLecture(SubLectureStartRequest request) {
+		val response = lectureService.startSubLecture(request);
 		return ApiResponseUtil.success(SUCCESS_START_ATTENDANCE, response);
 	}
 

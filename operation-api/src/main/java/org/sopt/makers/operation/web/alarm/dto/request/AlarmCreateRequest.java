@@ -6,7 +6,7 @@ import org.sopt.makers.operation.common.domain.Part;
 import org.sopt.makers.operation.alarm.domain.Alarm;
 import org.sopt.makers.operation.alarm.domain.Attribute;
 
-public record AlarmRequest(
+public record AlarmCreateRequest(
 	int generation,
 	int generationAt,
 	Attribute attribute,
@@ -17,6 +17,7 @@ public record AlarmRequest(
 	Part part,
 	List<String> targetList
 ) {
+
 	public Alarm toEntity() {
 		return Alarm.builder()
 				.generation(this.generation)

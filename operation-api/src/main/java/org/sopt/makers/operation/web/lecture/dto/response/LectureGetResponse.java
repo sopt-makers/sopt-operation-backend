@@ -1,6 +1,7 @@
 package org.sopt.makers.operation.web.lecture.dto.response;
 
 import static java.util.Objects.*;
+import static lombok.AccessLevel.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,40 +14,42 @@ import org.sopt.makers.operation.lecture.domain.SubLecture;
 
 import lombok.Builder;
 
-@Builder
-public record LectureResponse(
-	Long lectureId,
+@Builder(access = PRIVATE)
+public record LectureGetResponse(
+	long lectureId,
 	String name,
 	int generation,
 	Part part,
 	Attribute attribute,
-	List<SubLectureVO> subLectures,
-	AttendanceStatusListVO attendances,
+	List<SubLectureResponse> subLectures,
+	AttendanceStatusListResponse attendances,
 	LectureStatus status
 
 ) {
-	public static LectureResponse of(Lecture lecture) {
-		return LectureResponse.builder()
+
+	public static LectureGetResponse of(Lecture lecture) {
+		return LectureGetResponse.builder()
 			.lectureId(lecture.getId())
 			.name(lecture.getName())
 			.generation(lecture.getGeneration())
 			.part(lecture.getPart())
 			.attribute(lecture.getAttribute())
-			.subLectures(lecture.getSubLectures().stream().map(SubLectureVO::of).toList())
-			.attendances(AttendanceStatusListVO.of(lecture))
+			.subLectures(lecture.getSubLectures().stream().map(SubLectureResponse::of).toList())
+			.attendances(AttendanceStatusListResponse.of(lecture))
 			.status(lecture.getLectureStatus())
 			.build();
 	}
 
-	@Builder
-	public record SubLectureVO(
-			Long subLectureId,
+	@Builder(access = PRIVATE)
+	public record SubLectureResponse(
+			long subLectureId,
 			int round,
 			String startAt,
 			String code
 	) {
-		private static SubLectureVO of(SubLecture subLecture) {
-			return SubLectureVO.builder()
+
+		private static SubLectureResponse of(SubLecture subLecture) {
+			return SubLectureResponse.builder()
 					.subLectureId(subLecture.getId())
 					.round(subLecture.getRound())
 					.startAt(getStartAt(subLecture.getStartAt()))

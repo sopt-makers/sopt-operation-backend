@@ -14,10 +14,11 @@ import org.sopt.makers.operation.member.domain.Member;
 import org.sopt.makers.operation.member.repository.MemberRepository;
 import org.sopt.makers.operation.exception.LectureException;
 import org.sopt.makers.operation.exception.MemberException;
-import org.sopt.makers.operation.web.attendnace.dto.request.UpdatedSubAttendanceRequest;
-import org.sopt.makers.operation.web.attendnace.dto.response.AttendanceMemberResponse;
-import org.sopt.makers.operation.web.attendnace.dto.response.AttendanceListResponse;
-import org.sopt.makers.operation.web.attendnace.dto.response.UpdatedSubAttendanceResponse;
+import org.sopt.makers.operation.web.attendnace.dto.request.SubAttendanceUpdateRequest;
+import org.sopt.makers.operation.web.attendnace.dto.response.AttendanceListByMemberGetResponse;
+import org.sopt.makers.operation.web.attendnace.dto.response.AttendanceListByLectureGetResponse;
+import org.sopt.makers.operation.web.attendnace.dto.response.MemberScoreUpdateResponse;
+import org.sopt.makers.operation.web.attendnace.dto.response.SubAttendanceUpdateResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,10 +40,33 @@ public class WebAttendanceServiceImpl implements WebAttendanceService {
 
 	@Override
 	@Transactional
-	public UpdatedSubAttendanceResponse updateSubAttendance(UpdatedSubAttendanceRequest request) {
+	public SubAttendanceUpdateResponse updateSubAttendance(SubAttendanceUpdateRequest request) {
 		val subAttendance = findSubAttendance(request.subAttendanceId());
 		subAttendance.updateStatus(request.status());
-		return UpdatedSubAttendanceResponse.of(subAttendance);
+		return SubAttendanceUpdateResponse.of(subAttendance);
+	}
+
+	@Override
+	public AttendanceListByMemberGetResponse getAttendancesByMember(long memberId) {
+		val member = findMember(memberId);
+		val attendances = attendanceRepository.findFetchJoin(member);
+		return AttendanceListByMemberGetResponse.of(member, attendances);
+	}
+
+	@Override
+	@Transactional
+	public MemberScoreUpdateResponse updateMemberAllScore(long memberId) {
+		val member = findMember(memberId);
+		member.updateTotalScore();
+		return MemberScoreUpdateResponse.of(member);
+	}
+
+	@Override
+	public AttendanceListByLectureGetResponse getAttendancesByLecture(long lectureId, Part part, Pageable pageable) {
+		val lecture = findLecture(lectureId);
+		val attendances = attendanceRepository.findFetchJoin(lecture, part, pageable);
+		val totalCount = attendanceRepository.count(lecture, part);
+		return AttendanceListByLectureGetResponse.of(attendances, totalCount);
 	}
 
 	private SubAttendance findSubAttendance(long id) {
@@ -50,32 +74,9 @@ public class WebAttendanceServiceImpl implements WebAttendanceService {
 				.orElseThrow(() -> new LectureException(INVALID_ATTENDANCE));
 	}
 
-	@Override
-	public AttendanceMemberResponse findAttendancesByMember(long memberId) {
-		val member = findMember(memberId);
-		val attendanceList = attendanceRepository.findFetchJoin(member);
-		return AttendanceMemberResponse.of(member, attendanceList);
-	}
-
 	private Member findMember(long id) {
 		return memberRepository.findById(id)
 				.orElseThrow(() -> new MemberException(INVALID_MEMBER));
-	}
-
-	@Override
-	@Transactional
-	public float updateMemberAllScore(long memberId) {
-		val member = findMember(memberId);
-		member.updateTotalScore();
-		return member.getScore();
-	}
-
-	@Override
-	public AttendanceListResponse findAttendancesByLecture(long lectureId, Part part, Pageable pageable) {
-		val lecture = findLecture(lectureId);
-		val attendanceList = attendanceRepository.findFetchJoin(lecture, part, pageable);
-		val totalCount = attendanceRepository.count(lecture, part);
-		return AttendanceListResponse.of(attendanceList, totalCount);
 	}
 
 	private Lecture findLecture(long id) {

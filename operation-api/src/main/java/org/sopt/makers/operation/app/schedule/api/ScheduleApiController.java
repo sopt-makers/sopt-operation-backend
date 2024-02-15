@@ -1,6 +1,7 @@
 package org.sopt.makers.operation.app.schedule.api;
 
 import static org.sopt.makers.operation.code.success.app.ScheduleSuccessCode.*;
+import static org.springframework.format.annotation.DateTimeFormat.ISO.*;
 
 import java.time.LocalDateTime;
 
@@ -27,8 +28,8 @@ public class ScheduleApiController implements ScheduleApi {
 	@Override
 	@GetMapping
 	public ResponseEntity<BaseResponse<?>> getSchedules(
-			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
-			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end
+			@RequestParam @DateTimeFormat(iso = DATE_TIME) LocalDateTime start,
+			@RequestParam @DateTimeFormat(iso = DATE_TIME) LocalDateTime end
 	) {
 		val response = scheduleService.getSchedules(start, end);
 		return ApiResponseUtil.success(SUCCESS_GET_SCHEDULES, response);

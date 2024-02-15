@@ -54,6 +54,22 @@ public class Attendance {
 		this.status = ABSENT;
 	}
 
+	private void setMember(Member member) {
+		if (Objects.nonNull(this.member)) {
+			this.member.getAttendances().remove(this);
+		}
+		this.member = member;
+		member.getAttendances().add(this);
+	}
+
+	private void setLecture(Lecture lecture) {
+		if (Objects.nonNull(this.lecture)) {
+			this.lecture.getAttendances().remove(this);
+		}
+		this.lecture = lecture;
+		lecture.getAttendances().add(this);
+	}
+
 	public void updateStatus() {
 		this.status = getStatus();
 	}
@@ -61,6 +77,7 @@ public class Attendance {
 	public AttendanceStatus getStatus() {
 		val first = getSubAttendanceByRound(1);
 		val second = getSubAttendanceByRound(2);
+
 		return switch (this.lecture.getAttribute()) {
 			case SEMINAR -> second.getStatus().equals(ATTENDANCE)
 				? first.getStatus().equals(ATTENDANCE) ? ATTENDANCE : TARDY
@@ -72,6 +89,7 @@ public class Attendance {
 
 	public float getScore() {
 		val lectureAttribute = this.lecture.getAttribute();
+
 		return switch (lectureAttribute) {
 			case SEMINAR -> {
 				if (this.status.equals(ABSENT)) {
@@ -95,28 +113,14 @@ public class Attendance {
 		this.member.updateScore((-1) * this.getScore());
 	}
 
-	private SubAttendance getSubAttendanceByRound(int round) {
-		return this.subAttendances.stream().filter(o -> o.getSubLecture().getRound() == round).findFirst()
-			.orElseThrow(() -> new AttendanceException(INVALID_SUB_ATTENDANCE));
-	}
-
-	private void setMember(Member member) {
-		if (Objects.nonNull(this.member)) {
-			this.member.getAttendances().remove(this);
-		}
-		this.member = member;
-		member.getAttendances().add(this);
-	}
-
-	private void setLecture(Lecture lecture) {
-		if (Objects.nonNull(this.lecture)) {
-			this.lecture.getAttendances().remove(this);
-		}
-		this.lecture = lecture;
-		lecture.getAttendances().add(this);
-	}
-
 	public boolean isEnd() {
 		return this.lecture.isEnd();
+	}
+
+	private SubAttendance getSubAttendanceByRound(int round) {
+		return this.subAttendances.stream()
+				.filter(o -> o.getSubLecture().getRound() == round)
+				.findFirst()
+				.orElseThrow(() -> new AttendanceException(INVALID_SUB_ATTENDANCE));
 	}
 }

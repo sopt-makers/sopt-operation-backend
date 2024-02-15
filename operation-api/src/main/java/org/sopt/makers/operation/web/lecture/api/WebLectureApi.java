@@ -2,8 +2,8 @@ package org.sopt.makers.operation.web.lecture.api;
 
 import org.sopt.makers.operation.common.domain.Part;
 import org.sopt.makers.operation.dto.BaseResponse;
-import org.sopt.makers.operation.web.lecture.dto.request.AttendanceRequest;
-import org.sopt.makers.operation.web.lecture.dto.request.LectureRequest;
+import org.sopt.makers.operation.web.lecture.dto.request.SubLectureStartRequest;
+import org.sopt.makers.operation.web.lecture.dto.request.LectureCreateRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,7 +31,7 @@ public interface WebLectureApi {
 					)
 			}
 	)
-	ResponseEntity<BaseResponse<?>> createLecture(@RequestBody LectureRequest request);
+	ResponseEntity<BaseResponse<?>> createLecture(@RequestBody LectureCreateRequest request);
 
 	@Operation(
 			summary = "세션 리스트 조회 API",
@@ -90,7 +90,7 @@ public interface WebLectureApi {
 					)
 			}
 	)
-	ResponseEntity<BaseResponse<?>> startAttendance(@RequestBody AttendanceRequest request);
+	ResponseEntity<BaseResponse<?>> startSubLecture(@RequestBody SubLectureStartRequest request);
 
 	@Operation(
 			summary = "세션 종료 후 출석 점수 갱신 API",

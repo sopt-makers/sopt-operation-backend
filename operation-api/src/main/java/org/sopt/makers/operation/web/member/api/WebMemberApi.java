@@ -28,8 +28,8 @@ public interface WebMemberApi {
 					)
 			}
 	)
-	ResponseEntity<BaseResponse<?>> getMemberList(
+	ResponseEntity<BaseResponse<?>> getMembers(
 			@RequestParam(required = false) Part part,
-			@RequestParam(required = false) Integer generation,
+			@RequestParam int generation,
 			Pageable pageable);
 }
