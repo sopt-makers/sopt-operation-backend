@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.app.attendance.dto.response;
+package org.sopt.makers.operation.app.member.dto.response;
 
 import java.time.format.DateTimeFormatter;
 
