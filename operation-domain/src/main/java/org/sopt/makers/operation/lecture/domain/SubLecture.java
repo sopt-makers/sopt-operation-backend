@@ -48,6 +48,14 @@ public class SubLecture {
 		this.round = round;
 	}
 
+	private void setLecture(Lecture lecture) {
+		if (Objects.nonNull(this.lecture)) {
+			this.lecture.getSubLectures().remove(this);
+		}
+		this.lecture = lecture;
+		lecture.getSubLectures().add(this);
+	}
+
 	public void updateCode(String code) {
 		this.code = code;
 		this.startAt = LocalDateTime.now();
@@ -60,14 +68,6 @@ public class SubLecture {
 			case 2 -> LectureStatus.SECOND;
 			default -> this.lecture.getLectureStatus();
 		};
-	}
-
-	private void setLecture(Lecture lecture) {
-		if (Objects.nonNull(this.lecture)) {
-			this.lecture.getSubLectures().remove(this);
-		}
-		this.lecture = lecture;
-		lecture.getSubLectures().add(this);
 	}
 
 	public boolean isNotStarted() {

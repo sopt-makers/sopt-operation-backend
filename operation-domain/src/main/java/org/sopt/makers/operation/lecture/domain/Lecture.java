@@ -58,8 +58,15 @@ public class Lecture extends BaseEntity {
 	List<Attendance> attendances = new ArrayList<>();
 
 	@Builder
-	public Lecture(String name, Part part, int generation, String place, LocalDateTime startDate, LocalDateTime endDate,
-		Attribute attribute) {
+	public Lecture(
+			String name,
+			Part part,
+			int generation,
+			String place,
+			LocalDateTime startDate,
+			LocalDateTime endDate,
+			Attribute attribute
+	) {
 		this.name = name;
 		this.part = part;
 		this.generation = generation;
