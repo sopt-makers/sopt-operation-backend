@@ -49,6 +49,7 @@ public class SecurityConfig {
         setHttp(http);
         return http.build();
     }
+
     private void setHttp(HttpSecurity http) throws Exception {
         http.httpBasic().disable()
                 .csrf().disable()
@@ -58,6 +59,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
                                 .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/*")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/api/v1/test/**")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/error")).permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

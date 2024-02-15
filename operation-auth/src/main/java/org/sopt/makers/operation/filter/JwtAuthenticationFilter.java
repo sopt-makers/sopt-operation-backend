@@ -29,7 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         val uri = request.getRequestURI();
 
-        if ((uri.startsWith("/api/v1")) && !uri.contains("auth")) {
+        if ((uri.startsWith("/api/v1")) && !uri.contains("auth") && !uri.contains("test")) {
             val token = jwtTokenProvider.resolveToken(request);
 
             val jwtTokenType = validateTokenType(request);
