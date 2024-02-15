@@ -2,7 +2,6 @@ package org.sopt.makers.operation.app.member.dto.response;
 
 import java.util.List;
 
-import org.sopt.makers.operation.app.attendance.dto.response.AttendanceTotalVO;
 import org.sopt.makers.operation.common.domain.Part;
 import org.sopt.makers.operation.member.domain.Member;
 

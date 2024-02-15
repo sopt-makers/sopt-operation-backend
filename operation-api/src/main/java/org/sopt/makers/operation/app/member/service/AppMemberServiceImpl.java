@@ -7,7 +7,7 @@ import static org.sopt.makers.operation.lecture.domain.Attribute.*;
 import java.util.List;
 
 import org.sopt.makers.operation.app.member.dto.response.AttendanceTotalResponseDTO;
-import org.sopt.makers.operation.app.attendance.dto.response.AttendanceTotalVO;
+import org.sopt.makers.operation.app.member.dto.response.AttendanceTotalVO;
 import org.sopt.makers.operation.app.member.dto.response.MemberScoreGetResponse;
 import org.sopt.makers.operation.attendance.repository.attendance.AttendanceRepository;
 import org.sopt.makers.operation.config.ValueConfig;
