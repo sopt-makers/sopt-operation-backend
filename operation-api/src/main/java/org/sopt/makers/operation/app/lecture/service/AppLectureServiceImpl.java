@@ -73,6 +73,11 @@ public class AppLectureServiceImpl implements AppLectureService {
         }
     }
 
+    private boolean checkOnAttendanceAbsence(SubLecture subLecture, SubAttendance subAttendance) {
+        val isOnAttendanceCheck = LocalDateTime.now().isBefore(subLecture.getStartAt().plusMinutes(10));
+        return isOnAttendanceCheck && subAttendance.getStatus().equals(ABSENT);
+    }
+
     private Attendance getNowAttendance(List<Attendance> attendances) {
         val index = getAttendanceIndex();
         return attendances.get(index);
@@ -97,9 +102,8 @@ public class AppLectureServiceImpl implements AppLectureService {
 
     private TodayLectureResponse getTodayFirstLectureResponse(SubAttendance subAttendance, LectureResponseType responseType, Lecture lecture) {
         val subLecture = subAttendance.getSubLecture();
-        val isOnAttendanceCheck = LocalDateTime.now().isBefore(subLecture.getStartAt().plusMinutes(10));
         val message = getMessage(lecture.getAttribute());
-        if (isOnAttendanceCheck && subAttendance.getStatus().equals(ABSENT)) {
+        if (checkOnAttendanceAbsence(subLecture, subAttendance)) {
             return TodayLectureResponse.of(responseType, lecture, message, Collections.emptyList());
         }
         return TodayLectureResponse.of(responseType, lecture, message, Collections.singletonList(subAttendance));
@@ -112,9 +116,8 @@ public class AppLectureServiceImpl implements AppLectureService {
     ) {
         val subAttendance = subAttendances.get(1);
         val subLecture = subAttendance.getSubLecture();
-        val isOnAttendanceCheck = LocalDateTime.now().isBefore(subLecture.getStartAt().plusMinutes(10));
         val message = getMessage(lecture.getAttribute());
-        if (isOnAttendanceCheck && subAttendance.getStatus().equals(ABSENT)) {
+        if (checkOnAttendanceAbsence(subLecture, subAttendance)) {
             return TodayLectureResponse.of(responseType, lecture, message, Collections.singletonList(subAttendances.get(0)));
         }
         return TodayLectureResponse.of(responseType, lecture, message, subAttendances);
