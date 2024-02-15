@@ -1,5 +1,6 @@
 package org.sopt.makers.operation.web.member.dto.response;
 
+import static lombok.AccessLevel.*;
 import static org.sopt.makers.operation.attendance.domain.AttendanceStatus.*;
 
 import java.util.List;
@@ -8,53 +9,52 @@ import org.sopt.makers.operation.common.domain.Part;
 import org.sopt.makers.operation.attendance.domain.AttendanceStatus;
 import org.sopt.makers.operation.member.domain.Member;
 
-import lombok.AccessLevel;
 import lombok.Builder;
 
-@Builder(access = AccessLevel.PRIVATE)
-public record MemberListResponse(
-	List<MemberVO> members,
+@Builder(access = PRIVATE)
+public record MemberListGetResponse(
+	List<MemberResponse> members,
 	int totalCount
 ) {
-	public static MemberListResponse of(List<Member> memberList, int totalCount) {
-		return MemberListResponse.builder()
-				.members(memberList.stream().map(MemberVO::of).toList())
+	public static MemberListGetResponse of(List<Member> memberList, int totalCount) {
+		return MemberListGetResponse.builder()
+				.members(memberList.stream().map(MemberResponse::of).toList())
 				.totalCount(totalCount)
 				.build();
 	}
 
-	@Builder(access = AccessLevel.PRIVATE)
-	private record MemberVO(
-			Long id,
+	@Builder(access = PRIVATE)
+	private record MemberResponse(
+			long id,
 			String name,
 			String university,
 			Part part,
 			float score,
-			AttendanceInfo total
+			AttendanceStatusResponse total
 	) {
 
-		private static MemberVO of(Member member) {
-			return MemberVO.builder()
+		private static MemberResponse of(Member member) {
+			return MemberResponse.builder()
 					.id(member.getId())
 					.name(member.getName())
 					.university(member.getUniversity())
 					.part(member.getPart())
 					.score(member.getScore())
-					.total(AttendanceInfo.of(member))
+					.total(AttendanceStatusResponse.of(member))
 					.build();
 		}
 	}
 
-	@Builder(access = AccessLevel.PRIVATE)
-	private record AttendanceInfo(
+	@Builder(access = PRIVATE)
+	private record AttendanceStatusResponse(
 			int attendance,
 			int absent,
 			int tardy,
 			int participate
 	) {
 
-		private static AttendanceInfo of(Member member) {
-			return AttendanceInfo.builder()
+		private static AttendanceStatusResponse of(Member member) {
+			return AttendanceStatusResponse.builder()
 					.attendance(getCount(member, ATTENDANCE))
 					.absent(getCount(member, ABSENT))
 					.tardy(getCount(member, TARDY))

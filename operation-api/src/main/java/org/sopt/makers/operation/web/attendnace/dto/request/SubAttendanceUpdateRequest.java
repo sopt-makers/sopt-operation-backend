@@ -2,7 +2,7 @@ package org.sopt.makers.operation.web.attendnace.dto.request;
 
 import org.sopt.makers.operation.attendance.domain.AttendanceStatus;
 
-public record UpdatedSubAttendanceRequest(
+public record SubAttendanceUpdateRequest(
 	long subAttendanceId,
 	AttendanceStatus status
 ) {

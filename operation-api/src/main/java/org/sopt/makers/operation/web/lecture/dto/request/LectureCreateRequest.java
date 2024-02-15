@@ -1,5 +1,6 @@
 package org.sopt.makers.operation.web.lecture.dto.request;
 
+import static lombok.AccessLevel.*;
 import static org.sopt.makers.operation.code.failure.LectureFailureCode.*;
 
 import java.time.LocalDateTime;
@@ -13,8 +14,8 @@ import org.sopt.makers.operation.exception.DateTimeParseCustomException;
 import lombok.Builder;
 import lombok.NonNull;
 
-@Builder
-public record LectureRequest(
+@Builder(access = PRIVATE)
+public record LectureCreateRequest(
 	@NonNull Part part,
 	@NonNull String name,
 	int generation,

@@ -8,6 +8,5 @@ import org.sopt.makers.operation.lecture.domain.Lecture;
 
 public interface LectureCustomRepository {
     List<Lecture> find(int generation, Part part);
-    List<Lecture> findLecturesToBeEnd();
-    Optional<Lecture> find(Long lectureId);
+    List<Lecture> findLecturesReadyToEnd();
 }

@@ -6,7 +6,7 @@ import org.sopt.makers.operation.common.domain.Part;
 import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.util.ApiResponseUtil;
 import org.sopt.makers.operation.alarm.domain.Status;
-import org.sopt.makers.operation.web.alarm.dto.request.AlarmRequest;
+import org.sopt.makers.operation.web.alarm.dto.request.AlarmCreateRequest;
 import org.sopt.makers.operation.web.alarm.dto.request.AlarmSendRequest;
 import org.sopt.makers.operation.web.alarm.service.AlarmService;
 import org.springframework.data.domain.Pageable;
@@ -32,15 +32,15 @@ public class AlarmApiController implements AlarmApi {
 	@Override
 	@PostMapping("/send")
 	public ResponseEntity<BaseResponse<?>> sendAlarm(AlarmSendRequest request) {
-		alarmService.sendByAdmin(request);
+		alarmService.sendAlarm(request);
 		return ApiResponseUtil.success(SUCCESS_SEND_ALARM);
 	}
 
 	@Override
 	@PostMapping
-	public ResponseEntity<BaseResponse<?>> createAlarm(AlarmRequest request) {
-		val response = alarmService.createAlarm(request);
-		return ApiResponseUtil.success(SUCCESS_CREATE_ALARM, response);
+	public ResponseEntity<BaseResponse<?>> createAlarm(AlarmCreateRequest request) {
+		val response = alarmService.saveAlarm(request);
+		return ApiResponseUtil.success(SUCCESS_CREATE_ALARM, response.alarmId());
 	}
 
 	@Override

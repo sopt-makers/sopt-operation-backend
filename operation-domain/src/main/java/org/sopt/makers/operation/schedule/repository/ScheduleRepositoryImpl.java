@@ -19,13 +19,17 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public List<Schedule> findBetweenStartAndEnd(LocalDateTime start, LocalDateTime end) {
+	public List<Schedule> findBetween(LocalDateTime startDate, LocalDateTime endDate) {
 		return queryFactory
 			.select(schedule)
 			.from(schedule)
 			.where(
-				schedule.startDate.between(start, end)
-					.or(schedule.endDate.between(start, end))
+					schedule.startDate.eq(startDate)
+							.or(schedule.startDate.between(startDate, endDate))
+							.or(schedule.startDate.eq(endDate))
+							.or(schedule.endDate.eq(startDate))
+							.or(schedule.endDate.between(startDate, endDate))
+							.or(schedule.endDate.eq(endDate))
 			)
 			.orderBy(schedule.startDate.asc())
 			.fetch();

@@ -1,5 +1,6 @@
 package org.sopt.makers.operation.web.lecture.dto.response;
 
+import static lombok.AccessLevel.*;
 import static org.sopt.makers.operation.attendance.domain.AttendanceStatus.*;
 
 import org.sopt.makers.operation.attendance.domain.AttendanceStatus;
@@ -7,16 +8,16 @@ import org.sopt.makers.operation.lecture.domain.Lecture;
 
 import lombok.Builder;
 
-@Builder
-public record AttendanceStatusListVO(
+@Builder(access = PRIVATE)
+public record AttendanceStatusListResponse(
 	int attendance,
 	int absent,
 	int tardy,
 	int unknown
 ) {
 
-	public static AttendanceStatusListVO of(Lecture lecture) {
-		return AttendanceStatusListVO.builder()
+	public static AttendanceStatusListResponse of(Lecture lecture) {
+		return AttendanceStatusListResponse.builder()
 			.attendance(getCount(lecture, ATTENDANCE))
 			.absent(getAbsentCount(lecture))
 			.tardy(getCount(lecture, TARDY))

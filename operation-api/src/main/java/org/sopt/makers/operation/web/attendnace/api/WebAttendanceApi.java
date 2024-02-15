@@ -2,7 +2,7 @@ package org.sopt.makers.operation.web.attendnace.api;
 
 import org.sopt.makers.operation.common.domain.Part;
 import org.sopt.makers.operation.dto.BaseResponse;
-import org.sopt.makers.operation.web.attendnace.dto.request.UpdatedSubAttendanceRequest;
+import org.sopt.makers.operation.web.attendnace.dto.request.SubAttendanceUpdateRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,7 +31,7 @@ public interface WebAttendanceApi {
 					)
 			}
 	)
-	ResponseEntity<BaseResponse<?>> updateSubAttendance(@RequestBody UpdatedSubAttendanceRequest request);
+	ResponseEntity<BaseResponse<?>> updateSubAttendance(@RequestBody SubAttendanceUpdateRequest request);
 
 	@Operation(
 			summary = "회원별 출석 정보 조회 API",

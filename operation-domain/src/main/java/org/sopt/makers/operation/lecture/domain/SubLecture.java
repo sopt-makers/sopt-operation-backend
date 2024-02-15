@@ -48,9 +48,9 @@ public class SubLecture {
 		this.round = round;
 	}
 
-	public void startAttendance(String code) {
-		this.startAt = LocalDateTime.now();
+	public void updateCode(String code) {
 		this.code = code;
+		this.startAt = LocalDateTime.now();
 		this.lecture.updateStatus(getUpdatedStatus());
 	}
 

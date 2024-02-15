@@ -2,8 +2,8 @@ package org.sopt.makers.operation.app.schedule.service;
 
 import java.time.LocalDateTime;
 
-import org.sopt.makers.operation.app.schedule.dto.response.ScheduleListResponse;
+import org.sopt.makers.operation.app.schedule.dto.response.ScheduleListGetResponse;
 
 public interface ScheduleService {
-	ScheduleListResponse getSchedules(LocalDateTime start, LocalDateTime end);
+	ScheduleListGetResponse getSchedules(LocalDateTime startAt, LocalDateTime endAt);
 }

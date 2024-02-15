@@ -5,7 +5,7 @@ import static org.sopt.makers.operation.code.success.web.AttendanceSuccessCode.*
 import org.sopt.makers.operation.common.domain.Part;
 import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.util.ApiResponseUtil;
-import org.sopt.makers.operation.web.attendnace.dto.request.UpdatedSubAttendanceRequest;
+import org.sopt.makers.operation.web.attendnace.dto.request.SubAttendanceUpdateRequest;
 import org.sopt.makers.operation.web.attendnace.service.WebAttendanceService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +29,7 @@ public class WebAttendanceApiController implements WebAttendanceApi {
 
 	@Override
 	@PatchMapping
-	public ResponseEntity<BaseResponse<?>> updateSubAttendance(@RequestBody UpdatedSubAttendanceRequest request) {
+	public ResponseEntity<BaseResponse<?>> updateSubAttendance(@RequestBody SubAttendanceUpdateRequest request) {
 		val response = attendanceService.updateSubAttendance(request);
 		return ApiResponseUtil.success(SUCCESS_UPDATE_ATTENDANCE_STATUS, response);
 	}
@@ -37,7 +37,7 @@ public class WebAttendanceApiController implements WebAttendanceApi {
 	@Override
 	@GetMapping("/{memberId}")
 	public ResponseEntity<BaseResponse<?>> findAttendancesByMember(@PathVariable long memberId) {
-		val response = attendanceService.findAttendancesByMember(memberId);
+		val response = attendanceService.getAttendancesByMember(memberId);
 		return ApiResponseUtil.success(SUCCESS_GET_MEMBER_ATTENDANCE, response);
 	}
 
@@ -45,7 +45,7 @@ public class WebAttendanceApiController implements WebAttendanceApi {
 	@PatchMapping("/member/{memberId}")
 	public ResponseEntity<BaseResponse<?>> updateMemberScore(@PathVariable long memberId) {
 		val response = attendanceService.updateMemberAllScore(memberId);
-		return ApiResponseUtil.success(SUCCESS_UPDATE_MEMBER_SCORE, response);
+		return ApiResponseUtil.success(SUCCESS_UPDATE_MEMBER_SCORE, response.score());
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class WebAttendanceApiController implements WebAttendanceApi {
 			@RequestParam(required = false) Part part,
 			Pageable pageable
 	) {
-		val response = attendanceService.findAttendancesByLecture(lectureId, part, pageable);
+		val response = attendanceService.getAttendancesByLecture(lectureId, part, pageable);
 		return ApiResponseUtil.success(SUCCESS_GET_ATTENDANCES, response);
 	}
 }

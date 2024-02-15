@@ -7,7 +7,6 @@ import static org.sopt.makers.operation.member.domain.QMember.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.sopt.makers.operation.common.domain.Part;
 import org.sopt.makers.operation.lecture.domain.Lecture;
@@ -37,7 +36,7 @@ public class LectureRepositoryImpl implements LectureCustomRepository {
     }
 
     @Override
-    public List<Lecture> findLecturesToBeEnd() {
+    public List<Lecture> findLecturesReadyToEnd() {
         return queryFactory
             .selectFrom(lecture)
             .leftJoin(lecture.attendances, attendance).fetchJoin().distinct()
@@ -47,16 +46,6 @@ public class LectureRepositoryImpl implements LectureCustomRepository {
                 lecture.lectureStatus.ne(LectureStatus.END)
             )
             .fetch();
-    }
-
-    @Override
-    public Optional<Lecture> find(Long lectureId) {
-        return queryFactory
-            .selectFrom(lecture)
-            .leftJoin(lecture.attendances, attendance).fetchJoin().distinct()
-            .leftJoin(attendance.member, member).fetchJoin().distinct()
-            .where(lecture.id.eq(lectureId))
-            .stream().findFirst();
     }
 
     private BooleanExpression partEq(Part part) {
