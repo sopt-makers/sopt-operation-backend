@@ -1,15 +1,19 @@
 package org.sopt.makers.operation.app.lecture.dto.response;
 
+import lombok.Builder;
 import org.sopt.makers.operation.lecture.domain.SubLecture;
 
+import static lombok.AccessLevel.PRIVATE;
+
+@Builder(access = PRIVATE)
 public record LectureCurrentRoundResponse(
-        Long id,
+        long id,
         int round
 ) {
     public static LectureCurrentRoundResponse of(SubLecture subLecture){
-        return new LectureCurrentRoundResponse(
-                subLecture.getId(),
-                subLecture.getRound()
-        );
+        return LectureCurrentRoundResponse.builder()
+                .id(subLecture.getId())
+                .round(subLecture.getRound())
+                .build();
     }
 }

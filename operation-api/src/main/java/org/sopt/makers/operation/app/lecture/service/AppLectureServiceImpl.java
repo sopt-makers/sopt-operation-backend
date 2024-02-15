@@ -46,7 +46,7 @@ public class AppLectureServiceImpl implements AppLectureService {
         checkAttendancesSize(attendances);
 
         if (attendances.isEmpty()) {
-            return getEmptyResponse();
+            return TodayLectureResponse.getEmptyResponse();
         }
 
         val attendance = getNowAttendance(attendances);
@@ -65,19 +65,6 @@ public class AppLectureServiceImpl implements AppLectureService {
         }
 
         return getTodaySecondLectureResponse(subAttendances, responseType, lecture);
-    }
-
-    private TodayLectureResponse getEmptyResponse() {
-        return TodayLectureResponse.builder()
-                .type(LectureResponseType.NO_SESSION)
-                .id(0L)
-                .location("")
-                .name("")
-                .startDate("")
-                .endDate("")
-                .message("")
-                .attendances(Collections.emptyList())
-                .build();
     }
 
     private void checkAttendancesSize(List<Attendance> attendances) {
