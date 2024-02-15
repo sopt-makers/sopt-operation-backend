@@ -13,7 +13,7 @@ import org.sopt.makers.operation.web.admin.dto.response.SignUpResponse;
 import org.sopt.makers.operation.web.admin.dto.request.LoginRequest;
 import org.sopt.makers.operation.web.admin.dto.response.LoginResponse;
 import org.sopt.makers.operation.web.admin.dto.response.RefreshResponse;
-import org.sopt.makers.operation.domain.admin.repository.AdminRepository;
+import org.sopt.makers.operation.admin.repository.AdminRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
