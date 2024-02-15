@@ -2,7 +2,7 @@ package org.sopt.makers.operation.app.attendance.api;
 
 import java.security.Principal;
 
-import org.sopt.makers.operation.app.attendance.dto.request.AttendanceRequest;
+import org.sopt.makers.operation.app.attendance.dto.request.LectureAttendRequest;
 import org.sopt.makers.operation.dto.BaseResponse;
 import org.springframework.http.ResponseEntity;
 
@@ -36,6 +36,6 @@ public interface AppAttendanceApi {
 		}
 	)
 	ResponseEntity<BaseResponse<?>> attend(
-			@RequestBody AttendanceRequest request,
+			@RequestBody LectureAttendRequest request,
 			@Parameter(hidden = true) @NonNull Principal principal);
 }
