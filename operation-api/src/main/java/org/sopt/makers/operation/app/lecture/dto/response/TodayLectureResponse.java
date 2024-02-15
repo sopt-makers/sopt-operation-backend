@@ -2,8 +2,11 @@ package org.sopt.makers.operation.app.lecture.dto.response;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static lombok.AccessLevel.*;
 
 import org.sopt.makers.operation.attendance.domain.AttendanceStatus;
 import org.sopt.makers.operation.attendance.domain.SubAttendance;
@@ -11,10 +14,10 @@ import org.sopt.makers.operation.lecture.domain.Lecture;
 
 import lombok.Builder;
 
-@Builder
+@Builder(access = PRIVATE)
 public record TodayLectureResponse(
         LectureResponseType type,
-        Long id,
+        long id,
         String location,
         String name,
         String startDate,
@@ -23,7 +26,6 @@ public record TodayLectureResponse(
         List<LectureGetResponseVO> attendances
 ) {
     public static TodayLectureResponse of(LectureResponseType type, Lecture lecture, String message, List<SubAttendance> attendances) {
-
         return TodayLectureResponse.builder()
                 .type(type)
                 .id(lecture.getId())
@@ -35,6 +37,19 @@ public record TodayLectureResponse(
                 .attendances(attendances.stream()
                         .map(subAttendance -> LectureGetResponseVO.of(subAttendance.getStatus(), subAttendance.getLastModifiedDate()))
                         .collect(Collectors.toList()))
+                .build();
+    }
+
+    public static TodayLectureResponse getEmptyResponse() {
+        return TodayLectureResponse.builder()
+                .type(LectureResponseType.NO_SESSION)
+                .id(0L)
+                .location("")
+                .name("")
+                .startDate("")
+                .endDate("")
+                .message("")
+                .attendances(Collections.emptyList())
                 .build();
     }
 

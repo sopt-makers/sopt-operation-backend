@@ -1,8 +1,8 @@
 package org.sopt.makers.operation.app.attendance.service;
 
-import org.sopt.makers.operation.app.attendance.dto.request.AttendanceRequest;
-import org.sopt.makers.operation.app.attendance.dto.response.AttendanceResponse;
+import org.sopt.makers.operation.app.attendance.dto.request.LectureAttendRequest;
+import org.sopt.makers.operation.app.attendance.dto.response.LectureAttendResponse;
 
 public interface AppAttendanceService {
-	AttendanceResponse attend(long memberId, AttendanceRequest request);
+	LectureAttendResponse attend(long memberId, LectureAttendRequest request);
 }

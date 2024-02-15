@@ -6,8 +6,8 @@ import static org.sopt.makers.operation.code.failure.subAttendance.subAttendance
 import static org.sopt.makers.operation.code.failure.lecture.LectureFailureCode.*;
 import static org.sopt.makers.operation.code.failure.subLecture.subLectureFailureCode.*;
 
-import org.sopt.makers.operation.app.attendance.dto.request.AttendanceRequest;
-import org.sopt.makers.operation.app.attendance.dto.response.AttendanceResponse;
+import org.sopt.makers.operation.app.attendance.dto.request.LectureAttendRequest;
+import org.sopt.makers.operation.app.attendance.dto.response.LectureAttendResponse;
 import org.sopt.makers.operation.attendance.domain.Attendance;
 import org.sopt.makers.operation.attendance.domain.SubAttendance;
 import org.sopt.makers.operation.attendance.repository.attendance.AttendanceRepository;
@@ -39,10 +39,10 @@ public class AppAttendanceServiceImpl implements AppAttendanceService {
 
 	@Override
 	@Transactional
-	public AttendanceResponse attend(long playgroundId, AttendanceRequest request) {
+	public LectureAttendResponse attend(long playgroundId, LectureAttendRequest request) {
 		val subAttendance = getSubAttendance(request.subLectureId(), request.code(), playgroundId);
 		subAttendance.updateStatus(ATTENDANCE);
-		return AttendanceResponse.of(subAttendance);
+		return LectureAttendResponse.of(subAttendance);
 	}
 
 	private SubAttendance getSubAttendance(long subLectureId, String code, long playgroundId) {

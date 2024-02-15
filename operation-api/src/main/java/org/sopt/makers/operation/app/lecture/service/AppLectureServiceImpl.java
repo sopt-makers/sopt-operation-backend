@@ -46,7 +46,7 @@ public class AppLectureServiceImpl implements AppLectureService {
         checkAttendancesSize(attendances);
 
         if (attendances.isEmpty()) {
-            return getEmptyResponse();
+            return TodayLectureResponse.getEmptyResponse();
         }
 
         val attendance = getNowAttendance(attendances);
@@ -59,27 +59,23 @@ public class AppLectureServiceImpl implements AppLectureService {
         }
 
         val subAttendances = attendance.getSubAttendances();
-        val subAttendance = lecture.isFirst() ? subAttendances.get(0) : subAttendances.get(1);
-        return getTodayLectureResponse(subAttendance, responseType, lecture);
-    }
 
-    private TodayLectureResponse getEmptyResponse() {
-        return TodayLectureResponse.builder()
-                .type(LectureResponseType.NO_SESSION)
-                .id(0L)
-                .location("")
-                .name("")
-                .startDate("")
-                .endDate("")
-                .message("")
-                .attendances(Collections.emptyList())
-                .build();
+        if (lecture.isFirst()) {
+            return getTodayFirstLectureResponse(subAttendances.get(0), responseType, lecture);
+        }
+
+        return getTodaySecondLectureResponse(subAttendances, responseType, lecture);
     }
 
     private void checkAttendancesSize(List<Attendance> attendances) {
         if (attendances.size() > valueConfig.getSUB_LECTURE_MAX_ROUND()) {
             throw new LectureException(INVALID_COUNT_SESSION);
         }
+    }
+
+    private boolean checkOnAttendanceAbsence(SubLecture subLecture, SubAttendance subAttendance) {
+        val isOnAttendanceCheck = LocalDateTime.now().isBefore(subLecture.getStartAt().plusMinutes(10));
+        return isOnAttendanceCheck && subAttendance.getStatus().equals(ABSENT);
     }
 
     private Attendance getNowAttendance(List<Attendance> attendances) {
@@ -104,14 +100,27 @@ public class AppLectureServiceImpl implements AppLectureService {
         };
     }
 
-    private TodayLectureResponse getTodayLectureResponse(SubAttendance subAttendance, LectureResponseType responseType, Lecture lecture) {
+    private TodayLectureResponse getTodayFirstLectureResponse(SubAttendance subAttendance, LectureResponseType responseType, Lecture lecture) {
         val subLecture = subAttendance.getSubLecture();
-        val isOnAttendanceCheck = LocalDateTime.now().isBefore(subLecture.getStartAt().plusMinutes(10));
         val message = getMessage(lecture.getAttribute());
-        if (isOnAttendanceCheck && subAttendance.getStatus().equals(ABSENT)) {
+        if (checkOnAttendanceAbsence(subLecture, subAttendance)) {
             return TodayLectureResponse.of(responseType, lecture, message, Collections.emptyList());
         }
         return TodayLectureResponse.of(responseType, lecture, message, Collections.singletonList(subAttendance));
+    }
+
+    private TodayLectureResponse getTodaySecondLectureResponse(
+        List<SubAttendance> subAttendances,
+        LectureResponseType responseType,
+        Lecture lecture
+    ) {
+        val subAttendance = subAttendances.get(1);
+        val subLecture = subAttendance.getSubLecture();
+        val message = getMessage(lecture.getAttribute());
+        if (checkOnAttendanceAbsence(subLecture, subAttendance)) {
+            return TodayLectureResponse.of(responseType, lecture, message, Collections.singletonList(subAttendances.get(0)));
+        }
+        return TodayLectureResponse.of(responseType, lecture, message, subAttendances);
     }
 
     @Override
