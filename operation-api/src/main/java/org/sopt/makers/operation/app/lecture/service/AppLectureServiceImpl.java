@@ -60,11 +60,7 @@ public class AppLectureServiceImpl implements AppLectureService {
 
         val subAttendances = attendance.getSubAttendances();
 
-        if (lecture.isFirst()) {
-            return getTodayFirstLectureResponse(subAttendances.get(0), responseType, lecture);
-        }
-
-        return getTodaySecondLectureResponse(subAttendances, responseType, lecture);
+        return getTodayLectureResponse(subAttendances, responseType, lecture);
     }
 
     private void checkAttendancesSize(List<Attendance> attendances) {
@@ -79,12 +75,21 @@ public class AppLectureServiceImpl implements AppLectureService {
     }
 
     private Attendance getNowAttendance(List<Attendance> attendances) {
-        val index = getAttendanceIndex();
+        val index = getAttendanceIndex(attendances);
         return attendances.get(index);
     }
 
-    private int getAttendanceIndex() {
-        return (LocalDateTime.now().getHour() >= 16) ? 1 : 0;
+    private int getAttendanceIndex(List<Attendance> attendances) {
+        return (LocalDateTime.now().getHour() >= 16 && attendances.size() == 2) ? 1 : 0;
+    }
+
+    private SubAttendance getNowSubAttendance(List<SubAttendance> subAttendances, Lecture lecture) {
+        val index = getSubAttendanceIndex(lecture);
+        return subAttendances.get(index);
+    }
+
+    private int getSubAttendanceIndex(Lecture lecture) {
+        return lecture.isFirst() ? 0 : 1;
     }
 
     private LectureResponseType getResponseType(Lecture lecture) {
@@ -100,27 +105,42 @@ public class AppLectureServiceImpl implements AppLectureService {
         };
     }
 
-    private TodayLectureResponse getTodayFirstLectureResponse(SubAttendance subAttendance, LectureResponseType responseType, Lecture lecture) {
+    private TodayLectureResponse getTodayLectureResponse(
+            List<SubAttendance> subAttendances,
+            LectureResponseType responseType,
+            Lecture lecture
+    ) {
+        val subAttendance = getNowSubAttendance(subAttendances, lecture);
         val subLecture = subAttendance.getSubLecture();
         val message = getMessage(lecture.getAttribute());
+
         if (checkOnAttendanceAbsence(subLecture, subAttendance)) {
-            return TodayLectureResponse.of(responseType, lecture, message, Collections.emptyList());
+            return getOnAttendanceLectureResponse(subAttendance, lecture, responseType, message);
         }
-        return TodayLectureResponse.of(responseType, lecture, message, Collections.singletonList(subAttendance));
+
+        return getAttendanceLectureResponse(subAttendances, lecture, responseType, message);
     }
 
-    private TodayLectureResponse getTodaySecondLectureResponse(
-        List<SubAttendance> subAttendances,
-        LectureResponseType responseType,
-        Lecture lecture
+    private TodayLectureResponse getOnAttendanceLectureResponse(
+            SubAttendance subAttendance,
+            Lecture lecture,
+            LectureResponseType responseType,
+            String message
     ) {
-        val subAttendance = subAttendances.get(1);
-        val subLecture = subAttendance.getSubLecture();
-        val message = getMessage(lecture.getAttribute());
-        if (checkOnAttendanceAbsence(subLecture, subAttendance)) {
-            return TodayLectureResponse.of(responseType, lecture, message, Collections.singletonList(subAttendances.get(0)));
-        }
-        return TodayLectureResponse.of(responseType, lecture, message, subAttendances);
+        return lecture.isFirst()
+                ? TodayLectureResponse.of(responseType, lecture, message, Collections.emptyList())
+                : TodayLectureResponse.of(responseType, lecture, message, Collections.singletonList(subAttendance));
+    }
+
+    private TodayLectureResponse getAttendanceLectureResponse(
+            List<SubAttendance> subAttendances,
+            Lecture lecture,
+            LectureResponseType responseType,
+            String message
+    ) {
+        return lecture.isFirst()
+                ? TodayLectureResponse.of(responseType, lecture, message, Collections.singletonList(getNowSubAttendance(subAttendances, lecture)))
+                : TodayLectureResponse.of(responseType, lecture, message, subAttendances);
     }
 
     @Override
