@@ -165,8 +165,11 @@ public class WebLectureServiceImpl implements WebLectureService {
 
 	private Lecture getLectureReadyToEnd(long lectureId) {
 		val lecture = findLecture(lectureId);
-		if (!lecture.isEnd()) {
+		if (lecture.isNotYetToEnd()) {
 			throw new LectureException(NOT_END_TIME_YET);
+		}
+		if (lecture.isEnd()) {
+			throw new LectureException(END_LECTURE);
 		}
 		return lecture;
 	}
@@ -190,7 +193,7 @@ public class WebLectureServiceImpl implements WebLectureService {
 	private void deleteRelationship(Lecture lecture) {
 		subAttendanceRepository.deleteAllBySubLectureIn(lecture.getSubLectures());
 		subLectureRepository.deleteAllByLecture(lecture);
-		attendanceRepository.deleteAllByLecture(lecture);
+		attendanceRepository.deleteByLecture(lecture);
 	}
 
 }
