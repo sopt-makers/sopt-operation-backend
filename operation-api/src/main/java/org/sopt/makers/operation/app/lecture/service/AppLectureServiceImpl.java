@@ -70,8 +70,8 @@ public class AppLectureServiceImpl implements AppLectureService {
     }
 
     private boolean checkOnAttendanceAbsence(SubLecture subLecture, SubAttendance subAttendance) {
-        val isOnAttendanceCheck = LocalDateTime.now().isBefore(subLecture.getStartAt().plusMinutes(10));
-        return isOnAttendanceCheck && subAttendance.getStatus().equals(ABSENT);
+        val isOnAttendanceCheck = subLecture.isEnded(valueConfig.getATTENDANCE_MINUTE());
+        return !isOnAttendanceCheck && subAttendance.getStatus().equals(ABSENT);
     }
 
     private Attendance getNowAttendance(List<Attendance> attendances) {
@@ -80,7 +80,11 @@ public class AppLectureServiceImpl implements AppLectureService {
     }
 
     private int getAttendanceIndex(List<Attendance> attendances) {
-        return (LocalDateTime.now().getHour() >= 16 && attendances.size() == 2) ? 1 : 0;
+        val isMultipleAttendance = (
+                LocalDateTime.now().getHour() >= valueConfig.getHACKATHON_LECTURE_START_HOUR()
+                && attendances.size() == valueConfig.getMAX_LECTURE_COUNT()
+        );
+        return isMultipleAttendance ? 1 : 0;
     }
 
     private SubAttendance getNowSubAttendance(List<SubAttendance> subAttendances, Lecture lecture) {
@@ -189,17 +193,9 @@ public class AppLectureServiceImpl implements AppLectureService {
     }
 
     private void checkEndAttendance(SubLecture subLecture) {
-        if (isEndAttendance(subLecture)) {
+        if (subLecture.isEnded(valueConfig.getATTENDANCE_MINUTE())) {
             throw new LectureException(ENDED_ATTENDANCE, subLecture.getRound());
         }
-    }
-
-    private boolean isEndAttendance(SubLecture subLecture) {
-        val status = subLecture.getLecture().getLectureStatus();
-        if (LocalDateTime.now().isAfter(subLecture.getStartAt().plusMinutes(10))) {
-            return status.equals(FIRST) || status.equals(SECOND);
-        }
-        return false;
     }
 
     private void checkLectureEnd(Lecture lecture) {
