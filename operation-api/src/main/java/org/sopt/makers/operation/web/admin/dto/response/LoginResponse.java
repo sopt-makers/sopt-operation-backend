@@ -1,12 +1,12 @@
 package org.sopt.makers.operation.web.admin.dto.response;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-
 import org.sopt.makers.operation.admin.domain.Admin;
 import org.sopt.makers.operation.admin.domain.AdminStatus;
+import lombok.Builder;
 
-@Builder(access = AccessLevel.PRIVATE)
+import static lombok.AccessLevel.PRIVATE;
+
+@Builder(access = PRIVATE)
 public record LoginResponse(
 		LoginResponseVO loginResponseVO,
 		String refreshToken
