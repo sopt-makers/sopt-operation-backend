@@ -34,7 +34,8 @@ public class AdminServiceImpl implements AdminService {
 	@Transactional
 	public SignUpResponse signUp(SignUpRequest request){
 		checkEmailDuplicated(request.email());
-		val admin = adminRepository.save(request.toEntity());
+		val entity = request.toEntity(passwordEncoder.encode(request.password()));
+		val admin = adminRepository.save(entity);
 		return SignUpResponse.of(admin);
 	}
 
@@ -72,7 +73,7 @@ public class AdminServiceImpl implements AdminService {
 				.orElseThrow(() -> new AdminFailureException(INVALID_EMAIL));
 	}
 
-	private void checkPasswordMatched(String password, Admin admin) { // TODO: admin 내부로 옮기는 게 좋지 않을까..?
+	private void checkPasswordMatched(String password, Admin admin) {
 		if (!passwordEncoder.matches(password, admin.getPassword())) {
 			throw new AdminFailureException(INVALID_PASSWORD);
 		}

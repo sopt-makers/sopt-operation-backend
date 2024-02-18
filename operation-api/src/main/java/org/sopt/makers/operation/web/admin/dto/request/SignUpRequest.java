@@ -10,10 +10,10 @@ public record SignUpRequest(
         Role role
 ) {
 
-	public Admin toEntity() {
+	public Admin toEntity(String encodedPassword) {
 		return Admin.builder()
 				.email(this.email)
-				.password(this.password)
+				.password(encodedPassword)
 				.name(this.name)
 				.role(this.role)
 				.build();
