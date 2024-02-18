@@ -193,7 +193,7 @@ public class WebLectureServiceImpl implements WebLectureService {
 	private void deleteRelationship(Lecture lecture) {
 		subAttendanceRepository.deleteAllBySubLectureIn(lecture.getSubLectures());
 		subLectureRepository.deleteAllByLecture(lecture);
-		attendanceRepository.deleteAllByLecture(lecture);
+		attendanceRepository.deleteByLecture(lecture);
 	}
 
 }
