@@ -97,4 +97,8 @@ public class Lecture extends BaseEntity {
 	public boolean isFirst() {
 		return this.lectureStatus.equals(FIRST);
 	}
+
+	public boolean isNotYetToEnd() {
+		return this.endDate.isAfter(LocalDateTime.now());
+	}
 }

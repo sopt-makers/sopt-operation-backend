@@ -64,7 +64,7 @@ public class WebLectureApiController implements WebLectureApi {
 	@PatchMapping("/{lectureId}")
 	public ResponseEntity<BaseResponse<?>> endLecture(@PathVariable long lectureId) {
 		lectureService.endLecture(lectureId);
-		return ApiResponseUtil.success(SUCCESS_UPDATE_MEMBER_SCORE);
+		return ApiResponseUtil.success(SUCCESS_END_LECTURE);
 	}
 
 	@Override

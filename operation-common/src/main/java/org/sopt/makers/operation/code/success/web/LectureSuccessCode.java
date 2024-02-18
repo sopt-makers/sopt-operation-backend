@@ -18,6 +18,7 @@ public enum LectureSuccessCode implements SuccessCode {
 	SUCCESS_GET_MEMBERS(OK, "유저 리스트 조회 성공"),
 	SUCCESS_DELETE_LECTURE(OK, "세션 삭제 성공"),
 	SUCCESS_UPDATE_MEMBER_SCORE(OK, "회원 출석 점수 갱신 성공"),
+	SUCCESS_END_LECTURE(OK, "세션 종료 성공"),
 	;
 
 	private final HttpStatus status;
