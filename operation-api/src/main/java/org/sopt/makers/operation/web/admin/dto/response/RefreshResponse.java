@@ -1,13 +1,17 @@
 package org.sopt.makers.operation.web.admin.dto.response;
 
-import org.sopt.makers.operation.admin.domain.Admin;
+import lombok.Builder;
 
+import static lombok.AccessLevel.PRIVATE;
+
+@Builder(access = PRIVATE)
 public record RefreshResponse(
-		String accessToken,
-		String refreshToken
+		String accessToken
 ) {
 
-	public static RefreshResponse of(String accessToken, Admin admin) {
-		return new RefreshResponse(accessToken, admin.getRefreshToken());
+	public static RefreshResponse of(String accessToken) {
+		return RefreshResponse.builder()
+				.accessToken(accessToken)
+				.build();
 	}
 }

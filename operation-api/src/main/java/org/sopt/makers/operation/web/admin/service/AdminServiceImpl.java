@@ -93,11 +93,11 @@ public class AdminServiceImpl implements AdminService {
 		validateRefreshToken(admin, refreshToken);
 		val newAccessToken = generateAccessToken(admin);
 
-		return RefreshResponse.of(newAccessToken, admin);
+		return RefreshResponse.of(newAccessToken);
 	}
 
 	public void validateRefreshToken(Admin admin, String refreshToken) {
-		if(!admin.getRefreshToken().equals(refreshToken)) {
+		if (!admin.isMatchRefreshToken(refreshToken)) {
 			throw new AdminFailureException(INVALID_REFRESH_TOKEN);
 		}
 	}

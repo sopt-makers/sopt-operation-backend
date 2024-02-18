@@ -46,7 +46,6 @@ public class AdminApiController implements AdminApi {
 	@PatchMapping("/refresh")
 	public ResponseEntity<BaseResponse<?>> refresh(String refreshToken) {
 		val response = authService.refresh(refreshToken);
-		val headers = cookie.setRefreshToken(response.refreshToken());
-		return ApiResponseUtil.success(SUCCESS_GET_REFRESH_TOKEN, headers, response.accessToken());
+		return ApiResponseUtil.success(SUCCESS_GET_REFRESH_TOKEN, response);
 	}
 }
