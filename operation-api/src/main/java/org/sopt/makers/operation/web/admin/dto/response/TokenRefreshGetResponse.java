@@ -5,12 +5,12 @@ import lombok.Builder;
 import static lombok.AccessLevel.PRIVATE;
 
 @Builder(access = PRIVATE)
-public record RefreshResponse(
+public record TokenRefreshGetResponse(
 		String accessToken
 ) {
 
-	public static RefreshResponse of(String accessToken) {
-		return RefreshResponse.builder()
+	public static TokenRefreshGetResponse of(String accessToken) {
+		return TokenRefreshGetResponse.builder()
 				.accessToken(accessToken)
 				.build();
 	}

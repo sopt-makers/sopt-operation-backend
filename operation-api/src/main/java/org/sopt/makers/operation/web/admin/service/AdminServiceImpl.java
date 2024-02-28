@@ -12,7 +12,7 @@ import org.sopt.makers.operation.web.admin.dto.request.SignUpRequest;
 import org.sopt.makers.operation.web.admin.dto.response.SignUpResponse;
 import org.sopt.makers.operation.web.admin.dto.request.LoginRequest;
 import org.sopt.makers.operation.web.admin.dto.response.LoginResponse;
-import org.sopt.makers.operation.web.admin.dto.response.RefreshResponse;
+import org.sopt.makers.operation.web.admin.dto.response.TokenRefreshGetResponse;
 import org.sopt.makers.operation.admin.repository.AdminRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -87,13 +87,13 @@ public class AdminServiceImpl implements AdminService {
 
 	@Override
 	@Transactional
-	public RefreshResponse refresh(String refreshToken) {
+	public TokenRefreshGetResponse refresh(String refreshToken) {
 		val adminId = jwtTokenProvider.getId(refreshToken, JwtTokenType.REFRESH_TOKEN);
 		val admin = findById(adminId);
 		validateRefreshToken(admin, refreshToken);
 		val newAccessToken = generateAccessToken(admin);
 
-		return RefreshResponse.of(newAccessToken);
+		return TokenRefreshGetResponse.of(newAccessToken);
 	}
 
 	public void validateRefreshToken(Admin admin, String refreshToken) {
