@@ -8,7 +8,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 @Builder(access = PRIVATE)
 public record SignUpResponse(
-		Long id,
+		long id,
 		String email,
 		String name,
 		Role role
