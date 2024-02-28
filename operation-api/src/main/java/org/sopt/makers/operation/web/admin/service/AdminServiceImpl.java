@@ -74,7 +74,7 @@ public class AdminServiceImpl implements AdminService {
 	}
 
 	private void checkPasswordMatched(String password, Admin admin) {
-		if (!passwordEncoder.matches(password, admin.getPassword())) {
+		if (!admin.checkPasswordMatched(passwordEncoder, password)) {
 			throw new AdminFailureException(INVALID_PASSWORD);
 		}
 	}

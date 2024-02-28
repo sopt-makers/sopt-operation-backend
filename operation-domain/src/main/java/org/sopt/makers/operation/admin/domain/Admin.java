@@ -1,5 +1,7 @@
 package org.sopt.makers.operation.admin.domain;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -17,6 +19,7 @@ import lombok.Setter;
 @Entity
 @NoArgsConstructor
 public class Admin {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "admin_id")
@@ -59,5 +62,9 @@ public class Admin {
 
     public boolean isMatchRefreshToken(String refreshToken) {
         return this.getRefreshToken().equals(refreshToken);
+    }
+
+    public boolean checkPasswordMatched(PasswordEncoder passwordEncoder, String password) {
+        return passwordEncoder.matches(password, this.password);
     }
 }
