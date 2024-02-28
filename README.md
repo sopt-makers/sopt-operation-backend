@@ -1,29 +1,59 @@
-# sopt-operation-backend
-**메이커스 운영팀 서버** : 출석 관리 어드민 서비스, 회원 출석 체크 서비스, 알림 전송 서비스
+# SOPT 메이커스 운영 프로덕트 서버
+> SOPT 활동 기수 회원과 임원진의 편리한 운영을 위한 서비스를 만들어요.
+
+### 웹 어드민 (임원진 대상)
+- 세미나, 행사 등 **세션 생성**
+- 활동 기수 회원의 **출석 내역 관리**
+- 푸시 알림을 전송할 **공지 및 소식 작성, 푸시알림 전송**
+
+### 출석 앱 (활동 기수 회원 대상)
+- 참여한 세션 **출석 체크**, **자신의 출석 내역 조회**
 
 <br/>
 
-## 🛠 Used Stacks
+## Server Acrchitecture
 
-- Java 17
-- Gradle
-- Spring Boot 2.7.4
-- Spring Data JPA
-- PostgreSQL
+<img width="694" alt="image" src="https://github.com/sopt-makers/sopt-operation-backend/assets/55437339/af911c45-30b7-4f92-b096-5c0ad27fbe4c">
 
 <br/>
 
-## 👥 팀원
+## Used Stacks
+<img width="554" alt="image" src="https://github.com/sopt-makers/sopt-operation-backend/assets/55437339/a31ac432-ded8-4db0-acf0-f1c653067a33">
+
+<br/>
+
+## 프로젝트 폴더 구조
+### 멀티모듈 구조
+```
+📁 operation-api # Controller, Service
+📁 operation-auth # Authentication 관련 기능
+📁 operation-common # 공통 기능
+📁 operation-domain # Entity
+📁 operation-external # 외부 API 기능(SOPT 메이커스 내 플레이그라운드, 알림TF)
+```
+
+### 모듈 내 구조
+```
+📁 src
+|_ 📁 main
+|_ |_ 📁 app # 앱 기능
+|_ |_ 📁 common # 공통 기능
+|_ |_ 📁 web # 웹 기능
+```
+
+<br/>
+
+## Member
 
 | [이용택](https://github.com/dragontaek-lee)| [김소현](https://github.com/thguss)|
 |:-----:|:------:|
 | <img width="120" height="120" src="https://user-images.githubusercontent.com/55437339/236619788-8e1ec0be-9158-452c-88b9-fe18e227586c.png"> | <img width="120" height="120" src="https://user-images.githubusercontent.com/55437339/236619930-7cad7853-1eb8-45a7-88f7-8ca196124b42.png"> |
-|- 프로젝트 초기 세팅 <br/> - HTTPS 설정<br/> - 회원 출석 체크 서비스|- 프로젝트 초기 세팅<br/> - CICD 환경 구축<br/> - 출석 관리 어드민 서비스|
+|- 프로젝트 초기 세팅 <br/> - HTTPS 설정<br/> - (App)회원 출석 체크 기능<br/> - 알림TF|- 프로젝트 초기 세팅<br/> - CICD 환경 구축<br/> - (Web)세션 출석 관리 기능<br/> - 알림 관리 기능|
 
 
 <br/>
 
-## 📏 Process
+## Process
 1. 개발 전에 `github issue`를 생성해주세요!
     1. 템플릿에 맞게 내용을 작성한다
     2. Assignees, Label을 단다
@@ -38,12 +68,10 @@
 7. `approve`가 완료되었다면 `merge`를 진행해주세!요
 
 > `코드 외적인 부분`(환경변수, db 필드 및 테이블 수정, 인프라 세팅 등) 수정사항이 있다면 팀원에게 먼저 물어보고 진행하거나, 그러지 못하였더라면 빠르게 전달해주세요!(카톡, 슬랙, 디코 등)
->
-
 
 <br/>
 
-## 🌴 Commit Convention
+## Commit Convention
 | 태그 이름 | 설명 |
 | --- | --- |
 | [CHORE] | 코드 수정, 내부 파일 수정 |
@@ -61,7 +89,7 @@
 
 <br/>
 
-## ✨ Branch Strategy
+## Branch Strategy
 - `main`, `develop`, `feature` 브랜치가 있습니다!
 - **main**은 production용 브랜치입니다
     - 실서비스용 ec2(**makers.operation.prod)**로 배포되도록 파이프라인이 구축되어 있습니다
@@ -71,62 +99,4 @@
 - **feature**은 `이름_#이슈번호` 로 되어있는 브랜치입니다!
     - 각자 이슈에 대한 작업물의 브랜치입니다
     - develop에 PR을 거쳐 merge 해주세요
-
-<br/>
-
-## 🗂 프로젝트 폴더 구조
-
-```
-📁 src
-|_ 📁 main
-|_ |_ 📁 common
-|_ |_ 📁 config
-|_ |_ 📁 controller
-|_ |_ 📁 dto
-|_ |_ 📁 entity
-|_ |_ 📁 exception
-|_ |_ 📁 repository
-|_ |_ 📁 security
-|_ |_ 📁 service
-|_ |_ 📁 util
-
-```
-
-<br/>
-
-## 🌴 Dependencies Module
-<b>build.gradle</b>
-```
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
-    implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
-
-    compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'com.h2database:h2'
-    runtimeOnly 'org.postgresql:postgresql'
-    annotationProcessor 'org.projectlombok:lombok'
-
-    // jwt
-    implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
-    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
-    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
-    // swagger
-    implementation 'io.springfox:springfox-boot-starter:3.0.0'
-    implementation 'io.springfox:springfox-swagger-ui:3.0.0'
-}
-
-```
-
-<br/>
-
-
-## 🏗 Architecture
-![image](https://user-images.githubusercontent.com/55437339/236621230-8d2dd581-c68d-44e9-bc0d-ea35dee08ebe.png)
 
