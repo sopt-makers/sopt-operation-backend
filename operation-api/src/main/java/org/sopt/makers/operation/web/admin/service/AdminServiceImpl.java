@@ -12,7 +12,7 @@ import org.sopt.makers.operation.web.admin.dto.request.SignUpRequest;
 import org.sopt.makers.operation.web.admin.dto.response.SignUpResponse;
 import org.sopt.makers.operation.web.admin.dto.request.LoginRequest;
 import org.sopt.makers.operation.web.admin.dto.response.LoginResponse;
-import org.sopt.makers.operation.web.admin.dto.response.RefreshResponse;
+import org.sopt.makers.operation.web.admin.dto.response.TokenRefreshGetResponse;
 import org.sopt.makers.operation.admin.repository.AdminRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,7 +34,8 @@ public class AdminServiceImpl implements AdminService {
 	@Transactional
 	public SignUpResponse signUp(SignUpRequest request){
 		checkEmailDuplicated(request.email());
-		val admin = adminRepository.save(request.toEntity());
+		val adminEntity = request.toEntity(passwordEncoder.encode(request.password()));
+		val admin = adminRepository.save(adminEntity);
 		return SignUpResponse.of(admin);
 	}
 
@@ -72,8 +73,8 @@ public class AdminServiceImpl implements AdminService {
 				.orElseThrow(() -> new AdminFailureException(INVALID_EMAIL));
 	}
 
-	private void checkPasswordMatched(String password, Admin admin) { // TODO: admin 내부로 옮기는 게 좋지 않을까..?
-		if (!passwordEncoder.matches(password, admin.getPassword())) {
+	private void checkPasswordMatched(String password, Admin admin) {
+		if (!admin.checkPasswordMatched(passwordEncoder, password)) {
 			throw new AdminFailureException(INVALID_PASSWORD);
 		}
 	}
@@ -86,17 +87,17 @@ public class AdminServiceImpl implements AdminService {
 
 	@Override
 	@Transactional
-	public RefreshResponse refresh(String refreshToken) {
+	public TokenRefreshGetResponse refresh(String refreshToken) {
 		val adminId = jwtTokenProvider.getId(refreshToken, JwtTokenType.REFRESH_TOKEN);
 		val admin = findById(adminId);
 		validateRefreshToken(admin, refreshToken);
 		val newAccessToken = generateAccessToken(admin);
 
-		return RefreshResponse.of(newAccessToken, admin);
+		return TokenRefreshGetResponse.of(newAccessToken);
 	}
 
 	public void validateRefreshToken(Admin admin, String refreshToken) {
-		if(!admin.getRefreshToken().equals(refreshToken)) {
+		if (!admin.isMatchRefreshToken(refreshToken)) {
 			throw new AdminFailureException(INVALID_REFRESH_TOKEN);
 		}
 	}

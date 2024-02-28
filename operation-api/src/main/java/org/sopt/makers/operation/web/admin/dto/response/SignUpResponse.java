@@ -2,13 +2,13 @@ package org.sopt.makers.operation.web.admin.dto.response;
 
 import org.sopt.makers.operation.admin.domain.Admin;
 import org.sopt.makers.operation.admin.domain.Role;
-
-import lombok.AccessLevel;
 import lombok.Builder;
 
-@Builder(access = AccessLevel.PRIVATE)
+import static lombok.AccessLevel.PRIVATE;
+
+@Builder(access = PRIVATE)
 public record SignUpResponse(
-		Long id,
+		long id,
 		String email,
 		String name,
 		Role role

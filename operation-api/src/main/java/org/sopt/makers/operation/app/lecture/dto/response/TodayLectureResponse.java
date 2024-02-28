@@ -57,6 +57,29 @@ public record TodayLectureResponse(
         return DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     }
 
+    public static TodayLectureResponse getOnAttendanceLectureResponse(
+            SubAttendance subAttendance,
+            Lecture lecture,
+            LectureResponseType responseType,
+            String message
+    ) {
+        return lecture.isFirst()
+                ? TodayLectureResponse.of(responseType, lecture, message, Collections.emptyList())
+                : TodayLectureResponse.of(responseType, lecture, message, Collections.singletonList(subAttendance));
+    }
+
+    public static TodayLectureResponse getAttendanceLectureResponse(
+            List<SubAttendance> subAttendances,
+            SubAttendance subAttendance,
+            Lecture lecture,
+            LectureResponseType responseType,
+            String message
+    ) {
+        return lecture.isFirst()
+                ? TodayLectureResponse.of(responseType, lecture, message, Collections.singletonList(subAttendance))
+                : TodayLectureResponse.of(responseType, lecture, message, subAttendances);
+    }
+
     @Builder
     record LectureGetResponseVO(
             AttendanceStatus status,

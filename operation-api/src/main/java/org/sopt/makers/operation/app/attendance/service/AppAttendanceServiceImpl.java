@@ -83,7 +83,7 @@ public class AppAttendanceServiceImpl implements AppAttendanceService {
 	}
 
 	private void checkMatchedCode(SubLecture subLecture, String code) {
-		if (subLecture.isMatchCode(code)) {
+		if (!subLecture.isMatchCode(code)) {
 			throw new SubLectureException(INVALID_CODE);
 		}
 	}

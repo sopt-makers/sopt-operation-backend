@@ -34,6 +34,7 @@ public class ValueConfig {
 	private String playGroundToken;
 
 	private final int SUB_LECTURE_MAX_ROUND = 2;
+	private final int MAX_LECTURE_COUNT = 2;
 	private final String ETC_MESSAGE = "출석 점수가 반영되지 않아요.";
 	private final String SEMINAR_MESSAGE = "";
 	private final String EVENT_MESSAGE = "행사도 참여하고, 출석점수도 받고, 일석이조!";
@@ -43,6 +44,7 @@ public class ValueConfig {
 	private final int MAX_SCHEDULE_DURATION = 50;
 	private final int DAY_DURATION = 1;
 	private final int TWO_DAYS_DURATION = 2;
+	private final int HACKATHON_LECTURE_START_HOUR = 16;
 
 	private final List<String> APP_LINK_LIST = Arrays.asList(
 			"home",

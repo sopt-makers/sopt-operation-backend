@@ -60,11 +60,7 @@ public class AppLectureServiceImpl implements AppLectureService {
 
         val subAttendances = attendance.getSubAttendances();
 
-        if (lecture.isFirst()) {
-            return getTodayFirstLectureResponse(subAttendances.get(0), responseType, lecture);
-        }
-
-        return getTodaySecondLectureResponse(subAttendances, responseType, lecture);
+        return getTodayLectureResponse(subAttendances, responseType, lecture);
     }
 
     private void checkAttendancesSize(List<Attendance> attendances) {
@@ -74,17 +70,31 @@ public class AppLectureServiceImpl implements AppLectureService {
     }
 
     private boolean checkOnAttendanceAbsence(SubLecture subLecture, SubAttendance subAttendance) {
-        val isOnAttendanceCheck = LocalDateTime.now().isBefore(subLecture.getStartAt().plusMinutes(10));
-        return isOnAttendanceCheck && subAttendance.getStatus().equals(ABSENT);
+        val isOnAttendanceCheck = subLecture.isEnded(valueConfig.getATTENDANCE_MINUTE());
+        return !isOnAttendanceCheck && subAttendance.getStatus().equals(ABSENT);
     }
 
     private Attendance getNowAttendance(List<Attendance> attendances) {
-        val index = getAttendanceIndex();
+        val index = getAttendanceIndex(attendances);
         return attendances.get(index);
     }
 
-    private int getAttendanceIndex() {
-        return (LocalDateTime.now().getHour() >= 16) ? 1 : 0;
+    private int getAttendanceIndex(List<Attendance> attendances) {
+        val isMultipleAttendance = getIsMultipleAttendance(attendances.size());
+        return isMultipleAttendance ? 1 : 0;
+    }
+    private boolean getIsMultipleAttendance(int lectureCount) {
+        return LocalDateTime.now().getHour() >= valueConfig.getHACKATHON_LECTURE_START_HOUR()
+                && lectureCount == valueConfig.getMAX_LECTURE_COUNT();
+    }
+
+    private SubAttendance getNowSubAttendance(List<SubAttendance> subAttendances, Lecture lecture) {
+        val index = getSubAttendanceIndex(lecture);
+        return subAttendances.get(index);
+    }
+
+    private int getSubAttendanceIndex(Lecture lecture) {
+        return lecture.isFirst() ? 0 : 1;
     }
 
     private LectureResponseType getResponseType(Lecture lecture) {
@@ -100,27 +110,20 @@ public class AppLectureServiceImpl implements AppLectureService {
         };
     }
 
-    private TodayLectureResponse getTodayFirstLectureResponse(SubAttendance subAttendance, LectureResponseType responseType, Lecture lecture) {
-        val subLecture = subAttendance.getSubLecture();
-        val message = getMessage(lecture.getAttribute());
-        if (checkOnAttendanceAbsence(subLecture, subAttendance)) {
-            return TodayLectureResponse.of(responseType, lecture, message, Collections.emptyList());
-        }
-        return TodayLectureResponse.of(responseType, lecture, message, Collections.singletonList(subAttendance));
-    }
-
-    private TodayLectureResponse getTodaySecondLectureResponse(
-        List<SubAttendance> subAttendances,
-        LectureResponseType responseType,
-        Lecture lecture
+    private TodayLectureResponse getTodayLectureResponse(
+            List<SubAttendance> subAttendances,
+            LectureResponseType responseType,
+            Lecture lecture
     ) {
-        val subAttendance = subAttendances.get(1);
+        val subAttendance = getNowSubAttendance(subAttendances, lecture);
         val subLecture = subAttendance.getSubLecture();
         val message = getMessage(lecture.getAttribute());
+
         if (checkOnAttendanceAbsence(subLecture, subAttendance)) {
-            return TodayLectureResponse.of(responseType, lecture, message, Collections.singletonList(subAttendances.get(0)));
+            return TodayLectureResponse.getOnAttendanceLectureResponse(subAttendance, lecture, responseType, message);
         }
-        return TodayLectureResponse.of(responseType, lecture, message, subAttendances);
+
+        return TodayLectureResponse.getAttendanceLectureResponse(subAttendances, subAttendance, lecture, responseType, message);
     }
 
     @Override
@@ -169,17 +172,9 @@ public class AppLectureServiceImpl implements AppLectureService {
     }
 
     private void checkEndAttendance(SubLecture subLecture) {
-        if (isEndAttendance(subLecture)) {
+        if (subLecture.isEnded(valueConfig.getATTENDANCE_MINUTE())) {
             throw new LectureException(ENDED_ATTENDANCE, subLecture.getRound());
         }
-    }
-
-    private boolean isEndAttendance(SubLecture subLecture) {
-        val status = subLecture.getLecture().getLectureStatus();
-        if (LocalDateTime.now().isAfter(subLecture.getStartAt().plusMinutes(10))) {
-            return status.equals(FIRST) || status.equals(SECOND);
-        }
-        return false;
     }
 
     private void checkLectureEnd(Lecture lecture) {
