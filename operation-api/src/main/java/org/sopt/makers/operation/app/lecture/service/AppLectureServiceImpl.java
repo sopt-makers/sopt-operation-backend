@@ -120,32 +120,10 @@ public class AppLectureServiceImpl implements AppLectureService {
         val message = getMessage(lecture.getAttribute());
 
         if (checkOnAttendanceAbsence(subLecture, subAttendance)) {
-            return getOnAttendanceLectureResponse(subAttendance, lecture, responseType, message);
+            return TodayLectureResponse.getOnAttendanceLectureResponse(subAttendance, lecture, responseType, message);
         }
 
-        return getAttendanceLectureResponse(subAttendances, lecture, responseType, message);
-    }
-
-    private TodayLectureResponse getOnAttendanceLectureResponse(
-            SubAttendance subAttendance,
-            Lecture lecture,
-            LectureResponseType responseType,
-            String message
-    ) {
-        return lecture.isFirst()
-                ? TodayLectureResponse.of(responseType, lecture, message, Collections.emptyList())
-                : TodayLectureResponse.of(responseType, lecture, message, Collections.singletonList(subAttendance));
-    }
-
-    private TodayLectureResponse getAttendanceLectureResponse(
-            List<SubAttendance> subAttendances,
-            Lecture lecture,
-            LectureResponseType responseType,
-            String message
-    ) {
-        return lecture.isFirst()
-                ? TodayLectureResponse.of(responseType, lecture, message, Collections.singletonList(getNowSubAttendance(subAttendances, lecture)))
-                : TodayLectureResponse.of(responseType, lecture, message, subAttendances);
+        return TodayLectureResponse.getAttendanceLectureResponse(subAttendances, subAttendance, lecture, responseType, message);
     }
 
     @Override
