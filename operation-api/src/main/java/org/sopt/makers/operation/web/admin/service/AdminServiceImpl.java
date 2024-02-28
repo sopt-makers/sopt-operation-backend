@@ -34,8 +34,8 @@ public class AdminServiceImpl implements AdminService {
 	@Transactional
 	public SignUpResponse signUp(SignUpRequest request){
 		checkEmailDuplicated(request.email());
-		val entity = request.toEntity(passwordEncoder.encode(request.password()));
-		val admin = adminRepository.save(entity);
+		val adminEntity = request.toEntity(passwordEncoder.encode(request.password()));
+		val admin = adminRepository.save(adminEntity);
 		return SignUpResponse.of(admin);
 	}
 
