@@ -46,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private void checkJwtAvailable (String token, JwtTokenType jwtTokenType) {
         if (token == null || !jwtTokenProvider.validateTokenExpiration(token, jwtTokenType)) {
-            throw new TokenException(EMPTY_TOKEN);
+            throw new TokenException(INVALID_TOKEN);
         }
     }
 
