@@ -80,11 +80,12 @@ public class AppLectureServiceImpl implements AppLectureService {
     }
 
     private int getAttendanceIndex(List<Attendance> attendances) {
-        val isMultipleAttendance = (
-                LocalDateTime.now().getHour() >= valueConfig.getHACKATHON_LECTURE_START_HOUR()
-                && attendances.size() == valueConfig.getMAX_LECTURE_COUNT()
-        );
+        val isMultipleAttendance = getIsMultipleAttendance(attendances.size());
         return isMultipleAttendance ? 1 : 0;
+    }
+    private boolean getIsMultipleAttendance(int lectureCount) {
+        return LocalDateTime.now().getHour() >= valueConfig.getHACKATHON_LECTURE_START_HOUR()
+                && lectureCount == valueConfig.getMAX_LECTURE_COUNT();
     }
 
     private SubAttendance getNowSubAttendance(List<SubAttendance> subAttendances, Lecture lecture) {
