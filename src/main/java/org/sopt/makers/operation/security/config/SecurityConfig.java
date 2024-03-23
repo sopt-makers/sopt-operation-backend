@@ -31,6 +31,12 @@ public class SecurityConfig {
     @Value("${admin.url.dev}")
     private String ADMIN_DEV_URL;
 
+    @Value("${admin.url.prod_legacy}")
+    private String ADMIN_PROD_URL_LEGACY;
+
+    @Value("${admin.url.dev_legacy}")
+    private String ADMIN_DEV_URL_LEGACY;
+
     @Value("${admin.url.local}")
     private String ADMIN_LOCAL_URL;
 
@@ -66,6 +72,8 @@ public class SecurityConfig {
         configuration.addAllowedOrigin(ADMIN_PROD_URL);
         configuration.addAllowedOrigin(ADMIN_DEV_URL);
         configuration.addAllowedOrigin(ADMIN_LOCAL_URL);
+        configuration.addAllowedOrigin(ADMIN_PROD_URL_LEGACY);
+        configuration.addAllowedOrigin(ADMIN_DEV_URL_LEGACY);
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         configuration.setAllowCredentials(true);
