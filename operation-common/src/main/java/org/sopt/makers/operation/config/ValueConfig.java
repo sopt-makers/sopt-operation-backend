@@ -22,6 +22,10 @@ public class ValueConfig {
 	private String ADMIN_PROD_URL;
 	@Value("${admin.url.dev}")
 	private String ADMIN_DEV_URL;
+	@Value("${admin.url.prod_legacy}")
+	private String ADMIN_PROD_URL_LEGACY;
+	@Value("${admin.url.dev_legacy}")
+	private String ADMIN_DEV_URL_LEGACY;
 	@Value("${admin.url.local}")
 	private String ADMIN_LOCAL_URL;
 	@Value("${notification.key}")

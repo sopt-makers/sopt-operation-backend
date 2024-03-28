@@ -74,6 +74,8 @@ public class SecurityConfig {
 
         configuration.addAllowedOrigin(valueConfig.getADMIN_PROD_URL());
         configuration.addAllowedOrigin(valueConfig.getADMIN_DEV_URL());
+        configuration.addAllowedOrigin(valueConfig.getADMIN_PROD_URL_LEGACY());
+        configuration.addAllowedOrigin(valueConfig.getADMIN_DEV_URL_LEGACY());
         configuration.addAllowedOrigin(valueConfig.getADMIN_LOCAL_URL());
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
