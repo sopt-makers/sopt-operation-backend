@@ -85,9 +85,6 @@ public class Attendance {
 				}
 				yield first.getStatus().equals(ABSENT) && second.getStatus().equals(ABSENT) ? ABSENT : TARDY;
 			}
-//			case SEMINAR -> second.getStatus().equals(ATTENDANCE)
-//				? first.getStatus().equals(ATTENDANCE) ? ATTENDANCE : TARDY
-//				: ABSENT;
 			case EVENT -> second.getStatus().equals(ATTENDANCE) ? ATTENDANCE : ABSENT;
 			case ETC -> second.getStatus().equals(ATTENDANCE) ? PARTICIPATE : NOT_PARTICIPATE;
 		};
