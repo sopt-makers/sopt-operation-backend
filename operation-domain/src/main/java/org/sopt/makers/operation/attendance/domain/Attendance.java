@@ -79,9 +79,12 @@ public class Attendance {
 		val second = getSubAttendanceByRound(2);
 
 		return switch (this.lecture.getAttribute()) {
-			case SEMINAR -> second.getStatus().equals(ATTENDANCE)
-				? first.getStatus().equals(ATTENDANCE) ? ATTENDANCE : TARDY
-				: ABSENT;
+			case SEMINAR -> {
+				if (first.getStatus().equals(ATTENDANCE) && second.getStatus().equals(ATTENDANCE)) {
+					yield ATTENDANCE;
+				}
+				yield first.getStatus().equals(ABSENT) && second.getStatus().equals(ABSENT) ? ABSENT : TARDY;
+			}
 			case EVENT -> second.getStatus().equals(ATTENDANCE) ? ATTENDANCE : ABSENT;
 			case ETC -> second.getStatus().equals(ATTENDANCE) ? PARTICIPATE : NOT_PARTICIPATE;
 		};
