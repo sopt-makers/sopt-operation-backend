@@ -1,0 +1,18 @@
+jar {
+    enabled = true
+}
+
+bootJar {
+    enabled = false
+}
+
+dependencies {
+    implementation project(path: ':operation-common')
+    implementation project(path: ':operation-domain')
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+}
+
+test {
+    useJUnitPlatform()
+}
