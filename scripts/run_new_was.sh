@@ -31,5 +31,6 @@ then
    nohup java -jar -Dserver.port=${TARGET_PORT} -Dspring.profiles.active=dev /home/ubuntu/operation/operation-api/build/libs/operation-api-0.0.1-SNAPSHOT.jar > /dev/null 2> /dev/null < /dev/null &
    echo "> Now new WAS runs at ${TARGET_PORT}."
 fi
+sleep 10
 
 exit 0
