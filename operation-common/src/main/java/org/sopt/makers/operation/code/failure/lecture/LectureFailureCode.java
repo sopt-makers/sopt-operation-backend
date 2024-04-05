@@ -14,7 +14,7 @@ public enum LectureFailureCode implements FailureCode {
     INVALID_ATTENDANCE(BAD_REQUEST,"존재하지 않는 출석 세션입니다."),
     ENDED_ATTENDANCE(BAD_REQUEST, "차 출석이 이미 종료되었습니다."),
     ENDED_FIRST_ATTENDANCE(BAD_REQUEST, "1차 출석이 이미 종료되었습니다."),
-    ENDED_SECOND_ATTENDANCE(BAD_REQUEST, "차 출석이 이미 종료되었습니다."),
+    ENDED_SECOND_ATTENDANCE(BAD_REQUEST, "2차 출석이 이미 종료되었습니다."),
     INVALID_COUNT_SESSION(BAD_REQUEST,"세션의 개수가 올바르지 않습니다."),
     INVALID_LECTURE(BAD_REQUEST,"존재하지 않는 세션입니다."),
     NO_SESSION(BAD_REQUEST,"오늘 세션이 없습니다."),
