@@ -16,6 +16,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ public class AlarmSenderImpl implements AlarmSender {
 			val host = valueConfig.getNOTIFICATION_URL();
 			val entity = getEntity(request);
 			restTemplate.postForEntity(host, entity, AlarmSenderRequest.class);
-		} catch (HttpClientErrorException e) {
+		} catch (HttpServerErrorException | HttpClientErrorException e) {
 			throw new AlarmException(FAIL_SEND_ALARM);
 		}
 	}

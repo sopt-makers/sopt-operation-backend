@@ -1,8 +1,6 @@
 package org.sopt.makers.operation.dto;
 
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.*;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -11,7 +9,7 @@ import lombok.Builder;
 public record BaseResponse<T> (
 	boolean success,
 	String message,
-	@JsonInclude(value = NON_NULL)
+//	@JsonInclude(value = NON_NULL)
 	T data
 ) {
 
