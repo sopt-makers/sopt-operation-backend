@@ -48,6 +48,13 @@ public class Attendance {
 	@OneToMany(mappedBy = "attendance")
 	private final List<SubAttendance> subAttendances = new ArrayList<>();
 
+    protected Attendance(Long id, Member member, Lecture lecture, AttendanceStatus status) {
+        this.id = id;
+        setMember(member);
+        setLecture(lecture);
+        this.status = status;
+    }
+
 	public Attendance(Member member, Lecture lecture) {
 		setMember(member);
 		setLecture(lecture);
