@@ -110,7 +110,7 @@ public class Attendance {
 					yield 0f;
 				}
 			}
-			case EVENT -> this.status.equals(ATTENDANCE) ? 0.5f : 0f;
+			case EVENT -> this.status.equals(ABSENT) ? 0f : 0.5f;
 			default -> 0f;
 		};
 	}
