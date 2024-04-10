@@ -31,7 +31,7 @@ public class AttendanceGetScoreTest {
     }
 
     @Nested
-    @DisplayName("세미나 출석 관련 테스트")
+    @DisplayName("[세미나 출석 점수 반환 테스트]")
     public class SeminarTest {
         @Test
         @DisplayName("세미나에 출석을 했으면 0f를 반환한다.")
@@ -77,7 +77,7 @@ public class AttendanceGetScoreTest {
     }
 
     @Nested
-    @DisplayName("행사 출석 관련 테스트")
+    @DisplayName("[행사 출석 점수 반환 테스트]")
     public class EventTest {
         @Test
         @DisplayName("행사에 출석을 했으면 0.5f를 반환한다.")
