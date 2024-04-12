@@ -47,6 +47,13 @@ public class SubAttendance extends BaseEntity {
 		status = ABSENT;
 	}
 
+	protected SubAttendance(Long id, Attendance attendance, SubLecture subLecture, AttendanceStatus status) {
+		this.id = id;
+		setAttendance(attendance);
+		setSubLecture(subLecture);
+		this.status = status;
+	}
+
 	private void setAttendance(Attendance attendance) {
 		if (Objects.nonNull(this.attendance)) {
 			this.attendance.getSubAttendances().remove(this);

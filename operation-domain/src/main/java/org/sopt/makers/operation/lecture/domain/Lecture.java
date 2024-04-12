@@ -77,6 +77,18 @@ public class Lecture extends BaseEntity {
 		this.lectureStatus = BEFORE;
 	}
 
+	protected Lecture(Long id, String name, Part part, int generation, String place, LocalDateTime startDate, LocalDateTime endDate, Attribute attribute, LectureStatus lectureStatus) {
+		this.id = id;
+		this.name = name;
+		this.part = part;
+		this.generation = generation;
+		this.place = place;
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.attribute = attribute;
+		this.lectureStatus = lectureStatus;
+	}
+
 	public void updateStatus(LectureStatus status) {
 		this.lectureStatus = status;
 	}
@@ -100,5 +112,10 @@ public class Lecture extends BaseEntity {
 
 	public boolean isNotYetToEnd() {
 		return this.endDate.isAfter(LocalDateTime.now());
+	}
+
+	protected void setOneToMany(List<SubLecture> subLectures, List<Attendance> attendances) {
+		this.subLectures = subLectures;
+		this.attendances = attendances;
 	}
 }
