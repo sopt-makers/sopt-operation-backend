@@ -111,6 +111,6 @@ public class Alarm extends BaseEntity {
 	}
 
 	public boolean hasTargets() {
-		return Objects.isNull(this.isActive) || Objects.isNull(this.part);
+		return Objects.nonNull(this.targetList) && this.targetList.size() > 0;
 	}
 }
