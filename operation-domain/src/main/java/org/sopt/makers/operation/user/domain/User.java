@@ -8,7 +8,6 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
-import jakarta.persistence.Convert;
 
 import java.time.LocalDate;
 
@@ -19,7 +18,6 @@ import lombok.AllArgsConstructor;
 import lombok.AccessLevel;
 
 import org.sopt.makers.operation.common.domain.BaseEntity;
-import org.sopt.makers.operation.user.util.LocalDateConverter;
 
 @Entity @Getter
 @Table(name = "users")
@@ -45,7 +43,6 @@ public class User extends BaseEntity {
     private String name;
 
     @Column(name = "birthday")
-    @Convert(converter = LocalDateConverter.class)
     private LocalDate birthday;
 
     @Builder

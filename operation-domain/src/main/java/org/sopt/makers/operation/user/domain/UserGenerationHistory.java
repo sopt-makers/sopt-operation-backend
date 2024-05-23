@@ -29,7 +29,7 @@ public class UserGenerationHistory {
     private Long userId;
 
     @Column(name = "generation", nullable = false)
-    private Integer integer;
+    private int generation;
 
     @Column(name = "part")
     @Enumerated(value = EnumType.STRING)
@@ -44,9 +44,9 @@ public class UserGenerationHistory {
     private Position position;
 
     @Builder
-    public UserGenerationHistory(Long userId, Integer integer, Part part, Team team, Position position) {
+    public UserGenerationHistory(Long userId, int generation, Part part, Team team, Position position) {
         this.userId = userId;
-        this.integer = integer;
+        this.generation = generation;
         this.part = part;
         this.team = team;
         this.position = position;

@@ -6,6 +6,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Column;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 
 import lombok.Getter;
 import lombok.Builder;
@@ -29,13 +31,14 @@ public class UserRegisterInfo {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "generation")
-    private Integer generation;
+    @Column(name = "generation", nullable = false)
+    private int generation;
 
     @Column(name = "phone")
     private String phone;
 
     @Column(name = "part")
+    @Enumerated(value = EnumType.STRING)
     private Part part;
 
     @Builder
