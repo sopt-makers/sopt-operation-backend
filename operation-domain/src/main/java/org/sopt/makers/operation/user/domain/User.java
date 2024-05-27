@@ -42,15 +42,20 @@ public class User extends BaseEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "profile_image")
+    private String profileImage;
+
     @Column(name = "birthday")
     private LocalDate birthday;
 
+
     @Builder
-    public User(String email, String phone, Gender gender, String name, LocalDate birthday) {
+    public User(String email, String phone, Gender gender, String name, String profileImage, LocalDate birthday) {
         this.email = email;
         this.phone = phone;
         this.gender = gender;
         this.name = name;
+        this.profileImage = profileImage;
         this.birthday = birthday;
     }
 }
