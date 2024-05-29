@@ -50,6 +50,8 @@ public class ValueConfig {
 	private String googleClientSecret;
 	@Value("${oauth.google.redirect.url}")
 	private String googleRedirectUrl;
+	@Value("${spring.jwt.secretKey.platform_code}")
+	private String platformCodeSecretKey;
 
 	private final int SUB_LECTURE_MAX_ROUND = 2;
 	private final int MAX_LECTURE_COUNT = 2;
