@@ -19,10 +19,10 @@ public interface AuthApi {
                     @ApiResponse(
                             responseCode = "400",
                             description = """
-                                    쿼리 파라미터 중 데이터가 들어오지 않았습니다.
-                                    유효하지 않은 social type 입니다.
-                                    유효하지 않은 id token 입니다.
-                                    유효하지 않은 social code 입니다.
+                                    1. 쿼리 파라미터 중 데이터가 들어오지 않았습니다.\n
+                                    2. 유효하지 않은 social type 입니다.\n
+                                    3. 유효하지 않은 id token 입니다.\n
+                                    4. 유효하지 않은 social code 입니다.
                                     """
                     ),
                     @ApiResponse(
