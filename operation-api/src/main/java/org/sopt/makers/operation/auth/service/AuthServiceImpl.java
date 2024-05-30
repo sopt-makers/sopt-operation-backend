@@ -24,10 +24,10 @@ import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.NOT_FO
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
     private static final ZoneId KST = ZoneId.of("Asia/Seoul");
+
     private final SocialLoginManager socialLoginManager;
     private final TeamOAuthInfoRepository teamOAuthInfoRepository;
     private final UserIdentityInfoRepository userIdentityInfoRepository;
-
     private final ValueConfig valueConfig;
 
     @Override
