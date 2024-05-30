@@ -9,5 +9,5 @@ public interface AuthService {
 
     Long getUserId(SocialType socialType, String userSocialId);
 
-    String generatePlatformCode(Long userId);
+    String generatePlatformCode(String clientId, String redirectUri, Long userId);
 }

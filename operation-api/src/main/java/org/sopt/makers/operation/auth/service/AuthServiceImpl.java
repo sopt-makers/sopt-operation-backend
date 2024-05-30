@@ -50,7 +50,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String generatePlatformCode(Long userId) {
+    public String generatePlatformCode(String clientId, String redirectUri, Long userId) {
         val platformCodeSecretKey = valueConfig.getPlatformCodeSecretKey();
 
         val signatureAlgorithm = SignatureAlgorithm.HS256;
@@ -59,6 +59,8 @@ public class AuthServiceImpl implements AuthService {
         val exp = new Date().toInstant().atZone(KST)
                 .toLocalDateTime().plusMinutes(5).atZone(KST).toInstant();
         return Jwts.builder()
+                .setIssuer(clientId)
+                .setAudience(redirectUri)
                 .setSubject(Long.toString(userId))
                 .setExpiration(Date.from(exp))
                 .signWith(signingKey, signatureAlgorithm)

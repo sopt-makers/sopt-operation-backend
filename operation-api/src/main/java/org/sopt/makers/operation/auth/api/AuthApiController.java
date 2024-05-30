@@ -40,7 +40,7 @@ public class AuthApiController implements AuthApi {
         if (!SocialType.isContains(type)) throw new AuthException(INVALID_SOCIAL_TYPE);
 
         val userId = findUserIdBySocialTypeAndCode(type, code);
-        val platformCode = generatePlatformCode(userId);
+        val platformCode = generatePlatformCode(clientId, redirectUri, userId);
         return ApiResponseUtil.success(SUCCESS_GET_AUTHORIZATION_CODE, new AuthorizationCodeResponse(platformCode));
     }
 
@@ -57,8 +57,8 @@ public class AuthApiController implements AuthApi {
         return authService.getUserId(socialType, userSocialId);
     }
 
-    private String generatePlatformCode(Long userId) {
-        val platformCode = authService.generatePlatformCode(userId);
+    private String generatePlatformCode(String clientId, String redirectUri, Long userId) {
+        val platformCode = authService.generatePlatformCode(clientId, redirectUri, userId);
         tempPlatformCode.putIfAbsent(platformCode, platformCode);
         return platformCode;
     }
