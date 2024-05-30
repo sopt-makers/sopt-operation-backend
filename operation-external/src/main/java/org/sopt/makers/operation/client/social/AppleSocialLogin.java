@@ -31,27 +31,30 @@ import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.FAILUR
 @Component
 @RequiredArgsConstructor
 public class AppleSocialLogin {
+    // 1시간
+    private static final int EXPIRATION_TIME_IN_MILLISECONDS = 3600 * 1000;
+    private static final String GRANT_TYPE = "authorization_code";
+    private static final String HOST = "https://appleid.apple.com/auth/token";
+
     private final RestTemplate restTemplate;
     private final ValueConfig valueConfig;
 
     public IdTokenResponse getIdTokenByCode(String code) {
         val tokenRequest = new LinkedMultiValueMap<>();
-        val grantType = "authorization_code";
         val clientId = valueConfig.getAppleSub();
         val clientSecret = createClientSecret();
 
         tokenRequest.add("client_id", clientId);
         tokenRequest.add("client_secret", clientSecret);
         tokenRequest.add("code", code);
-        tokenRequest.add("grant_type", grantType);
+        tokenRequest.add("grant_type", GRANT_TYPE);
 
         val headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         val entity = new HttpEntity<>(tokenRequest, headers);
 
-        val host = "https://appleid.apple.com/auth/token";
-        return restTemplate.postForObject(host, entity, IdTokenResponse.class);
+        return restTemplate.postForObject(HOST, entity, IdTokenResponse.class);
     }
 
     private String createClientSecret() {
@@ -67,7 +70,7 @@ public class AppleSocialLogin {
                 .setHeaderParam("kid", kid)
                 .setHeaderParam("alg", "ES256")
                 .setIssuedAt(now)
-                .setExpiration(new Date(System.currentTimeMillis() + 3600 * 1000))
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME_IN_MILLISECONDS))
                 .setIssuer(issuer)
                 .setAudience(aud)
                 .setSubject(sub)
@@ -76,7 +79,7 @@ public class AppleSocialLogin {
     }
 
     private Optional<PrivateKey> getPrivateKey() {
-        val appleKeyPath = "authConfig.getAppleKeyPath()";
+        val appleKeyPath = valueConfig.getAppleKeyPath();
         try {
             val resource = new ClassPathResource(appleKeyPath);
             val privateKey = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);

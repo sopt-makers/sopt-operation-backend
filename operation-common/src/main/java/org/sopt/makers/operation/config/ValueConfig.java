@@ -38,6 +38,8 @@ public class ValueConfig {
 	private String playGroundToken;
 	@Value("${oauth.apple.key.id}")
 	private String appleKeyId;
+	@Value("${oauth.apple.key.path}")
+	private String appleKeyPath;
 	@Value("${oauth.apple.team.id}")
 	private String appleTeamId;
 	@Value("${oauth.apple.aud}")
