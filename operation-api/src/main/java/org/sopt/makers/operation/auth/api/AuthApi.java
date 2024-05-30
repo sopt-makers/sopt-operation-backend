@@ -28,8 +28,8 @@ public interface AuthApi {
                     @ApiResponse(
                             responseCode = "404",
                             description = """
-                                    등록되지 않은 팀입니다.
-                                    등록된 소셜 정보가 없습니다.
+                                    1. 등록되지 않은 팀입니다.\n
+                                    2. 등록된 소셜 정보가 없습니다.
                                     """
                     ),
                     @ApiResponse(
