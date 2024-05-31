@@ -38,7 +38,7 @@ public class AuthApiController implements AuthApi {
         if (checkParamsIsNull(type, code, clientId, redirectUri)) {
             throw new AuthException(NOT_NULL_PARAMS);
         }
-        if (authService.checkRegisteredTeamOAuthInfo(clientId, redirectUri)) {
+        if (!authService.checkRegisteredTeamOAuthInfo(clientId, redirectUri)) {
             throw new AuthException(NOT_FOUNT_REGISTERED_TEAM);
         }
         if (!SocialType.isContains(type)) {
