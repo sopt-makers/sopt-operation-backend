@@ -8,8 +8,7 @@ public enum SocialType {
 
 
     public static boolean isContains(String type) {
-        SocialType[] socialTypes = SocialType.values();
-        return Arrays.stream(socialTypes)
+        return Arrays.stream(SocialType.values())
                 .anyMatch(socialType -> socialType.name().equals(type));
     }
 }
