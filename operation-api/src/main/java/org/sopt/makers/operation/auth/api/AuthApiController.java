@@ -17,7 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.INVALID_SOCIAL_TYPE;
 import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.NOT_FOUNT_REGISTERED_TEAM;
-import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.NOT_NULL_PARAMS;
 import static org.sopt.makers.operation.code.success.auth.AuthSuccessCode.SUCCESS_GET_AUTHORIZATION_CODE;
 
 @RestController
@@ -35,9 +34,6 @@ public class AuthApiController implements AuthApi {
             @RequestParam String clientId,
             @RequestParam String redirectUri
     ) {
-        if (checkParamsIsNull(type, code, clientId, redirectUri)) {
-            throw new AuthException(NOT_NULL_PARAMS);
-        }
         if (!authService.checkRegisteredTeamOAuthInfo(clientId, redirectUri)) {
             throw new AuthException(NOT_FOUNT_REGISTERED_TEAM);
         }
@@ -48,15 +44,6 @@ public class AuthApiController implements AuthApi {
         val userId = findUserIdBySocialTypeAndCode(type, code);
         val platformCode = generatePlatformCode(clientId, redirectUri, userId);
         return ApiResponseUtil.success(SUCCESS_GET_AUTHORIZATION_CODE, new AuthorizationCodeResponse(platformCode));
-    }
-
-    private boolean checkParamsIsNull(String... params) {
-        for (String param : params) {
-            if (param == null) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private Long findUserIdBySocialTypeAndCode(String type, String code) {
