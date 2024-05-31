@@ -36,6 +36,24 @@ public class ValueConfig {
 	private String playGroundURI;
 	@Value("${sopt.makers.playground.token}")
 	private String playGroundToken;
+	@Value("${oauth.apple.key.id}")
+	private String appleKeyId;
+	@Value("${oauth.apple.key.path}")
+	private String appleKeyPath;
+	@Value("${oauth.apple.team.id}")
+	private String appleTeamId;
+	@Value("${oauth.apple.aud}")
+	private String appleAud;
+	@Value("${oauth.apple.sub}")
+	private String appleSub;
+	@Value("${oauth.google.client.id}")
+	private String googleClientId;
+	@Value("${oauth.google.client.secret}")
+	private String googleClientSecret;
+	@Value("${oauth.google.redirect.url}")
+	private String googleRedirectUrl;
+	@Value("${spring.jwt.secretKey.platform_code}")
+	private String platformCodeSecretKey;
 
 	private final int SUB_LECTURE_MAX_ROUND = 2;
 	private final int MAX_LECTURE_COUNT = 2;

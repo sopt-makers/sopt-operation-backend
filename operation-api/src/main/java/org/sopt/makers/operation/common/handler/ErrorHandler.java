@@ -1,6 +1,7 @@
 package org.sopt.makers.operation.common.handler;
 
 import org.sopt.makers.operation.dto.BaseResponse;
+import org.sopt.makers.operation.exception.AuthException;
 import org.sopt.makers.operation.util.ApiResponseUtil;
 import org.sopt.makers.operation.exception.AdminFailureException;
 import org.sopt.makers.operation.exception.AlarmException;
@@ -70,6 +71,12 @@ public class ErrorHandler {
 
     @ExceptionHandler(AttendanceException.class)
     public ResponseEntity<BaseResponse<?>> attendanceException(AttendanceException ex) {
+        log.error(ex.getMessage());
+        return ApiResponseUtil.failure(ex.getFailureCode());
+    }
+
+    @ExceptionHandler(AuthException.class)
+    public ResponseEntity<BaseResponse<?>> authException(AuthException ex) {
         log.error(ex.getMessage());
         return ApiResponseUtil.failure(ex.getFailureCode());
     }
