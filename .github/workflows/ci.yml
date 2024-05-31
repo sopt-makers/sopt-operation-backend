@@ -33,8 +33,9 @@ jobs:
 
       - name: 'Get key from Github Secrets'
         run: |
-          mkdir -p src/main/resources/static
-          echo ${{ secrets.APPLE_KEY }} | base64 --decode > src/main/resources/static/${{ secrets.APPLE_KEY_NAME }}
+          pwd
+          mkdir -p ./operation-api/src/main/resources/static
+          echo ${{ secrets.APPLE_KEY }} | base64 --decode > ./operation-api/src/main/resources/static/${{ secrets.APPLE_KEY_NAME }}
 
       - name: Build with Gradle
         run: ./gradlew build
