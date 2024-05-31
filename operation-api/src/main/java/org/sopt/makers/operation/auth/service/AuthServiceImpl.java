@@ -23,6 +23,7 @@ import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.NOT_FO
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
+
     private static final ZoneId KST = ZoneId.of("Asia/Seoul");
 
     private final SocialLoginManager socialLoginManager;
@@ -38,7 +39,9 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public String getSocialUserInfo(SocialType type, String code) {
         val idToken = socialLoginManager.getIdTokenByCode(type, code);
-        if (idToken == null) throw new AuthException(INVALID_SOCIAL_CODE);
+        if (idToken == null) {
+            throw new AuthException(INVALID_SOCIAL_CODE);
+        }
         return socialLoginManager.getUserInfo(idToken);
     }
 

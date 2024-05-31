@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
 
 public interface AuthApi {
+
     @Operation(
             security = @SecurityRequirement(name = "Authorization"),
             summary = "플랫폼 인가코드 반환 API",

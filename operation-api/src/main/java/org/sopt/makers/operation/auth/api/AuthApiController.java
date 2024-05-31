@@ -23,6 +23,7 @@ import static org.sopt.makers.operation.code.success.auth.AuthSuccessCode.SUCCES
 @RestController
 @RequiredArgsConstructor
 public class AuthApiController implements AuthApi {
+
     private final ConcurrentHashMap<String, String> tempPlatformCode = new ConcurrentHashMap<>();
     private final AuthService authService;
 
@@ -34,10 +35,15 @@ public class AuthApiController implements AuthApi {
             @RequestParam String clientId,
             @RequestParam String redirectUri
     ) {
-        if (checkParamsIsNull(type, code, clientId, redirectUri)) throw new AuthException(NOT_NULL_PARAMS);
-        if (authService.checkRegisteredTeamOAuthInfo(clientId, redirectUri))
+        if (checkParamsIsNull(type, code, clientId, redirectUri)) {
+            throw new AuthException(NOT_NULL_PARAMS);
+        }
+        if (authService.checkRegisteredTeamOAuthInfo(clientId, redirectUri)) {
             throw new AuthException(NOT_FOUNT_REGISTERED_TEAM);
-        if (!SocialType.isContains(type)) throw new AuthException(INVALID_SOCIAL_TYPE);
+        }
+        if (!SocialType.isContains(type)) {
+            throw new AuthException(INVALID_SOCIAL_TYPE);
+        }
 
         val userId = findUserIdBySocialTypeAndCode(type, code);
         val platformCode = generatePlatformCode(clientId, redirectUri, userId);
@@ -46,7 +52,9 @@ public class AuthApiController implements AuthApi {
 
     private boolean checkParamsIsNull(String... params) {
         for (String param : params) {
-            if (param == null) return true;
+            if (param == null) {
+                return true;
+            }
         }
         return false;
     }
