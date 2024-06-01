@@ -193,4 +193,130 @@ class AuthApiControllerTest {
                     .andExpect(jsonPath("$.message").value("유효하지 않은 social type 입니다."));
         }
     }
+
+    @Nested
+    @DisplayName("/token API 오류 케이스 테스트")
+    class TokenAPIErrorCaseTest {
+
+        @DisplayName("grantType 이 null 일 때 400 에러를 반환한다.")
+        @ParameterizedTest
+        @CsvSource({
+                ",clientId,redirectUri,code"
+        })
+        void errorTest(String grantType, String clientId, String redirectUri, String code) throws Exception {
+            // when, then
+            mockMvc.perform(post(tokenUri)
+                            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                            .param("grantType", grantType)
+                            .param("clientId", clientId)
+                            .param("redirectUri", redirectUri)
+                            .param("code", code))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.message").value("grantType 데이터가 들어오지 않았습니다."));
+        }
+
+        @DisplayName("grantType 이 authorizationCode 또는 refreshToken 외의 값이 들어온다면 400 에러를 반환한다.")
+        @ParameterizedTest
+        @CsvSource({
+                "error,clientId,redirectUri,code"
+        })
+        void errorTest2(String grantType, String clientId, String redirectUri, String code) throws Exception {
+            // when, then
+            mockMvc.perform(post(tokenUri)
+                            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                            .param("grantType", grantType)
+                            .param("clientId", clientId)
+                            .param("redirectUri", redirectUri)
+                            .param("code", code))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.message").value("유효하지 않은 grantType 입니다."));
+        }
+
+        @DisplayName("grantType 이 authorizationCode 일 때, code 값으로 null 값이 들어온다면 400 에러를 반환한다.")
+        @ParameterizedTest
+        @CsvSource({
+                "authorizationCode,clientId,redirectUri,"
+        })
+        void errorTest3(String grantType, String clientId, String redirectUri, String code) throws Exception {
+            // when, then
+            mockMvc.perform(post(tokenUri)
+                            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                            .param("grantType", grantType)
+                            .param("clientId", clientId)
+                            .param("redirectUri", redirectUri)
+                            .param("code", code))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.message").value("플랫폼 인가코드가 들어오지 않았습니다."));
+        }
+
+        @DisplayName("grantType 이 authorizationCode 일 때, code 값이 hashmap인 tempPlatformCode 내에 없다면 400 에러를 반환한다.")
+        @ParameterizedTest
+        @CsvSource({
+                "authorizationCode,clientId,redirectUri,code"
+        })
+        void errorTest4(String grantType, String clientId, String redirectUri, String code) throws Exception {
+            // given
+            given(tempPlatformCode.contains(code)).willReturn(false);
+
+            // when, then
+            mockMvc.perform(post(tokenUri)
+                            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                            .param("grantType", grantType)
+                            .param("clientId", clientId)
+                            .param("redirectUri", redirectUri)
+                            .param("code", code))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.message").value("이미 사용한 플랫폼 인가코드입니다."));
+        }
+
+        @DisplayName("grantType 이 refreshToken 일 때, refreshToken 값으로 null 값이 들어온다면 400 에러를 반환한다.")
+        @ParameterizedTest
+        @CsvSource({
+                "refreshToken,"
+        })
+        void errorTest5(String grantType, String refreshToken) throws Exception {
+            // when, then
+            mockMvc.perform(post(tokenUri)
+                            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                            .param("grantType", grantType)
+                            .param("refreshToken", refreshToken))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.message").value("리프레쉬 토큰이 들어오지 않았습니다."));
+        }
+
+        @DisplayName("grantType 이 authorizationCode 일 때, code 값이 만료되었다면 401 에러를 반환한다.")
+        @ParameterizedTest
+        @CsvSource({
+                "authorizationCode,clientId,redirectUri,code"
+        })
+        void errorTest6(String grantType, String clientId, String redirectUri, String code) throws Exception {
+            given(jwtTokenProvider.validatePlatformCode(code, clientId, redirectUri)).willReturn(false);
+            given(tempPlatformCode.contains(code)).willReturn(true);
+            // when, then
+            mockMvc.perform(post(tokenUri)
+                            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                            .param("grantType", grantType)
+                            .param("clientId", clientId)
+                            .param("redirectUri", redirectUri)
+                            .param("code", code))
+                    .andExpect(status().isUnauthorized())
+                    .andExpect(jsonPath("$.message").value("만료된 플랫폼 인가코드입니다."));
+        }
+
+        @DisplayName("grantType 이 refreshToken 일 때, refreshToken 값이 만료되었다면 401 에러를 반환한다.")
+        @ParameterizedTest
+        @CsvSource({
+                "refreshToken,refreshToken"
+        })
+        void errorTest7(String grantType, String refreshToken) throws Exception {
+            given(jwtTokenProvider.validateTokenExpiration(refreshToken, REFRESH_TOKEN)).willReturn(false);
+            // when, then
+            mockMvc.perform(post(tokenUri)
+                            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                            .param("grantType", grantType)
+                            .param("refreshToken", refreshToken))
+                    .andExpect(status().isUnauthorized())
+                    .andExpect(jsonPath("$.message").value("만료된 리프레쉬 토큰입니다."));
+        }
+    }
 }
