@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.sopt.makers.operation.auth.service.AuthService;
+import org.sopt.makers.operation.authentication.AdminAuthentication;
 import org.sopt.makers.operation.common.handler.ErrorHandler;
 import org.sopt.makers.operation.jwt.JwtTokenProvider;
 import org.sopt.makers.operation.user.domain.SocialType;
@@ -22,7 +23,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.mockito.BDDMockito.given;
+import static org.sopt.makers.operation.jwt.JwtTokenType.PLATFORM_CODE;
+import static org.sopt.makers.operation.jwt.JwtTokenType.REFRESH_TOKEN;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -41,6 +45,7 @@ class AuthApiControllerTest {
     @Autowired
     ObjectMapper objectMapper;
     final String authorizeUri = "/api/v1/authorize";
+    final String tokenUri = "/api/v1/token";
 
     @Nested
     @DisplayName("API 통신 성공 테스트")
@@ -67,6 +72,60 @@ class AuthApiControllerTest {
                             .param("redirectUri", redirectUri))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.message").value("플랫폼 인가코드 발급 성공"));
+        }
+
+        @DisplayName("grantType 이 authorizationCode 이고, 유효한 clientId, redirectUri, code 값이 들어왔을 때, 액세스 토큰과 리프레시 토큰을 발급한다.")
+        @ParameterizedTest
+        @CsvSource({
+                "authorizationCode,clientId,redirectUri,code"
+        })
+        void tokenByAuthorizationCodeSuccessTest(String grantType, String clientId, String redirectUri, String code) throws Exception {
+            // given
+            val authentication = new AdminAuthentication(1L, null, null);
+            given(jwtTokenProvider.validatePlatformCode(code, clientId, redirectUri)).willReturn(true);
+            given(jwtTokenProvider.getAuthentication(code, PLATFORM_CODE)).willReturn(authentication);
+            given(jwtTokenProvider.generateAccessToken(authentication)).willReturn("access token");
+            given(jwtTokenProvider.generateRefreshToken(authentication)).willReturn("refresh token");
+            given(tempPlatformCode.contains(code)).willReturn(true);
+
+            // when, then
+            mockMvc.perform(post(tokenUri)
+                            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                            .param("grantType", grantType)
+                            .param("clientId", clientId)
+                            .param("redirectUri", redirectUri)
+                            .param("code", code))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.message").value("토큰 발급 성공"))
+                    .andExpect(jsonPath("$.data.tokenType").value("Bearer"))
+                    .andExpect(jsonPath("$.data.accessToken").value("access token"))
+                    .andExpect(jsonPath("$.data.refreshToken").value("refresh token"));
+        }
+
+        @DisplayName("grantType 이 refreshToken 이고, 유효한 refreshToken 값이 들어왔을 때, 액세스 토큰과 리프레시 토큰을 발급한다.")
+        @ParameterizedTest
+        @CsvSource({
+                "refreshToken,refreshToken"
+        })
+        void tokenByRefreshTokenSuccessTest(String grantType, String refreshToken) throws Exception {
+            // given
+            val authentication = new AdminAuthentication(1L, null, null);
+            given(jwtTokenProvider.validateTokenExpiration(refreshToken, REFRESH_TOKEN)).willReturn(true);
+            given(jwtTokenProvider.getAuthentication(refreshToken, REFRESH_TOKEN)).willReturn(authentication);
+            given(jwtTokenProvider.generateAccessToken(authentication)).willReturn("access token");
+            given(jwtTokenProvider.generateRefreshToken(authentication)).willReturn("refresh token");
+
+            // when, then
+            mockMvc.perform(post(tokenUri)
+                            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                            .param("grantType", grantType)
+                            .param("refreshToken", refreshToken)
+                    )
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.message").value("토큰 발급 성공"))
+                    .andExpect(jsonPath("$.data.tokenType").value("Bearer"))
+                    .andExpect(jsonPath("$.data.accessToken").value("access token"))
+                    .andExpect(jsonPath("$.data.refreshToken").value("refresh token"));
         }
     }
 
