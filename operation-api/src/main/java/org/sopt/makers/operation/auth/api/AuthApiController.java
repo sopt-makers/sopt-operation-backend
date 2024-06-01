@@ -28,6 +28,7 @@ import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.INVALI
 import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.NOT_FOUNT_REGISTERED_TEAM;
 import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.NOT_NULL_CODE;
 import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.NOT_NULL_GRANT_TYPE;
+import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.NOT_NULL_REFRESH_TOKEN;
 import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.USED_PLATFORM_CODE;
 import static org.sopt.makers.operation.code.success.auth.AuthSuccessCode.SUCCESS_GENERATE_TOKEN;
 import static org.sopt.makers.operation.code.success.auth.AuthSuccessCode.SUCCESS_GET_AUTHORIZATION_CODE;
@@ -103,7 +104,7 @@ public class AuthApiController implements AuthApi {
 
     private TokenResponse generateTokenResponseByRefreshToken(AccessTokenRequest accessTokenRequest) {
         if (accessTokenRequest.isNullRefreshToken()) {
-            throw new AuthException(USED_PLATFORM_CODE);
+            throw new AuthException(NOT_NULL_REFRESH_TOKEN);
         }
         if (!jwtTokenProvider.validateTokenExpiration(accessTokenRequest.refreshToken(), REFRESH_TOKEN)) {
             throw new AuthException(EXPIRED_REFRESH_TOKEN);

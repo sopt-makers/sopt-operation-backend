@@ -23,7 +23,7 @@ public enum AuthFailureCode implements FailureCode {
     USED_PLATFORM_CODE(BAD_REQUEST, "이미 사용한 플랫폼 인가코드입니다."),
     NOT_NULL_REFRESH_TOKEN(BAD_REQUEST, "리프레쉬 토큰이 들어오지 않았습니다."),
     // 401
-    EXPIRED_PLATFORM_CODE(UNAUTHORIZED, "만료된 플랫폼 인가 코드입니다."),
+    EXPIRED_PLATFORM_CODE(UNAUTHORIZED, "만료된 플랫폼 인가코드입니다."),
     EXPIRED_REFRESH_TOKEN(UNAUTHORIZED, "만료된 리프레쉬 토큰입니다."),
     // 404
     NOT_FOUNT_REGISTERED_TEAM(NOT_FOUND, "등록되지 않은 팀입니다."),
