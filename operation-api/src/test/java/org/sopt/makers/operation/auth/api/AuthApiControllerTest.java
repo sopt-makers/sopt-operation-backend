@@ -19,6 +19,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -32,11 +34,13 @@ class AuthApiControllerTest {
     AuthService authService;
     @MockBean
     JwtTokenProvider jwtTokenProvider;
+    @MockBean
+    ConcurrentHashMap<String, String> tempPlatformCode;
     @Autowired
     MockMvc mockMvc;
     @Autowired
     ObjectMapper objectMapper;
-    final String uri = "/api/v1/authorize";
+    final String authorizeUri = "/api/v1/authorize";
 
     @Nested
     @DisplayName("API 통신 성공 테스트")
@@ -55,7 +59,7 @@ class AuthApiControllerTest {
             given(jwtTokenProvider.generatePlatformCode(clientId, redirectUri, 1L)).willReturn("Platform Code");
 
             // when, then
-            mockMvc.perform(get(uri)
+            mockMvc.perform(get(authorizeUri)
                             .contentType(MediaType.APPLICATION_JSON)
                             .param("type", type)
                             .param("code", code)
@@ -80,7 +84,7 @@ class AuthApiControllerTest {
         })
         void validateTest(String type, String code, String clientId, String redirectUri) throws Exception {
             // when, then
-            mockMvc.perform(get(uri)
+            mockMvc.perform(get(authorizeUri)
                             .contentType(MediaType.APPLICATION_JSON)
                             .param("type", type)
                             .param("code", code)
@@ -99,7 +103,7 @@ class AuthApiControllerTest {
             given(authService.checkRegisteredTeamOAuthInfo(clientId, redirectUri)).willReturn(false);
 
             // when, then
-            mockMvc.perform(get(uri)
+            mockMvc.perform(get(authorizeUri)
                             .contentType(MediaType.APPLICATION_JSON)
                             .param("type", type)
                             .param("code", code)
@@ -120,7 +124,7 @@ class AuthApiControllerTest {
             given(authService.checkRegisteredTeamOAuthInfo(clientId, redirectUri)).willReturn(true);
 
             // when, then
-            mockMvc.perform(get(uri)
+            mockMvc.perform(get(authorizeUri)
                             .contentType(MediaType.APPLICATION_JSON)
                             .param("type", type)
                             .param("code", code)
