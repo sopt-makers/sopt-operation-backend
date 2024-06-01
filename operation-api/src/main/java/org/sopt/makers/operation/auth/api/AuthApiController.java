@@ -2,27 +2,44 @@ package org.sopt.makers.operation.auth.api;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.sopt.makers.operation.auth.dto.request.AccessTokenRequest;
 import org.sopt.makers.operation.auth.dto.response.AuthorizationCodeResponse;
+import org.sopt.makers.operation.auth.dto.response.TokenResponse;
 import org.sopt.makers.operation.auth.service.AuthService;
 import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.exception.AuthException;
 import org.sopt.makers.operation.jwt.JwtTokenProvider;
 import org.sopt.makers.operation.user.domain.SocialType;
 import org.sopt.makers.operation.util.ApiResponseUtil;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.EXPIRED_PLATFORM_CODE;
+import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.EXPIRED_REFRESH_TOKEN;
+import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.INVALID_GRANT_TYPE;
 import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.INVALID_SOCIAL_TYPE;
 import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.NOT_FOUNT_REGISTERED_TEAM;
+import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.NOT_NULL_CODE;
+import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.NOT_NULL_GRANT_TYPE;
+import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.USED_PLATFORM_CODE;
+import static org.sopt.makers.operation.code.success.auth.AuthSuccessCode.SUCCESS_GENERATE_TOKEN;
 import static org.sopt.makers.operation.code.success.auth.AuthSuccessCode.SUCCESS_GET_AUTHORIZATION_CODE;
+import static org.sopt.makers.operation.jwt.JwtTokenType.PLATFORM_CODE;
+import static org.sopt.makers.operation.jwt.JwtTokenType.REFRESH_TOKEN;
 
 @RestController
 @RequiredArgsConstructor
 public class AuthApiController implements AuthApi {
+
+    private static final String AUTHORIZATION_CODE_GRANT_TYPE = "authorizationCode";
+    private static final String REFRESH_TOKEN_GRANT_TYPE = "refreshToken";
 
     private final ConcurrentHashMap<String, String> tempPlatformCode;
     private final AuthService authService;
@@ -46,6 +63,60 @@ public class AuthApiController implements AuthApi {
         val userId = findUserIdBySocialTypeAndCode(type, code);
         val platformCode = generatePlatformCode(clientId, redirectUri, userId);
         return ApiResponseUtil.success(SUCCESS_GET_AUTHORIZATION_CODE, new AuthorizationCodeResponse(platformCode));
+    }
+
+    @Override
+    @PostMapping(
+            path = "/api/v1/token",
+            consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
+    )
+    public ResponseEntity<BaseResponse<?>> token(AccessTokenRequest accessTokenRequest) {
+        if (accessTokenRequest.isNullGrantType()) {
+            throw new AuthException(NOT_NULL_GRANT_TYPE);
+        }
+
+        val grantType = accessTokenRequest.grantType();
+        if (!(grantType.equals(AUTHORIZATION_CODE_GRANT_TYPE) || grantType.equals(REFRESH_TOKEN_GRANT_TYPE))) {
+            throw new AuthException(INVALID_GRANT_TYPE);
+        }
+
+        val tokenResponse = grantType.equals(AUTHORIZATION_CODE_GRANT_TYPE) ?
+                generateTokenResponseByAuthorizationCode(accessTokenRequest) : generateTokenResponseByRefreshToken(accessTokenRequest);
+        return ApiResponseUtil.success(SUCCESS_GENERATE_TOKEN, tokenResponse);
+    }
+
+    private TokenResponse generateTokenResponseByAuthorizationCode(AccessTokenRequest accessTokenRequest) {
+        if (accessTokenRequest.isNullCode()) {
+            throw new AuthException(NOT_NULL_CODE);
+        }
+        if (!tempPlatformCode.contains(accessTokenRequest.code())) {
+            throw new AuthException(USED_PLATFORM_CODE);
+        }
+        if (!jwtTokenProvider.validatePlatformCode(accessTokenRequest.code(), accessTokenRequest.clientId(), accessTokenRequest.redirectUri())) {
+            throw new AuthException(EXPIRED_PLATFORM_CODE);
+        }
+
+        val authentication = jwtTokenProvider.getAuthentication(accessTokenRequest.code(), PLATFORM_CODE);
+        tempPlatformCode.remove(accessTokenRequest.code());
+        return generateTokenResponse(authentication);
+    }
+
+    private TokenResponse generateTokenResponseByRefreshToken(AccessTokenRequest accessTokenRequest) {
+        if (accessTokenRequest.isNullRefreshToken()) {
+            throw new AuthException(USED_PLATFORM_CODE);
+        }
+        if (!jwtTokenProvider.validateTokenExpiration(accessTokenRequest.refreshToken(), REFRESH_TOKEN)) {
+            throw new AuthException(EXPIRED_REFRESH_TOKEN);
+        }
+
+        val authentication = jwtTokenProvider.getAuthentication(accessTokenRequest.refreshToken(), REFRESH_TOKEN);
+        return generateTokenResponse(authentication);
+    }
+
+    private TokenResponse generateTokenResponse(Authentication authentication) {
+        val accessToken = jwtTokenProvider.generateAccessToken(authentication);
+        val refreshToken = jwtTokenProvider.generateRefreshToken(authentication);
+        return TokenResponse.of(accessToken, refreshToken);
     }
 
     private Long findUserIdBySocialTypeAndCode(String type, String code) {
