@@ -93,12 +93,13 @@ public class AuthApiController implements AuthApi {
         if (!tempPlatformCode.contains(accessTokenRequest.code())) {
             throw new AuthException(USED_PLATFORM_CODE);
         }
+        tempPlatformCode.remove(accessTokenRequest.code());
+
         if (!jwtTokenProvider.validatePlatformCode(accessTokenRequest.code(), accessTokenRequest.clientId(), accessTokenRequest.redirectUri())) {
             throw new AuthException(EXPIRED_PLATFORM_CODE);
         }
 
         val authentication = jwtTokenProvider.getAuthentication(accessTokenRequest.code(), PLATFORM_CODE);
-        tempPlatformCode.remove(accessTokenRequest.code());
         return generateTokenResponse(authentication);
     }
 
