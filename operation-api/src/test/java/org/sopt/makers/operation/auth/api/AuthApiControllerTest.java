@@ -130,7 +130,7 @@ class AuthApiControllerTest {
     }
 
     @Nested
-    @DisplayName("쿼리 파라미터 유효성 검사 테스트")
+    @DisplayName("/authorize API 쿼리 파라미터 유효성 검사 테스트")
     class QueryParameterValidateTest {
 
         @DisplayName("type, code, clientId, redirectUri 중 하나라도 null 이 들어오면 400을 반환한다.")
