@@ -8,6 +8,4 @@ public interface AuthService {
     String getSocialUserInfo(SocialType type, String code);
 
     Long getUserId(SocialType socialType, String userSocialId);
-
-    String generatePlatformCode(String clientId, String redirectUri, Long userId);
 }

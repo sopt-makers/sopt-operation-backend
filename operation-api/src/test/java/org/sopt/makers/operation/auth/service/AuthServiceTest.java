@@ -1,9 +1,5 @@
 package org.sopt.makers.operation.auth.service;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.SignatureException;
-import jakarta.xml.bind.DatatypeConverter;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,14 +10,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.sopt.makers.operation.auth.repository.TeamOAuthInfoRepository;
 import org.sopt.makers.operation.client.social.SocialLoginManager;
-import org.sopt.makers.operation.config.ValueConfig;
 import org.sopt.makers.operation.exception.AuthException;
 import org.sopt.makers.operation.user.domain.SocialType;
 import org.sopt.makers.operation.user.repository.identityinfo.UserIdentityInfoRepository;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
@@ -33,14 +27,12 @@ class AuthServiceTest {
     TeamOAuthInfoRepository teamOAuthInfoRepository;
     @Mock
     UserIdentityInfoRepository userIdentityInfoRepository;
-    @Mock
-    ValueConfig valueConfig;
 
     AuthService authService;
 
     @BeforeEach
     void setUp() {
-        authService = new AuthServiceImpl(socialLoginManager, teamOAuthInfoRepository, userIdentityInfoRepository, valueConfig);
+        authService = new AuthServiceImpl(socialLoginManager, teamOAuthInfoRepository, userIdentityInfoRepository);
     }
 
     @Nested
@@ -79,36 +71,4 @@ class AuthServiceTest {
         }
     }
 
-    @Nested
-    @DisplayName("generatePlatformCode 메서드 테스트")
-    class GeneratePlatformCodeMethodTest {
-        final String platformSecretKey = "123456789123456789123456789123456789123456789123456789";
-
-        @DisplayName("iss:clientId, aud:redirectUri , sub:userId 인 jwt 토큰을 발급한다.")
-        @Test
-        void test() {
-            // given
-            val clientId = "clientId";
-            val redirectUri = "redirectUri";
-            val userId = 1L;
-            given(valueConfig.getPlatformCodeSecretKey()).willReturn(platformSecretKey);
-
-            // when
-            String platformCode = authService.generatePlatformCode(clientId, redirectUri, userId);
-            Claims claims = getClaimsFromToken(platformCode);
-
-            // then
-            assertThat(claims.getIssuer()).isEqualTo("clientId");
-            assertThat(claims.getAudience()).isEqualTo("redirectUri");
-            assertThat(claims.getSubject()).isEqualTo("1");
-        }
-
-        private Claims getClaimsFromToken(String token) throws SignatureException {
-            return Jwts.parserBuilder()
-                    .setSigningKey(DatatypeConverter.parseBase64Binary(platformSecretKey))
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-        }
-    }
 }

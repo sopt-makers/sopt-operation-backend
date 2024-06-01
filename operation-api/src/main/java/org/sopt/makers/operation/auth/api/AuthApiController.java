@@ -6,6 +6,7 @@ import org.sopt.makers.operation.auth.dto.response.AuthorizationCodeResponse;
 import org.sopt.makers.operation.auth.service.AuthService;
 import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.exception.AuthException;
+import org.sopt.makers.operation.jwt.JwtTokenProvider;
 import org.sopt.makers.operation.user.domain.SocialType;
 import org.sopt.makers.operation.util.ApiResponseUtil;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ public class AuthApiController implements AuthApi {
 
     private final ConcurrentHashMap<String, String> tempPlatformCode = new ConcurrentHashMap<>();
     private final AuthService authService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     @GetMapping("/api/v1/authorize")
@@ -53,7 +55,7 @@ public class AuthApiController implements AuthApi {
     }
 
     private String generatePlatformCode(String clientId, String redirectUri, Long userId) {
-        val platformCode = authService.generatePlatformCode(clientId, redirectUri, userId);
+        val platformCode = jwtTokenProvider.generatePlatformCode(clientId, redirectUri, userId);
         tempPlatformCode.putIfAbsent(platformCode, platformCode);
         return platformCode;
     }

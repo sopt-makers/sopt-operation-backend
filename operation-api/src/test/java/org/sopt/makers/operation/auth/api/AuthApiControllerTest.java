@@ -8,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.sopt.makers.operation.auth.service.AuthService;
 import org.sopt.makers.operation.common.handler.ErrorHandler;
+import org.sopt.makers.operation.jwt.JwtTokenProvider;
 import org.sopt.makers.operation.user.domain.SocialType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
@@ -29,6 +30,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AuthApiControllerTest {
     @MockBean
     AuthService authService;
+    @MockBean
+    JwtTokenProvider jwtTokenProvider;
     @Autowired
     MockMvc mockMvc;
     @Autowired
@@ -49,7 +52,7 @@ class AuthApiControllerTest {
             val socialType = SocialType.valueOf(type);
             given(authService.getSocialUserInfo(socialType, code)).willReturn("123");
             given(authService.getUserId(socialType, "123")).willReturn(1L);
-            given(authService.generatePlatformCode(clientId, redirectUri, 1L)).willReturn("Platform Code");
+            given(jwtTokenProvider.generatePlatformCode(clientId, redirectUri, 1L)).willReturn("Platform Code");
 
             // when, then
             mockMvc.perform(get(uri)
