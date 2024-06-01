@@ -24,7 +24,7 @@ import static org.sopt.makers.operation.code.success.auth.AuthSuccessCode.SUCCES
 @RequiredArgsConstructor
 public class AuthApiController implements AuthApi {
 
-    private final ConcurrentHashMap<String, String> tempPlatformCode = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, String> tempPlatformCode;
     private final AuthService authService;
     private final JwtTokenProvider jwtTokenProvider;
 
