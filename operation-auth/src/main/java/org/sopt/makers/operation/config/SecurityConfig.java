@@ -64,8 +64,8 @@ public class SecurityConfig {
                                 .anyRequest().authenticated())
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                    .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                    .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);
     }
 
     @Bean
@@ -74,8 +74,6 @@ public class SecurityConfig {
 
         configuration.addAllowedOrigin(valueConfig.getADMIN_PROD_URL());
         configuration.addAllowedOrigin(valueConfig.getADMIN_DEV_URL());
-        configuration.addAllowedOrigin(valueConfig.getADMIN_PROD_URL_LEGACY());
-        configuration.addAllowedOrigin(valueConfig.getADMIN_DEV_URL_LEGACY());
         configuration.addAllowedOrigin(valueConfig.getADMIN_LOCAL_URL());
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");

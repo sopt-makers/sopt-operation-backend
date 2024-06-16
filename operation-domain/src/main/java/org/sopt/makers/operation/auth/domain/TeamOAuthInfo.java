@@ -1,15 +1,17 @@
 package org.sopt.makers.operation.auth.domain;
 
+import static jakarta.persistence.GenerationType.IDENTITY;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-
-import static jakarta.persistence.GenerationType.IDENTITY;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "team_oauth_info")
 public class TeamOAuthInfo {
 
     @Id
