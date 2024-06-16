@@ -47,7 +47,7 @@ public class AuthApiController implements AuthApi {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
-    @GetMapping("/api/v1/authorize")
+    @GetMapping("/api/v1/auth/authorize")
     public ResponseEntity<BaseResponse<?>> authorize(
             @RequestParam String type,
             @RequestParam String code,
@@ -68,7 +68,7 @@ public class AuthApiController implements AuthApi {
 
     @Override
     @PostMapping(
-            path = "/api/v1/token",
+            path = "/api/v1/auth/token",
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
     )
     public ResponseEntity<BaseResponse<?>> token(AccessTokenRequest accessTokenRequest) {
