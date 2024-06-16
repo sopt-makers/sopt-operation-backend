@@ -3,11 +3,13 @@ package org.sopt.makers.operation.auth.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.sopt.makers.operation.auth.dto.request.AccessTokenRequest;
 import org.sopt.makers.operation.dto.BaseResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
 
+@Tag(name = "SSO 기반 인증 관련 API")
 public interface AuthApi {
 
     @Operation(
