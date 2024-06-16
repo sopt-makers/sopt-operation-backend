@@ -60,6 +60,8 @@ public class SecurityConfig {
                         authorizeHttpRequests
                                 .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/*")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/api/v1/test/**")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/api/v1/authorize")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/api/v1/token")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/error")).permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
