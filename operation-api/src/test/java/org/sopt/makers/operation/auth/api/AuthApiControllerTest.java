@@ -44,8 +44,8 @@ class AuthApiControllerTest {
     MockMvc mockMvc;
     @Autowired
     ObjectMapper objectMapper;
-    final String authorizeUri = "/api/v1/authorize";
-    final String tokenUri = "/api/v1/token";
+    final String authorizeUri = "/api/v1/auth/authorize";
+    final String tokenUri = "/api/v1/auth/token";
 
     @Nested
     @DisplayName("API 통신 성공 테스트")

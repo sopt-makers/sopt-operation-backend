@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,6 +38,7 @@ import static org.sopt.makers.operation.jwt.JwtTokenType.REFRESH_TOKEN;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/auth")
 public class AuthApiController implements AuthApi {
 
     private static final String AUTHORIZATION_CODE_GRANT_TYPE = "authorizationCode";
@@ -47,7 +49,7 @@ public class AuthApiController implements AuthApi {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
-    @GetMapping("/api/v1/authorize")
+    @GetMapping("/authorize")
     public ResponseEntity<BaseResponse<?>> authorize(
             @RequestParam String type,
             @RequestParam String code,
@@ -68,7 +70,7 @@ public class AuthApiController implements AuthApi {
 
     @Override
     @PostMapping(
-            path = "/api/v1/token",
+            path = "/token",
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
     )
     public ResponseEntity<BaseResponse<?>> token(AccessTokenRequest accessTokenRequest) {

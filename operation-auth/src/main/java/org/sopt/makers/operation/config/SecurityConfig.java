@@ -23,6 +23,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
+    private static final String API_V1_PREFIX = "/api/v1";
+    private static final String AUTH_PATH_PATTERN = API_V1_PREFIX + "/auth/*";
+    private static final String TEST_PATH_PATTERN = API_V1_PREFIX + "/test/**";
+    private static final String ERROR_PATH_PATTERN = "/error";
+
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtExceptionFilter jwtExceptionFilter;
     private final ValueConfig valueConfig;
@@ -58,11 +63,9 @@ public class SecurityConfig {
                 .and()
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
-                                .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/*")).permitAll()
-                                .requestMatchers(new AntPathRequestMatcher("/api/v1/test/**")).permitAll()
-                                .requestMatchers(new AntPathRequestMatcher("/api/v1/authorize")).permitAll()
-                                .requestMatchers(new AntPathRequestMatcher("/api/v1/token")).permitAll()
-                                .requestMatchers(new AntPathRequestMatcher("/error")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher(AUTH_PATH_PATTERN)).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher(TEST_PATH_PATTERN)).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher(ERROR_PATH_PATTERN)).permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
