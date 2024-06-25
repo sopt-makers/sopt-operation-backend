@@ -11,6 +11,7 @@ import static lombok.AccessLevel.*;
 
 @Builder(access = PRIVATE)
 public record ActivityTotalVO(
+        long id,
         int generation,
         Part part,
         Team team,
@@ -18,6 +19,7 @@ public record ActivityTotalVO(
 ) {
     public static ActivityTotalVO from(UserGenerationHistory history) {
         return ActivityTotalVO.builder()
+                .id(history.getId())
                 .generation(history.getGeneration())
                 .part(history.getPart())
                 .team(history.getTeam())
