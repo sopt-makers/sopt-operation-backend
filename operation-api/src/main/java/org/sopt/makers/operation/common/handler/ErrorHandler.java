@@ -3,6 +3,8 @@ package org.sopt.makers.operation.common.handler;
 import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.exception.AuthException;
 import org.sopt.makers.operation.util.ApiResponseUtil;
+import org.sopt.makers.operation.exception.UserException;
+import org.sopt.makers.operation.exception.ParameterDecodeCustomException;
 import org.sopt.makers.operation.exception.AdminFailureException;
 import org.sopt.makers.operation.exception.AlarmException;
 import org.sopt.makers.operation.exception.AttendanceException;
@@ -12,6 +14,7 @@ import org.sopt.makers.operation.exception.MemberException;
 import org.sopt.makers.operation.exception.ScheduleException;
 import org.sopt.makers.operation.exception.SubLectureException;
 import org.sopt.makers.operation.exception.TokenException;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -46,6 +49,12 @@ public class ErrorHandler {
         return ApiResponseUtil.failure(ex.getFailureCode());
     }
 
+    @ExceptionHandler(UserException.class)
+    public ResponseEntity<BaseResponse<?>> userException(UserException ex) {
+        log.error(ex.getMessage());
+        return ApiResponseUtil.failure(ex.getFailureCode());
+    }
+
     @ExceptionHandler(LectureException.class)
     public ResponseEntity<BaseResponse<?>> lectureException(LectureException ex) {
         log.error(ex.getMessage());
@@ -60,6 +69,12 @@ public class ErrorHandler {
 
     @ExceptionHandler(DateTimeParseCustomException.class)
     public ResponseEntity<BaseResponse<?>> dateTimeParseException(DateTimeParseCustomException ex) {
+        return ApiResponseUtil.failure(ex.getFailureCode());
+    }
+
+    @ExceptionHandler(ParameterDecodeCustomException.class)
+    public ResponseEntity<BaseResponse<?>> ParameterDecodeException(ParameterDecodeCustomException ex) {
+        log.error(ex.getMessage());
         return ApiResponseUtil.failure(ex.getFailureCode());
     }
 
