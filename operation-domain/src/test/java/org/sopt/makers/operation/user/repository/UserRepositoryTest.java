@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.TestInstance.*;
 
 @DataJpaTest
-@DisplayName("[[ Unit Test ]] - UserRepository >")
+@DisplayName("[[ Unit Test ]] - UserRepository")
 @EntityScan(basePackages = "org.sopt.makers.operation.user")
 @ContextConfiguration(classes = {
         UserRepository.class, UserGenerationHistoryRepository.class
