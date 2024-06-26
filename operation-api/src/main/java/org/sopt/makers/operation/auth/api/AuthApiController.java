@@ -42,7 +42,7 @@ public class AuthApiController implements AuthApi {
 
     private static final String AUTHORIZATION_CODE_GRANT_TYPE = "authorizationCode";
     private static final String REFRESH_TOKEN_GRANT_TYPE = "refreshToken";
-    private static final String REDIRECT_URL_WITH_CODE_TEMPLATE = "%s?code=%s";
+    private static final String REDIRECT_URL_WITH_CODE_FORMAT = "%s?code=%s";
 
     private final ConcurrentHashMap<String, String> tempPlatformCode;
     private final AuthService authService;
@@ -65,7 +65,7 @@ public class AuthApiController implements AuthApi {
 
         val userId = findUserIdBySocialTypeAndCode(type, code);
         val platformCode = generatePlatformCode(clientId, redirectUri, userId);
-        val redirectUrl = String.format(REDIRECT_URL_WITH_CODE_TEMPLATE, redirectUri, platformCode);
+        val redirectUrl = String.format(REDIRECT_URL_WITH_CODE_FORMAT, redirectUri, platformCode);
         return ApiResponseUtil.success(SUCCESS_RETURN_REDIRECT_URL_WITH_PLATFORM_CODE, new RedirectUrlResponse(redirectUrl));
     }
 
