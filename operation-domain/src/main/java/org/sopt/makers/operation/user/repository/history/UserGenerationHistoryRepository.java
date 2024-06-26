@@ -2,6 +2,7 @@ package org.sopt.makers.operation.user.repository.history;
 
 import java.util.List;
 
+import lombok.val;
 import org.sopt.makers.operation.exception.UserException;
 import org.sopt.makers.operation.code.failure.UserFailureCode;
 import org.sopt.makers.operation.user.domain.UserGenerationHistory;
@@ -15,7 +16,7 @@ public interface UserGenerationHistoryRepository extends JpaRepository<UserGener
     List<UserGenerationHistory> findAllByUserId(Long userId);
 
     default List<UserGenerationHistory> findAllHistoryByUserId(Long userId) {
-        List<UserGenerationHistory> histories = findAllByUserId(userId);
+        val histories = findAllByUserId(userId);
         if (histories.isEmpty()) {
             throw new UserException(UserFailureCode.INVALID_HISTORY);
         }
