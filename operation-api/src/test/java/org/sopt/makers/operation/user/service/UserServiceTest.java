@@ -57,13 +57,13 @@ class UserServiceTest {
             given(userGenerationHistoryRepository.findAllHistoryByUserId(1L)).willReturn(List.of(mockedHistory));
 
             Long targetUserId = 1L;
+            UserInfoResponse expected = UserInfoResponse.of(mockedUser, List.of(mockedHistory));
 
             // when
-            UserInfoResponse userInfo = userService.getUserInfo(targetUserId);
+            UserInfoResponse response = userService.getUserInfo(targetUserId);
 
             // then
-            assertThat(userInfo).usingRecursiveComparison()
-                    .isEqualTo(UserInfoResponse.of(mockedUser, List.of(mockedHistory)));
+            assertThat(response).usingRecursiveComparison().isEqualTo(expected);
         }
 
     }
