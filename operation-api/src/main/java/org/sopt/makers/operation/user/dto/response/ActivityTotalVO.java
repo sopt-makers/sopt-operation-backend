@@ -7,7 +7,7 @@ import org.sopt.makers.operation.user.domain.Team;
 import org.sopt.makers.operation.user.domain.Position;
 import org.sopt.makers.operation.user.domain.UserGenerationHistory;
 
-import static lombok.AccessLevel.*;
+import static lombok.AccessLevel.PRIVATE;
 
 @Builder(access = PRIVATE)
 public record ActivityTotalVO(

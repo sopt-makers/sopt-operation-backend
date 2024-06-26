@@ -7,7 +7,7 @@ import lombok.Builder;
 import org.sopt.makers.operation.user.domain.User;
 import org.sopt.makers.operation.user.domain.UserGenerationHistory;
 
-import static lombok.AccessLevel.*;
+import static lombok.AccessLevel.PRIVATE;
 
 @Builder(access = PRIVATE)
 public record UserInfoResponse(
