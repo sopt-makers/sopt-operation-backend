@@ -1,15 +1,6 @@
 package org.sopt.makers.operation.alarm.domain;
 
-import static java.util.Objects.*;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
-import org.sopt.makers.operation.common.domain.BaseEntity;
-import org.sopt.makers.operation.common.domain.Part;
-import org.sopt.makers.operation.schedule.converter.StringListConverter;
+import static java.util.Objects.nonNull;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -19,98 +10,103 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.sopt.makers.operation.common.domain.BaseEntity;
+import org.sopt.makers.operation.common.domain.Part;
+import org.sopt.makers.operation.schedule.converter.StringListConverter;
 
 @Entity
 @NoArgsConstructor
 @Getter
 public class Alarm extends BaseEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "alarm_id")
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "alarm_id")
+    private Long id;
 
-	private int generation;
+    private String title;
 
-	private int generationAt;
+    @Column(columnDefinition = "TEXT")
+    private String content;
 
-	@Column(nullable = false)
-	@Enumerated(value = EnumType.STRING)
-	private Attribute attribute;
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private Category category;
 
-	private String title;
+    @Enumerated(value = EnumType.STRING)
+    private Part part;
 
-	@Column(columnDefinition = "TEXT")
-	private String content;
+    @Enumerated(value = EnumType.STRING)
+    private LinkType linkType;
 
-	private String link;
+    private String link;
 
-	private Boolean isActive;
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private AlarmType alarmType;
 
-	@Enumerated(value = EnumType.STRING)
-	private Part part;
+    @Enumerated(value = EnumType.STRING)
+    private TargetType targetType;
 
-	@Column(columnDefinition = "TEXT", nullable = false)
-	@Convert(converter = StringListConverter.class)
-	private List<String> targetList;
+    @Column(columnDefinition = "TEXT", nullable = false)
+    @Convert(converter = StringListConverter.class)
+    private List<String> targetList;
 
-	@Column(nullable = false)
-	@Enumerated(value = EnumType.STRING)
-	private Status status;
+    private String sendAt;
 
-	private LocalDateTime sendAt;
+    @Column(name = "is_sent")
+    private Boolean isSent;
 
-	@Builder
-	public Alarm(
-			int generation,
-			int generationAt,
-			Attribute attribute,
-			String title,
-			String content,
-			String link,
-			Boolean isActive,
-			Part part,
-			List<String> targetList
-	) {
-		this.generation = generation;
-		this.generationAt = generationAt;
-		this.attribute = attribute;
-		this.title = title;
-		this.content = content;
-		setLink(link);
-		setTargetsInfo(isActive, part, targetList);
-		this.status = Status.BEFORE;
-	}
+    @Builder
+    public Alarm(
+            Category category,
+            String title,
+            String content,
+            AlarmType alarmType,
+            String link,
+            LinkType linkType,
+            Part part,
+            TargetType targetType,
+            List<String> targetList
+    ) {
+        this.category = category;
+        this.title = title;
+        this.content = content;
+        this.alarmType = alarmType;
+        this.linkType = linkType;
+        this.targetType = targetType;
+        setLink(link);
+        setTargetsInfo(part, targetList);
+        this.isSent = false;
+    }
 
-	private void setLink(String link) {
-		if (nonNull(link)) {
-			this.link = link;
-		}
-	}
+    private void setLink(String link) {
+        if (nonNull(link)) {
+            this.link = link;
+        }
+    }
 
-	private void setTargetsInfo(Boolean isActive, Part part, List<String> targetList) {
-		if (nonNull(targetList)) {
-			this.targetList = targetList;
-		} else {
-			this.isActive = isActive;
-			this.part = part;
-			this.targetList = new ArrayList<>();
-		}
-	}
+    private void setTargetsInfo(Part part, List<String> targetList) {
+        if (nonNull(targetList)) {
+            this.targetList = targetList;
+        } else {
+            this.part = part;
+            this.targetList = new ArrayList<>();
+        }
+    }
 
-	public boolean isSent() {
-		return this.status.equals(Status.AFTER);
-	}
+    public void updateToSent(String sendAt) {
+        this.sendAt = sendAt;
+        this.isSent = true;
+    }
 
-	public void updateToSent() {
-		this.status = Status.AFTER;
-		this.sendAt = LocalDateTime.now();
-	}
-
-	public boolean hasTargets() {
-		return Objects.nonNull(this.targetList) && this.targetList.size() > 0;
-	}
+    public boolean hasTargets() {
+        return Objects.nonNull(this.targetList) && this.targetList.size() > 0;
+    }
 }

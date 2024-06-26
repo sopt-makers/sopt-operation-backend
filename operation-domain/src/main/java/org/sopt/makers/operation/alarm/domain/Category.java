@@ -5,9 +5,9 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum Status {
-	BEFORE("발송 전"),
-	AFTER("발송 후");
+public enum Category {
+    NOTICE("공지"),
+    NEWS("소식");
 
-	private final String name;
+    private final String name;
 }
