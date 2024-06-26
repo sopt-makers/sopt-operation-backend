@@ -60,8 +60,9 @@ public class Alarm extends BaseEntity {
 
     private String sendAt;
 
-    @Column(name = "is_sent")
     private Boolean isSent;
+
+    private Integer createdGeneration;
 
     @Builder
     public Alarm(
@@ -73,7 +74,8 @@ public class Alarm extends BaseEntity {
             LinkType linkType,
             Part part,
             TargetType targetType,
-            List<String> targetList
+            List<String> targetList,
+            Integer createdGeneration
     ) {
         this.category = category;
         this.title = title;
@@ -84,6 +86,7 @@ public class Alarm extends BaseEntity {
         setLink(link);
         setTargetsInfo(part, targetList);
         this.isSent = false;
+        this.createdGeneration = createdGeneration;
     }
 
     private void setLink(String link) {
