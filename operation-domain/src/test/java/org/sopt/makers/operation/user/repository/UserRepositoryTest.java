@@ -66,7 +66,7 @@ class UserRepositoryTest {
 
         @Test
         @Order(1)
-        @DisplayName("Case1. 단일 유저에 대한 저장 및 조회 성공")
+        @DisplayName("Case1. 단일 유저에 대한 조회 성공")
         void getSuccessTest() {
             // given
             val userId = user.getId();
