@@ -53,7 +53,7 @@ class AuthApiControllerTest {
         @DisplayName("유효한 type, code, clientId, redirectUri 값이 들어왔을 때, 플랫폼 인가코드를 반환한다.")
         @ParameterizedTest
         @CsvSource({
-                "APPLE,code,clientId,redirectUri"
+                "APPLE,code,clientId,https://localhost:8080/auth/redirectUri"
         })
         void successTest(String type, String code, String clientId, String redirectUri) throws Exception {
             // given
@@ -71,7 +71,8 @@ class AuthApiControllerTest {
                             .param("clientId", clientId)
                             .param("redirectUri", redirectUri))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.message").value("플랫폼 인가코드 발급 성공"));
+                    .andExpect(jsonPath("$.message").value("플랫폼 인가코드를 포함한 redirect url 반환 성공"))
+                    .andExpect(jsonPath("$.data.redirectUrl").value("https://localhost:8080/auth/redirectUri?code=Platform Code"));
         }
 
         @DisplayName("grantType 이 authorizationCode 이고, 유효한 clientId, redirectUri, code 값이 들어왔을 때, 액세스 토큰과 리프레시 토큰을 발급한다.")

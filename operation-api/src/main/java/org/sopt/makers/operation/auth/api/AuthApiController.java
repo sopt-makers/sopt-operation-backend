@@ -1,9 +1,24 @@
 package org.sopt.makers.operation.auth.api;
 
+import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.EXPIRED_PLATFORM_CODE;
+import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.EXPIRED_REFRESH_TOKEN;
+import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.INVALID_GRANT_TYPE;
+import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.INVALID_SOCIAL_TYPE;
+import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.NOT_FOUNT_REGISTERED_TEAM;
+import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.NOT_NULL_CODE;
+import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.NOT_NULL_GRANT_TYPE;
+import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.NOT_NULL_REFRESH_TOKEN;
+import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.USED_PLATFORM_CODE;
+import static org.sopt.makers.operation.code.success.auth.AuthSuccessCode.SUCCESS_GENERATE_TOKEN;
+import static org.sopt.makers.operation.code.success.auth.AuthSuccessCode.SUCCESS_RETURN_REDIRECT_URL_WITH_PLATFORM_CODE;
+import static org.sopt.makers.operation.jwt.JwtTokenType.PLATFORM_CODE;
+import static org.sopt.makers.operation.jwt.JwtTokenType.REFRESH_TOKEN;
+
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.sopt.makers.operation.auth.dto.request.AccessTokenRequest;
-import org.sopt.makers.operation.auth.dto.response.AuthorizationCodeResponse;
+import org.sopt.makers.operation.auth.dto.response.RedirectUrlResponse;
 import org.sopt.makers.operation.auth.dto.response.TokenResponse;
 import org.sopt.makers.operation.auth.service.AuthService;
 import org.sopt.makers.operation.dto.BaseResponse;
@@ -20,22 +35,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.concurrent.ConcurrentHashMap;
-
-import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.EXPIRED_PLATFORM_CODE;
-import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.EXPIRED_REFRESH_TOKEN;
-import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.INVALID_GRANT_TYPE;
-import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.INVALID_SOCIAL_TYPE;
-import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.NOT_FOUNT_REGISTERED_TEAM;
-import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.NOT_NULL_CODE;
-import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.NOT_NULL_GRANT_TYPE;
-import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.NOT_NULL_REFRESH_TOKEN;
-import static org.sopt.makers.operation.code.failure.auth.AuthFailureCode.USED_PLATFORM_CODE;
-import static org.sopt.makers.operation.code.success.auth.AuthSuccessCode.SUCCESS_GENERATE_TOKEN;
-import static org.sopt.makers.operation.code.success.auth.AuthSuccessCode.SUCCESS_GET_AUTHORIZATION_CODE;
-import static org.sopt.makers.operation.jwt.JwtTokenType.PLATFORM_CODE;
-import static org.sopt.makers.operation.jwt.JwtTokenType.REFRESH_TOKEN;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
@@ -43,6 +42,7 @@ public class AuthApiController implements AuthApi {
 
     private static final String AUTHORIZATION_CODE_GRANT_TYPE = "authorizationCode";
     private static final String REFRESH_TOKEN_GRANT_TYPE = "refreshToken";
+    private static final String REDIRECT_URL_WITH_CODE_FORMAT = "%s?code=%s";
 
     private final ConcurrentHashMap<String, String> tempPlatformCode;
     private final AuthService authService;
@@ -65,7 +65,8 @@ public class AuthApiController implements AuthApi {
 
         val userId = findUserIdBySocialTypeAndCode(type, code);
         val platformCode = generatePlatformCode(clientId, redirectUri, userId);
-        return ApiResponseUtil.success(SUCCESS_GET_AUTHORIZATION_CODE, new AuthorizationCodeResponse(platformCode));
+        val redirectUrl = String.format(REDIRECT_URL_WITH_CODE_FORMAT, redirectUri, platformCode);
+        return ApiResponseUtil.success(SUCCESS_RETURN_REDIRECT_URL_WITH_PLATFORM_CODE, new RedirectUrlResponse(redirectUrl));
     }
 
     @Override
