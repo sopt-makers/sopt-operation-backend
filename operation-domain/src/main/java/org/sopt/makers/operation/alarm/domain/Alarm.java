@@ -54,13 +54,14 @@ public class Alarm extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private TargetType targetType;
 
+    @Enumerated(value = EnumType.STRING)
+    private Status status;
+
     @Column(columnDefinition = "TEXT", nullable = false)
     @Convert(converter = StringListConverter.class)
     private List<String> targetList;
 
     private String sendAt;
-
-    private Boolean isSent;
 
     private Integer createdGeneration;
 
@@ -73,6 +74,7 @@ public class Alarm extends BaseEntity {
             String link,
             LinkType linkType,
             Part part,
+            Status status,
             TargetType targetType,
             List<String> targetList,
             Integer createdGeneration
@@ -85,7 +87,7 @@ public class Alarm extends BaseEntity {
         this.targetType = targetType;
         setLink(link);
         setTargetsInfo(part, targetList);
-        this.isSent = false;
+        this.status = status;
         this.createdGeneration = createdGeneration;
     }
 
@@ -106,7 +108,7 @@ public class Alarm extends BaseEntity {
 
     public void updateToSent(String sendAt) {
         this.sendAt = sendAt;
-        this.isSent = true;
+        this.status = Status.COMPLETED;
     }
 
     public boolean hasTargets() {
