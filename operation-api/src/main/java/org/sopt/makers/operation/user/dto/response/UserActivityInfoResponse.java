@@ -10,15 +10,15 @@ import org.sopt.makers.operation.user.domain.UserGenerationHistory;
 import static lombok.AccessLevel.PRIVATE;
 
 @Builder(access = PRIVATE)
-public record ActivityTotalVO(
+public record UserActivityInfoResponse(
         long id,
         int generation,
         Part part,
         Team team,
         Position position
 ) {
-    public static ActivityTotalVO from(UserGenerationHistory history) {
-        return ActivityTotalVO.builder()
+    public static UserActivityInfoResponse from(UserGenerationHistory history) {
+        return UserActivityInfoResponse.builder()
                 .id(history.getId())
                 .generation(history.getGeneration())
                 .part(history.getPart())

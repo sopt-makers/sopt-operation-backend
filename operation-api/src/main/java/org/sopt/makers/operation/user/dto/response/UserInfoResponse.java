@@ -2,6 +2,7 @@ package org.sopt.makers.operation.user.dto.response;
 
 import java.util.List;
 
+import lombok.val;
 import lombok.Builder;
 
 import org.sopt.makers.operation.user.domain.User;
@@ -15,10 +16,10 @@ public record UserInfoResponse(
         String name,
         String phone,
         String profileImage,
-        List<ActivityTotalVO> activities
+        List<UserActivityInfoResponse> activities
 ) {
     public static UserInfoResponse of(User user, List<UserGenerationHistory> histories) {
-        List<ActivityTotalVO> activities = histories.stream().map(ActivityTotalVO::from).toList();
+        val activities = histories.stream().map(UserActivityInfoResponse::from).toList();
         return UserInfoResponse.builder()
                 .id(user.getId())
                 .name(user.getName())
