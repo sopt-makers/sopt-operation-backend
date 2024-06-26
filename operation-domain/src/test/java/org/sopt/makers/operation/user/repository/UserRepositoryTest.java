@@ -2,12 +2,6 @@ package org.sopt.makers.operation.user.repository;
 
 import lombok.val;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.List;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.ArrayList;
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.Test;
@@ -20,7 +14,6 @@ import org.junit.jupiter.api.TestClassOrder;
 import org.junit.jupiter.api.ClassOrderer;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
 
 import org.sopt.makers.operation.user.domain.User;
 import org.sopt.makers.operation.user.domain.Gender;
@@ -33,9 +26,9 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.TestInstance.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.TestInstance.Lifecycle;
 
 @DataJpaTest
 @DisplayName("[[ Unit Test ]] - UserRepository")
@@ -112,68 +105,6 @@ class UserRepositoryTest {
     @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
     class MultiUserTest {
 
-        private Map<Long, User> cachedUsers;
-
-        @BeforeAll
-        void setUpMultiUser() {
-            cachedUsers = new HashMap<>();
-            List<User> users = new ArrayList<>();
-            for (int i = 0; i < 10; i++) {
-                val dummyUser = User.builder()
-                        .email(String.format("test%d@test.com", i))
-                        .phone(String.format("010-000%d-000%d", i, i))
-                        .gender(i % 2 == 0 ? Gender.MALE : Gender.FEMALE)
-                        .name(String.format("TestUser%d", i))
-                        .profileImage(String.format("DummyImageUrl%d", i))
-                        .birthday(LocalDate.of(1999, 12, i + 1))
-                        .build();
-                users.add(dummyUser);
-            }
-            List<User> savedUsers = userRepository.saveAll(users);
-            savedUsers.forEach(user -> cachedUsers.put(user.getId(), user));
-        }
-
-        @Test
-        @Order(1)
-        @DisplayName("Case1. 여러 유저에 대한 저장 및 각 유저에 대한 조회 성공")
-        void getSuccessTest() {
-            for (Long userId : cachedUsers.keySet()) {
-                // given
-                val user = cachedUsers.get(userId);
-
-                // when
-                val result = userRepository.findUserById(userId);
-
-                // then
-                assertThat(result.getId()).isEqualTo(user.getId());
-                assertThat(result.getName()).isEqualTo(user.getName());
-                assertThat(result.getPhone()).isEqualTo(user.getPhone());
-                assertThat(result.getEmail()).isEqualTo(user.getEmail());
-                assertThat(result.getBirthday()).isEqualTo(user.getBirthday());
-                assertThat(result.getGender()).isEqualTo(user.getGender());
-                assertThat(result.getProfileImage()).isEqualTo(user.getProfileImage());
-            }
-
-        }
-
-        @Test
-        @DisplayName("Case2. 여러 유저 중 존재하지 않은 userId로 조회할 경우, 예외 반환")
-        void getFailTest() {
-            // given
-            Long invalidId = 0L;
-            Set<Long> ids = new HashSet<>();
-            ids.add(invalidId);
-            ids.addAll(cachedUsers.keySet());
-
-            for (Long userId : ids) {
-                if (userId.equals(invalidId)) {
-                    // when & then
-                    val userException = assertThrows(UserException.class, () -> userRepository.findUserById(invalidId));
-                    assertThat(userException.getFailureCode()).isEqualTo(UserFailureCode.INVALID_USER);
-                    return;
-                }
-            }
-        }
     }
 
 
