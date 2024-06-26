@@ -8,7 +8,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long>  {
+
     default User findUserById(Long userId) {
         return findById(userId).orElseThrow(() -> new UserException(UserFailureCode.INVALID_USER));
     }
+
 }

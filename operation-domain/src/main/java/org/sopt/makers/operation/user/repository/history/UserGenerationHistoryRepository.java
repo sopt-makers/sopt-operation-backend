@@ -11,7 +11,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 @Repository
 public interface UserGenerationHistoryRepository extends JpaRepository<UserGenerationHistory, Long> {
+
     List<UserGenerationHistory> findAllByUserId(Long userId);
+
     default List<UserGenerationHistory> findAllHistoryByUserId(Long userId) {
         List<UserGenerationHistory> histories = findAllByUserId(userId);
         if (histories.isEmpty()) {
@@ -19,4 +21,5 @@ public interface UserGenerationHistoryRepository extends JpaRepository<UserGener
         }
         return histories;
     }
+
 }
