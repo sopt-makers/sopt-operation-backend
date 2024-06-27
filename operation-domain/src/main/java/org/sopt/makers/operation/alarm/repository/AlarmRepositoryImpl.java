@@ -1,63 +1,53 @@
 package org.sopt.makers.operation.alarm.repository;
 
-import static java.util.Objects.*;
-import static org.sopt.makers.operation.alarm.domain.QAlarm.*;
+import static java.util.Objects.nonNull;
+import static org.sopt.makers.operation.alarm.domain.QAlarm.alarm;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
-
-import org.sopt.makers.operation.common.domain.Part;
+import lombok.RequiredArgsConstructor;
 import org.sopt.makers.operation.alarm.domain.Alarm;
 import org.sopt.makers.operation.alarm.domain.Status;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-
-import lombok.RequiredArgsConstructor;
-
 @Repository
 @RequiredArgsConstructor
 public class AlarmRepositoryImpl implements AlarmCustomRepository {
-	private final JPAQueryFactory queryFactory;
+    private final JPAQueryFactory queryFactory;
 
-	@Override
-	public List<Alarm> findOrderByCreatedDate(Integer generation, Part part, Status status, Pageable pageable) {
-		return queryFactory
-			.selectFrom(alarm)
-			.where(
-				generationEq(generation),
-				partEq(part),
-				statusEq(status)
-			)
-			.orderBy(alarm.createdDate.desc())
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize())
-			.fetch();
-	}
+    @Override
+    public List<Alarm> findOrderByCreatedDate(Integer generation, Status status, Pageable pageable) {
+        return queryFactory
+                .selectFrom(alarm)
+                .where(
+                        generationEq(generation),
+                        statusEq(status)
+                )
+                .orderBy(alarm.createdDate.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+    }
 
-	@Override
-	public int count(int generation, Part part, Status status) {
-		return Math.toIntExact(queryFactory
-			.select(alarm.count())
-			.from(alarm)
-			.where(
-				generationEq(generation),
-				partEq(part),
-				statusEq(status)
-			)
-			.fetchFirst());
-	}
+    @Override
+    public int count(Integer generation, Status status) {
+        return Math.toIntExact(queryFactory
+                .select(alarm.count())
+                .from(alarm)
+                .where(
+                        generationEq(generation),
+                        statusEq(status)
+                )
+                .fetchFirst());
+    }
 
-	private BooleanExpression generationEq(Integer generation) {
-		return nonNull(generation) ? alarm.generation.eq(generation) : null;
-	}
+    private BooleanExpression generationEq(Integer generation) {
+        return nonNull(generation) ? alarm.createdGeneration.eq(generation) : null;
+    }
 
-	private BooleanExpression partEq(Part part) {
-		return nonNull(part) ? alarm.part.eq(part) : null;
-	}
-
-	private BooleanExpression statusEq(Status status) {
-		return nonNull(status) ? alarm.status.eq(status) : null;
-	}
+    private BooleanExpression statusEq(Status status) {
+        return nonNull(status) ? alarm.status.eq(status) : null;
+    }
 }
