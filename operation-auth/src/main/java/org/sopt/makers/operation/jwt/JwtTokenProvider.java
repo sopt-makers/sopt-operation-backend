@@ -1,7 +1,5 @@
 package org.sopt.makers.operation.jwt;
 
-import static org.sopt.makers.operation.code.failure.TokenFailureCode.*;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -19,7 +17,6 @@ import org.springframework.util.StringUtils;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
-
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -28,18 +25,42 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@RequiredArgsConstructor
+import static org.sopt.makers.operation.code.failure.TokenFailureCode.INVALID_TOKEN;
+
 @Service
 public class JwtTokenProvider {
 
-    @Value("${spring.jwt.secretKey.access}")
-    private String accessSecretKey;
+    private final String accessSecretKey;
+    private final String refreshSecretKey;
+    private final String appAccessSecretKey;
+    private final String platformCodeSecretKey;
 
-    @Value("${spring.jwt.secretKey.refresh}")
-    private String refreshSecretKey;
+    public JwtTokenProvider(
+            @Value("${spring.jwt.secretKey.access}") String accessSecretKey,
+            @Value("${spring.jwt.secretKey.refresh}") String refreshSecretKey,
+            @Value("${spring.jwt.secretKey.app}") String appAccessSecretKey,
+            @Value("${spring.jwt.secretKey.platform_code}") String platformCodeSecretKey
+    ) {
+        this.accessSecretKey = accessSecretKey;
+        this.refreshSecretKey = refreshSecretKey;
+        this.appAccessSecretKey = appAccessSecretKey;
+        this.platformCodeSecretKey = platformCodeSecretKey;
+    }
 
-    @Value("${spring.jwt.secretKey.app}")
-    private String appAccessSecretKey;
+    public String generatePlatformCode(final String clientId, final String redirectUri, final Long userId) {
+        val encodeKey = encodeKey(platformCodeSecretKey);
+        val secretKeyBytes = DatatypeConverter.parseBase64Binary(encodeKey);
+        val signingKey = new SecretKeySpec(secretKeyBytes, SignatureAlgorithm.HS256.getJcaName());
+
+        return Jwts.builder()
+                .setHeader(createHeader())
+                .setIssuer(clientId)
+                .setAudience(redirectUri)
+                .setSubject(Long.toString(userId))
+                .setExpiration(createExpireDate(JwtTokenType.PLATFORM_CODE))
+                .signWith(signingKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
 
     public String generateAccessToken(final Authentication authentication) {
         val encodedKey = encodeKey(accessSecretKey);
@@ -76,9 +97,19 @@ public class JwtTokenProvider {
         }
     }
 
+    public boolean validatePlatformCode(String platformCode, String clientId, String redirectUri) {
+        try {
+            val claims = getClaimsFromToken(platformCode, JwtTokenType.PLATFORM_CODE);
+            return isClaimsMatchingRequest(claims, clientId, redirectUri);
+        } catch (ExpiredJwtException | SignatureException e) {
+            return false;
+        }
+    }
+
     public AdminAuthentication getAuthentication(String token, JwtTokenType jwtTokenType) {
         return switch (jwtTokenType) {
-            case ACCESS_TOKEN, REFRESH_TOKEN -> new AdminAuthentication(getId(token, jwtTokenType), null, null);
+            case ACCESS_TOKEN, REFRESH_TOKEN, PLATFORM_CODE ->
+                    new AdminAuthentication(getId(token, jwtTokenType), null, null);
             case APP_ACCESS_TOKEN -> new AdminAuthentication(getPlayGroundId(token, jwtTokenType), null, null);
         };
     }
@@ -101,6 +132,11 @@ public class JwtTokenProvider {
         } catch (ExpiredJwtException | SignatureException e) {
             throw new TokenException(INVALID_TOKEN);
         }
+    }
+
+    private boolean isClaimsMatchingRequest(Claims claims, String clientId, String redirectUri) {
+        return claims.getAudience().equals(redirectUri)
+                && claims.getIssuer().equals(clientId);
     }
 
     private Claims getClaimsFromToken(String token, JwtTokenType jwtTokenType) {
@@ -131,6 +167,7 @@ public class JwtTokenProvider {
             case ACCESS_TOKEN -> accessSecretKey;
             case REFRESH_TOKEN -> refreshSecretKey;
             case APP_ACCESS_TOKEN -> appAccessSecretKey;
+            case PLATFORM_CODE -> platformCodeSecretKey;
         };
     }
 
@@ -139,6 +176,7 @@ public class JwtTokenProvider {
             case ACCESS_TOKEN -> now.plusHours(5);
             case REFRESH_TOKEN -> now.plusWeeks(2);
             case APP_ACCESS_TOKEN -> throw new TokenException(INVALID_TOKEN);
+            case PLATFORM_CODE -> now.plusMinutes(5);
         };
     }
 
