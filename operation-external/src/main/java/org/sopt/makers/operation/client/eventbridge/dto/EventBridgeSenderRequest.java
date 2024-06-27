@@ -2,7 +2,6 @@ package org.sopt.makers.operation.client.eventbridge.dto;
 
 import java.util.List;
 import org.sopt.makers.operation.alarm.domain.Category;
-import org.sopt.makers.operation.config.ValueConfig;
 
 public record EventBridgeSenderRequest(EventBridgeSenderRequestHeader header,
                                        EventBridgeSenderRequestBody body) {
@@ -12,10 +11,10 @@ public record EventBridgeSenderRequest(EventBridgeSenderRequestHeader header,
     }
 
     public static EventBridgeSenderRequest of(
-            ValueConfig config, String action,
+            String xApiKey, String action,
             List<String> userIds, String title, String content, Category category, String deepLink, String webLink
     ) {
-        EventBridgeSenderRequestHeader Header = EventBridgeSenderRequestHeader.of(config, action);
+        EventBridgeSenderRequestHeader Header = EventBridgeSenderRequestHeader.of(xApiKey, action);
         EventBridgeSenderRequestBody Body = EventBridgeSenderRequestBody.of(userIds, title, content, category, deepLink,
                 webLink);
         return new EventBridgeSenderRequest(Header, Body);
