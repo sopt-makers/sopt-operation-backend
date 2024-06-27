@@ -77,7 +77,7 @@ public class AlarmServiceImpl implements AlarmService {
         val deepLink = linkType == LinkType.APP ? request.link() : null;
 
         val eventBridgeRequest = EventBridgeSenderRequest.of(
-                valueConfig,
+                valueConfig.getNOTIFICATION_KEY(),
                 request.targetType().getAction(),
                 request.targetList(),
                 request.title(),
