@@ -31,7 +31,7 @@ public class ValueConfig {
     @Value("${sopt.makers.playground.token}")
     private String playGroundToken;
     @Value("${notification.arn}")
-    private String NOTIFICATION_LAMBDA_ARN;
+    private String notificationLambdaArn;
     @Value("${cloud.aws.credentials.accessKey}")
     private String accessKey;
     @Value("${cloud.aws.credentials.secretKey}")

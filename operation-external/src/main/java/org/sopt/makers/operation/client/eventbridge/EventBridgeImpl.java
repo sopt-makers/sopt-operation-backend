@@ -48,7 +48,7 @@ public class EventBridgeImpl implements EventBridgeSender {
 
             Target target = Target.builder()
                     .roleArn(valueConfig.getEventBridgeRoleArn())
-                    .arn(valueConfig.getNOTIFICATION_LAMBDA_ARN())
+                    .arn(valueConfig.getNotificationLambdaArn())
                     .input(eventJson)
                     .build();
 
