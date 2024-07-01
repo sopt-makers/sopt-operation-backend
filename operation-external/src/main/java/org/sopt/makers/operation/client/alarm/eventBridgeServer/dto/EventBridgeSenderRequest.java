@@ -18,9 +18,9 @@ public record EventBridgeSenderRequest(
             String xApiKey, String service, String action,
             List<String> userIds, String title, String content, Category category, String deepLink, String webLink
     ) {
-        EventBridgeSenderRequestHeader Header = EventBridgeSenderRequestHeader.of(xApiKey, action, service);
-        EventBridgeSenderRequestBody Body = EventBridgeSenderRequestBody.of(userIds, title, content, category, deepLink,
+        EventBridgeSenderRequestHeader header = EventBridgeSenderRequestHeader.of(xApiKey, action, service);
+        EventBridgeSenderRequestBody body = EventBridgeSenderRequestBody.of(userIds, title, content, category, deepLink,
                 webLink);
-        return new EventBridgeSenderRequest(Header, Body);
+        return new EventBridgeSenderRequest(header, body);
     }
 }
