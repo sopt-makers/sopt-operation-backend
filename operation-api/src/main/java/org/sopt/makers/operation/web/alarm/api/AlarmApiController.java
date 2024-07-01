@@ -33,9 +33,16 @@ public class AlarmApiController implements AlarmApi {
 
     @Override
     @PostMapping("/send")
-    public ResponseEntity<BaseResponse<?>> sendAlarm(AlarmInstantSendRequest request) {
-        alarmService.sendAlarm(request);
+    public ResponseEntity<BaseResponse<?>> sendInstantAlarm(AlarmInstantSendRequest request) {
+        alarmService.sendInstantAlarm(request);
         return ApiResponseUtil.success(SUCCESS_SEND_ALARM);
+    }
+
+    @Override
+    @PostMapping("/schedule")
+    public ResponseEntity<BaseResponse<?>> sendScheduleAlarm(AlarmScheduleSendRequest request) {
+        alarmService.sendScheduleAlarm(request);
+        return ApiResponseUtil.success(SUCCESS_SCHEDULE_ALARM);
     }
 
     @Override
@@ -61,12 +68,5 @@ public class AlarmApiController implements AlarmApi {
     public ResponseEntity<BaseResponse<?>> deleteAlarm(@PathVariable long alarmId) {
         alarmService.deleteAlarm(alarmId);
         return ApiResponseUtil.success(SUCCESS_DELETE_ALARM);
-    }
-
-    @Override
-    @PostMapping("/schedule")
-    public ResponseEntity<BaseResponse<?>> scheduleAlarm(AlarmScheduleSendRequest request) {
-        alarmService.scheduleAlarm(request);
-        return ApiResponseUtil.success(SUCCESS_SCHEDULE_ALARM);
     }
 }

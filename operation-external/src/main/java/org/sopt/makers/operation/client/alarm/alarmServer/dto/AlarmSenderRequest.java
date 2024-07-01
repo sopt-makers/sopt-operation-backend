@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.client.alarm.dto;
+package org.sopt.makers.operation.client.alarm.alarmServer.dto;
 
 import static org.sopt.makers.operation.alarm.domain.Category.NEWS;
 

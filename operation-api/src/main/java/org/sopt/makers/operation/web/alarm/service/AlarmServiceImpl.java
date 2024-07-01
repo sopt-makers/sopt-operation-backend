@@ -16,10 +16,9 @@ import org.sopt.makers.operation.alarm.domain.LinkType;
 import org.sopt.makers.operation.alarm.domain.Status;
 import org.sopt.makers.operation.alarm.domain.TargetType;
 import org.sopt.makers.operation.alarm.repository.AlarmRepository;
-import org.sopt.makers.operation.client.alarm.AlarmSender;
-import org.sopt.makers.operation.client.alarm.dto.AlarmSenderRequest;
-import org.sopt.makers.operation.client.eventbridge.EventBridgeSender;
-import org.sopt.makers.operation.client.eventbridge.dto.EventBridgeSenderRequest;
+import org.sopt.makers.operation.client.alarm.AlarmManager;
+import org.sopt.makers.operation.client.alarm.alarmServer.dto.AlarmSenderRequest;
+import org.sopt.makers.operation.client.alarm.eventBridgeServer.dto.EventBridgeSenderRequest;
 import org.sopt.makers.operation.common.domain.Part;
 import org.sopt.makers.operation.config.ValueConfig;
 import org.sopt.makers.operation.exception.AlarmException;
@@ -39,35 +38,21 @@ public class AlarmServiceImpl implements AlarmService {
 
     private final AlarmRepository alarmRepository;
     private final MemberRepository memberRepository;
-    private final AlarmSender alarmSender;
-    private final EventBridgeSender eventBridgeSender;
+    private final AlarmManager alarmManager;
     private final ValueConfig valueConfig;
 
     @Override
     @Transactional
-    public void sendAlarm(AlarmInstantSendRequest request) {
+    public void sendInstantAlarm(AlarmInstantSendRequest request) {
         val savedAlarm = alarmRepository.save(request.toEntity());
         val targets = getTargets(savedAlarm);
-        alarmSender.send(AlarmSenderRequest.of(savedAlarm, targets));
+        alarmManager.postInstantAlarm(AlarmSenderRequest.of(savedAlarm, targets));
         savedAlarm.updateToSent(formatSendAt(LocalDateTime.now()));
     }
 
     @Override
-    public AlarmListGetResponse getAlarms(Integer generation, Status status, Pageable pageable) {
-        val alarms = alarmRepository.findOrderByCreatedDate(generation, status, pageable);
-        val totalCount = alarmRepository.count(generation, status);
-        return AlarmListGetResponse.of(alarms, totalCount);
-    }
-
-    @Override
-    public AlarmGetResponse getAlarm(long alarmId) {
-        val alarm = findAlarm(alarmId);
-        return AlarmGetResponse.of(alarm);
-    }
-
-    @Override
     @Transactional
-    public void scheduleAlarm(AlarmScheduleSendRequest request) {
+    public void sendScheduleAlarm(AlarmScheduleSendRequest request) {
         val savedAlarm = alarmRepository.save(request.toEntity());
         val sendAt = parseDateTime(request.postDate(), request.postTime());
         savedAlarm.updateToSent(formatSendAt(sendAt));
@@ -87,7 +72,20 @@ public class AlarmServiceImpl implements AlarmService {
                 webLink
         );
 
-        eventBridgeSender.scheduleAlarm(eventBridgeRequest, request.postDate(), request.postTime(), savedAlarm.getId());
+        alarmManager.postReservedAlarm(eventBridgeRequest, request.postDate(), request.postTime(), savedAlarm.getId());
+    }
+
+    @Override
+    public AlarmListGetResponse getAlarms(Integer generation, Status status, Pageable pageable) {
+        val alarms = alarmRepository.findOrderByCreatedDate(generation, status, pageable);
+        val totalCount = alarmRepository.count(generation, status);
+        return AlarmListGetResponse.of(alarms, totalCount);
+    }
+
+    @Override
+    public AlarmGetResponse getAlarm(long alarmId) {
+        val alarm = findAlarm(alarmId);
+        return AlarmGetResponse.of(alarm);
     }
 
     @Override
