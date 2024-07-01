@@ -7,6 +7,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.sopt.makers.operation.client.alarm.eventBridgeServer.dto.EventBridgeSenderRequest;
 import org.sopt.makers.operation.code.failure.AlarmFailureCode;
 import org.sopt.makers.operation.config.ValueConfig;
@@ -40,29 +41,14 @@ public class EventBridgeSenderImpl implements EventBridgeSender {
         this.objectMapper = new ObjectMapper();
     }
 
+    @Override
     public void scheduleAlarm(EventBridgeSenderRequest request, String postDate, String postTime, Long alarmId) {
         try {
-            String eventJson = String.format("{\"detail\": %s}", objectMapper.writeValueAsString(request));
-            String formattedDate = formatCronExpression(postDate, postTime);
-            String formattedTime = postTime.replace(":", "-");
-            String scheduleName = String.format("%s_%s_%d", postDate, formattedTime, alarmId);
-
-            Target target = Target.builder()
-                    .roleArn(valueConfig.getEventBridgeRoleArn())
-                    .arn(valueConfig.getNotificationLambdaArn())
-                    .input(eventJson)
-                    .build();
-
-            CreateScheduleRequest createScheduleRequest = CreateScheduleRequest.builder()
-                    .name(scheduleName)
-                    .scheduleExpression(formattedDate)
-                    .target(target)
-                    .actionAfterCompletion("DELETE")
-                    .flexibleTimeWindow(FlexibleTimeWindow.builder()
-                            .mode(FlexibleTimeWindowMode.OFF)
-                            .build())
-                    .build();
-
+            val eventJson = String.format("{\"detail\": %s}", objectMapper.writeValueAsString(request));
+            val formattedDate = formatCronExpression(postDate, postTime);
+            val scheduleName = createScheduleName(postDate, postTime, alarmId);
+            val target = createEventBridgeTarget(eventJson);
+            val createScheduleRequest = createScheduleRequest(target, scheduleName, formattedDate);
             schedulerClient.createSchedule(createScheduleRequest);
         } catch (Exception e) {
             e.printStackTrace();
@@ -70,7 +56,7 @@ public class EventBridgeSenderImpl implements EventBridgeSender {
         }
     }
 
-    public static String formatCronExpression(String postDate, String postTime) {
+    private String formatCronExpression(String postDate, String postTime) {
         try {
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
             LocalDateTime localDateTime = LocalDateTime.parse(postDate + " " + postTime, dateFormatter);
@@ -87,6 +73,31 @@ public class EventBridgeSenderImpl implements EventBridgeSender {
         } catch (Exception e) {
             throw new AlarmException(AlarmFailureCode.INVALID_SCHEDULE_ALARM_FORMAT);
         }
+    }
+
+    private String createScheduleName(String postDate, String postTime, Long alarmId) {
+        String formattedTime = postTime.replace(":", "-");
+        return String.format("%s_%s_%d", postDate, formattedTime, alarmId);
+    }
+
+    private Target createEventBridgeTarget(String eventJson) {
+        return Target.builder()
+                .roleArn(valueConfig.getEventBridgeRoleArn())
+                .arn(valueConfig.getNotificationLambdaArn())
+                .input(eventJson)
+                .build();
+    }
+
+    private CreateScheduleRequest createScheduleRequest(Target target, String scheduleName, String formattedDate) {
+        return CreateScheduleRequest.builder()
+                .name(scheduleName)
+                .scheduleExpression(formattedDate)
+                .target(target)
+                .actionAfterCompletion("DELETE")
+                .flexibleTimeWindow(FlexibleTimeWindow.builder()
+                        .mode(FlexibleTimeWindowMode.OFF)
+                        .build())
+                .build();
     }
 }
 
