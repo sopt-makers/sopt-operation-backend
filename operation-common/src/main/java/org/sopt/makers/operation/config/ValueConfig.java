@@ -69,6 +69,7 @@ public class ValueConfig {
     private final int DAY_DURATION = 1;
     private final int TWO_DAYS_DURATION = 2;
     private final int HACKATHON_LECTURE_START_HOUR = 16;
+    private final String NOTIFICATION_HEADER_SERVICE = "operation";
 
     private final List<String> APP_LINK_LIST = Arrays.asList(
             "home",
