@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
@@ -32,7 +31,7 @@ public class EventBridgeSenderImpl implements EventBridgeSender {
 
     @PostConstruct
     private void init() {
-        AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(valueConfig.getAccessKey(),
+        val awsCredentials = AwsBasicCredentials.create(valueConfig.getAccessKey(),
                 valueConfig.getSecretKey());
         this.schedulerClient = SchedulerClient.builder()
                 .region(Region.AP_NORTHEAST_2)
@@ -58,10 +57,10 @@ public class EventBridgeSenderImpl implements EventBridgeSender {
 
     private String formatCronExpression(String postDate, String postTime) {
         try {
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-            LocalDateTime localDateTime = LocalDateTime.parse(postDate + " " + postTime, dateFormatter);
+            val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            val localDateTime = LocalDateTime.parse(postDate + " " + postTime, dateFormatter);
 
-            ZonedDateTime utcDateTime = localDateTime.atZone(ZoneId.systemDefault())
+            val utcDateTime = localDateTime.atZone(ZoneId.systemDefault())
                     .withZoneSameInstant(ZoneId.of("UTC"));
 
             return String.format("cron(%d %d %d %d ? %d)",
@@ -76,7 +75,7 @@ public class EventBridgeSenderImpl implements EventBridgeSender {
     }
 
     private String createScheduleName(String postDate, String postTime, Long alarmId) {
-        String formattedTime = postTime.replace(":", "-");
+        val formattedTime = postTime.replace(":", "-");
         return String.format("%s_%s_%d", postDate, formattedTime, alarmId);
     }
 
