@@ -35,7 +35,7 @@ public interface AlarmApi {
                     )
             }
     )
-    ResponseEntity<BaseResponse<?>> sendAlarm(@RequestBody AlarmInstantSendRequest request);
+    ResponseEntity<BaseResponse<?>> sendInstantAlarm(@RequestBody AlarmInstantSendRequest request);
 
     @Operation(
             summary = "알림 예약 발송 API",
@@ -62,7 +62,7 @@ public interface AlarmApi {
                     )
             }
     )
-    ResponseEntity<BaseResponse<?>> scheduleAlarm(@RequestBody AlarmScheduleSendRequest request);
+    ResponseEntity<BaseResponse<?>> sendScheduleAlarm(@RequestBody AlarmScheduleSendRequest request);
 
     @Operation(
             summary = "알림 리스트 조회 API",

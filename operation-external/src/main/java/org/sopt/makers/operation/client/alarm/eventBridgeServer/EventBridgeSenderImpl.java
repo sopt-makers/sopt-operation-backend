@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.client.eventbridge;
+package org.sopt.makers.operation.client.alarm.eventBridgeServer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
@@ -7,7 +7,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
-import org.sopt.makers.operation.client.eventbridge.dto.EventBridgeSenderRequest;
+import org.sopt.makers.operation.client.alarm.eventBridgeServer.dto.EventBridgeSenderRequest;
 import org.sopt.makers.operation.code.failure.AlarmFailureCode;
 import org.sopt.makers.operation.config.ValueConfig;
 import org.sopt.makers.operation.exception.AlarmException;
@@ -23,7 +23,7 @@ import software.amazon.awssdk.services.scheduler.model.Target;
 
 @Component
 @RequiredArgsConstructor
-public class EventBridgeImpl implements EventBridgeSender {
+public class EventBridgeSenderImpl implements EventBridgeSender {
     private SchedulerClient schedulerClient;
     private final ValueConfig valueConfig;
     private ObjectMapper objectMapper;

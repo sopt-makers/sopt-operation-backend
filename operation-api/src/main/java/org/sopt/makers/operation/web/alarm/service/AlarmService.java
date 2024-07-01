@@ -8,13 +8,14 @@ import org.sopt.makers.operation.web.alarm.dto.response.AlarmListGetResponse;
 import org.springframework.data.domain.Pageable;
 
 public interface AlarmService {
-    void sendAlarm(AlarmInstantSendRequest requestDTO);
+    
+    void sendInstantAlarm(AlarmInstantSendRequest requestDTO);
+
+    void sendScheduleAlarm(AlarmScheduleSendRequest request);
 
     AlarmListGetResponse getAlarms(Integer generation, Status status, Pageable pageable);
 
     AlarmGetResponse getAlarm(long alarmId);
 
     void deleteAlarm(long alarmId);
-
-    void scheduleAlarm(AlarmScheduleSendRequest request);
 }

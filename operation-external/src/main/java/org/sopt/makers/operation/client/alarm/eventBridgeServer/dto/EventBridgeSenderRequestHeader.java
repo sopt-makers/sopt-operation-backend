@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.client.eventbridge.dto;
+package org.sopt.makers.operation.client.alarm.eventBridgeServer.dto;
 
 import java.util.UUID;
 
