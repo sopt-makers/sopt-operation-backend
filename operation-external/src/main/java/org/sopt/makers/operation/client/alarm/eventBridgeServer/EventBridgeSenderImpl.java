@@ -24,6 +24,7 @@ import software.amazon.awssdk.services.scheduler.model.Target;
 @Component
 @RequiredArgsConstructor
 public class EventBridgeSenderImpl implements EventBridgeSender {
+
     private SchedulerClient schedulerClient;
     private final ValueConfig valueConfig;
     private ObjectMapper objectMapper;

@@ -63,6 +63,7 @@ public class AlarmServiceImpl implements AlarmService {
 
         val eventBridgeRequest = EventBridgeSenderRequest.of(
                 valueConfig.getNOTIFICATION_KEY(),
+                valueConfig.getNOTIFICATION_HEADER_SERVICE(),
                 request.targetType().getAction(),
                 request.targetList(),
                 request.title(),
