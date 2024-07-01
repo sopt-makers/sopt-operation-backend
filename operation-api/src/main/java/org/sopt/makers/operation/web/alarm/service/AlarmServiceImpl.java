@@ -77,6 +77,7 @@ public class AlarmServiceImpl implements AlarmService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public AlarmListGetResponse getAlarms(Integer generation, Status status, Pageable pageable) {
         val alarms = alarmRepository.findOrderByCreatedDate(generation, status, pageable);
         val totalCount = alarmRepository.count(generation, status);
@@ -84,6 +85,7 @@ public class AlarmServiceImpl implements AlarmService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public AlarmGetResponse getAlarm(long alarmId) {
         val alarm = findAlarm(alarmId);
         return AlarmGetResponse.of(alarm);
