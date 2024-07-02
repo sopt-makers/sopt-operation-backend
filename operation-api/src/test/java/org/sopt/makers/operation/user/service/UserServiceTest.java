@@ -1,5 +1,6 @@
 package org.sopt.makers.operation.user.service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Collections;
 
@@ -120,7 +121,7 @@ class UserServiceTest {
         @DisplayName("Case. 복수 유저 조회 시에 유효하지 않은 범위의 Id 값이 포함되어 있을 경우, 예외 반환")
         void throwException_Include_Invalid_Id() {
             // given
-            val invalidUserIds = List.of(0L, -1L, 1L);
+            val invalidUserIds = Arrays.asList(0L, -1L, 1L);
 
             // when & then
             assertThatThrownBy(() -> userService.getUserInfos(invalidUserIds))
