@@ -14,11 +14,11 @@ public class AlarmManager {
     private final AlarmSenderImpl alarmSender;
     private final EventBridgeSenderImpl eventBridgeSender;
 
-    public void postInstantAlarm(AlarmSenderRequest request) {
+    public void sendInstantAlarm(AlarmSenderRequest request) {
         alarmSender.send(request);
     }
 
-    public void postReservedAlarm(EventBridgeSenderRequest request, String postDate, String postTime, Long alarmId) {
+    public void sendReservedAlarm(EventBridgeSenderRequest request, String postDate, String postTime, Long alarmId) {
         eventBridgeSender.scheduleAlarm(request, postDate, postTime, alarmId);
     }
 }
