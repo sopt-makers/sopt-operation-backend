@@ -46,7 +46,7 @@ public class AlarmServiceImpl implements AlarmService {
     public void sendInstantAlarm(AlarmInstantSendRequest request) {
         val savedAlarm = alarmRepository.save(request.toEntity());
         val targets = getTargets(savedAlarm);
-        alarmManager.postInstantAlarm(AlarmSenderRequest.of(savedAlarm, targets));
+        alarmManager.sendInstantAlarm(AlarmSenderRequest.of(savedAlarm, targets));
         savedAlarm.updateToSent(formatSendAt(LocalDateTime.now()));
     }
 
@@ -73,7 +73,7 @@ public class AlarmServiceImpl implements AlarmService {
                 webLink
         );
 
-        alarmManager.postReservedAlarm(eventBridgeRequest, request.postDate(), request.postTime(), savedAlarm.getId());
+        alarmManager.sendReservedAlarm(eventBridgeRequest, request.postDate(), request.postTime(), savedAlarm.getId());
     }
 
     @Override
