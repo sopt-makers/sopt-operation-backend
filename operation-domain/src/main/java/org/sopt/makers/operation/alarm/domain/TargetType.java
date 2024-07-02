@@ -5,9 +5,10 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum Status {
-    SCHEDULED("발송 예약"),
-    COMPLETED("발송 완료");
+public enum TargetType {
+    ALL("sendAll"),
+    ACTIVE("send"),
+    CSV("send");
 
-    private final String description;
+    private final String action;
 }

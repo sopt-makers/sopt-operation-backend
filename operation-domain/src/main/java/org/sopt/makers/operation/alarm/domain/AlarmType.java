@@ -5,9 +5,9 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum Status {
-    SCHEDULED("발송 예약"),
-    COMPLETED("발송 완료");
+public enum AlarmType {
+    INSTANT("즉시 발송"),
+    RESERVED("예약 발송");
 
     private final String description;
 }
