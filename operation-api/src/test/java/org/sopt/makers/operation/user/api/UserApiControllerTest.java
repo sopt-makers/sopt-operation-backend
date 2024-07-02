@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.sopt.makers.operation.user.domain.*;
 import org.sopt.makers.operation.user.dto.response.UserInfoResponse;
+import org.sopt.makers.operation.user.dto.response.UserInfosResponse;
 import org.sopt.makers.operation.user.service.UserService;
 import org.sopt.makers.operation.jwt.JwtTokenProvider;
 import org.sopt.makers.operation.common.util.CommonUtils;
@@ -26,6 +27,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -45,6 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserApiControllerTest {
 
     final String userInfoSelfUri = "/api/v1/internal/user/me";
+    final String userInfosUri = "/api/v1/internal/user";
 
     @MockBean
     UserService userService;
@@ -62,7 +65,7 @@ class UserApiControllerTest {
     class SuccessTest {
 
         @Test
-        @DisplayName("Case1. 요청자 자신에 대한 유저 정보 조회 성공 - /internal/user/me")
+        @DisplayName("Case. 요청자 자신에 대한 유저 정보 조회 성공 - /internal/user/me")
         void successUserInfoSelf() throws Exception {
             User mockedUser = mock(User.class);
             UserGenerationHistory mockedHistory = mock(UserGenerationHistory.class);
@@ -101,6 +104,76 @@ class UserApiControllerTest {
                     .andExpect(jsonPath("$.data.activities[0].part").value("SERVER"))
                     .andExpect(jsonPath("$.data.activities[0].team").value("OPERATION"))
                     .andExpect(jsonPath("$.data.activities[0].position").value("MEMBER"));
+
+        }
+
+        @Test
+        @DisplayName("Case. 복수 유저 정보 조회 성공 - /internal/user?userIds=")
+        void successUserInfos() throws Exception {
+            User mockedUserA = mock(User.class);
+            UserGenerationHistory mockedHistoryA = mock(UserGenerationHistory.class);
+
+            given(mockedUserA.getId()).willReturn(1L);
+            given(mockedUserA.getName()).willReturn("TestUserA");
+            given(mockedUserA.getPhone()).willReturn("01012345678");
+            given(mockedUserA.getProfileImage()).willReturn("TestImageUrlA");
+            given(mockedHistoryA.getId()).willReturn(1L);
+            given(mockedHistoryA.getPart()).willReturn(Part.SERVER);
+            given(mockedHistoryA.getGeneration()).willReturn(32);
+            given(mockedHistoryA.getTeam()).willReturn(Team.OPERATION);
+            given(mockedHistoryA.getPosition()).willReturn(Position.MEMBER);
+
+            User mockedUserB = mock(User.class);
+            UserGenerationHistory mockedHistoryB = mock(UserGenerationHistory.class);
+            given(mockedUserB.getId()).willReturn(2L);
+            given(mockedUserB.getName()).willReturn("TestUserB");
+            given(mockedUserB.getPhone()).willReturn("01056789012");
+            given(mockedUserB.getProfileImage()).willReturn("TestImageUrlB");
+            given(mockedHistoryB.getId()).willReturn(2L);
+            given(mockedHistoryB.getPart()).willReturn(Part.PLAN);
+            given(mockedHistoryB.getGeneration()).willReturn(32);
+            given(mockedHistoryB.getTeam()).willReturn(Team.MEDIA);
+            given(mockedHistoryB.getPosition()).willReturn(Position.TEAM_LEADER);
+
+            Principal mockPrincipal = mock(Principal.class);
+            given(mockPrincipal.getName()).willReturn("1");
+
+            UserInfoResponse expectServiceResultOfA = UserInfoResponse.of(mockedUserA, List.of(mockedHistoryA));
+            UserInfoResponse expectServiceResultOfB = UserInfoResponse.of(mockedUserB, List.of(mockedHistoryB));
+            UserInfosResponse expected = UserInfosResponse.of(List.of(expectServiceResultOfA, expectServiceResultOfB));
+
+            given(userService.getUserInfos(anyList())).willReturn(expected);
+
+            mockMvc.perform(
+                            get(userInfosUri)
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .principal(mockPrincipal)
+                                    .queryParam("userIds","1,2"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.success").value("true"))
+                    .andExpect(jsonPath("$.message").value("전체 유저 정보 조회 성공"))
+
+                    .andExpect(jsonPath("$.data.users[0].id").value("1"))
+                    .andExpect(jsonPath("$.data.users[0].name").value("TestUserA"))
+                    .andExpect(jsonPath("$.data.users[0].phone").value("01012345678"))
+                    .andExpect(jsonPath("$.data.users[0].profileImage").value("TestImageUrlA"))
+
+                    .andExpect(jsonPath("$.data.users[0].activities[0].id").value("1"))
+                    .andExpect(jsonPath("$.data.users[0].activities[0].generation").value("32"))
+                    .andExpect(jsonPath("$.data.users[0].activities[0].part").value("SERVER"))
+                    .andExpect(jsonPath("$.data.users[0].activities[0].team").value("OPERATION"))
+                    .andExpect(jsonPath("$.data.users[0].activities[0].position").value("MEMBER"))
+
+                    .andExpect(jsonPath("$.data.users[1].id").value("2"))
+                    .andExpect(jsonPath("$.data.users[1].name").value("TestUserB"))
+                    .andExpect(jsonPath("$.data.users[1].phone").value("01056789012"))
+                    .andExpect(jsonPath("$.data.users[1].profileImage").value("TestImageUrlB"))
+
+                    .andExpect(jsonPath("$.data.users[1].activities[0].id").value("2"))
+                    .andExpect(jsonPath("$.data.users[1].activities[0].generation").value("32"))
+                    .andExpect(jsonPath("$.data.users[1].activities[0].part").value("PLAN"))
+                    .andExpect(jsonPath("$.data.users[1].activities[0].team").value("MEDIA"))
+                    .andExpect(jsonPath("$.data.users[1].activities[0].position").value("TEAM_LEADER"));
 
         }
 
