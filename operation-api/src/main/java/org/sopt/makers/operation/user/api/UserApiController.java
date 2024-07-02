@@ -14,12 +14,13 @@ import org.sopt.makers.operation.util.ApiResponseUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URLDecoder;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
-import java.net.URLEncoder;
 import java.io.UnsupportedEncodingException;
 
 import static org.sopt.makers.operation.code.success.UserSuccessCode.SUCCESS_GET_USER;
@@ -48,9 +49,10 @@ public class UserApiController implements UserApi {
 	}
 
 	@Override
+	@GetMapping("")
 	public ResponseEntity<BaseResponse<?>> getUserInfoOf(
 			@NonNull Principal principal,
-			@NonNull String targetUserIds
+			@NonNull @RequestParam("userIds") String targetUserIds
 	) {
 		val userIds = getIdsFromParameter(targetUserIds);
 		val response = userService.getUserInfos(userIds);
@@ -59,8 +61,9 @@ public class UserApiController implements UserApi {
 
 	private List<Long> getIdsFromParameter(@NonNull String parameter)  {
 		try {
-			String encodedParameter = URLEncoder.encode(parameter, DECODING_CHARSET);
-			return Arrays.stream(encodedParameter.split(DELIMITER_ID_PARAMETER))
+			String decodedParameter = URLDecoder.decode(parameter, DECODING_CHARSET);
+			return Arrays.stream(decodedParameter.split(DELIMITER_ID_PARAMETER))
+					.filter(str -> !str.equals(DELIMITER_ID_PARAMETER))
 					.map(id -> Long.parseLong(id.trim()))
 					.toList();
 		} catch (UnsupportedEncodingException ex) {
