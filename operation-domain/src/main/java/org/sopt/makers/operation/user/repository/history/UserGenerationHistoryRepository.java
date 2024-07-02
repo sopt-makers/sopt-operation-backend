@@ -18,7 +18,7 @@ public interface UserGenerationHistoryRepository extends JpaRepository<UserGener
     default List<UserGenerationHistory> findAllHistoryByUserId(Long userId) {
         val histories = findAllByUserId(userId);
         if (histories.isEmpty()) {
-            throw new UserException(UserFailureCode.INVALID_HISTORY);
+            throw new UserException(UserFailureCode.NOT_FOUND_HISTORY);
         }
         return histories;
     }
