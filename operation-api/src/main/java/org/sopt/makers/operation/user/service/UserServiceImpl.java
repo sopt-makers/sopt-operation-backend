@@ -1,15 +1,12 @@
 package org.sopt.makers.operation.user.service;
 
 import java.util.List;
+import java.util.Collections;
 
 import lombok.val;
 import lombok.RequiredArgsConstructor;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import org.sopt.makers.operation.user.repository.UserRepository;
@@ -22,7 +19,6 @@ import org.sopt.makers.operation.exception.UserException;
 
 @Service
 @RequiredArgsConstructor
-@Validated
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
@@ -30,14 +26,15 @@ public class UserServiceImpl implements UserService {
     private final UserGenerationHistoryRepository generationHistoryRepository;
 
     @Override
-    public UserInfoResponse getUserInfo(@Min(1) Long userId) {
+    public UserInfoResponse getUserInfo(Long userId) {
+        validateIds(Collections.singletonList(userId));
         val targetUser = userRepository.findUserById(userId);
         val histories = generationHistoryRepository.findAllHistoryByUserId(userId);
         return UserInfoResponse.of(targetUser, histories);
     }
 
     @Override
-    public UserInfosResponse getUserInfos(@NotEmpty List<Long> userIds) {
+    public UserInfosResponse getUserInfos(List<Long> userIds) {
         validateIds(userIds);
         val targetUsers = userRepository.findAllUsersById(userIds);
         val userInfoResponses = targetUsers.stream()
@@ -49,6 +46,9 @@ public class UserServiceImpl implements UserService {
     }
 
     private void validateIds(List<Long> ids) {
+        if (ids.isEmpty() || ids.contains(null)) {
+            throw new UserException(UserFailureCode.INVALID_PARAMETER);
+        }
         val isContainLittleThenOne  = ids.stream().anyMatch(id -> id < 1);
         if (isContainLittleThenOne) {
             throw new UserException(UserFailureCode.INVALID_USER_INCLUDED);
