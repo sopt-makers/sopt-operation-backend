@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.user.repository;
+package org.sopt.makers.operation;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;

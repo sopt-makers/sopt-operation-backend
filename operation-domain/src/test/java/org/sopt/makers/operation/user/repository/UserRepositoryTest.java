@@ -15,6 +15,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
 
+import org.sopt.makers.operation.DatabaseCleaner;
 import org.sopt.makers.operation.user.domain.User;
 import org.sopt.makers.operation.user.domain.Gender;
 import org.sopt.makers.operation.user.repository.history.UserGenerationHistoryRepository;
