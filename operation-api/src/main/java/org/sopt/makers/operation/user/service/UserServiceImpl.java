@@ -6,6 +6,7 @@ import java.util.Collections;
 import lombok.val;
 import lombok.RequiredArgsConstructor;
 
+import org.sopt.makers.operation.user.domain.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,10 +39,7 @@ public class UserServiceImpl implements UserService {
         validateIds(userIds);
         val targetUsers = userRepository.findAllUsersById(userIds);
         val userInfoResponses = targetUsers.stream()
-                .map(user -> {
-                    val histories = generationHistoryRepository.findAllHistoryByUserId(user.getId());
-                    return UserInfoResponse.of(user, histories);
-                }).toList();
+                .map(this::mergeUserInfoWithHistory).toList();
         return UserInfosResponse.of(userInfoResponses);
     }
 
@@ -53,6 +51,11 @@ public class UserServiceImpl implements UserService {
         if (isContainLittleThenOne) {
             throw new UserException(UserFailureCode.INVALID_USER_INCLUDED);
         }
+    }
+
+    private UserInfoResponse mergeUserInfoWithHistory(User user) {
+        val histories = generationHistoryRepository.findAllHistoryByUserId(user.getId());
+        return UserInfoResponse.of(user, histories);
     }
 
 }
