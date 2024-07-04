@@ -8,6 +8,7 @@ import org.sopt.makers.operation.code.failure.UserFailureCode;
 import org.sopt.makers.operation.common.util.CommonUtils;
 import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.exception.ParameterDecodeCustomException;
+import org.sopt.makers.operation.exception.UserException;
 import org.sopt.makers.operation.user.service.UserService;
 import org.sopt.makers.operation.util.ApiResponseUtil;
 
@@ -22,6 +23,7 @@ import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 import java.io.UnsupportedEncodingException;
+import java.util.Objects;
 
 import static org.sopt.makers.operation.code.success.UserSuccessCode.SUCCESS_GET_USER;
 import static org.sopt.makers.operation.code.success.UserSuccessCode.SUCCESS_GET_USERS;
@@ -49,19 +51,22 @@ public class UserApiController implements UserApi {
 	}
 
 	@Override
-	@GetMapping("")
+	@GetMapping
 	public ResponseEntity<BaseResponse<?>> getUserInfoOf(
 			@NonNull Principal principal,
-			@NonNull @RequestParam("userIds") String targetUserIds
+			@RequestParam(value = "userIds", required = false) String targetUserIds
 	) {
 		val userIds = getIdsFromParameter(targetUserIds);
 		val response = userService.getUserInfos(userIds);
 		return ApiResponseUtil.success(SUCCESS_GET_USERS, response);
 	}
 
-	private List<Long> getIdsFromParameter(@NonNull String parameter)  {
+	private List<Long> getIdsFromParameter(String parameter)  {
+		if (Objects.isNull(parameter)) {
+			throw new UserException(UserFailureCode.INVALID_PARAMETER);
+		}
 		try {
-			String decodedParameter = URLDecoder.decode(parameter, DECODING_CHARSET);
+			val decodedParameter = URLDecoder.decode(parameter, DECODING_CHARSET);
 			return Arrays.stream(decodedParameter.split(DELIMITER_ID_PARAMETER))
 					.filter(str -> !str.equals(DELIMITER_ID_PARAMETER))
 					.map(id -> Long.parseLong(id.trim()))
