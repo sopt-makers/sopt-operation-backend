@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -101,18 +103,12 @@ class UserServiceTest {
                     .hasMessageContaining(UserFailureCode.INVALID_PARAMETER.getMessage());
         }
 
-        @Test
+        @ParameterizedTest(name = "Invalid User ID ({index}) = {0}")
         @DisplayName("Case. 단일 유저 조회 시에 유효하지 않은 범위의 Id 값일 경우, 예외 반환")
-        void throwException_Invalid_Id() {
-            // given
-            val invalidUserIdZero = 0L;
-            val invalidUserIdMinusOne = -1L;
-
+        @ValueSource(longs = {0L, -1L})
+        void throwException_Invalid_Id(Long invalidUserId) {
             // when & then
-            assertThatThrownBy(() -> userService.getUserInfo(invalidUserIdZero))
-                    .isInstanceOf(UserException.class)
-                    .hasMessageContaining(UserFailureCode.INVALID_USER_INCLUDED.getMessage());
-            assertThatThrownBy(() -> userService.getUserInfo(invalidUserIdMinusOne))
+            assertThatThrownBy(() -> userService.getUserInfo(invalidUserId))
                     .isInstanceOf(UserException.class)
                     .hasMessageContaining(UserFailureCode.INVALID_USER_INCLUDED.getMessage());
         }
