@@ -110,7 +110,7 @@ class UserServiceTest {
             // when & then
             assertThatThrownBy(() -> userService.getUserInfo(invalidUserId))
                     .isInstanceOf(UserException.class)
-                    .hasMessageContaining(UserFailureCode.INVALID_USER_INCLUDED.getMessage());
+                    .hasMessageContaining(UserFailureCode.INVALID_USER_IN_USER_LIST_PARAMETER.getMessage());
         }
 
         @Test
@@ -122,7 +122,7 @@ class UserServiceTest {
             // when & then
             assertThatThrownBy(() -> userService.getUserInfos(invalidUserIds))
                     .isInstanceOf(UserException.class)
-                    .hasMessageContaining(UserFailureCode.INVALID_USER_INCLUDED.getMessage());
+                    .hasMessageContaining(UserFailureCode.INVALID_USER_IN_USER_LIST_PARAMETER.getMessage());
         }
 
     }

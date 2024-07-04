@@ -171,7 +171,7 @@ class UserRepositoryTest {
             // when & then
             assertThatThrownBy(() -> userRepository.findAllUsersById(ids))
                     .isInstanceOf(UserException.class)
-                    .hasMessageContaining(UserFailureCode.NOT_FOUND_USER_INCLUDED.getMessage());
+                    .hasMessageContaining(UserFailureCode.NOT_FOUND_USER_IN_USER_LIST_PARAMETER.getMessage());
         }
 
     }

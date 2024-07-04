@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
         }
         val isContainLittleThenOne  = ids.stream().anyMatch(id -> id < 1);
         if (isContainLittleThenOne) {
-            throw new UserException(UserFailureCode.INVALID_USER_INCLUDED);
+            throw new UserException(UserFailureCode.INVALID_USER_IN_USER_LIST_PARAMETER);
         }
     }
 

@@ -18,7 +18,7 @@ public interface UserRepository extends JpaRepository<User, Long>  {
     default List<User> findAllUsersById(List<Long> userIds) {
         val allUsers = findAllById(userIds);
         if (allUsers.size() != userIds.size()) {
-            throw new UserException(UserFailureCode.NOT_FOUND_USER_INCLUDED);
+            throw new UserException(UserFailureCode.NOT_FOUND_USER_IN_USER_LIST_PARAMETER);
         }
         return allUsers;
     }
