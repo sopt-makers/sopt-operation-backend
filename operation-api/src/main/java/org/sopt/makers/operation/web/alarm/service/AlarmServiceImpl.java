@@ -54,6 +54,7 @@ public class AlarmServiceImpl implements AlarmService {
     @Transactional
     public void sendScheduleAlarm(AlarmScheduleSendRequest request) {
         val savedAlarm = alarmRepository.save(request.toEntity());
+        val targets = getTargets(savedAlarm);
         val sendAt = parseDateTime(request.postDate(), request.postTime());
         savedAlarm.updateToSent(formatSendAt(sendAt));
 
@@ -65,7 +66,7 @@ public class AlarmServiceImpl implements AlarmService {
                 valueConfig.getNOTIFICATION_KEY(),
                 valueConfig.getNOTIFICATION_HEADER_SERVICE(),
                 request.targetType().getAction(),
-                request.targetList(),
+                targets,
                 request.title(),
                 request.content(),
                 request.category(),
