@@ -3,6 +3,7 @@ package org.sopt.makers.operation.common.handler;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.exception.AdminFailureException;
 import org.sopt.makers.operation.exception.AlarmException;
@@ -17,6 +18,7 @@ import org.sopt.makers.operation.exception.TokenException;
 import org.sopt.makers.operation.util.ApiResponseUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -85,19 +87,24 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<BaseResponse<?>> methodArgumentNotValidException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<BaseResponse<?>> handleValidationException(MethodArgumentNotValidException ex) {
         List<String> errorMessages = ex.getBindingResult().getAllErrors().stream()
-                .map(objectError -> {
-                    if (objectError instanceof FieldError) {
-                        FieldError fieldError = (FieldError) objectError;
-                        return String.format("[%s]은 필수 값입니다.", fieldError.getField());
-                    } else {
-                        return objectError.getDefaultMessage();
-                    }
-                })
+                .map(this::getErrorMessage)
                 .collect(Collectors.toList());
-        log.error("[ValidationException] : {}", String.join(", ", errorMessages));
-        return ApiResponseUtil.failure(String.join(", ", errorMessages));
+
+        val errorMessage = String.join(", ", errorMessages);
+        log.error("[ValidationException] : {}", errorMessage);
+
+        return ApiResponseUtil.failure(errorMessage);
+    }
+
+    private String getErrorMessage(ObjectError objectError) {
+        if (objectError instanceof FieldError) {
+            FieldError fieldError = (FieldError) objectError;
+            return String.format("[%s]은 필수 값입니다.", fieldError.getField());
+        } else {
+            return objectError.getDefaultMessage();
+        }
     }
 
 }
