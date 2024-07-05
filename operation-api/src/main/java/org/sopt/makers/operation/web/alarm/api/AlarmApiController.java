@@ -6,6 +6,7 @@ import static org.sopt.makers.operation.code.success.web.AlarmSuccessCode.SUCCES
 import static org.sopt.makers.operation.code.success.web.AlarmSuccessCode.SUCCESS_SCHEDULE_ALARM;
 import static org.sopt.makers.operation.code.success.web.AlarmSuccessCode.SUCCESS_SEND_ALARM;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.sopt.makers.operation.alarm.domain.Status;
@@ -33,14 +34,14 @@ public class AlarmApiController implements AlarmApi {
 
     @Override
     @PostMapping("/send")
-    public ResponseEntity<BaseResponse<?>> sendInstantAlarm(AlarmInstantSendRequest request) {
+    public ResponseEntity<BaseResponse<?>> sendInstantAlarm(@Valid AlarmInstantSendRequest request) {
         alarmService.sendInstantAlarm(request);
         return ApiResponseUtil.success(SUCCESS_SEND_ALARM);
     }
 
     @Override
     @PostMapping("/schedule")
-    public ResponseEntity<BaseResponse<?>> sendScheduleAlarm(AlarmScheduleSendRequest request) {
+    public ResponseEntity<BaseResponse<?>> sendScheduleAlarm(@Valid AlarmScheduleSendRequest request) {
         alarmService.sendScheduleAlarm(request);
         return ApiResponseUtil.success(SUCCESS_SCHEDULE_ALARM);
     }
