@@ -30,6 +30,14 @@ public class ValueConfig {
     private String playGroundURI;
     @Value("${sopt.makers.playground.token}")
     private String playGroundToken;
+    @Value("${notification.arn}")
+    private String notificationLambdaArn;
+    @Value("${cloud.aws.credentials.accessKey}")
+    private String accessKey;
+    @Value("${cloud.aws.credentials.secretKey}")
+    private String secretKey;
+    @Value("${cloud.aws.eventBridge.roleArn}")
+    private String eventBridgeRoleArn;
     @Value("${oauth.apple.key.id}")
     private String appleKeyId;
     @Value("${oauth.apple.key.path}")
@@ -61,6 +69,7 @@ public class ValueConfig {
     private final int DAY_DURATION = 1;
     private final int TWO_DAYS_DURATION = 2;
     private final int HACKATHON_LECTURE_START_HOUR = 16;
+    private final String NOTIFICATION_HEADER_SERVICE = "operation";
 
     private final List<String> APP_LINK_LIST = Arrays.asList(
             "home",
