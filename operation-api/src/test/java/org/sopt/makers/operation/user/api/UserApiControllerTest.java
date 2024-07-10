@@ -157,7 +157,7 @@ class UserApiControllerTest {
                             get(userInfosUri)
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .principal(mockPrincipal)
-                                    .queryParam("userIds","1","2"))
+                                    .queryParam("userIds","1%2C2"))
                     .andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.success").value("true"))
