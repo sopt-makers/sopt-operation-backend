@@ -30,6 +30,14 @@ public class ValueConfig {
     private String playGroundURI;
     @Value("${sopt.makers.playground.token}")
     private String playGroundToken;
+    @Value("${notification.arn}")
+    private String NOTIFICATION_LAMBDA_ARN;
+    @Value("${cloud.aws.credentials.accessKey}")
+    private String accessKey;
+    @Value("${cloud.aws.credentials.secretKey}")
+    private String secretKey;
+    @Value("${cloud.aws.eventBridge.roleArn}")
+    private String eventBridgeRoleArn;
     @Value("${oauth.apple.key.id}")
     private String appleKeyId;
     @Value("${oauth.apple.key.path}")
