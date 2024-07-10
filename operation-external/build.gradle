@@ -16,7 +16,6 @@ dependencies {
     implementation 'software.amazon.awssdk:scheduler'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-aws', version: '2.2.6.RELEASE'
 
-
     implementation 'org.bouncycastle:bcprov-jdk18on:1.75'
     implementation 'org.bouncycastle:bcpkix-jdk18on:1.75'
 

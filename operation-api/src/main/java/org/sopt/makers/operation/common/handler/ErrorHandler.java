@@ -13,6 +13,29 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
+
+import org.sopt.makers.operation.dto.BaseResponse;
+import org.sopt.makers.operation.util.ApiResponseUtil;
+
+import org.sopt.makers.operation.exception.AuthException;
+import org.sopt.makers.operation.exception.UserException;
+import org.sopt.makers.operation.exception.ParameterDecodeCustomException;
+import org.sopt.makers.operation.exception.AdminFailureException;
+import org.sopt.makers.operation.exception.AlarmException;
+import org.sopt.makers.operation.exception.AttendanceException;
+import org.sopt.makers.operation.exception.DateTimeParseCustomException;
+import org.sopt.makers.operation.exception.LectureException;
+import org.sopt.makers.operation.exception.MemberException;
+import org.sopt.makers.operation.exception.ScheduleException;
+import org.sopt.makers.operation.exception.SubLectureException;
+import org.sopt.makers.operation.exception.TokenException;
+
+import org.springframework.http.ResponseEntity;
+
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -92,7 +115,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<BaseResponse<?>> handleValidationException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<BaseResponse<?>> validationException(MethodArgumentNotValidException ex) {
         List<String> errorMessages = ex.getBindingResult().getAllErrors().stream()
                 .map(this::getErrorMessage)
                 .collect(Collectors.toList());
