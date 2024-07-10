@@ -36,6 +36,7 @@ public class UserApiController implements UserApi {
 
 	private static final String DECODING_CHARSET = "UTF-8";
 	private static final String DELIMITER_ID_PARAMETER = ",";
+	private static final String USER_IDS_PARAMETER_REGEX = "^(\\d+)(%2C\\d+)*$";
 
 	private final UserService userService;
 	private final CommonUtils utils;
@@ -54,7 +55,7 @@ public class UserApiController implements UserApi {
 	@GetMapping
 	public ResponseEntity<BaseResponse<?>> getUserInfoOf(
 			@NonNull Principal principal,
-			@RequestParam(value = "userIds", required = false) String targetUserIds
+			@NonNull @RequestParam("userIds") String targetUserIds
 	) {
 		val userIds = getIdsFromParameter(targetUserIds);
 		val response = userService.getUserInfos(userIds);
@@ -62,7 +63,7 @@ public class UserApiController implements UserApi {
 	}
 
 	private List<Long> getIdsFromParameter(String parameter)  {
-		if (Objects.isNull(parameter)) {
+		if (Objects.isNull(parameter) || !parameter.matches(USER_IDS_PARAMETER_REGEX)) {
 			throw new UserException(UserFailureCode.INVALID_PARAMETER);
 		}
 		try {
@@ -71,7 +72,7 @@ public class UserApiController implements UserApi {
 					.filter(str -> !str.equals(DELIMITER_ID_PARAMETER))
 					.map(id -> Long.parseLong(id.trim()))
 					.toList();
-		} catch (UnsupportedEncodingException ex) {
+		} catch (UnsupportedEncodingException | NumberFormatException ex) {
 			throw new ParameterDecodeCustomException(UserFailureCode.INVALID_PARAMETER, parameter);
 		}
 	}
