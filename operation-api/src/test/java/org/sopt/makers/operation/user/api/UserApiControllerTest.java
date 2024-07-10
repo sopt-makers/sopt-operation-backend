@@ -6,11 +6,17 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import org.sopt.makers.operation.user.domain.*;
+import org.sopt.makers.operation.user.domain.User;
+import org.sopt.makers.operation.user.domain.Part;
+import org.sopt.makers.operation.user.domain.Team;
+import org.sopt.makers.operation.user.domain.Position;
+import org.sopt.makers.operation.user.domain.UserGenerationHistory;
 import org.sopt.makers.operation.user.dto.response.UserInfoResponse;
 import org.sopt.makers.operation.user.dto.response.UserInfosResponse;
 import org.sopt.makers.operation.user.service.UserService;
@@ -19,26 +25,29 @@ import org.sopt.makers.operation.common.util.CommonUtils;
 import org.sopt.makers.operation.common.handler.ErrorHandler;
 
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyList;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-@Import({UserApiController.class, ErrorHandler.class})
+@Import({UserApiController.class})
 @ExtendWith(MockitoExtension.class)
-@ContextConfiguration(classes = {UserApiController.class})
+@ContextConfiguration(
+        classes = {UserApiController.class, ErrorHandler.class}
+)
 @WebMvcTest(
         controllers = {UserApiController.class},
         excludeAutoConfiguration =  {SecurityAutoConfiguration.class}
@@ -148,7 +157,8 @@ class UserApiControllerTest {
                             get(userInfosUri)
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .principal(mockPrincipal)
-                                    .queryParam("userIds","1,2"))
+                                    .queryParam("userIds","1","2"))
+                    .andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.success").value("true"))
                     .andExpect(jsonPath("$.message").value("전체 유저 정보 조회 성공"))
@@ -179,5 +189,58 @@ class UserApiControllerTest {
 
     }
 
+    @Nested
+    @DisplayName("[TEST] 실패한 경우에 대한 테스트")
+    class FailTest {
 
+        @Test
+        @DisplayName("Case. 잘못된 형식의 userIds Parameter 값 : Null - /internal/user?userIds=")
+        void failUserInfosCausedByNullParameter() throws Exception {
+            Principal mockPrincipal = mock(Principal.class);
+            given(mockPrincipal.getName()).willReturn("1");
+
+            mockMvc.perform(
+                            get(userInfosUri)
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .principal(mockPrincipal)
+                                    .param("userIds", ""))
+                    .andDo(print())
+                    .andExpect(status().isBadRequest())
+                    .andDo(print());
+        }
+
+        @DisplayName("Case. 잘못된 형식의 userIds Parameter 값 : Wrong Delimiter - /internal/user?userIds=")
+        @ParameterizedTest(name = "* {index}번째 입력값 = {0}")
+        @ValueSource(strings = {"123/124", "123_124", "123:124", "123-124"})
+        void failUserInfosCausedByWrongDelimiter(String wrongDelimiter) throws Exception {
+            Principal mockPrincipal = mock(Principal.class);
+            given(mockPrincipal.getName()).willReturn("1");
+
+            mockMvc.perform(
+                            get(userInfosUri)
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .principal(mockPrincipal)
+                                    .param("userIds", wrongDelimiter))
+                    .andDo(print())
+                    .andExpect(status().isBadRequest())
+                    .andDo(print());
+        }
+
+        @DisplayName("Case. 잘못된 형식의 userIds Parameter 값 : Not Number - /internal/user?userIds=")
+        @ParameterizedTest(name = "* {index}번째 입력값 = {0}")
+        @ValueSource(strings = {"abc,def", "ㄱㄴㄷ,ㄹㅁㅂ", "[][],.;.;"})
+        void failUserInfosCausedByNotNumber(String notNumberValue) throws Exception {
+            Principal mockPrincipal = mock(Principal.class);
+            given(mockPrincipal.getName()).willReturn("1");
+
+            mockMvc.perform(
+                            get(userInfosUri)
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .principal(mockPrincipal)
+                                    .param("userIds", notNumberValue))
+                    .andDo(print())
+                    .andExpect(status().isBadRequest())
+                    .andDo(print());
+        }
+    }
 }
