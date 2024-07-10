@@ -36,7 +36,7 @@ public class UserApiController implements UserApi {
 
 	private static final String DECODING_CHARSET = "UTF-8";
 	private static final String DELIMITER_ID_PARAMETER = ",";
-	private static final String USER_IDS_PARAMETER_REGEX = "^(\\d+)(%2C\\d+)*$";
+	private static final String USER_IDS_PARAMETER_REGEX = "^(\\d+)((%20)*%2C(%20)*\\d+)*$";
 
 	private final UserService userService;
 	private final CommonUtils utils;
