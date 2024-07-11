@@ -17,12 +17,15 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.AccessLevel;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.sopt.makers.operation.common.domain.BaseEntity;
+import org.sopt.makers.operation.user.dao.UserPersonalInfoUpdateDao;
 
 @Entity @Getter
 @Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@DynamicUpdate
 public class User extends BaseEntity {
 
     @Id
@@ -57,5 +60,11 @@ public class User extends BaseEntity {
         this.name = name;
         this.profileImage = profileImage;
         this.birthday = birthday;
+    }
+
+    public void updateUserInfo(UserPersonalInfoUpdateDao infoUpdateDao) {
+        this.name = infoUpdateDao.name();
+        this.phone = infoUpdateDao.phone();
+        this.profileImage = infoUpdateDao.profileImage();
     }
 }
