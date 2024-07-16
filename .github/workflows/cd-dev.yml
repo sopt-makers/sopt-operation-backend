@@ -1,7 +1,7 @@
 name: cd-dev
 
 on:
-  pull_request:
+  push:
     branches: [ feat/#251 ]
 
 jobs:
