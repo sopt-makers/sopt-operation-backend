@@ -2,7 +2,7 @@ name: cd-dev
 
 on:
   push:
-    branches: [ feat/#251 ]
+    branches: [ develop ]
 
 jobs:
   build:
