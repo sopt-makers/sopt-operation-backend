@@ -4,9 +4,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-
 import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.util.ApiResponseUtil;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 
 import org.sopt.makers.operation.exception.AuthException;
 import org.sopt.makers.operation.exception.UserException;
@@ -21,12 +26,6 @@ import org.sopt.makers.operation.exception.ScheduleException;
 import org.sopt.makers.operation.exception.SubLectureException;
 import org.sopt.makers.operation.exception.TokenException;
 
-import org.springframework.http.ResponseEntity;
-
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
-
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -119,11 +118,16 @@ public class ErrorHandler {
 
     private String getErrorMessage(ObjectError objectError) {
         if (objectError instanceof FieldError) {
-            FieldError fieldError = (FieldError) objectError;
-            return String.format("[%s]은 필수 값입니다.", fieldError.getField());
+            return String.format("[%s]은 필수 값입니다.", ((FieldError) objectError).getField());
         } else {
             return objectError.getDefaultMessage();
         }
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<BaseResponse<?>> handleValidationFailure(MissingServletRequestParameterException ex) {
+        log.error("[Missing Parameter Exception] : {}", ex.getMessage());
+        return ApiResponseUtil.failure(ex.getMessage());
     }
 
 }

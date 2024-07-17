@@ -61,5 +61,5 @@ public interface UserApi {
 	)
 	ResponseEntity<BaseResponse<?>> getUserInfoOf(
 			@Parameter(hidden = true) @NonNull Principal principal,
-			@Parameter @NonNull String targetUserIds);
+			@Parameter String targetUserIds);
 }
