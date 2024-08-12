@@ -1,6 +1,12 @@
 # SOPT 메이커스 운영 프로덕트 서버
-> SOPT 활동 기수 회원과 임원진의 편리한 운영을 위한 서비스를 만들어요.
+> _updated at 2024.08.12_
 
+SOPT 활동 기수 회원들의 편리한 활동과<br/>
+SOPT 임원진의 원활한 운영을 돕는 프로덕트를 만들고
+
+SOPT makers 프로덕트들이 전역적으로 사용하는 internal API를 관리합니다.
+
+## 핵심 기능
 ### 웹 어드민 (임원진 대상)
 - 세미나, 행사 등 **세션 생성**
 - 활동 기수 회원의 **출석 내역 관리**
@@ -8,6 +14,10 @@
 
 ### 출석 앱 (활동 기수 회원 대상)
 - 참여한 세션 **출석 체크**, **자신의 출석 내역 조회**
+
+### 인증 및 로그인 / 회원 데이터 관리 (전 프로덕트 대상)
+- **SSO**(Single Sign-On)와 유사한 방식의 **공통 토큰 발급**
+- 유저 고유 데이터 및 개인정보를 **중앙화**하여 **표준화된 유저 API** 제공
 
 <br/>
 
@@ -22,45 +32,14 @@
 
 <br/>
 
-## 프로젝트 폴더 구조
-### 멀티모듈 구조
-```
-📁 operation-api # Controller, Service
-📁 operation-auth # Authentication 관련 기능
-📁 operation-common # 공통 기능
-📁 operation-domain # Entity
-📁 operation-external # 외부 API 기능(SOPT 메이커스 내 플레이그라운드, 알림TF)
-```
-
-### 모듈 내 구조
-```
-📁 src
-|_ 📁 main
-|_ |_ 📁 app # 앱 기능
-|_ |_ 📁 common # 공통 기능
-|_ |_ 📁 web # 웹 기능
-```
-
-<br/>
-
-## Member
-
-| [이용택](https://github.com/dragontaek-lee)| [김소현](https://github.com/thguss)|
-|:-----:|:------:|
-| <img width="120" height="120" src="https://user-images.githubusercontent.com/55437339/236619788-8e1ec0be-9158-452c-88b9-fe18e227586c.png"> | <img width="120" height="120" src="https://user-images.githubusercontent.com/55437339/236619930-7cad7853-1eb8-45a7-88f7-8ca196124b42.png"> |
-|- 프로젝트 초기 세팅 <br/> - HTTPS 설정<br/> - (App)회원 출석 체크 기능<br/> - 알림TF|- 프로젝트 초기 세팅<br/> - CICD 환경 구축<br/> - (Web)세션 출석 관리 기능<br/> - 알림 관리 기능|
-
-
-<br/>
-
 ## Process
 1. 개발 전에 `github issue`를 생성해주세요!
     1. 템플릿에 맞게 내용을 작성한다
     2. Assignees, Label을 단다
     3. label의 경우 타입과 본인의 이름을 할당한다 (`chore` `yongtaek`)
 2. `feature branch`를 생성해주세요!
-    1. 브랜치명은 `이름_#이슈번호` 로 한다
-    2. 예시는 다음과 같다 **브랜치명: yongtaek_#32**
+    1. 브랜치명은 `{이슈 종류}/#{이슈번호}_T-{티켓번호}` 로 한다
+    2. 예시는 다음과 같다 **브랜치명: feat/#123_T-4567**
 3. 로컬에서 작업하고 `기능단위로 쪼개서` 커밋을 해주세요!
 4. 해당 issue에 대한 작업이 완료되었다면 github에 `해당 브랜치를` 올려주세요!
 5. `PR`을 템플릿에 맞춰서 올려주세요!
@@ -96,7 +75,85 @@
 - **develop**은 development용 브랜치입니다!
     - 테스트용 ec2(**makers.operation)**로 배포되도록 파이프라인이 구축되어 있습니다
     - default 브랜치 입니다
-- **feature**은 `이름_#이슈번호` 로 되어있는 브랜치입니다!
+- **feature**은 `{이슈 종류}/#{이슈번호}_T-{티켓번호}` 로 되어있는 브랜치입니다!
     - 각자 이슈에 대한 작업물의 브랜치입니다
+      - 이슈에 따라 브랜치 Prefix를 `feat`/`fix`/`modify`등 여러가지를 활용할 수 있습니다  
     - develop에 PR을 거쳐 merge 해주세요
+    - 팀 내에서 사용하고 있는 프로젝트 관리 툴 **Height** 의 Magic Link 활용을 위해 위와 같은 이름 형식을 가집니다.
 
+<br/>
+
+## 프로젝트 폴더 구조
+### 멀티모듈 구조
+```
+📁 operation-api # Controller, Service
+📁 operation-auth # Authentication 관련 기능
+📁 operation-common # 공통 기능 / 공용 객체
+📁 operation-domain # Entity & Repository
+📁 operation-external # 외부 API 기능(SOPT 메이커스 내 플레이그라운드, 알림 서버)
+```
+
+### 모듈 내 구조
+> `operation-api`
+```
+📁 src
+|_ 📁 main
+|_ |_ 📁 app # 앱 기능
+|_ |_ 📁 auth # 인증 기능
+|_ |_ 📁 common # 공통 기능
+|_ |_ 📁 scheduler # 자동 출석 처리 기능(Spring Scheduling - Cron Job)
+|_ |_ 📁 test # HealthCheck API Controller
+|_ |_ 📁 user # 유저 기능
+|_ |_ 📁 web # 웹 기능
+|_ |_ OperationApplication.java // Spring Application Class
+```
+
+> `operation-auth`
+```
+📁 src
+|_ 📁 main
+|_ |_ 📁 authentication
+|_ |_ 📁 config
+|_ |_ 📁 filter
+|_ |_ 📁 jwt
+|_ |_ AuthRoot.java // Auth Module 패키지 인식을 위한 Interface
+```
+
+> `operation-common`
+```
+📁 src
+|_ 📁 main
+|_ |_ 📁 code
+|_ |_ 📁 config
+|_ |_ 📁 dto
+|_ |_ 📁 exception
+|_ |_ 📁 util
+|_ |_ CommonRoot.java // Common Module 패키지 인식을 위한 Interface
+```
+
+> `operation-domain`
+```
+📁 src
+|_ 📁 main
+|_ |_ 📁 admin
+|_ |_ 📁 alarm
+|_ |_ 📁 attendance
+|_ |_ 📁 auth
+|_ |_ 📁 common
+|_ |_ 📁 lecture
+|_ |_ 📁 member
+|_ |_ 📁 schedule
+|_ |_ 📁 user
+|_ |_ DomainRoot.java // Domain Module 패키지 인식을 위한 Interface
+```
+
+> `operation-external`
+```
+📁 src
+|_ 📁 main
+|_ |_ 📁 client
+|_ |_ 📁 config
+|_ |_ ExternalRoot.java // External Module 패키지 인식을 위한 Interface
+```
+
+<br/>
