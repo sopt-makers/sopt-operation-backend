@@ -6,7 +6,14 @@ import java.util.Collections;
 import lombok.val;
 import lombok.RequiredArgsConstructor;
 
+import org.sopt.makers.operation.user.dao.UserActivityInfoUpdateDao;
+import org.sopt.makers.operation.user.dao.UserPersonalInfoUpdateDao;
+import org.sopt.makers.operation.user.domain.Position;
 import org.sopt.makers.operation.user.domain.User;
+import org.sopt.makers.operation.user.domain.UserGenerationHistory;
+import org.sopt.makers.operation.user.dto.request.UserActivityModifyRequest;
+import org.sopt.makers.operation.user.dto.request.UserModifyRequest;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +48,43 @@ public class UserServiceImpl implements UserService {
         val userInfoResponses = targetUsers.stream()
                 .map(this::mergeUserInfoWithHistory).toList();
         return UserInfosResponse.of(userInfoResponses);
+    }
+
+    @Override
+    @Transactional
+    public void modifyUserPersonalInfo(UserModifyRequest userModifyRequest) {
+        val targetUser = userRepository.findUserById(userModifyRequest.userId());
+        val userInfoUpdateDao = new UserPersonalInfoUpdateDao(
+                userModifyRequest.userName(),
+                userModifyRequest.userPhone(),
+                userModifyRequest.userProfileImage()
+        );
+        targetUser.updateUserInfo(userInfoUpdateDao);
+    }
+
+    @Override
+    @Transactional
+    public void modifyUserActivityInfos(List<UserActivityModifyRequest> activitiesModifyRequest) {
+        activitiesModifyRequest.forEach(
+                activityModifyRequest -> {
+                    val targetActivity = generationHistoryRepository.findHistoryById(activityModifyRequest.activityId());
+                    validateIsAbleToUpdateActivity(targetActivity, activityModifyRequest);
+
+                    val activityInfoUpdateDao = new UserActivityInfoUpdateDao(
+                            activityModifyRequest.team()
+                    );
+                    targetActivity.updateActivityInfo(activityInfoUpdateDao);
+                });
+    }
+
+    private void validateIsAbleToUpdateActivity(
+            UserGenerationHistory currentActivity, UserActivityModifyRequest activityModifyRequest
+    ) {
+        if (!Position.MEMBER.equals(currentActivity.getPosition())
+                && !currentActivity.getTeam().equals(activityModifyRequest.team())
+        ) {
+            throw new UserException(UserFailureCode.INVALID_USER_MODIFY_ACTIVITY_INFO);
+        }
     }
 
     private void validateIds(List<Long> ids) {
