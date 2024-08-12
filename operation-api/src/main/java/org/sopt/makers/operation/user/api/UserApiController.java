@@ -1,5 +1,6 @@
 package org.sopt.makers.operation.user.api;
 
+import jakarta.validation.Valid;
 import lombok.val;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -9,11 +10,13 @@ import org.sopt.makers.operation.common.util.CommonUtils;
 import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.exception.ParameterDecodeCustomException;
 import org.sopt.makers.operation.exception.UserException;
+import org.sopt.makers.operation.user.dto.request.UserModifyRequest;
 import org.sopt.makers.operation.user.service.UserService;
 import org.sopt.makers.operation.util.ApiResponseUtil;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,7 +30,7 @@ import java.util.Objects;
 
 import static org.sopt.makers.operation.code.success.UserSuccessCode.SUCCESS_GET_USER;
 import static org.sopt.makers.operation.code.success.UserSuccessCode.SUCCESS_GET_USERS;
-
+import static org.sopt.makers.operation.code.success.UserSuccessCode.SUCCESS_PUT_USER;
 
 @RestController
 @RequiredArgsConstructor
@@ -60,6 +63,16 @@ public class UserApiController implements UserApi {
 		val userIds = getIdsFromParameter(targetUserIds);
 		val response = userService.getUserInfos(userIds);
 		return ApiResponseUtil.success(SUCCESS_GET_USERS, response);
+	}
+
+	@Override
+	@PutMapping
+	public ResponseEntity<BaseResponse<?>> modifyUserInfoOf(
+			@Valid UserModifyRequest userModifyRequest
+	) {
+		userService.modifyUserPersonalInfo(userModifyRequest);
+		userService.modifyUserActivityInfos(userModifyRequest.userActivities());
+		return ApiResponseUtil.success(SUCCESS_PUT_USER);
 	}
 
 	private List<Long> getIdsFromParameter(String parameter)  {
