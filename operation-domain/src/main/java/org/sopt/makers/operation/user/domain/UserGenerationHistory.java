@@ -14,11 +14,14 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.AccessLevel;
+import org.hibernate.annotations.DynamicUpdate;
+import org.sopt.makers.operation.user.dao.UserActivityInfoUpdateDao;
 
 @Entity @Getter
 @Table(name = "user_generation_history")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@DynamicUpdate
 public class UserGenerationHistory {
 
     @Id
@@ -50,5 +53,9 @@ public class UserGenerationHistory {
         this.part = part;
         this.team = team;
         this.position = position;
+    }
+
+    public void updateActivityInfo(UserActivityInfoUpdateDao activityInfoUpdateDao) {
+        this.team = activityInfoUpdateDao.team();
     }
 }

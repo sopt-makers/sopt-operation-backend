@@ -14,6 +14,7 @@ public enum UserFailureCode implements FailureCode{
     // 400
     INVALID_PARAMETER(BAD_REQUEST, "잘못된 형식의 회원 정보 요청입니다."),
     INVALID_USER_IN_USER_LIST_PARAMETER(BAD_REQUEST, "유효하지 않은 회원 ID가 포함되어 있습니다."),
+    INVALID_USER_MODIFY_ACTIVITY_INFO(BAD_REQUEST, "유효하지 않은 활동 이력 변경 요청입니다."),
 
     // 404
     NOT_FOUND_USER(NOT_FOUND, "존재하지 않는 회원입니다."),
