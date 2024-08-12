@@ -107,32 +107,35 @@ SOPT makers 프로덕트들이 전역적으로 사용하는 internal API를 관�
 |_ |_ 📁 web # 웹 기능
 |_ |_ OperationApplication.java // Spring Application Class
 ```
+<br/>
 
 > `operation-auth`
 ```
 📁 src
 |_ 📁 main
-|_ |_ 📁 authentication
-|_ |_ 📁 config
-|_ |_ 📁 filter
-|_ |_ 📁 jwt
+|_ |_ 📁 authentication // 구현체
+|_ |_ 📁 config // Spring Security Config
+|_ |_ 📁 filter // Filter 구현체
+|_ |_ 📁 jwt // JWT 발급 관련 객체
 |_ |_ AuthRoot.java // Auth Module 패키지 인식을 위한 Interface
 ```
+<br/>
 
 > `operation-common`
 ```
 📁 src
 |_ 📁 main
-|_ |_ 📁 code
-|_ |_ 📁 config
-|_ |_ 📁 dto
-|_ |_ 📁 exception
-|_ |_ 📁 util
+|_ |_ 📁 code // 성공 및 실패 Code 객체
+|_ |_ 📁 config // 전역 환경 변수 값 주입 객체
+|_ |_ 📁 dto // API 공용 Base Api Response Body 객체
+|_ |_ 📁 exception // Application 도메인별 Exception 객체
+|_ |_ 📁 util // API 공용 Api Response 생성 객체 
 |_ |_ CommonRoot.java // Common Module 패키지 인식을 위한 Interface
 ```
 
 > `operation-domain`
 ```
+// 공통적으로 각 도메인의 Entity 및 Repository 관리
 📁 src
 |_ 📁 main
 |_ |_ 📁 admin
@@ -146,14 +149,13 @@ SOPT makers 프로덕트들이 전역적으로 사용하는 internal API를 관�
 |_ |_ 📁 user
 |_ |_ DomainRoot.java // Domain Module 패키지 인식을 위한 Interface
 ```
+<br/>
 
 > `operation-external`
 ```
 📁 src
 |_ 📁 main
-|_ |_ 📁 client
-|_ |_ 📁 config
+|_ |_ 📁 client // 외부 서버 or API 통신 객체 구현
+|_ |_ 📁 config // 외부 통신(RestTemplate) 설정 객체
 |_ |_ ExternalRoot.java // External Module 패키지 인식을 위한 Interface
 ```
-
-<br/>
