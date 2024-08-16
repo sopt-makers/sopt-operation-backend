@@ -7,6 +7,6 @@ public enum Part {
     WEB,
     ANDROID,
     IOS,
-    SERVER
-
+    SERVER,
+    INDEPENDENT, // 회장단 무소속 선택지
 }
