@@ -3,6 +3,7 @@ package org.sopt.makers.operation.user.service;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Collections;
+import java.util.stream.Stream;
 
 import lombok.val;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.InjectMocks;
@@ -18,11 +21,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.sopt.makers.operation.code.failure.UserFailureCode;
 import org.sopt.makers.operation.exception.UserException;
+import org.sopt.makers.operation.user.domain.*;
+import org.sopt.makers.operation.user.dto.request.UserActivityModifyRequest;
 import org.sopt.makers.operation.user.dto.response.UserInfoResponse;
-import org.sopt.makers.operation.user.domain.User;
-import org.sopt.makers.operation.user.domain.Team;
-import org.sopt.makers.operation.user.domain.Position;
-import org.sopt.makers.operation.user.domain.UserGenerationHistory;
 import org.sopt.makers.operation.user.repository.UserRepository;
 import org.sopt.makers.operation.user.repository.history.UserGenerationHistoryRepository;
 
@@ -47,8 +48,8 @@ class UserServiceTest {
     class SuccessTest {
 
         @Test
-        @DisplayName("Case1. 의도했던 데이터로 구성된 Response 데이터가 반환된다.")
-        void expectResponseReturnSuccess() {
+        @DisplayName("Case. 의도했던 데이터로 구성된 유저 조회 결과 Response 데이터가 반환된다.")
+        void expectFindUserResponseReturnSuccess() {
             // given
             User mockedUser = mock(User.class);
             UserGenerationHistory mockedHistory = mock(UserGenerationHistory.class);
@@ -91,6 +92,7 @@ class UserServiceTest {
                     .isInstanceOf(UserException.class)
                     .hasMessageContaining(UserFailureCode.INVALID_PARAMETER.getMessage());
         }
+
         @Test
         @DisplayName("Case. 복수 유저 조회 시에 빈 Id 리스트를 주입할 경우, 예외 반환")
         void throwException_Empty_Ids() {
@@ -125,6 +127,32 @@ class UserServiceTest {
                     .hasMessageContaining(UserFailureCode.INVALID_USER_IN_USER_LIST_PARAMETER.getMessage());
         }
 
-    }
+        @ParameterizedTest
+        @DisplayName("Case. 유저 활동 데이터 변경 시에 임원진이면서 기존 저장되어 있던 Team과 다를 경우")
+        @MethodSource("ofActivityUpdateRequests")
+        void throwException_Update_Team_Data_Of_Executive_User(
+                // given
+                List<UserActivityModifyRequest> activitiesModifyRequest
+        ) {
+            UserGenerationHistory mockedExistHistory = mock(UserGenerationHistory.class);
+            given(mockedExistHistory.getTeam()).willReturn(Team.MAKERS);
+            given(mockedExistHistory.getPosition()).willReturn(Position.TEAM_LEADER);
 
+            given(userGenerationHistoryRepository.findHistoryById(1L)).willReturn(mockedExistHistory);
+
+            // then
+            assertThatThrownBy(() -> userService.modifyUserActivityInfos(activitiesModifyRequest))
+                    .isInstanceOf(UserException.class)
+                    .hasMessageContaining(UserFailureCode.INVALID_USER_MODIFY_ACTIVITY_INFO.getMessage());
+        }
+        static Stream<Arguments> ofActivityUpdateRequests() {
+            return Stream.of(
+                    Arguments.of(
+                            List.of(
+                                    new UserActivityModifyRequest(1L, 34, Part.SERVER, Team.OPERATION, Position.TEAM_LEADER)
+                            )
+                    )
+            );
+        }
+    }
 }
