@@ -31,6 +31,14 @@ jobs:
           echo "${{ secrets.APPLICATION_DEV }}" >> ./application-dev.yml
           cat ./application-dev.yml
 
+      - name: Create application-test.yml
+        run: |
+          cd ./operation-domain/src/test
+          mkdir -p resources
+          touch ./resources/application-test.yml
+          echo "${{ secrets.APPLICATION_DOMAIN_TEST }}" >> ./application-test.yml
+          cat ./application-test.yml
+
       - name: 'Get key from Github Secrets'
         run: |
           pwd
