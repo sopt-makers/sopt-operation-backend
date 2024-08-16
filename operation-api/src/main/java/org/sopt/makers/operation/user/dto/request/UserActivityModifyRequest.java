@@ -14,6 +14,7 @@ public record UserActivityModifyRequest(
         @NotNull(message = ERROR_MESSAGE_FOR_NOT_NULL)
         Part part,
         Team team,
+        @NotNull(message = ERROR_MESSAGE_FOR_NOT_NULL)
         Position position
 ) {
     private static final String ERROR_MESSAGE_FOR_NOT_NULL = "는 필수 값입니다.";
