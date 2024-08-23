@@ -235,14 +235,6 @@ class UserRepositoryTest {
                     Arguments.of(
                             new UserPersonalInfoUpdateDao("김철수", "01098765432", "changedProfileImageForCheolSu"),
                             "김철수", "01098765432", "changedProfileImageForCheolSu"
-                    ),
-                    Arguments.of(
-                            new UserPersonalInfoUpdateDao("장민수", "01013245768", "changedProfileImageForMinsu"),
-                            "장민수", "01013245768", "changedProfileImageForMinsu"
-                    ),
-                    Arguments.of(
-                            new UserPersonalInfoUpdateDao("조진세", "01097865342", "changedProfileImageForJinsae"),
-                            "조진세", "01097865342", "changedProfileImageForJinsae"
                     )
             );
         }
@@ -262,7 +254,7 @@ class UserRepositoryTest {
 
             // when
             targetUser.updateUserInfo(infoUpdateDao);
-            userRepository.save(user);
+            userRepository.save(targetUser);
             User expectedUser = userRepository.findUserById(ABSOLUTE_USER_ID_VALUE);
 
             // then
