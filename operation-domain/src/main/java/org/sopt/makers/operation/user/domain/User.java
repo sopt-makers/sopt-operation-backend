@@ -17,7 +17,6 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.AccessLevel;
 
-import org.hibernate.annotations.DynamicUpdate;
 import org.sopt.makers.operation.common.domain.BaseEntity;
 import org.sopt.makers.operation.user.dao.UserPersonalInfoUpdateDao;
 
@@ -25,7 +24,6 @@ import org.sopt.makers.operation.user.dao.UserPersonalInfoUpdateDao;
 @Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@DynamicUpdate
 public class User extends BaseEntity {
 
     @Id
