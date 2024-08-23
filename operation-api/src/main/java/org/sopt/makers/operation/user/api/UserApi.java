@@ -9,6 +9,7 @@ import lombok.NonNull;
 import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.user.dto.request.UserModifyRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.security.Principal;
 
@@ -92,5 +93,6 @@ public interface UserApi {
 			}
 	)
 	ResponseEntity<BaseResponse<?>> modifyUserInfoOf(
+			@PathVariable long userId,
 			@RequestBody UserModifyRequest userModifyRequest);
 }

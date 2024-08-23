@@ -8,9 +8,6 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public record UserModifyRequest(
-        @JsonProperty("id")
-        @NotNull(message = ERROR_MESSAGE_FOR_NOT_NULL)
-        long userId, // 추후 Admin에서 임원진이 회원 정보를 수정할 수 있도록 하기 위해
         @JsonProperty("name")
         @NotNull(message = ERROR_MESSAGE_FOR_NOT_NULL)
         String userName,
