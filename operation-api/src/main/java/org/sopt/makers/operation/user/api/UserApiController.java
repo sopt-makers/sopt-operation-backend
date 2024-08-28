@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.sopt.makers.operation.code.failure.UserFailureCode;
 import org.sopt.makers.operation.common.util.CommonUtils;
+import org.sopt.makers.operation.common.util.PermissionValidator;
 import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.exception.ParameterDecodeCustomException;
 import org.sopt.makers.operation.exception.UserException;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URLDecoder;
@@ -43,6 +45,7 @@ public class UserApiController implements UserApi {
 
 	private final UserService userService;
 	private final CommonUtils utils;
+	private final PermissionValidator permissionValidator;
 
 	@Override
 	@GetMapping("/me")
@@ -66,12 +69,15 @@ public class UserApiController implements UserApi {
 	}
 
 	@Override
-	@PutMapping
+	@PutMapping("/{userId}")
 	public ResponseEntity<BaseResponse<?>> modifyUserInfoOf(
+			@NonNull Principal principal,
+			@PathVariable("userId") long userId,
 			@Valid UserModifyRequest userModifyRequest
 	) {
-		userService.modifyUserPersonalInfo(userModifyRequest);
-		userService.modifyUserActivityInfos(userModifyRequest.userActivities());
+		val requesterId = utils.getMemberId(principal);
+		permissionValidator.validateIsSelfOrExecutive(requesterId, userId);
+		userService.modifyUserInfo(userId, userModifyRequest);
 		return ApiResponseUtil.success(SUCCESS_PUT_USER);
 	}
 
