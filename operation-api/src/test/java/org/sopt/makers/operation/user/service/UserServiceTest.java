@@ -23,6 +23,7 @@ import org.sopt.makers.operation.code.failure.UserFailureCode;
 import org.sopt.makers.operation.exception.UserException;
 import org.sopt.makers.operation.user.domain.*;
 import org.sopt.makers.operation.user.dto.request.UserActivityModifyRequest;
+import org.sopt.makers.operation.user.dto.request.UserModifyRequest;
 import org.sopt.makers.operation.user.dto.response.UserInfoResponse;
 import org.sopt.makers.operation.user.repository.UserRepository;
 import org.sopt.makers.operation.user.repository.history.UserGenerationHistoryRepository;
@@ -65,7 +66,7 @@ class UserServiceTest {
             given(userRepository.findUserById(1L)).willReturn(mockedUser);
             given(userGenerationHistoryRepository.findAllHistoryByUserId(1L)).willReturn(List.of(mockedHistory));
 
-            Long targetUserId = 1L;
+            long targetUserId = 1L;
             UserInfoResponse expected = UserInfoResponse.of(mockedUser, List.of(mockedHistory));
 
             // when
@@ -132,24 +133,37 @@ class UserServiceTest {
         @MethodSource("ofActivityUpdateRequests")
         void throwException_Update_Team_Data_Of_Executive_User(
                 // given
-                List<UserActivityModifyRequest> activitiesModifyRequest
+                UserModifyRequest userModifyRequest
         ) {
-            UserGenerationHistory mockedExistHistory = mock(UserGenerationHistory.class);
-            given(mockedExistHistory.getTeam()).willReturn(Team.MAKERS);
-            given(mockedExistHistory.getPosition()).willReturn(Position.TEAM_LEADER);
+            val mockedUser = mock(User.class);
+            val mockedExistHistory = mock(UserGenerationHistory.class);
 
+            given(mockedUser.getId()).willReturn(1L);
+            given(mockedExistHistory.isExecutive()).willReturn(true);
+            given(mockedExistHistory.isBelongTeamTo(Team.OPERATION)).willReturn(false);
+
+            given(userRepository.findUserById(1L)).willReturn(mockedUser);
             given(userGenerationHistoryRepository.findHistoryById(1L)).willReturn(mockedExistHistory);
 
             // then
-            assertThatThrownBy(() -> userService.modifyUserActivityInfos(activitiesModifyRequest))
+            assertThatThrownBy(() -> userService.modifyUserInfo(mockedUser.getId(), userModifyRequest))
                     .isInstanceOf(UserException.class)
                     .hasMessageContaining(UserFailureCode.INVALID_USER_MODIFY_ACTIVITY_INFO.getMessage());
         }
         static Stream<Arguments> ofActivityUpdateRequests() {
             return Stream.of(
                     Arguments.of(
-                            List.of(
-                                    new UserActivityModifyRequest(1L, 34, Part.SERVER, Team.OPERATION, Position.TEAM_LEADER)
+//                            new UserPersonalInfoUpdateDao("TestUser",
+//                                    "01012345678",
+//                                    "TestProfileImage"
+//                            ),
+                            new UserModifyRequest(
+                                    "TestUser",
+                                    "01012345678",
+                                    "TestProfileImage",
+                                    List.of(
+                                            new UserActivityModifyRequest(1L, 34, Part.SERVER, Team.OPERATION, Position.TEAM_LEADER)
+                                    )
                             )
                     )
             );
