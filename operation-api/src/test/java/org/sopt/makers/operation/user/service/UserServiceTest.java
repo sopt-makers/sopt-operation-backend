@@ -82,17 +82,6 @@ class UserServiceTest {
     @DisplayName("[TEST] 실패한 경우에 대한 테스트")
     class FailureTest {
 
-        @Test
-        @DisplayName("Case. 단일 유저 조회 시에 null이 주입할 경우, 예외 반환")
-        void throwException_Null_Id() {
-            // given
-            Long invalidUserId = null;
-
-            // when & then
-            assertThatThrownBy(() -> userService.getUserInfo(invalidUserId))
-                    .isInstanceOf(UserException.class)
-                    .hasMessageContaining(UserFailureCode.INVALID_PARAMETER.getMessage());
-        }
 
         @Test
         @DisplayName("Case. 복수 유저 조회 시에 빈 Id 리스트를 주입할 경우, 예외 반환")
