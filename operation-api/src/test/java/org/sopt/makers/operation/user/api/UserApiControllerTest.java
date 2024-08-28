@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.sopt.makers.operation.common.util.PermissionValidator;
 import org.sopt.makers.operation.user.domain.User;
 import org.sopt.makers.operation.user.domain.Part;
 import org.sopt.makers.operation.user.domain.Team;
@@ -65,6 +66,9 @@ class UserApiControllerTest {
     JwtTokenProvider tokenProvider;
     @MockBean
     CommonUtils commonUtils;
+
+    @MockBean
+    PermissionValidator permissionValidator;
 
     @Autowired
     MockMvc mockMvc;
