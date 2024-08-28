@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
     private final UserGenerationHistoryRepository generationHistoryRepository;
 
     @Override
-    public UserInfoResponse getUserInfo(Long userId) {
+    public UserInfoResponse getUserInfo(final long userId) {
         validateIds(Collections.singletonList(userId));
         val targetUser = userRepository.findUserById(userId);
         val histories = generationHistoryRepository.findAllHistoryByUserId(userId);
@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserInfosResponse getUserInfos(List<Long> userIds) {
+    public UserInfosResponse getUserInfos(final List<Long> userIds) {
         validateIds(userIds);
         val targetUsers = userRepository.findAllUsersById(userIds);
         val userInfoResponses = targetUsers.stream()
@@ -52,19 +52,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void modifyUserPersonalInfo(UserModifyRequest userModifyRequest) {
-        val targetUser = userRepository.findUserById(userModifyRequest.userId());
+    public void modifyUserInfo(final long userId, final UserModifyRequest userModifyRequest) {
+        val targetUser = userRepository.findUserById(userId);
         val userInfoUpdateDao = new UserPersonalInfoUpdateDao(
                 userModifyRequest.userName(),
                 userModifyRequest.userPhone(),
                 userModifyRequest.userProfileImage()
         );
         targetUser.updateUserInfo(userInfoUpdateDao);
+
+        modifyUserActivityInfos(userModifyRequest.userActivities());
     }
 
-    @Override
-    @Transactional
-    public void modifyUserActivityInfos(List<UserActivityModifyRequest> activitiesModifyRequest) {
+    private void modifyUserActivityInfos(final List<UserActivityModifyRequest> activitiesModifyRequest) {
         activitiesModifyRequest.forEach(
                 activityModifyRequest -> {
                     val targetActivity = generationHistoryRepository.findHistoryById(activityModifyRequest.activityId());
