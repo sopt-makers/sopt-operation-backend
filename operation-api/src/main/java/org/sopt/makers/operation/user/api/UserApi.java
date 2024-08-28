@@ -93,6 +93,7 @@ public interface UserApi {
 			}
 	)
 	ResponseEntity<BaseResponse<?>> modifyUserInfoOf(
+			@Parameter(hidden = true) @NonNull Principal principal,
 			@PathVariable long userId,
 			@RequestBody UserModifyRequest userModifyRequest);
 }
