@@ -8,7 +8,6 @@ import org.sopt.makers.operation.code.failure.UserFailureCode;
 import org.sopt.makers.operation.config.ValueConfig;
 import org.sopt.makers.operation.exception.PermissionException;
 import org.sopt.makers.operation.exception.UserException;
-import org.sopt.makers.operation.user.domain.Position;
 import org.sopt.makers.operation.user.repository.history.UserGenerationHistoryRepository;
 
 import org.springframework.context.annotation.Configuration;
@@ -43,7 +42,7 @@ public class PermissionValidator {
                 .filter(history -> history.getGeneration() == valueConfig.getGENERATION())
                 .findFirst()
                 .orElseThrow(() -> new UserException(UserFailureCode.NOT_FOUND_HISTORY));
-        return !Position.MEMBER.equals(requesterCurrentHistory.getPosition());
+        return requesterCurrentHistory.isExecutive();
     }
 
 }

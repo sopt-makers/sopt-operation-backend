@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 
 import org.sopt.makers.operation.user.dao.UserActivityInfoUpdateDao;
 import org.sopt.makers.operation.user.dao.UserPersonalInfoUpdateDao;
-import org.sopt.makers.operation.user.domain.Position;
 import org.sopt.makers.operation.user.domain.User;
 import org.sopt.makers.operation.user.domain.UserGenerationHistory;
 import org.sopt.makers.operation.user.dto.request.UserActivityModifyRequest;
@@ -80,8 +79,8 @@ public class UserServiceImpl implements UserService {
     private void validateIsAbleToUpdateActivity(
             UserGenerationHistory currentActivity, UserActivityModifyRequest activityModifyRequest
     ) {
-        if (!Position.MEMBER.equals(currentActivity.getPosition())
-                && !currentActivity.getTeam().equals(activityModifyRequest.team())
+        if (currentActivity.isExecutive()
+                && !currentActivity.isBelongTeamTo(activityModifyRequest.team())
         ) {
             throw new UserException(UserFailureCode.INVALID_USER_MODIFY_ACTIVITY_INFO);
         }

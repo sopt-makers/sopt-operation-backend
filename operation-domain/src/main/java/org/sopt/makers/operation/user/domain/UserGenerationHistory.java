@@ -53,6 +53,14 @@ public class UserGenerationHistory {
         this.position = position;
     }
 
+    public boolean isExecutive() {
+        return !Position.MEMBER.equals(this.position);
+    }
+
+    public boolean isBelongTeamTo(Team team) {
+        return this.team.equals(team);
+    }
+
     public void updateActivityInfo(UserActivityInfoUpdateDao activityInfoUpdateDao) {
         this.team = activityInfoUpdateDao.team();
     }
