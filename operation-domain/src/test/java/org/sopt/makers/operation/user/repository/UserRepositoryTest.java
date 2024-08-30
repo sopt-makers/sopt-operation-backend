@@ -222,7 +222,6 @@ class UserRepositoryTest {
 
             // when
             targetUser.updateUserInfo(infoUpdateDao);
-            userRepository.save(user);
             User expectedUser = userRepository.findUserById(ABSOLUTE_USER_ID_VALUE);
 
             // then
