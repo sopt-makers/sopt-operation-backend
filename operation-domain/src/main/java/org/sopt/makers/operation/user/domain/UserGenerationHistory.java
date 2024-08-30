@@ -14,6 +14,7 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.AccessLevel;
+import org.sopt.makers.operation.user.dao.UserActivityInfoUpdateDao;
 
 @Entity @Getter
 @Table(name = "user_generation_history")
@@ -50,5 +51,17 @@ public class UserGenerationHistory {
         this.part = part;
         this.team = team;
         this.position = position;
+    }
+
+    public boolean isExecutive() {
+        return !Position.MEMBER.equals(this.position);
+    }
+
+    public boolean isBelongTeamTo(Team team) {
+        return this.team.equals(team);
+    }
+
+    public void updateActivityInfo(UserActivityInfoUpdateDao activityInfoUpdateDao) {
+        this.team = activityInfoUpdateDao.team();
     }
 }

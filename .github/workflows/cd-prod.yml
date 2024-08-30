@@ -31,6 +31,14 @@ jobs:
           echo "${{ secrets.APPLICATION_PROD }}" >> ./application-prod.yml
           cat ./application-prod.yml
 
+      - name: Create application-test.yml
+        run: |
+          cd ./operation-domain/src/test
+          mkdir -p resources
+          touch ./resources/application-test.yml
+          echo "${{ secrets.APPLICATION_DOMAIN_TEST }}" >> ./application-test.yml
+          cat ./application-test.yml
+
       - name: Build with Gradle
         run: ./gradlew build
         shell: bash

@@ -9,22 +9,28 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
-@Profile("domain-unit")
+@Profile("test")
 public class DatabaseCleaner implements InitializingBean {
+
+    private static final String TRUNCATE_TABLE_QUERY_FORMAT = "TRUNCATE TABLE %s";
+    private static final String ALTER_TABLE_ID_COLUMN_TO_START_FROM_ONE_QUERY_FORMAT = "ALTER TABLE %s ALTER COLUMN id RESTART WITH 1";
 
     @PersistenceContext
     private EntityManager entityManager;
 
-    private List<String> tableNames;
+    private final List<String> tableNames = new ArrayList<>();
 
     @Override
     public void afterPropertiesSet() {
-        tableNames = entityManager.getMetamodel().getEntities().stream()
+        findAllTableNames();
+    }
+
+    private  void findAllTableNames() {
+        List<String> names = entityManager.getMetamodel().getEntities().stream()
                 .filter(e -> e.getJavaType().getAnnotation(Entity.class) != null)
                 .map(e -> {
                     String snakeName = convertToSnake(e.getName());
@@ -33,8 +39,8 @@ public class DatabaseCleaner implements InitializingBean {
                     }
                     return snakeName;
                 })
-                .collect(Collectors.toList());
-        System.out.println(Arrays.deepToString(tableNames.toArray()));
+                .toList();
+        tableNames.addAll(names);
     }
 
     private String convertToSnake(String camel) {
@@ -57,10 +63,16 @@ public class DatabaseCleaner implements InitializingBean {
 
     @Transactional
     public void execute() {
-        entityManager.flush();
+        entityManager.clear();
+        truncate();
+    }
+
+    private void truncate() {
         for (String name : tableNames) {
-            entityManager.createNativeQuery(String.format("TRUNCATE TABLE %s", name)).executeUpdate();
-            entityManager.createNativeQuery(String.format("ALTER TABLE %s ALTER COLUMN ID RESTART WITH 1", name)).executeUpdate();
+            entityManager.createNativeQuery(String.format(TRUNCATE_TABLE_QUERY_FORMAT, name))
+                    .executeUpdate();
+            entityManager.createNativeQuery(String.format(ALTER_TABLE_ID_COLUMN_TO_START_FROM_ONE_QUERY_FORMAT, name))
+                    .executeUpdate();
         }
     }
 }

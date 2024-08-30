@@ -6,7 +6,13 @@ import java.util.Collections;
 import lombok.val;
 import lombok.RequiredArgsConstructor;
 
+import org.sopt.makers.operation.user.dao.UserActivityInfoUpdateDao;
+import org.sopt.makers.operation.user.dao.UserPersonalInfoUpdateDao;
 import org.sopt.makers.operation.user.domain.User;
+import org.sopt.makers.operation.user.domain.UserGenerationHistory;
+import org.sopt.makers.operation.user.dto.request.UserActivityModifyRequest;
+import org.sopt.makers.operation.user.dto.request.UserModifyRequest;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +33,7 @@ public class UserServiceImpl implements UserService {
     private final UserGenerationHistoryRepository generationHistoryRepository;
 
     @Override
-    public UserInfoResponse getUserInfo(Long userId) {
+    public UserInfoResponse getUserInfo(final long userId) {
         validateIds(Collections.singletonList(userId));
         val targetUser = userRepository.findUserById(userId);
         val histories = generationHistoryRepository.findAllHistoryByUserId(userId);
@@ -35,12 +41,49 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserInfosResponse getUserInfos(List<Long> userIds) {
+    public UserInfosResponse getUserInfos(final List<Long> userIds) {
         validateIds(userIds);
         val targetUsers = userRepository.findAllUsersById(userIds);
         val userInfoResponses = targetUsers.stream()
                 .map(this::mergeUserInfoWithHistory).toList();
         return UserInfosResponse.of(userInfoResponses);
+    }
+
+    @Override
+    @Transactional
+    public void modifyUserInfo(final long userId, final UserModifyRequest userModifyRequest) {
+        val targetUser = userRepository.findUserById(userId);
+        val userInfoUpdateDao = new UserPersonalInfoUpdateDao(
+                userModifyRequest.userName(),
+                userModifyRequest.userPhone(),
+                userModifyRequest.userProfileImage()
+        );
+        targetUser.updateUserInfo(userInfoUpdateDao);
+
+        modifyUserActivityInfos(userModifyRequest.userActivities());
+    }
+
+    private void modifyUserActivityInfos(final List<UserActivityModifyRequest> activitiesModifyRequest) {
+        activitiesModifyRequest.forEach(
+                activityModifyRequest -> {
+                    val targetActivity = generationHistoryRepository.findHistoryById(activityModifyRequest.activityId());
+                    validateIsAbleToUpdateActivity(targetActivity, activityModifyRequest);
+
+                    val activityInfoUpdateDao = new UserActivityInfoUpdateDao(
+                            activityModifyRequest.team()
+                    );
+                    targetActivity.updateActivityInfo(activityInfoUpdateDao);
+                });
+    }
+
+    private void validateIsAbleToUpdateActivity(
+            UserGenerationHistory currentActivity, UserActivityModifyRequest activityModifyRequest
+    ) {
+        if (currentActivity.isExecutive()
+                && !currentActivity.isBelongTeamTo(activityModifyRequest.team())
+        ) {
+            throw new UserException(UserFailureCode.INVALID_USER_MODIFY_ACTIVITY_INFO);
+        }
     }
 
     private void validateIds(List<Long> ids) {
