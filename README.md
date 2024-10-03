@@ -22,7 +22,6 @@ SOPT makers 프로덕트들이 전역적으로 사용하는 internal API를 관�
 <br/>
 
 ## Server Acrchitecture
-
 <img width="694" alt="image" src="https://github.com/sopt-makers/sopt-operation-backend/assets/55437339/af911c45-30b7-4f92-b096-5c0ad27fbe4c">
 
 <br/>
