@@ -21,7 +21,8 @@ CHECK_PID=$(lsof -Fp -i TCP:${NEXT_RUNNING_PORT} | grep -Po 'p[0-9]+' | grep -Po
 
 if [ ! -z ${CHECK_PID} ]; then
   echo "> Kill WAS running at ${NEXT_RUNNING_PORT}."
-  sudo kill ${CHECK_PID}
+  sudo kill -15 ${CHECK_PID}
+  sleep 5
 fi
 
 
