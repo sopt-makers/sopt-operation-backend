@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "> Reun New WAS Start"
+
 # 현재 proxy 중인 실구동 port
 CURRENT_RUNNING_PORT=$(cat /etc/nginx/conf.d/service-url.inc | grep -Po '[0-9]+' | tail -1)
 

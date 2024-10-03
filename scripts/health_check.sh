@@ -1,6 +1,7 @@
 #!/bin/bash
-
+echo "> Health Check Start"
 CURRENT_RUNNING_PORT=$(cat /etc/nginx/conf.d/service-url.inc | grep -Po '[0-9]+' | tail -1)
+echo "> Current port of running WAS is ${CURRENT_RUNNING_PORT}."
 
 if [ ${CURRENT_RUNNING_PORT} -ne 8081 ]; then
     # run_new_was 에서 정상적으로 처리되지 않았다는 의미 - 더 이상 진행되면 안된다.
