@@ -16,7 +16,7 @@ permissions:
 
 hooks:
   AfterInstall:
-    - location: script/run_new_was.sh
+    - location: scripts/run_new_was.sh
       timeout: 180
       runas: ubuntu
   ApplicationStart:
