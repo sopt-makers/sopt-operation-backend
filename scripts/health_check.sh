@@ -2,8 +2,11 @@
 
 CURRENT_RUNNING_PORT=$(cat /etc/nginx/conf.d/service-url.inc | grep -Po '[0-9]+' | tail -1)
 
-if [ ${CURRENT_RUNNING_PORT} -ne 8081 -o ${CURRENT_RUNNING_PORT} -ne 8082 ]; then
+if [ ${CURRENT_RUNNING_PORT} -ne 8081 ]; then
     # run_new_was 에서 정상적으로 처리되지 않았다는 의미 - 더 이상 진행되면 안된다.
+    echo "> No WAS is connected to nginx"
+    exit 1
+elif [ ${CURRENT_RUNNING_PORT} -ne 8082 ]; then
     echo "> No WAS is connected to nginx"
     exit 1
 fi
