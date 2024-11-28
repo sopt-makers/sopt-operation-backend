@@ -2,8 +2,8 @@ version: 0.0
 os: linux
 
 files:
-  - source: /
-    destination: /home/ubuntu/operation/
+  - source: /script
+    destination: /home/ubuntu/script/op
     overwrite: yes
 
 file_exists_behavior: OVERWRITE
@@ -15,13 +15,14 @@ permissions:
     group: ubuntu
 
 hooks:
-  ApplicationStart:
-    - location: scripts/run_new_was.sh
-      timeout: 180
+  AfterInstall:
+    - location: script/op/deploy.sh
+      timeout: 120
       runas: root
-    - location: scripts/health_check.sh
-      timeout: 500
+    - location: script/op/switch.sh
+      timeout: 120
       runas: root
-    - location: scripts/switch.sh
-      timeout: 180
+  ValidateService:
+    - location: script/op/valid.sh
+      timeout: 60
       runas: root

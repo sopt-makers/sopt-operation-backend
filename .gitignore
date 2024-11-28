@@ -41,3 +41,4 @@ out/
 application-**.yml
 
 */src/main/generated
+scripts
