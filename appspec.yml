@@ -22,13 +22,30 @@ permissions:
 
 hooks:
   AfterInstall:
-    - location: /home/ubuntu/script/op/deploy.sh
-      timeout: 120
-      runas: root
-    - location: /home/ubuntu/script/op/switch.sh
+    - location: /bin/bash
+      arguments:
+        - -c
+        - |
+          cd /home/ubuntu/script/op && ./deploy.sh
+          cd /home/ubuntu/script/op && ./switch.sh
       timeout: 120
       runas: root
   ValidateService:
-    - location: /home/ubuntu/script/op/valid.sh
+    - location: /bin/bash
+      arguments:
+        - -c
+        - |
+          cd /home/ubuntu/script/op && ./valid.sh
       timeout: 60
       runas: root
+#  AfterInstall:
+#    - location: script/deploy.sh
+#      timeout: 120
+#      runas: root
+#    - location: script/switch.sh
+#      timeout: 120
+#      runas: root
+#  ValidateService:
+#    - location: script/valid.sh
+#      timeout: 60
+#      runas: root
