@@ -1,4 +1,4 @@
-FROM gradle:8.10.2 as builder
+FROM openjdk:17-jdk-slim as builder
 
 # mkdir /app-build && cd /app-build
 WORKDIR /app-build
@@ -7,10 +7,10 @@ WORKDIR /app-build
 COPY . /app-build
 
 # create .jar
-RUN gradle build -x test
+RUN ./gradlew build -x test
 
 # Run-Time Image Setting
-FROM openjdk:21-jdk-slim as production
+FROM openjdk:17-jdk-slim as production
 
 # mkdir /app-run && cd /app-run
 WORKDIR /app-run
