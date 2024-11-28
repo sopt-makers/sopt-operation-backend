@@ -2,13 +2,13 @@ version: 0.0
 os: linux
 
 files:
-  - source: ./script/deploy.sh
+  - source: script/deploy.sh
     destination: /home/ubuntu/script/op/deploy.sh
     overwrite: yes
-  - source: ./script/switch.sh
+  - source: script/switch.sh
     destination: /home/ubuntu/script/op/switch.sh
     overwrite: yes
-  - source: ./script/valid.sh
+  - source: script/valid.sh
     destination: /home/ubuntu/script/op/valid.sh
     overwrite: yes
 
@@ -22,30 +22,13 @@ permissions:
 
 hooks:
   AfterInstall:
-    - location: /bin/bash
-      arguments:
-        - -c
-        - |
-          cd /home/ubuntu/script/op && ./deploy.sh
-          cd /home/ubuntu/script/op && ./switch.sh
+    - location: script/deploy.sh
+      timeout: 120
+      runas: root
+    - location: script/switch.sh
       timeout: 120
       runas: root
   ValidateService:
-    - location: /bin/bash
-      arguments:
-        - -c
-        - |
-          cd /home/ubuntu/script/op && ./valid.sh
+    - location: script/valid.sh
       timeout: 60
       runas: root
-#  AfterInstall:
-#    - location: script/deploy.sh
-#      timeout: 120
-#      runas: root
-#    - location: script/switch.sh
-#      timeout: 120
-#      runas: root
-#  ValidateService:
-#    - location: script/valid.sh
-#      timeout: 60
-#      runas: root
