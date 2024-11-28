@@ -54,16 +54,16 @@ jobs:
           REGION: ${{ secrets.AWS_REGION }}
           S3_BUCKET: ${{ secrets.AWS_BUCKET_NAME }}
         run: |
-          mkdir script
+          mkdir ./script
           aws s3 cp --region $REGION \
-            s3://$S3_BUCKET/dev/script/deploy.sh script/deploy.sh
+            s3://$S3_BUCKET/dev/script/deploy.sh ./script/deploy.sh
           aws s3 cp --region $REGION \
-            s3://$S3_BUCKET/dev/script/switch.sh script/switch.sh
+            s3://$S3_BUCKET/dev/script/switch.sh ./script/switch.sh
           aws s3 cp --region $REGION \
-            s3://$S3_BUCKET/dev/script/valid.sh script/valid.sh
+            s3://$S3_BUCKET/dev/script/valid.sh ./script/valid.sh
 
       - name: Make zip file
-        run: zip ./$GITHUB_SHA.zip ./script appspec.yml
+        run: zip ./$GITHUB_SHA.zip ./script ./appspec.yml
         shell: bash
 
       - name: Upload Property Zip to S3 and Create Code Deploy
