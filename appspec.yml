@@ -2,13 +2,13 @@ version: 0.0
 os: linux
 
 files:
-  - source: /script/deploy.sh
+  - source: ./script/deploy.sh
     destination: /home/ubuntu/script/op/deploy.sh
     overwrite: yes
-  - source: /script/switch.sh
+  - source: ./script/switch.sh
     destination: /home/ubuntu/script/op/switch.sh
     overwrite: yes
-  - source: /script/valid.sh
+  - source: ./script/valid.sh
     destination: /home/ubuntu/script/op/valid.sh
     overwrite: yes
 
