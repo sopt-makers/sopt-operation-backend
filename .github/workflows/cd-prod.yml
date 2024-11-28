@@ -33,7 +33,7 @@ jobs:
 
       - name: Create Property
         run: |
-          touch ./operation-api/src/main/resources/application-dev.yml
+          touch ./operation-api/src/main/resources/application-prod.yml
           echo "${{ secrets.APPLICATION_PROD }}" >> ./operation-api/src/main/resources/application-prod.yml
           
           mkdir -p ./operation-api/src/main/resources/static
@@ -56,11 +56,11 @@ jobs:
         run: |
           mkdir script
           aws s3 cp --region $REGION \
-            s3://$S3_BUCKET/dev/script/deploy.sh script/deploy.sh
+            s3://$S3_BUCKET/prod/script/deploy.sh script/deploy.sh
           aws s3 cp --region $REGION \
-            s3://$S3_BUCKET/dev/script/switch.sh script/switch.sh
+            s3://$S3_BUCKET/prod/script/switch.sh script/switch.sh
           aws s3 cp --region $REGION \
-            s3://$S3_BUCKET/dev/script/valid.sh script/valid.sh
+            s3://$S3_BUCKET/prod/script/valid.sh script/valid.sh
 
       - name: Make zip file
         run: zip -r ./$GITHUB_SHA.zip ./script
@@ -73,9 +73,9 @@ jobs:
           DEPLOY_GROUP: ${{ secrets.AWS_DEPLOY_GROUP_PROD }}
           S3_BUCKET: ${{ secrets.AWS_BUCKET_NAME }}
         run: |
-          aws s3 cp --region $REGION ./$GITHUB_SHA.zip s3://$S3_BUCKET/dev/deploy/$GITHUB_SHA.zip
+          aws s3 cp --region $REGION ./$GITHUB_SHA.zip s3://$S3_BUCKET/prod/deploy/$GITHUB_SHA.zip
           
           aws deploy create-deployment --application-name $AWS_DEPLOY_APPLICATION_NAME
           --deployment-config-name CodeDeployDefault.AllAtOnce
           --deployment-group-name $DEPLOY_GROUP
-          --s3-location bucket=$S3_BUCKET,bundleType=zip,key=dev/deploy/$GITHUB_SHA.zip
+          --s3-location bucket=$S3_BUCKET,bundleType=zip,key=prod/deploy/$GITHUB_SHA.zip
