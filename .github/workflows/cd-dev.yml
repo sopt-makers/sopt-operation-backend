@@ -52,7 +52,7 @@ jobs:
       - name: 📝 Copy Script File
         env:
           REGION: ${{ secrets.AWS_REGION }}
-          S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          S3_BUCKET: ${{ secrets.AWS_BUCKET_NAME }}
         run: |
           mkdir script
           aws s3 cp --region $REGION \
@@ -71,11 +71,11 @@ jobs:
           REGION: ${{ secrets.AWS_REGION }}
           DEPLOY_APPLICATION: ${{ secrets.AWS_DEPLOY_APPLICATION }}
           DEPLOY_GROUP: ${{ secrets.AWS_DEPLOY_GROUP_DEV }}
-          S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          S3_BUCKET: ${{ secrets.AWS_BUCKET_NAME }}
         run: |
-          aws s3 cp --region $REGION ./$GITHUB_SHA.zip s3://$S3_PATH/dev/deploy/$GITHUB_SHA.zip
+          aws s3 cp --region $REGION ./$GITHUB_SHA.zip s3://$S3_BUCKET/dev/deploy/$GITHUB_SHA.zip
           
           aws deploy create-deployment --application-name $AWS_DEPLOY_APPLICATION_NAME
           --deployment-config-name CodeDeployDefault.AllAtOnce
           --deployment-group-name $DEPLOY_GROUP
-          --s3-location bucket=$AWS_BUCKET_NAME,bundleType=zip,key=dev/deploy/$GITHUB_SHA.zip
+          --s3-location bucket=$S3_BUCKET,bundleType=zip,key=dev/deploy/$GITHUB_SHA.zip
