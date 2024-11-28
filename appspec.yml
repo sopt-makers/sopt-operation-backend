@@ -16,13 +16,13 @@ permissions:
 
 hooks:
   AfterInstall:
-    - location: script/auth/deploy.sh
+    - location: script/op/deploy.sh
       timeout: 120
       runas: root
-    - location: script/auth/switch.sh
+    - location: script/op/switch.sh
       timeout: 120
       runas: root
   ValidateService:
-    - location: script/auth/valid.sh
+    - location: script/op/valid.sh
       timeout: 60
       runas: root
