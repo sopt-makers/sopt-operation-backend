@@ -75,7 +75,7 @@ jobs:
         run: |
           aws s3 cp --region $REGION ./$GITHUB_SHA.zip s3://$S3_BUCKET/dev/deploy/$GITHUB_SHA.zip
           
-          aws deploy create-deployment --application-name $DEPLOY_APPLICATION
-          --deployment-config-name CodeDeployDefault.AllAtOnce
-          --deployment-group-name $DEPLOY_GROUP
+          aws deploy create-deployment --application-name $DEPLOY_APPLICATION \
+          --deployment-config-name CodeDeployDefault.AllAtOnce \
+          --deployment-group-name $DEPLOY_GROUP \
           --s3-location bucket=$S3_BUCKET,bundleType=zip,key=dev/deploy/$GITHUB_SHA.zip
