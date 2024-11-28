@@ -16,7 +16,7 @@ FROM openjdk:17-jdk-slim as production
 WORKDIR /app-run
 
 # copy .jar to Run-Time Image
-COPY --from=builder /app-build/build/libs/*.jar /app-run/operation.jar
+COPY --from=builder /app-build/build/libs/operation.jar /app-run/operation.jar
 
 
 EXPOSE 8080
