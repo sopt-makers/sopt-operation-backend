@@ -7,7 +7,7 @@ WORKDIR /app-build
 COPY . /app-build
 
 # create .jar
-RUN gradle clean build --no-daemon
+RUN gradle build -x test
 
 # Run-Time Image Setting
 FROM openjdk:21-jdk-slim as production

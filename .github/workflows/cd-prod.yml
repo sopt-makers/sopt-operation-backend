@@ -1,11 +1,12 @@
 name: cd-prod
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main ]
 
 jobs:
-  build:
+  build-and-push-and-deploy:
     runs-on: ubuntu-22.04
 
     steps:
@@ -19,46 +20,62 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew
-        shell: bash
-
-      - name: Create application.yml
-        run: |
-          pwd
-          cd ./operation-api/src/main/resources
-          touch ./application-prod.yml
-          echo "${{ secrets.APPLICATION_PROD }}" >> ./application-prod.yml
-          cat ./application-prod.yml
-
-      - name: Create application-test.yml
-        run: |
-          cd ./operation-domain/src/test
-          mkdir -p resources
-          touch ./resources/application-test.yml
-          echo "${{ secrets.APPLICATION_DOMAIN_TEST }}" >> ./application-test.yml
-          cat ./application-test.yml
-
-      - name: Build with Gradle
-        run: ./gradlew build
-        shell: bash
-
-      - name: Configure AWS credentials
+      - name: 🔒 Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Make zip file
-        run: zip -r ./$GITHUB_SHA.zip .
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
         shell: bash
 
-      - name: Upload to S3
-        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://${{ secrets.AWS_BUCKET_NAME }}/prod/deploy/$GITHUB_SHA.zip
+      - name: Create Property
+        run: |
+          touch ./operation-api/src/main/resources/application-dev.yml
+          echo "${{ secrets.APPLICATION_PROD }}" >> ./operation-api/src/main/resources/application-prod.yml
+          
+          mkdir -p ./operation-api/src/main/resources/static
+          echo "${{ secrets.APPLE_KEY }}" | base64 --decode > ./operation-api/src/main/resources/static/${{ secrets.APPLE_KEY_NAME }}
 
-      - name: Code Deploy
-        run: aws deploy create-deployment --application-name operation
+      - name: 🧱 Build Image and Push to ECR
+        env:
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+          AWS_ECR_REPO: ${{ secrets.AWS_ECR_REPO_PROD }}
+        run: |
+          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
+          docker build -t $AWS_ECR_REPO .
+          docker tag $AWS_ECR_REPO:latest public.ecr.aws/$AWS_ACCOUNT_ID/$AWS_ECR_REPO:latest
+          docker push public.ecr.aws/$AWS_ACCOUNT_ID/$AWS_ECR_REPO:latest
+
+      - name: 📝 Copy Script File
+        env:
+          REGION: ${{ secrets.AWS_REGION }}
+          S3_BUCKET: ${{ secrets.AWS_BUCKET_NAME }}
+        run: |
+          mkdir script
+          aws s3 cp --region $REGION \
+            s3://$S3_BUCKET/dev/script/deploy.sh script/deploy.sh
+          aws s3 cp --region $REGION \
+            s3://$S3_BUCKET/dev/script/switch.sh script/switch.sh
+          aws s3 cp --region $REGION \
+            s3://$S3_BUCKET/dev/script/valid.sh script/valid.sh
+
+      - name: Make zip file
+        run: zip -r ./$GITHUB_SHA.zip ./script
+        shell: bash
+
+      - name: Upload Property Zip to S3 and Create Code Deploy
+        env:
+          REGION: ${{ secrets.AWS_REGION }}
+          DEPLOY_APPLICATION: ${{ secrets.AWS_DEPLOY_APPLICATION }}
+          DEPLOY_GROUP: ${{ secrets.AWS_DEPLOY_GROUP_PROD }}
+          S3_BUCKET: ${{ secrets.AWS_BUCKET_NAME }}
+        run: |
+          aws s3 cp --region $REGION ./$GITHUB_SHA.zip s3://$S3_BUCKET/dev/deploy/$GITHUB_SHA.zip
+          
+          aws deploy create-deployment --application-name $AWS_DEPLOY_APPLICATION_NAME
           --deployment-config-name CodeDeployDefault.AllAtOnce
-          --deployment-group-name prod
-          --s3-location bucket=${{ secrets.AWS_BUCKET_NAME }},bundleType=zip,key=prod/deploy/$GITHUB_SHA.zip
+          --deployment-group-name $DEPLOY_GROUP
+          --s3-location bucket=$S3_BUCKET,bundleType=zip,key=dev/deploy/$GITHUB_SHA.zip
