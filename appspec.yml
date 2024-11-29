@@ -11,6 +11,8 @@ files:
   - source: script/valid.sh
     destination: /home/ubuntu/script/op/valid.sh
     overwrite: yes
+  - source: application.env
+    destination: /home/ubuntu/env/op/application.env
 
 file_exists_behavior: OVERWRITE
 

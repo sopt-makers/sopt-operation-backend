@@ -1,0 +1,29 @@
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:test;DATABASE_TO_LOWER=true;MODE=PostgreSQL
+  jpa:
+    hibernate:
+      ddl-auto: update # create-drop 이나 create로 할경우, 자동으로 실행되는 schema & table drop 에서 DDL 오류 발생 (not exist -> not found)
+    properties:
+      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+      hibernate:
+        format_sql: true
+        globally_quoted_identifiers: true
+        show_sql: true
+    show-sql: true
+    generate-ddl: true
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql: trace

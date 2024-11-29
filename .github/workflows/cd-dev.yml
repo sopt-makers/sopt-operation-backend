@@ -61,9 +61,12 @@ jobs:
             s3://$S3_BUCKET/dev/script/switch.sh ./script/switch.sh
           aws s3 cp --region $REGION \
             s3://$S3_BUCKET/dev/script/valid.sh ./script/valid.sh
+          
+          aws s3 cp --region $REGION \
+            s3://$S3_BUCKET/dev/dev.env application.env
 
       - name: Make zip file
-        run: zip -r ./$GITHUB_SHA.zip ./script ./appspec.yml
+        run: zip -r ./$GITHUB_SHA.zip ./script ./appspec.yml ./application.env
         shell: bash
 
       - name: Upload Property Zip to S3 and Create Code Deploy
