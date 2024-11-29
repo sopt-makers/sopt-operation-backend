@@ -3,16 +3,16 @@ os: linux
 
 files:
   - source: script/deploy.sh
-    destination: /home/ubuntu/script/op/deploy.sh
+    destination: /home/ubuntu/script/op
     overwrite: yes
   - source: script/switch.sh
-    destination: /home/ubuntu/script/op/switch.sh
+    destination: /home/ubuntu/script/op
     overwrite: yes
   - source: script/valid.sh
-    destination: /home/ubuntu/script/op/valid.sh
+    destination: /home/ubuntu/script/op
     overwrite: yes
   - source: application.env
-    destination: /home/ubuntu/env/op/application.env
+    destination: /home/ubuntu/env/op
 
 file_exists_behavior: OVERWRITE
 
