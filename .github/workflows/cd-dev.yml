@@ -33,8 +33,6 @@ jobs:
 
       - name: Create Property
         run: |
-          touch ./operation-api/src/main/resources/application-dev.yml
-          echo "${{ secrets.APPLICATION_DEV }}" >> ./operation-api/src/main/resources/application-dev.yml
           
           mkdir -p ./operation-api/src/main/resources/static
           echo "${{ secrets.APPLE_KEY }}" | base64 --decode > ./operation-api/src/main/resources/static/${{ secrets.APPLE_KEY_NAME }}
