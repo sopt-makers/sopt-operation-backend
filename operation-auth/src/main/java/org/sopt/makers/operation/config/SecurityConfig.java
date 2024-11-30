@@ -24,7 +24,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 public class SecurityConfig {
     private static final String API_V1_PREFIX = "/api/v1";
-    private static final String AUTH_PATH_PATTERN = API_V1_PREFIX + "/auth/*";
+    private static final String AUTH_PATH_PATTERN = API_V1_PREFIX + "/auth/**";
     private static final String TEST_PATH_PATTERN = API_V1_PREFIX + "/test/**";
     private static final String ERROR_PATH_PATTERN = "/error";
 
