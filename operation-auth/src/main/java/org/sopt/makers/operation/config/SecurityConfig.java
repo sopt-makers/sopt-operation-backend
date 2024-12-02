@@ -1,7 +1,6 @@
 package org.sopt.makers.operation.config;
 
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import org.sopt.makers.operation.filter.JwtAuthenticationFilter;
 import org.sopt.makers.operation.filter.JwtExceptionFilter;
 import org.springframework.context.annotation.Bean;
@@ -15,24 +14,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
     private static final String API_V1_PREFIX = "/api/v1";
-    private static final String AUTH_PATH_PATTERN = API_V1_PREFIX + "/auth/*";
+    private static final String AUTH_PATH_PATTERN = API_V1_PREFIX + "/auth/**";
     private static final String TEST_PATH_PATTERN = API_V1_PREFIX + "/test/**";
     private static final String ERROR_PATH_PATTERN = "/error";
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtExceptionFilter jwtExceptionFilter;
-    private final ValueConfig valueConfig;
 
     @Bean
     public static PasswordEncoder passwordEncoder() {
@@ -62,8 +55,6 @@ public class SecurityConfig {
                 .csrf().disable()
                 .formLogin().disable()
                 .cors().disable()
-//                .cors().configurationSource(corsConfigurationSource())
-//                .and()
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
                                 .requestMatchers(new AntPathRequestMatcher(AUTH_PATH_PATTERN)).permitAll()
@@ -77,32 +68,4 @@ public class SecurityConfig {
                 .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);
     }
 
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        val configuration = new CorsConfiguration();
-//        configuration.setAllowedOrigins(List.of(
-//                valueConfig.getADMIN_PROD_URL(),
-//                valueConfig.getADMIN_DEV_URL(),
-//                valueConfig.getADMIN_LOCAL_URL()
-//        ));
-//        configuration.setAllowedMethods(List.of("HEAD", "GET", "POST", "PUT", "DELETE", "OPTIONS"));
-//        configuration.setAllowedHeaders(List.of(
-//                "Authorization",
-//                "Cache-Control",
-//                "Content-Type",
-//                "Accept"));
-//        configuration.setExposedHeaders(List.of("Authorization","Set-Cookie"));
-////        configuration.addAllowedOrigin(valueConfig.getADMIN_PROD_URL());
-////        configuration.addAllowedOrigin(valueConfig.getADMIN_DEV_URL());
-////        configuration.addAllowedOrigin(valueConfig.getADMIN_LOCAL_URL());
-////        configuration.addAllowedHeader("*");
-////        configuration.addAllowedMethod("*");
-//        configuration.setAllowCredentials(true);
-//
-//        val source = new UrlBasedCorsConfigurationSource();
-//
-//        source.registerCorsConfiguration("/**", configuration);
-//
-//        return source;
-//    }
 }
