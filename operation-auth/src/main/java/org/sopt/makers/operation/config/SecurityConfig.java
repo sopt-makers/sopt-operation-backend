@@ -19,6 +19,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @EnableWebSecurity
 @Configuration
@@ -59,8 +61,9 @@ public class SecurityConfig {
         http.httpBasic().disable()
                 .csrf().disable()
                 .formLogin().disable()
-                .cors().configurationSource(corsConfigurationSource())
-                .and()
+                .cors().disable()
+//                .cors().configurationSource(corsConfigurationSource())
+//                .and()
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
                                 .requestMatchers(new AntPathRequestMatcher(AUTH_PATH_PATTERN)).permitAll()
@@ -74,21 +77,32 @@ public class SecurityConfig {
                 .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);
     }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        val configuration = new CorsConfiguration();
-
-        configuration.addAllowedOrigin(valueConfig.getADMIN_PROD_URL());
-        configuration.addAllowedOrigin(valueConfig.getADMIN_DEV_URL());
-        configuration.addAllowedOrigin(valueConfig.getADMIN_LOCAL_URL());
-        configuration.addAllowedHeader("*");
-        configuration.addAllowedMethod("*");
-        configuration.setAllowCredentials(true);
-
-        val source = new UrlBasedCorsConfigurationSource();
-
-        source.registerCorsConfiguration("/**", configuration);
-
-        return source;
-    }
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        val configuration = new CorsConfiguration();
+//        configuration.setAllowedOrigins(List.of(
+//                valueConfig.getADMIN_PROD_URL(),
+//                valueConfig.getADMIN_DEV_URL(),
+//                valueConfig.getADMIN_LOCAL_URL()
+//        ));
+//        configuration.setAllowedMethods(List.of("HEAD", "GET", "POST", "PUT", "DELETE", "OPTIONS"));
+//        configuration.setAllowedHeaders(List.of(
+//                "Authorization",
+//                "Cache-Control",
+//                "Content-Type",
+//                "Accept"));
+//        configuration.setExposedHeaders(List.of("Authorization","Set-Cookie"));
+////        configuration.addAllowedOrigin(valueConfig.getADMIN_PROD_URL());
+////        configuration.addAllowedOrigin(valueConfig.getADMIN_DEV_URL());
+////        configuration.addAllowedOrigin(valueConfig.getADMIN_LOCAL_URL());
+////        configuration.addAllowedHeader("*");
+////        configuration.addAllowedMethod("*");
+//        configuration.setAllowCredentials(true);
+//
+//        val source = new UrlBasedCorsConfigurationSource();
+//
+//        source.registerCorsConfiguration("/**", configuration);
+//
+//        return source;
+//    }
 }
