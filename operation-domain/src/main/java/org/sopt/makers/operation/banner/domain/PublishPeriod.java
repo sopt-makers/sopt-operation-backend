@@ -16,12 +16,12 @@ public class PublishPeriod {
     private LocalDate startDate;
     private LocalDate endDate;
 
-    public void changeStartDateTo(LocalDate changedDate) {
-        this.startDate = changedDate;
+    public void updateStartDate(LocalDate updateDate) {
+        this.startDate = updateDate;
     }
 
-    public void changeEndDateTo(LocalDate changedDate) {
-        this.endDate = changedDate;
+    public void updateEndDate(LocalDate updateDate) {
+        this.endDate = updateDate;
     }
 
     public PublishStatus getPublishStatus(LocalDate date) {

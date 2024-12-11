@@ -16,12 +16,12 @@ public class BannerImage {
     private String pcImageUrl;
     private String mobileImageUrl;
 
-    public void changePcImageTo(String changedPcImageUrl) {
-        this.pcImageUrl = changedPcImageUrl;
+    public void updatePcImage(String updatePcImageUrl) {
+        this.pcImageUrl = updatePcImageUrl;
     }
 
-    public void changeMobileImageTo(String changedMobileImageUrl) {
-        this.pcImageUrl = changedMobileImageUrl;
+    public void updateMobileImage(String updateMobileImageUrl) {
+        this.pcImageUrl = updateMobileImageUrl;
     }
 
 }
