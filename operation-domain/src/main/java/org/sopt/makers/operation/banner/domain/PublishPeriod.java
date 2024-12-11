@@ -1,8 +1,10 @@
 package org.sopt.makers.operation.banner.domain;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.*;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.time.LocalDate;
 

@@ -2,7 +2,7 @@ package org.sopt.makers.operation.web.banner.api;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.sopt.makers.operation.code.success.web.BannerSuccessCode;
+
 import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.util.ApiResponseUtil;
 import org.sopt.makers.operation.web.banner.service.BannerService;

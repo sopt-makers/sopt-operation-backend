@@ -1,8 +1,8 @@
 package org.sopt.makers.operation.banner.domain;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
 import org.sopt.makers.operation.code.failure.BannerFailureCode;
 import org.sopt.makers.operation.exception.BannerException;
 
