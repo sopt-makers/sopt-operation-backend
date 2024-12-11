@@ -21,7 +21,7 @@ public class BannerImage {
     }
 
     public void updateMobileImage(String updateMobileImageUrl) {
-        this.pcImageUrl = updateMobileImageUrl;
+        this.mobileImageUrl = updateMobileImageUrl;
     }
 
 }
