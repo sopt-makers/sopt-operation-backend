@@ -37,6 +37,9 @@ public class DatabaseCleaner implements InitializingBean {
                     if (snakeName.equals("user")) {
                         return "users";
                     }
+                    if (snakeName.equals("banner")) {
+                        return "banners";
+                    }
                     return snakeName;
                 })
                 .toList();
@@ -58,6 +61,7 @@ public class DatabaseCleaner implements InitializingBean {
             }
             index++;
         }
+        System.out.println(builder);
         return builder.toString();
     }
 
