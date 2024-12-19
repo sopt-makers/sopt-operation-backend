@@ -1,0 +1,82 @@
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    username: sa
+    password:
+    url: jdbc:h2:mem:test;DATABASE_TO_LOWER=true # ;DATABASE_TO_UPPER=false;MODE=PostgreSQL
+  jpa:
+    hibernate:
+      ddl-auto: update # create-drop 이나 create로 할경우, 자동으로 실행되는 schema & table drop 에서 DDL 오류 발생 (not exist -> not found)
+    properties:
+      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+      hibernate:
+        format_sql: true
+        show_sql: true
+    show-sql: true
+    generate-ddl: true
+  jwt:
+    secretKey:
+      app: test
+      access: test
+      refresh: test
+      platform_code: test
+  secretKey:
+    playground: test
+
+sopt:
+  current:
+    generation: 0
+  makers:
+    playground:
+      server: test
+      token: test
+  alarm:
+    message:
+      title_end: test
+      content_end: test
+
+admin:
+  url:
+    prod: test
+    dev: test
+    local: test
+
+notification:
+  url: test
+  key: test
+  arn: test
+
+oauth:
+  apple:
+    aud: test
+    sub: test
+    key:
+      id: test
+      path: test
+    team:
+      id: test
+  google:
+    redirect:
+      url: test
+    client:
+      id: test
+      secret: test
+
+cloud:
+  aws:
+    credentials:
+      accessKey: test
+      secretKey: test
+    eventBridge:
+      roleArn: test
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql: trace
