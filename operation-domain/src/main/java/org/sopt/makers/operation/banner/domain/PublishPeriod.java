@@ -27,14 +27,14 @@ public class PublishPeriod {
     }
 
     public PublishStatus getPublishStatus(LocalDate date) {
-        if (date.isAfter(endDate)) {
+        boolean isReserved = date.isBefore(startDate);
+        boolean isDone = date.isAfter(endDate);
+        if (isDone) {
             return PublishStatus.DONE;
-        } else {
-            if (date.isAfter(startDate)) {
-                return PublishStatus.IN_PROGRESS;
-            }
+        } else if (isReserved){
             return PublishStatus.RESERVED;
         }
+        return PublishStatus.IN_PROGRESS;
     }
 
 }
