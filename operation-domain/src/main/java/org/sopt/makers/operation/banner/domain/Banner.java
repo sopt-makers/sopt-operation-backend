@@ -18,7 +18,6 @@ import lombok.AllArgsConstructor;
 
 import org.sopt.makers.operation.common.domain.BaseEntity;
 
-
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;

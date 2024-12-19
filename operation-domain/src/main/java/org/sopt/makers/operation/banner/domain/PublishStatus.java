@@ -17,6 +17,7 @@ public enum PublishStatus {
     IN_PROGRESS("in_progress"),
     DONE("done"),
     ;
+
     private final String value;
 
     public static PublishLocation getByValue(String value) {

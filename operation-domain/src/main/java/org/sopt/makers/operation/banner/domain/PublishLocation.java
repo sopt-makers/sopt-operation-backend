@@ -18,6 +18,7 @@ public enum PublishLocation {
     CREW_FEED("cr_feed"),
     OFFICIAL_PAGE("org"),
     ;
+
     private final String value;
 
     public static PublishLocation getByValue(String value) {

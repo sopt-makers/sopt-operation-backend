@@ -61,7 +61,6 @@ public class DatabaseCleaner implements InitializingBean {
             }
             index++;
         }
-        System.out.println(builder);
         return builder.toString();
     }
 

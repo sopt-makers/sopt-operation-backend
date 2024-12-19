@@ -94,7 +94,8 @@ public class BannerTest {
 
             // then
             Banner resultBanner = bannerRepository.findById(TEST_BANNER_ID).get();
-            assertThat(resultBanner.getPeriod().getStartDate()).isEqualTo(givenUpdateStartDate);
+            LocalDate resultBannerStartDate = resultBanner.getPeriod().getStartDate();
+            assertThat(resultBannerStartDate).isEqualTo(givenUpdateStartDate);
         }
 
         @Test
@@ -173,6 +174,7 @@ public class BannerTest {
             assertThat(resultPeriod.getStartDate()).isEqualTo(TEST_BANNER_START_DATE);
             assertThat(resultPeriod.getEndDate()).isEqualTo(TEST_BANNER_END_DATE);
         }
+
         @Test
         @DisplayName("게시 이미지들을 정상적으로 조회한다.")
         void getImage() {
