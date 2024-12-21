@@ -21,6 +21,12 @@ public class BannerServiceImpl implements BannerService {
         return BannerResponse.BannerDetail.fromEntity(banner);
     }
 
+    @Override
+    public void deleteBanner(long bannerId) {
+        val banner = getBannerById(bannerId);
+        bannerRepository.delete(banner);
+    }
+
     private Banner getBannerById(final long id) {
         return bannerRepository.findById(id)
                 .orElseThrow(() -> new BannerException(BannerFailureCode.NOT_FOUNT_BANNER));
