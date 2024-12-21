@@ -28,4 +28,10 @@ public class BannerApiController implements BannerApi {
         val response = bannerService.getBannerDetail(bannerId);
         return ApiResponseUtil.success(SUCCESS_GET_BANNER_DETAIL, response);
     }
+
+    @Override
+    public ResponseEntity<BaseResponse<?>> getPreSignedUrlForBanner(String bannerName, String imageTyp,
+                                                                    String imageExtension) {
+        return null;
+    }
 }

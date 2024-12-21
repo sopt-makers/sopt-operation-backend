@@ -31,4 +31,23 @@ public interface BannerApi {
     )
     ResponseEntity<BaseResponse<?>> getBannerDetail(Long bannerId);
 
+    @Operation(
+            summary = "배너 이미지 PreSignedUrl 조회 API",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "PreSignedUrl 조회 성공"
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "잘못된 요청"
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "서버 내부 오류"
+                    )
+            }
+    )
+    ResponseEntity<BaseResponse<?>> getPreSignedUrlForBanner(String bannerName, String imageTyp, String imageExtension);
+
 }
