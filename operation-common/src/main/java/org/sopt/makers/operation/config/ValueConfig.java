@@ -36,6 +36,8 @@ public class ValueConfig {
     private String accessKey;
     @Value("${cloud.aws.credentials.secretKey}")
     private String secretKey;
+    @Value("${cloud.aws.region}")
+    private String region;
     @Value("${cloud.aws.eventBridge.roleArn}")
     private String eventBridgeRoleArn;
     @Value("${oauth.apple.key.id}")

@@ -71,6 +71,7 @@ cloud:
       secretKey: test
     eventBridge:
       roleArn: test
+    region: test
 
 logging:
   level:

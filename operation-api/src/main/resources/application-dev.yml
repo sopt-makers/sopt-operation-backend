@@ -84,6 +84,7 @@ cloud:
       secretKey: ${AWS_CREDENTIALS_ACCESS_KEY}
     eventBridge:
       roleArn: ${AWS_CREDENTIALS_EVENTBRIDGE_ROLE_ARN}
+    region: ${AWS_S3_REGION}
 
 management:
   endpoints:
