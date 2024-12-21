@@ -31,4 +31,27 @@ public interface BannerApi {
     )
     ResponseEntity<BaseResponse<?>> getBannerDetail(Long bannerId);
 
+    @Operation(
+        summary = "배너 삭제 API",
+        responses = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "배너 삭제 성공"
+            ),
+            @ApiResponse(
+                responseCode = "400",
+                description = "잘못된 요청"
+            ),
+            @ApiResponse(
+                responseCode = "404",
+                description = "존재하지 않는 배너 ID 요청"
+            ),
+            @ApiResponse(
+                responseCode = "500",
+                description = "서버 내부 오류"
+            )
+        }
+    )
+  ResponseEntity<BaseResponse<?>> deleteBanner(Long bannerId);
+
 }

@@ -11,6 +11,7 @@ import static lombok.AccessLevel.PRIVATE;
 @RequiredArgsConstructor(access = PRIVATE)
 public enum BannerSuccessCode implements SuccessCode {
     SUCCESS_GET_BANNER_DETAIL(HttpStatus.OK, "배너 상세 정보 조회 성공"),
+    SUCCESS_DELETE_BANNER(HttpStatus. NO_CONTENT, "배너 삭제 성공")
     ;
 
     private final HttpStatus status;

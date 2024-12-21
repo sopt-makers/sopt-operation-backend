@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -80,5 +81,23 @@ class BannerApiControllerTest {
                 .andExpect(jsonPath("$.data.end_date").value(givenBannerDetail.endDate().toString()))
                 .andExpect(jsonPath("$.data.image_url_pc").value(givenBannerDetail.pcImageUrl()))
                 .andExpect(jsonPath("$.data.image_url_mobile").value(givenBannerDetail.mobileImageUrl()));
+    }
+
+    @Test
+    @DisplayName("(DELETE) Banner Delete")
+    void deleteBanner() throws Exception {
+        //given
+        BannerResponse.BannerDetail mockBannerDetail =  bannerService.getBannerDetail(MOCK_BANNER_ID);
+
+        this.mockMvc.perform(
+            //when
+            delete("/api/v1/banners/" + MOCK_BANNER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .principal(mock(Principal.class)))
+
+            //then
+                .andExpect(status().isNoContent())
+                .andExpect(jsonPath("$.success").value("true"));
+
     }
 }
