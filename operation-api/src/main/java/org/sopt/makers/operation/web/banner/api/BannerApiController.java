@@ -11,10 +11,12 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.sopt.makers.operation.code.success.web.BannerSuccessCode.SUCCESS_DELETE_BANNER;
 import static org.sopt.makers.operation.code.success.web.BannerSuccessCode.SUCCESS_GET_BANNER_DETAIL;
+import static org.sopt.makers.operation.code.success.web.BannerSuccessCode.SUCCESS_GET_EXTERNAL_BANNERS;
 
 @RestController
 @RequestMapping("/api/v1/banners")
@@ -38,5 +40,14 @@ public class BannerApiController implements BannerApi {
     ) {
         bannerService.deleteBanner(bannerId);
         return ApiResponseUtil.success(SUCCESS_DELETE_BANNER);
+    }
+
+    @Override
+    @GetMapping("/images")
+    public ResponseEntity<BaseResponse<?>> getExternalBanners(
+        @RequestParam("platform") String platform,
+        @RequestParam("location") String location
+    ) {
+      return ApiResponseUtil.success(SUCCESS_GET_EXTERNAL_BANNERS, bannerService.getExternalBanners(platform, location));
     }
 }

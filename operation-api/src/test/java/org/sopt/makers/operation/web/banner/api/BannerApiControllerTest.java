@@ -100,4 +100,23 @@ class BannerApiControllerTest {
                 .andExpect(jsonPath("$.success").value("true"));
 
     }
+
+    @Test
+    @DisplayName("(GET) External Banners")
+    void getExternalBanners() throws Exception {
+        // given
+        String platform = "pc";
+        String location = "pg_community";
+
+        this.mockMvc.perform(
+                        // when
+                        get("/api/v1/banners/images")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .param("platform", platform)
+                                .param("location", location)
+                                .principal(mock(Principal.class)))
+                // then
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value("true"));
+    }
 }

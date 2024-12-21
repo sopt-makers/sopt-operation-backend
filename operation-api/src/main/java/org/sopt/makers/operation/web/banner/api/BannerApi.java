@@ -54,4 +54,22 @@ public interface BannerApi {
     )
   ResponseEntity<BaseResponse<?>> deleteBanner(Long bannerId);
 
+  @Operation(
+      summary = "게시 중인 외부 배너 리스트 조회 API",
+      responses = {
+          @ApiResponse(
+              responseCode = "200",
+              description = "게시 중인 외부 배너 리스트 조회 성공"
+          ),
+          @ApiResponse(
+              responseCode = "400",
+              description = "잘못된 요청"
+          ),
+          @ApiResponse(
+              responseCode = "500",
+              description = "서버 내부 오류"
+          )
+      }
+  )
+  ResponseEntity<BaseResponse<?>> getExternalBanners(String platform, String location);
 }
