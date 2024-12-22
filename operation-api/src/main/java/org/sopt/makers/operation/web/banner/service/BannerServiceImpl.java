@@ -31,7 +31,7 @@ public class BannerServiceImpl implements BannerService {
 
     private Banner getBannerById(final long id) {
         return bannerRepository.findById(id)
-                .orElseThrow(() -> new BannerException(BannerFailureCode.NOT_FOUNT_BANNER));
+                .orElseThrow(() -> new BannerException(BannerFailureCode.NOT_FOUND_BANNER));
     }
 
     @Override
