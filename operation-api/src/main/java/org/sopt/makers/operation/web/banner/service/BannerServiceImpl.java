@@ -4,16 +4,15 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.sopt.makers.operation.banner.domain.ContentType;
-import org.sopt.makers.operation.banner.domain.ImageExtension;
-import org.sopt.makers.operation.banner.domain.ImageType;
-import org.sopt.makers.operation.banner.domain.Banner;
+import org.sopt.makers.operation.banner.domain.*;
 import org.sopt.makers.operation.banner.repository.BannerRepository;
 import org.sopt.makers.operation.client.s3.S3Service;
 import org.sopt.makers.operation.code.failure.BannerFailureCode;
 import org.sopt.makers.operation.config.ValueConfig;
 import org.sopt.makers.operation.exception.BannerException;
+import org.sopt.makers.operation.web.banner.dto.request.BannerRequest.*;
 import org.sopt.makers.operation.web.banner.dto.response.BannerResponse;
+import org.sopt.makers.operation.web.banner.dto.response.BannerResponse.*;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -52,5 +51,42 @@ public class BannerServiceImpl implements BannerService {
         val formattedDate = today.format(formatter);
 
         return location+formattedDate + "_" + contentName + "(" + imageType + ")." + imageExtension;
+    }
+
+    @Override
+    public BannerDetail createBanner(BannerCreate request) {
+        val period = getPublishPeriod(request.startDate(), request.endDate());
+        val image = getBannerImage(request.pcImage(), request.mobileImage());
+        val newBanner = Banner.builder()
+                .publisher(request.publisher())
+                .link(request.link())
+                .contentType(ContentType.getByValue(request.bannerType()))
+                .location(PublishLocation.getByValue(request.bannerLocation()))
+                .period(period)
+                .image(image)
+                .build();
+        val banner = saveBanner(newBanner);
+
+        return BannerResponse.BannerDetail.fromEntity(banner);
+    }
+
+    private PublishPeriod getPublishPeriod(LocalDate startDate, LocalDate endDate) {
+        return PublishPeriod.builder()
+                .startDate(startDate)
+                .endDate(endDate)
+                .build();
+    }
+
+    private BannerImage getBannerImage(String pcImage, String mobileImage) {
+        val pcImageUrl = s3Service.getUrl(valueConfig.getBannerBucket(), pcImage);
+        val mobileImageUrl = s3Service.getUrl(valueConfig.getBannerBucket(), mobileImage);
+        return BannerImage.builder()
+                .pcImageUrl(pcImageUrl)
+                .mobileImageUrl(mobileImageUrl)
+                .build();
+    }
+
+    private Banner saveBanner(Banner banner) {
+        return bannerRepository.save(banner);
     }
 }
