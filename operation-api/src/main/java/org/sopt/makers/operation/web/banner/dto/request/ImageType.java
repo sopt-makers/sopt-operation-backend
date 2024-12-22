@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public enum ImageType {
-    PC("pc"), MOBILE("mo");
+    PC("pc", "/pc"), MOBILE("mo", "mobile");
 
     private final String type;
+    private final String location;
 }
