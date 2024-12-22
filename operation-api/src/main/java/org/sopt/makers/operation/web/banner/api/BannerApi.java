@@ -48,6 +48,6 @@ public interface BannerApi {
                     )
             }
     )
-    ResponseEntity<BaseResponse<?>> getPreSignedUrlForBanner(String bannerName, String imageType, String imageExtension);
+    ResponseEntity<BaseResponse<?>> getPreSignedUrlForBanner(String contentName, String imageType, String imageExtension, String contentType);
 
 }

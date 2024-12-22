@@ -30,8 +30,8 @@ public class BannerApiController implements BannerApi {
     }
 
     @Override
-    public ResponseEntity<BaseResponse<?>> getPreSignedUrlForBanner(String bannerName, String imageType,
-                                                                    String imageExtension) {
+    public ResponseEntity<BaseResponse<?>> getPreSignedUrlForBanner(String contentName, String imageType,
+                                                                    String imageExtension, String contentType) {
         return null;
     }
 }
