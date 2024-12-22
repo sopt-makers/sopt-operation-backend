@@ -7,5 +7,5 @@ public interface BannerService {
 
     BannerResponse.BannerDetail getBannerDetail(final long bannerId);
 
-    BannerResponse.ImagePreSignedUrl getPreSignedUrlForBanner(String contentName, ImageType imageType, ImageExtension imageExtension, String contentType);
+    BannerResponse.ImagePreSignedUrl getPutPreSignedUrlForBanner(String contentName, String imageType, String imageExtension, String contentType);
 }

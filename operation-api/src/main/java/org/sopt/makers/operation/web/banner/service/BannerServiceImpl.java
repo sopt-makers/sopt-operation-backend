@@ -27,7 +27,11 @@ public class BannerServiceImpl implements BannerService {
     }
 
     @Override
-    public BannerResponse.ImagePreSignedUrl getPreSignedUrlForBanner(String contentName, ImageType imageType, ImageExtension imageExtension, String contentType) {
+    public BannerResponse.ImagePreSignedUrl getPutPreSignedUrlForBanner(String contentName, String imageType, String imageExtension, String contentType) {
+        return null;
+    }
+
+    private String getBannerImageName(String contentName, String imageType, String imageExtension, String contentType) {
         return null;
     }
 }
