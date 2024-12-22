@@ -84,7 +84,9 @@ cloud:
       secretKey: ${AWS_CREDENTIALS_ACCESS_KEY}
     eventBridge:
       roleArn: ${AWS_CREDENTIALS_EVENTBRIDGE_ROLE_ARN}
-    region: ${AWS_S3_REGION}
+    s3:
+      banner-bucket: ${BUCKET_FOR_BANNER}
+    region: ${AWS_REGION}
 
 management:
   endpoints:
