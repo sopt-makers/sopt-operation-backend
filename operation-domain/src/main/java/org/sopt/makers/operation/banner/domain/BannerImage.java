@@ -9,7 +9,6 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @Embeddable
 @NoArgsConstructor(access = PROTECTED)
-@AllArgsConstructor
 public class BannerImage {
     private String pcImageUrl;
     private String mobileImageUrl;
@@ -27,5 +26,4 @@ public class BannerImage {
         this.pcImageUrl = pcImageUrl;
         this.mobileImageUrl = mobileImageUrl;
     }
-
 }

@@ -13,7 +13,6 @@ import static org.sopt.makers.operation.code.failure.BannerFailureCode.INVALID_B
 @Getter
 @Embeddable
 @NoArgsConstructor(access = PROTECTED)
-@AllArgsConstructor
 public class PublishPeriod {
     private LocalDate startDate;
     private LocalDate endDate;
@@ -49,5 +48,4 @@ public class PublishPeriod {
             throw new BannerException(INVALID_BANNER_PERIOD);
         }
     }
-
 }
