@@ -14,9 +14,11 @@ import org.sopt.makers.operation.web.banner.dto.request.BannerRequest.*;
 import org.sopt.makers.operation.web.banner.dto.response.BannerResponse;
 import org.sopt.makers.operation.web.banner.dto.response.BannerResponse.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.*;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class BannerServiceImpl implements BannerService {
 
     private final BannerRepository bannerRepository;
@@ -53,6 +55,7 @@ public class BannerServiceImpl implements BannerService {
         return location+formattedDate + "_" + contentName + "(" + imageType + ")." + imageExtension;
     }
 
+    @Transactional
     @Override
     public BannerDetail createBanner(BannerCreate request) {
         val period = getPublishPeriod(request.startDate(), request.endDate());
