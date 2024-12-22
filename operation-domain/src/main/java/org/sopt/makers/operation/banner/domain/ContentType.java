@@ -13,14 +13,15 @@ import static lombok.AccessLevel.PRIVATE;
 @Getter
 @RequiredArgsConstructor(access = PRIVATE)
 public enum ContentType {
-    PRODUCT("product"),
-    BIRTHDAY("birthday"),
-    SPONSOR("sponsor"),
-    EVENT("event"),
-    ETC("etc"),
+    PRODUCT("product", "/product"),
+    BIRTHDAY("birthday", "/birthday"),
+    SPONSOR("sponsor", "/sponsor"),
+    EVENT("event", "event"),
+    ETC("etc", "/etc"),
     ;
 
     private final String value;
+    private final String location;
 
     public static PublishLocation getByValue(String value) {
         return Arrays.stream(PublishLocation.values())
