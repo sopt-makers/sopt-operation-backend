@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public enum ImageExtension {
-    JPG("jpg"), PNG("png");
+    PNG("png");
 
     private final String extension;
 }
