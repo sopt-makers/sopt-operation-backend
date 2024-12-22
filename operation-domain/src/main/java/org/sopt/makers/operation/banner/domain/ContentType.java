@@ -23,8 +23,8 @@ public enum ContentType {
     private final String value;
     private final String location;
 
-    public static PublishLocation getByValue(String value) {
-        return Arrays.stream(PublishLocation.values())
+    public static ContentType getByValue(String value) {
+        return Arrays.stream(ContentType.values())
                 .filter(location -> location.getValue().equals(value))
                 .findAny().orElseThrow(() -> new BannerException(BannerFailureCode.NOT_FOUND_CONTENT_TYPE));
     }
