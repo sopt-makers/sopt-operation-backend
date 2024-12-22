@@ -9,12 +9,7 @@ import org.sopt.makers.operation.web.banner.dto.request.BannerRequest;
 import org.sopt.makers.operation.web.banner.service.BannerService;
 import org.springframework.http.ResponseEntity;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import static org.sopt.makers.operation.code.success.web.BannerSuccessCode.SUCCESS_CREATE_BANNER;
 import static org.sopt.makers.operation.code.success.web.BannerSuccessCode.SUCCESS_GET_BANNER_DETAIL;
@@ -43,6 +38,7 @@ public class BannerApiController implements BannerApi {
         return ApiResponseUtil.success(SUCCESS_GET_BANNER_IMAGE_PRE_SIGNED_URL, response);
     }
 
+    @PostMapping
     @Override
     public ResponseEntity<BaseResponse<?>> createBanner(@RequestBody BannerRequest.BannerCreate request) {
         val response = bannerService.createBanner(request);
