@@ -8,10 +8,9 @@ import org.sopt.makers.operation.exception.*;
 @RequiredArgsConstructor
 @Getter
 public enum ImageType {
-    PC("pc", "/pc"), MOBILE("mo", "/mobile");
+    PC("pc"), MOBILE("mo");
 
     private final String value;
-    private final String location;
 
     public static ImageType getByValue(String value) {
         return Arrays.stream(ImageType.values())
