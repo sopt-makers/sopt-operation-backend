@@ -1,14 +1,17 @@
 package org.sopt.makers.operation.client.s3;
 
+import static org.sopt.makers.operation.code.failure.BannerFailureCode.NOT_FOUND_BANNER_IMAGE;
+
 import java.time.Duration;
 
 import lombok.val;
 import lombok.RequiredArgsConstructor;
 
+import org.sopt.makers.operation.exception.*;
 import org.springframework.stereotype.Service;
 
 import software.amazon.awssdk.services.s3.*;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
@@ -36,6 +39,14 @@ public class S3ServiceImpl implements S3Service {
 
     @Override
     public String getUrl(String bucketName, String fileName) {
-        return s3Client.utilities().getUrl(b -> b.bucket(bucketName).key(fileName)).toExternalForm();
+        try {
+            return s3Client.utilities().getUrl(b -> b.bucket(bucketName).key(fileName)).toExternalForm();
+        } catch(NoSuchKeyException e) {
+            throw new BannerException(NOT_FOUND_BANNER_IMAGE);
+        }
+    }
+
+    public void deleteFile(String bucketName, String fileName){
+        s3Client.deleteObject(b -> b.bucket(bucketName).key(fileName));
     }
 }
