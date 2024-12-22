@@ -2,13 +2,11 @@ package org.sopt.makers.operation.web.banner.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.sopt.makers.operation.banner.domain.Banner;
+import org.sopt.makers.operation.banner.domain.*;
 import org.sopt.makers.operation.banner.repository.BannerRepository;
 import org.sopt.makers.operation.code.failure.BannerFailureCode;
 import org.sopt.makers.operation.exception.BannerException;
-import org.sopt.makers.operation.web.banner.dto.request.*;
 import org.sopt.makers.operation.web.banner.dto.response.BannerResponse;
-import org.sopt.makers.operation.web.banner.dto.response.BannerResponse.*;
 import org.springframework.stereotype.Service;
 
 @Service

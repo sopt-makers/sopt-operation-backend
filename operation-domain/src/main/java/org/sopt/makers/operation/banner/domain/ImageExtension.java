@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.web.banner.dto.request;
+package org.sopt.makers.operation.banner.domain;
 
 import lombok.RequiredArgsConstructor;
 
