@@ -16,6 +16,6 @@ public enum ImageExtension {
     public static ImageExtension getByValue(String value) {
         return Arrays.stream(ImageExtension.values())
                 .filter(location -> location.getValue().equals(value))
-                .findAny().orElseThrow(() -> new BannerException(BannerFailureCode.INVALID_IMAGE_TYPE));
+                .findAny().orElseThrow(() -> new BannerException(BannerFailureCode.INVALID_IMAGE_EXTENSION));
     }
 }
