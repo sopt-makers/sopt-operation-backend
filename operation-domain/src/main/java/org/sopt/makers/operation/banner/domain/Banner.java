@@ -44,6 +44,8 @@ public class Banner extends BaseEntity {
     @Column(nullable = false)
     private String publisher;
 
+    private String link;
+
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "startDate", column = @Column(name = "start_date", nullable = false)),
