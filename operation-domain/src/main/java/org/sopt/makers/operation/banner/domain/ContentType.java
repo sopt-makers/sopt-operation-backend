@@ -13,11 +13,11 @@ import static lombok.AccessLevel.PRIVATE;
 @Getter
 @RequiredArgsConstructor(access = PRIVATE)
 public enum ContentType {
-    PRODUCT("product", "/product"),
-    BIRTHDAY("birthday", "/birthday"),
-    SPONSOR("sponsor", "/sponsor"),
-    EVENT("event", "event"),
-    ETC("etc", "/etc"),
+    PRODUCT("product", "product/"),
+    BIRTHDAY("birthday", "birthday/"),
+    SPONSOR("sponsor", "sponsor/"),
+    EVENT("event", "event/"),
+    ETC("etc", "etc/"),
     ;
 
     private final String value;
