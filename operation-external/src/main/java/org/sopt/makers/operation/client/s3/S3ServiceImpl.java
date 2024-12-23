@@ -1,6 +1,6 @@
 package org.sopt.makers.operation.client.s3;
 
-import static org.sopt.makers.operation.code.failure.BannerFailureCode.NOT_FOUND_BANNER_IMAGE;
+import static org.sopt.makers.operation.code.failure.ExternalFailureCode.NOT_FOUND_S3_RESOURCE;
 
 import java.time.Duration;
 
@@ -42,7 +42,7 @@ public class S3ServiceImpl implements S3Service {
         try {
             return s3Client.utilities().getUrl(b -> b.bucket(bucketName).key(fileName)).toExternalForm();
         } catch(NoSuchKeyException e) {
-            throw new BannerException(NOT_FOUND_BANNER_IMAGE);
+            throw new ExternalException(NOT_FOUND_S3_RESOURCE);
         }
     }
 
