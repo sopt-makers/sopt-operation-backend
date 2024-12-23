@@ -71,6 +71,9 @@ cloud:
       secretKey: test
     eventBridge:
       roleArn: test
+    s3:
+      banner:
+        name: banner
     region: test
 
 logging:

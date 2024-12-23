@@ -85,7 +85,8 @@ cloud:
     eventBridge:
       roleArn: ${AWS_CREDENTIALS_EVENTBRIDGE_ROLE_ARN}
     s3:
-      banner-bucket: ${BUCKET_FOR_BANNER}
+      banner:
+        name: ${BUCKET_FOR_BANNER}
     region: ${AWS_REGION}
 
 management:
