@@ -104,6 +104,12 @@ public class ErrorHandler {
         return ApiResponseUtil.failure(ex.getFailureCode());
     }
 
+    @ExceptionHandler(ExternalException.class)
+    public ResponseEntity<BaseResponse<?>> externalException(ExternalException ex) {
+        log.error(ex.getMessage());
+        return ApiResponseUtil.failure(ex.getFailureCode());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<BaseResponse<?>> validationException(MethodArgumentNotValidException ex) {
         List<String> errorMessages = ex.getBindingResult().getAllErrors().stream()
