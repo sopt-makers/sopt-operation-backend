@@ -57,7 +57,7 @@ public class BannerServiceImpl implements BannerService {
 
     @Transactional
     @Override
-    public BannerDetail createBanner(BannerCreate request) {
+    public BannerDetail createBanner(BannerCreateOrModify request) {
         val period = getPublishPeriod(request.startDate(), request.endDate());
         val image = getBannerImage(request.pcImage(), request.mobileImage());
         val newBanner = Banner.builder()
@@ -71,6 +71,11 @@ public class BannerServiceImpl implements BannerService {
         val banner = saveBanner(newBanner);
 
         return BannerResponse.BannerDetail.fromEntity(banner);
+    }
+
+    @Override
+    public BannerDetail updateBanner(Long bannerId, BannerCreateOrModify request) {
+        return null;
     }
 
     private PublishPeriod getPublishPeriod(LocalDate startDate, LocalDate endDate) {

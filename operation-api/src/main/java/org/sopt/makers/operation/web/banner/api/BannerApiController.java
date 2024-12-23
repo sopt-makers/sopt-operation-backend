@@ -5,7 +5,6 @@ import lombok.val;
 
 import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.util.ApiResponseUtil;
-import org.sopt.makers.operation.web.banner.dto.request.BannerRequest;
 import org.sopt.makers.operation.web.banner.dto.request.BannerRequest.*;
 import org.sopt.makers.operation.web.banner.service.BannerService;
 import org.springframework.http.ResponseEntity;
@@ -41,14 +40,14 @@ public class BannerApiController implements BannerApi {
 
     @PostMapping
     @Override
-    public ResponseEntity<BaseResponse<?>> createBanner(@RequestBody BannerRequest.BannerCreate request) {
+    public ResponseEntity<BaseResponse<?>> createBanner(@RequestBody BannerCreateOrModify request) {
         val response = bannerService.createBanner(request);
         return ApiResponseUtil.success(SUCCESS_CREATE_BANNER, response);
     }
 
     @PutMapping("/{bannerId}")
     @Override
-    public ResponseEntity<BaseResponse<?>> updateBanner(@PathVariable("bannerId") Long bannerId, BannerCreate request) {
+    public ResponseEntity<BaseResponse<?>> updateBanner(@PathVariable("bannerId") Long bannerId, BannerCreateOrModify request) {
         return null;
     }
 }

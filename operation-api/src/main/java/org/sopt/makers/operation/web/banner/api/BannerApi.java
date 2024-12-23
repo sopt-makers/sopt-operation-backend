@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 import org.sopt.makers.operation.dto.BaseResponse;
 
-import org.sopt.makers.operation.web.banner.dto.request.*;
+import org.sopt.makers.operation.web.banner.dto.request.BannerRequest.*;
 import org.springframework.http.ResponseEntity;
 
 public interface BannerApi {
@@ -68,7 +68,7 @@ public interface BannerApi {
                     )
             }
     )
-    ResponseEntity<BaseResponse<?>> createBanner(BannerRequest.BannerCreate request);
+    ResponseEntity<BaseResponse<?>> createBanner(BannerCreateOrModify request);
 
     @Operation(
             summary = "배너 생성 API",
@@ -87,5 +87,5 @@ public interface BannerApi {
                     )
             }
     )
-    ResponseEntity<BaseResponse<?>> updateBanner(Long bannerId, BannerRequest.BannerCreate request);
+    ResponseEntity<BaseResponse<?>> updateBanner(Long bannerId, BannerCreateOrModify request);
 }
