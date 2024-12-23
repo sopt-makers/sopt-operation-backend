@@ -2,18 +2,17 @@ package org.sopt.makers.operation.banner.domain;
 
 import jakarta.persistence.Embeddable;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
+import org.sopt.makers.operation.exception.*;
 
 import static lombok.AccessLevel.PROTECTED;
+import static org.sopt.makers.operation.code.failure.BannerFailureCode.INVALID_BANNER_PERIOD;
 
 @Getter
 @Embeddable
 @NoArgsConstructor(access = PROTECTED)
-@AllArgsConstructor
 public class PublishPeriod {
     private LocalDate startDate;
     private LocalDate endDate;
@@ -37,4 +36,16 @@ public class PublishPeriod {
         return PublishStatus.IN_PROGRESS;
     }
 
+    @Builder
+    private PublishPeriod(LocalDate startDate, LocalDate endDate) {
+        validatePublishPeriod(startDate, endDate);
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
+    private void validatePublishPeriod(LocalDate startDate, LocalDate endDate) {
+        if (endDate.isBefore(startDate)) {
+            throw new BannerException(INVALID_BANNER_PERIOD);
+        }
+    }
 }

@@ -19,6 +19,7 @@ public final class BannerResponse {
             @JsonProperty("location") String bannerLocation,
             @JsonProperty("content_type") String bannerType,
             @JsonProperty("publisher") String publisher,
+            @JsonProperty("link") String link,
             @JsonProperty("start_date") LocalDate startDate,
             @JsonProperty("end_date") LocalDate endDate,
             @JsonProperty("image_url_pc") String pcImageUrl,
@@ -32,11 +33,22 @@ public final class BannerResponse {
                     .bannerLocation(banner.getLocation().getValue())
                     .bannerType(banner.getContentType().getValue())
                     .publisher(banner.getPublisher())
+                    .link(banner.getLink())
                     .startDate(banner.getPeriod().getStartDate())
                     .endDate(banner.getPeriod().getEndDate())
                     .pcImageUrl(banner.getImage().getPcImageUrl())
                     .mobileImageUrl(banner.getImage().getMobileImageUrl())
                     .build();
+        }
+    }
+
+    @Builder(access = PRIVATE)
+    public record ImagePreSignedUrl(
+            @JsonProperty("presigned-url") String preSignedUrl,
+            @JsonProperty("filename") String fileName
+    ) {
+        public static ImagePreSignedUrl of(String preSignedUrl, String filename) {
+            return new ImagePreSignedUrl(preSignedUrl, filename);
         }
     }
 }

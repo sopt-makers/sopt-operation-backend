@@ -47,7 +47,7 @@ class BannerApiControllerTest {
     @BeforeEach
     void setMockBanner() {
         BannerResponse.BannerDetail mockBannerDetail = new BannerResponse.BannerDetail(
-                MOCK_BANNER_ID, "in_progress", "pg_community", "product", "publisher",
+                MOCK_BANNER_ID, "in_progress", "pg_community", "product", "publisher", "link",
                 LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 31), "image-url-pc", "image-url-mobile"
         );
 
@@ -76,6 +76,7 @@ class BannerApiControllerTest {
                 .andExpect(jsonPath("$.data.location").value(givenBannerDetail.bannerLocation()))
                 .andExpect(jsonPath("$.data.content_type").value(givenBannerDetail.bannerType()))
                 .andExpect(jsonPath("$.data.publisher").value(givenBannerDetail.publisher()))
+                .andExpect(jsonPath("$.data.link").value(givenBannerDetail.link()))
                 .andExpect(jsonPath("$.data.start_date").value(givenBannerDetail.startDate().toString()))
                 .andExpect(jsonPath("$.data.end_date").value(givenBannerDetail.endDate().toString()))
                 .andExpect(jsonPath("$.data.image_url_pc").value(givenBannerDetail.pcImageUrl()))
