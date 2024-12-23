@@ -20,7 +20,9 @@ import org.springframework.transaction.annotation.*;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class BannerServiceImpl implements BannerService {
-
+    private static final String SLASH = "/";
+    private static final String PROTOCOL_SEPARATOR = "//";
+    private static final int PROTOCOL_END_OFFSET = 2;
     private final BannerRepository bannerRepository;
     private final S3Service s3Service;
     private final ValueConfig valueConfig;
@@ -73,9 +75,18 @@ public class BannerServiceImpl implements BannerService {
         return BannerResponse.BannerDetail.fromEntity(banner);
     }
 
+    @Transactional
     @Override
     public BannerDetail updateBanner(Long bannerId, BannerCreateOrModify request) {
+        val banner = getBannerById(bannerId);
         return null;
+    }
+
+    private void deleteExistImage(String url) {
+        val protocolEndIndex = url.indexOf(PROTOCOL_SEPARATOR) + PROTOCOL_END_OFFSET;
+        val firstSlashIndex = url.indexOf(SLASH, protocolEndIndex);
+        val extractedPath = url.substring(firstSlashIndex);
+        s3Service.deleteFile(valueConfig.getBannerBucket(), extractedPath);
     }
 
     private PublishPeriod getPublishPeriod(LocalDate startDate, LocalDate endDate) {
