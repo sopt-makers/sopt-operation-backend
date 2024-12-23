@@ -81,4 +81,10 @@ public class Banner extends BaseEntity {
     public void updatePublisher(String publisher) {
         this.publisher = publisher;
     }
+
+    public void updateLink(String link) { this.link = link;}
+
+    public void updatePeriod(PublishPeriod period) { this.period = period; }
+
+    public void updateImage(BannerImage image) { this.image = image; }
 }

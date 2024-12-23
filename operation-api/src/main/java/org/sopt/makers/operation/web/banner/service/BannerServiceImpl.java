@@ -78,8 +78,19 @@ public class BannerServiceImpl implements BannerService {
     @Transactional
     @Override
     public BannerDetail updateBanner(Long bannerId, BannerCreateOrModify request) {
-        val banner = getBannerById(bannerId);
-        return null;
+        var banner = getBannerById(bannerId);
+        val period = getPublishPeriod(request.startDate(), request.endDate());
+        val image = getBannerImage(request.pcImage(), request.mobileImage());
+
+        deleteExistImage(banner.getImage().getPcImageUrl());
+        deleteExistImage(banner.getImage().getMobileImageUrl());
+        banner.updatePublisher(request.publisher());
+        banner.updateLink(request.link());
+        banner.updateContentType(ContentType.getByValue(request.bannerType()));
+        banner.updateLocation(PublishLocation.getByValue(request.bannerLocation()));
+        banner.updatePeriod(period);
+        banner.updateImage(image);
+        return BannerResponse.BannerDetail.fromEntity(banner);
     }
 
     private void deleteExistImage(String url) {
