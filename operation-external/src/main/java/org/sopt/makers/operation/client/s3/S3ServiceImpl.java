@@ -23,7 +23,7 @@ public class S3ServiceImpl implements S3Service {
     private static final int SIGNATURE_DURATION = 20;
 
     @Override
-    public String createPutPreSignedUrl(String bucketName, String fileName) {
+    public String createPreSignedUrlForPutObject(String bucketName, String fileName) {
         val putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(fileName)

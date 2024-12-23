@@ -49,7 +49,7 @@ public interface BannerApi {
                     )
             }
     )
-    ResponseEntity<BaseResponse<?>> getPreSignedUrlForBanner(String contentName, String imageType, String imageExtension, String contentType);
+    ResponseEntity<BaseResponse<?>> getIssuedPreSignedUrlForPutImage(String contentName, String imageType, String imageExtension, String contentType);
 
     @Operation(
             summary = "배너 생성 API",

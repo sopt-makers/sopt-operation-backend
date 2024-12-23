@@ -37,12 +37,12 @@ public class BannerServiceImpl implements BannerService {
     }
 
     @Override
-    public BannerResponse.ImagePreSignedUrl getPutPreSignedUrlForBanner(String contentName, String imageType, String imageExtension, String contentType) {
+    public BannerResponse.ImagePreSignedUrl getIssuedPreSignedUrlForPutImage(String contentName, String imageType, String imageExtension, String contentType) {
         val type = ImageType.getByValue(imageType);
         val extension = ImageExtension.getByValue(imageExtension);
         val location = ContentType.getByValue(contentType).getLocation();
         val fileName = getBannerImageName(location, contentName, type.getValue(), extension.getValue());
-        val putPreSignedUrl = s3Service.createPutPreSignedUrl(valueConfig.getBannerBucket(), fileName);
+        val putPreSignedUrl = s3Service.createPreSignedUrlForPutObject(valueConfig.getBannerBucket(), fileName);
 
         return BannerResponse.ImagePreSignedUrl.of(putPreSignedUrl, fileName);
     }
