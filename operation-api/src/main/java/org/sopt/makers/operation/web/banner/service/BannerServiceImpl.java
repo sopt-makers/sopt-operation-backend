@@ -10,7 +10,7 @@ import org.sopt.makers.operation.client.s3.S3Service;
 import org.sopt.makers.operation.code.failure.BannerFailureCode;
 import org.sopt.makers.operation.config.ValueConfig;
 import org.sopt.makers.operation.exception.BannerException;
-import org.sopt.makers.operation.web.banner.dto.request.BannerRequest.*;
+import org.sopt.makers.operation.web.banner.dto.request.*;
 import org.sopt.makers.operation.web.banner.dto.response.BannerResponse;
 import org.sopt.makers.operation.web.banner.dto.response.BannerResponse.*;
 import org.springframework.stereotype.Service;
@@ -59,7 +59,7 @@ public class BannerServiceImpl implements BannerService {
 
     @Transactional
     @Override
-    public BannerDetail createBanner(BannerCreateOrModify request) {
+    public BannerDetail createBanner(BannerRequest.BannerCreateOrModify request) {
         val period = getPublishPeriod(request.startDate(), request.endDate());
         val image = getBannerImage(request.pcImage(), request.mobileImage());
         val newBanner = Banner.builder()
@@ -77,7 +77,7 @@ public class BannerServiceImpl implements BannerService {
 
     @Transactional
     @Override
-    public BannerDetail updateBanner(Long bannerId, BannerCreateOrModify request) {
+    public BannerDetail updateBanner(Long bannerId, BannerRequest.BannerCreateOrModify request) {
         var banner = getBannerById(bannerId);
         val period = getPublishPeriod(request.startDate(), request.endDate());
         val image = getBannerImage(request.pcImage(), request.mobileImage());
