@@ -1,10 +1,18 @@
 package org.sopt.makers.operation.web.banner.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.val;
+import org.sopt.makers.operation.banner.domain.Banner;
+import org.sopt.makers.operation.banner.domain.PublishLocation;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.sopt.makers.operation.banner.domain.*;
+
 import org.sopt.makers.operation.banner.repository.BannerRepository;
 import org.sopt.makers.operation.client.s3.S3Service;
 import org.sopt.makers.operation.code.failure.BannerFailureCode;
@@ -31,7 +39,26 @@ public class BannerServiceImpl implements BannerService {
         return BannerResponse.BannerDetail.fromEntity(banner);
     }
 
-    private Banner getBannerById(final long id) {
+    @Override
+    public void deleteBanner(final long bannerId) {
+        val banner = getBannerById(bannerId);
+        bannerRepository.delete(banner);
+    }
+
+  @Override
+  public List<BannerResponse.BannerImageUrl> getExternalBanners(final String imageType, final String location) {
+     val publishLocation = PublishLocation.getByValue(location);
+
+     val bannerList = bannerRepository.findBannersByLocation(publishLocation);
+
+     List<String> list = bannerList.stream()
+         .map( banner -> banner.getImage().retrieveImageUrl(imageType))
+         .collect(Collectors.toUnmodifiableList());
+
+    return BannerResponse.BannerImageUrl.fromEntity(list);
+  }
+
+  private Banner getBannerById(final long id) {
         return bannerRepository.findById(id)
                 .orElseThrow(() -> new BannerException(BannerFailureCode.NOT_FOUND_BANNER));
     }

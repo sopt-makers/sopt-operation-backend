@@ -16,8 +16,11 @@ public enum BannerFailureCode implements FailureCode {
     NOT_FOUND_STATUS(NOT_FOUND, "존재하지 않는 게시 상태입니다."),
     NOT_FOUND_LOCATION(NOT_FOUND, "존재하지 않는 게시 위치입니다."),
     NOT_FOUND_CONTENT_TYPE(NOT_FOUND, "존재하지 않는 게시 유형입니다."),
+    NOT_FOUNT_BANNER(NOT_FOUND, "존재하지 않는 배너입니다."),
+    NOT_SUPPORTED_PLATFORM_TYPE(NOT_FOUND, "지원하지 않는 플랫폼 유형입니다."),
     NOT_FOUND_BANNER(NOT_FOUND, "존재하지 않는 배너입니다."),
     NOT_FOUND_BANNER_IMAGE(NOT_FOUND, "존재하지 않는 배너 이미지입니다.")
+
     ;
 
     private final HttpStatus status;

@@ -1,6 +1,8 @@
 package org.sopt.makers.operation.web.banner.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.sopt.makers.operation.banner.domain.Banner;
@@ -39,6 +41,18 @@ public final class BannerResponse {
                     .pcImageUrl(banner.getImage().getPcImageUrl())
                     .mobileImageUrl(banner.getImage().getMobileImageUrl())
                     .build();
+        }
+
+
+    }
+    public record BannerImageUrl(
+        @JsonProperty("url") String url
+    ){
+
+        public static List<BannerImageUrl> fromEntity(List<String> urlList){
+            return urlList.stream()
+                .map(BannerImageUrl::new)
+                .collect(Collectors.toUnmodifiableList());
         }
     }
 
