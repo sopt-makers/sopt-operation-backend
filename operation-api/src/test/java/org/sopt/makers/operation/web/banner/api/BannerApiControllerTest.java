@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -66,7 +67,7 @@ class BannerApiControllerTest {
         this.mockMvc.perform(
                         // when
                         get("/api/v1/banners/" + MOCK_BANNER_ID)
-                                .contentType(MediaType.APPLICATION_JSON)
+                                .contentType(APPLICATION_JSON)
                                 .principal(mock(Principal.class)))
                 // then
                 .andExpect(status().isOk())
@@ -93,7 +94,7 @@ class BannerApiControllerTest {
         this.mockMvc.perform(
             //when
             delete("/api/v1/banners/" + MOCK_BANNER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
                 .principal(mock(Principal.class)))
 
             //then
@@ -112,8 +113,8 @@ class BannerApiControllerTest {
         this.mockMvc.perform(
                         // when
                         get("/api/v1/banners/images")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .param("platform", imageType)
+                                .contentType(APPLICATION_JSON)
+                                .param("image_type", imageType)
                                 .param("location", location)
                                 .principal(mock(Principal.class)))
                 // then
