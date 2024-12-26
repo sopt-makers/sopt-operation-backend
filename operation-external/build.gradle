@@ -12,6 +12,7 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation(platform("software.amazon.awssdk:bom:2.21.1"))
+    implementation 'software.amazon.awssdk:s3:2.21.0'
     implementation 'software.amazon.awssdk:eventbridge'
     implementation 'software.amazon.awssdk:scheduler'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-aws', version: '2.2.6.RELEASE'

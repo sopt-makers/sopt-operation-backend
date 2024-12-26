@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 import org.sopt.makers.operation.dto.BaseResponse;
 
+import org.sopt.makers.operation.web.banner.dto.request.*;
 import org.springframework.http.ResponseEntity;
 
 public interface BannerApi {
@@ -72,4 +73,43 @@ public interface BannerApi {
       }
   )
   ResponseEntity<BaseResponse<?>> getExternalBanners(String platform, String location);
+
+  @Operation(
+            summary = "배너 이미지 PreSignedUrl 조회 API",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "PreSignedUrl 조회 성공"
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "잘못된 요청"
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "서버 내부 오류"
+                    )
+            }
+    )
+    ResponseEntity<BaseResponse<?>> getIssuedPreSignedUrlForPutImage(String contentName, String imageType, String imageExtension, String contentType);
+
+    @Operation(
+            summary = "배너 생성 API",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "배너 생성 성공"
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "잘못된 요청"
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "서버 내부 오류"
+                    )
+            }
+    )
+    ResponseEntity<BaseResponse<?>> createBanner(BannerRequest.BannerCreate request);
+
 }

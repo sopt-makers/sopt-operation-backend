@@ -44,6 +44,8 @@ public class Banner extends BaseEntity {
     @Column(nullable = false)
     private String publisher;
 
+    private String link;
+
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "startDate", column = @Column(name = "start_date", nullable = false)),
@@ -59,8 +61,9 @@ public class Banner extends BaseEntity {
     private BannerImage image;
 
     @Builder
-    private Banner(PublishLocation location, ContentType contentType, String publisher, PublishPeriod period, BannerImage image) {
+    private Banner(PublishLocation location, String link, ContentType contentType, String publisher, PublishPeriod period, BannerImage image) {
         this.location = location;
+        this.link = link;
         this.contentType = contentType;
         this.publisher = publisher;
         this.period = period;

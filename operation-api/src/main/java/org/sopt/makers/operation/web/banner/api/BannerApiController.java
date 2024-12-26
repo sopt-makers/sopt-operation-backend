@@ -5,6 +5,7 @@ import lombok.val;
 
 import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.util.ApiResponseUtil;
+import org.sopt.makers.operation.web.banner.dto.request.BannerRequest;
 import org.sopt.makers.operation.web.banner.service.BannerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 import static org.sopt.makers.operation.code.success.web.BannerSuccessCode.SUCCESS_DELETE_BANNER;
 import static org.sopt.makers.operation.code.success.web.BannerSuccessCode.SUCCESS_GET_BANNER_DETAIL;
 import static org.sopt.makers.operation.code.success.web.BannerSuccessCode.SUCCESS_GET_EXTERNAL_BANNERS;
+
+import org.springframework.web.bind.annotation.*;
+
+import static org.sopt.makers.operation.code.success.web.BannerSuccessCode.SUCCESS_CREATE_BANNER;
+import static org.sopt.makers.operation.code.success.web.BannerSuccessCode.SUCCESS_GET_BANNER_DETAIL;
+import static org.sopt.makers.operation.code.success.web.BannerSuccessCode.SUCCESS_GET_BANNER_IMAGE_PRE_SIGNED_URL;
 
 @RestController
 @RequestMapping("/api/v1/banners")
@@ -49,5 +56,19 @@ public class BannerApiController implements BannerApi {
         @RequestParam("location") String location
     ) {
       return ApiResponseUtil.success(SUCCESS_GET_EXTERNAL_BANNERS, bannerService.getExternalBanners(imageType, location));
+
+    @Override
+    @GetMapping("/img/pre-signed")
+    public ResponseEntity<BaseResponse<?>> getIssuedPreSignedUrlForPutImage(@RequestParam("content-name") String contentName, @RequestParam("image-type") String imageType,
+                                                                            @RequestParam("image-extension") String imageExtension, @RequestParam("content-type") String contentType) {
+        val response = bannerService.getIssuedPreSignedUrlForPutImage(contentName, imageType, imageExtension, contentType);
+        return ApiResponseUtil.success(SUCCESS_GET_BANNER_IMAGE_PRE_SIGNED_URL, response);
+    }
+
+    @PostMapping
+    @Override
+    public ResponseEntity<BaseResponse<?>> createBanner(@RequestBody BannerRequest.BannerCreate request) {
+        val response = bannerService.createBanner(request);
+        return ApiResponseUtil.success(SUCCESS_CREATE_BANNER, response);
     }
 }

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.sopt.makers.operation.code.failure.BannerFailureCode;
 import org.sopt.makers.operation.code.failure.FailureCode;
 import org.sopt.makers.operation.exception.BannerException;
+import lombok.*;
 
 import static lombok.AccessLevel.PROTECTED;
 import static org.sopt.makers.operation.code.failure.BannerFailureCode.NOT_SUPPORTED_PLATFORM_TYPE;
@@ -15,7 +16,6 @@ import static org.sopt.makers.operation.code.failure.BannerFailureCode.NOT_SUPPO
 @Getter
 @Embeddable
 @NoArgsConstructor(access = PROTECTED)
-@AllArgsConstructor
 public class BannerImage {
     private String pcImageUrl;
     private String mobileImageUrl;
@@ -34,5 +34,11 @@ public class BannerImage {
         case "mobile" -> mobileImageUrl;
         default -> throw new BannerException(NOT_SUPPORTED_PLATFORM_TYPE);
       };
+    }
+  
+    @Builder
+    private BannerImage(String pcImageUrl, String mobileImageUrl) {
+        this.pcImageUrl = pcImageUrl;
+        this.mobileImageUrl = mobileImageUrl;
     }
 }
