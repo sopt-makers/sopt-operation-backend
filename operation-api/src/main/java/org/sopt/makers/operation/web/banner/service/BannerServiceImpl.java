@@ -31,13 +31,13 @@ public class BannerServiceImpl implements BannerService {
     }
 
   @Override
-  public List<BannerResponse.BannerImageUrl> getExternalBanners(final String platform, final String location) {
-     PublishLocation publishLocation = PublishLocation.getByValue(location);
+  public List<BannerResponse.BannerImageUrl> getExternalBanners(final String imageType, final String location) {
+     val publishLocation = PublishLocation.getByValue(location);
 
      val bannerList = bannerRepository.findBannersByLocation(publishLocation);
 
      List<String> list = bannerList.stream()
-         .map( banner -> banner.getImage().retrieveImageUrl(platform))
+         .map( banner -> banner.getImage().retrieveImageUrl(imageType))
          .collect(Collectors.toUnmodifiableList());
 
     return BannerResponse.BannerImageUrl.fromEntity(list);
