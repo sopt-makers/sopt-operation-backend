@@ -47,13 +47,10 @@ public class BannerTest {
     private static final LocalDate TEST_BANNER_END_DATE = LocalDate.of(2024, 12, 31);
     private static final String TEST_BANNER_PC_IMAGE_URL = "image-url-for-pc";
     private static final String TEST_BANNER_MOBILE_IMAGE_URL = "image-url-for-mobile";
-
-    private static final PublishPeriod TEST_PUBLISH_PERIOD = new PublishPeriod(
-            TEST_BANNER_START_DATE, TEST_BANNER_END_DATE
-    );
-    private static final BannerImage TEST_BANNER_IMAGE = new BannerImage(
-            TEST_BANNER_PC_IMAGE_URL, TEST_BANNER_MOBILE_IMAGE_URL
-    );
+    private static final PublishPeriod TEST_PUBLISH_PERIOD = PublishPeriod.builder()
+            .startDate(TEST_BANNER_START_DATE).endDate(TEST_BANNER_END_DATE).build();
+    private static final BannerImage TEST_BANNER_IMAGE = BannerImage.builder()
+            .pcImageUrl(TEST_BANNER_PC_IMAGE_URL).mobileImageUrl(TEST_BANNER_MOBILE_IMAGE_URL).build();
 
     private static final Banner TEST_BANNER = Banner.builder()
             .location(TEST_BANNER_LOCATION)
