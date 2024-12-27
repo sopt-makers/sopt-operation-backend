@@ -19,6 +19,19 @@ tasks.named("bootJar") {
     })
 }
 
+def profile = project.findProperty("profile") ?: "test"
+println("Build Profile: $profile")
+
+tasks.register("processProfileYaml", Copy) {
+    from("src/main/resources/application-${profile}.yaml")
+    into("build/resources/main") // 빌드 시 사용할 리소스 경로
+    rename { "application.yaml" } // 모든 프로파일 파일을 application.yaml로 변경
+}
+
+// processResources 작업 후에 실행되도록 의존성 추가
+tasks.named("processResources") {
+    dependsOn("processProfileYaml")
+}
 dependencies {
     // module
     implementation project(path: ':operation-auth')
