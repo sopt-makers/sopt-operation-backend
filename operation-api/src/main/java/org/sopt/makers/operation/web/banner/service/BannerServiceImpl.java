@@ -110,10 +110,10 @@ public class BannerServiceImpl implements BannerService {
     }
 
     private List<Banner> getFilteredBanners(List<Banner> banners, FilterCriteria filter) {
-        val targetStatus = PublishStatus.getByValue(filter.getParameter());
-        if (targetStatus == null) {
+        if (FilterCriteria.ALL.equals(filter)) {
             return banners;
         }
+        val targetStatus = PublishStatus.getByValue(filter.getParameter());
         return banners.stream()
                 .filter(banner -> targetStatus.equals(banner.getPeriod().getPublishStatus(LocalDate.now())))
                 .toList();
