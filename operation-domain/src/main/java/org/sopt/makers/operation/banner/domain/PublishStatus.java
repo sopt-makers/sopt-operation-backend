@@ -20,9 +20,9 @@ public enum PublishStatus {
 
     private final String value;
 
-    public static PublishLocation getByValue(String value) {
-        return Arrays.stream(PublishLocation.values())
-                .filter(location -> location.getValue().equals(value))
+    public static PublishStatus getByValue(String value) {
+        return Arrays.stream(PublishStatus.values())
+                .filter(status -> status.getValue().equals(value))
                 .findAny().orElseThrow(() -> new BannerException(BannerFailureCode.NOT_FOUND_STATUS));
     }
 }
