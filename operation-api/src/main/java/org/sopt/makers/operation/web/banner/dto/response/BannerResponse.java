@@ -15,6 +15,30 @@ import static lombok.AccessLevel.PRIVATE;
 public final class BannerResponse {
 
     @Builder(access = PRIVATE)
+    public record BannerSimple (
+            @JsonProperty("id") long bannerId,
+            @JsonProperty("status") String bannerStatus,
+            @JsonProperty("location") String bannerLocation,
+            @JsonProperty("content_type") String bannerType,
+            @JsonProperty("publisher") String publisher,
+            @JsonProperty("start_date") LocalDate startDate,
+            @JsonProperty("end_date") LocalDate endDate
+    ) {
+        public static BannerSimple fromEntity(Banner banner) {
+            return BannerSimple.builder()
+                    .bannerId(banner.getId())
+                    .bannerStatus(banner.getPeriod().getPublishStatus(LocalDate.now()).getValue())
+                    .bannerLocation(banner.getLocation().getValue())
+                    .bannerType(banner.getContentType().getValue())
+                    .publisher(banner.getPublisher())
+                    .startDate(banner.getPeriod().getStartDate())
+                    .endDate(banner.getPeriod().getEndDate())
+                    .build();
+        }
+    }
+
+
+    @Builder(access = PRIVATE)
     public record BannerDetail(
             @JsonProperty("id") long bannerId,
             @JsonProperty("status") String bannerStatus,
