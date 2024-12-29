@@ -23,28 +23,6 @@ jobs:
         run: chmod +x ./gradlew
         shell: bash
 
-      - name: Create application.yml
-        run: |
-          pwd
-          cd ./operation-api/src/main/resources
-          touch ./application-dev.yml
-          echo "${{ secrets.APPLICATION_DEV }}" >> ./application-dev.yml
-          cat ./application-dev.yml
-
-      - name: Create application-test.yml
-        run: |
-          cd ./operation-domain/src/test
-          mkdir -p resources
-          touch ./resources/application-test.yml
-          echo "${{ secrets.APPLICATION_DOMAIN_TEST }}" >> ./application-test.yml
-          cat ./application-test.yml
-
-      - name: 'Get key from Github Secrets'
-        run: |
-          pwd
-          mkdir -p ./operation-api/src/main/resources/static
-          echo "${{ secrets.APPLE_KEY }}" | base64 --decode > ./operation-api/src/main/resources/static/${{ secrets.APPLE_KEY_NAME }}
-
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: 🧱 Build with Gradle
+        run: docker build -t app-ci .
         shell: bash
