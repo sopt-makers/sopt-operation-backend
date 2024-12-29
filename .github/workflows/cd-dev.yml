@@ -77,12 +77,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.PEM_KEY_DEV }}
           port: 22
-          source: |
-            deploy.sh
-            switch.sh
-            valid.sh
-            application.env
-            ${{ secrets.APPLE_KEY_NAME }}
+          source: "deploy.sh,switch.sh,valid.sh,application.env,${{ secrets.APPLE_KEY_NAME }}"
           target: /home/ubuntu/deploy-temp/op
 
       - name: 🚀SSH command deploy
