@@ -70,6 +70,21 @@ jobs:
           aws s3 cp --region $REGION \
             s3://$S3_BUCKET/dev/static/$APPLE_KEY ./$APPLE_KEY_NAME
 
+      - name: 🔄 Transfer Files to Server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST_DEV }}
+          username: ubuntu
+          key: ${{ secrets.PEM_KEY_DEV }}
+          port: 22
+          source: |
+            deploy.sh
+            switch.sh
+            valid.sh
+            application.env
+            ${{ secrets.APPLE_KEY_NAME }}
+          target: /home/ubuntu/deploy-temp/op
+
       - name: 🚀SSH command deploy
         uses: appleboy/ssh-action@master
         with:
@@ -82,11 +97,11 @@ jobs:
             mkdir -p /home/ubuntu/property/op
             mkdir -p /home/ubuntu/env/op
             
-            echo $(cat deploy.sh) > /home/ubuntu/script/op/deploy.sh
-            echo $(cat switch.sh) > /home/ubuntu/script/op/switch.sh
-            echo $(cat valid.sh) > /home/ubuntu/script/op/valid.sh
-            echo $(cat application.env) > /home/ubuntu/env/op/application.env
-            echo $(cat ${{ secrets.APPLE_KEY_NAME }}) > /home/ubuntu/property/op/key/${{ secrets.APPLE_KEY_NAME }}
+            mv /home/ubuntu/deploy-temp/op/deploy.sh /home/ubuntu/script/op/deploy.sh
+            mv /home/ubuntu/deploy-temp/op/switch.sh /home/ubuntu/script/op/switch.sh
+            mv /home/ubuntu/deploy-temp/op/valid.sh /home/ubuntu/script/op/valid.sh
+            mv /home/ubuntu/deploy-temp/op/application.env /home/ubuntu/env/op/application.env
+            mv /home/ubuntu/deploy-temp/op/${{ secrets.APPLE_KEY_NAME }} /home/ubuntu/property/op/key/${{ secrets.APPLE_KEY_NAME }}
             
             sudo chmod +x /home/ubuntu/script/op/deploy.sh
             sudo chmod +x /home/ubuntu/script/op/switch.sh
@@ -94,6 +109,6 @@ jobs:
             sudo chmod +r /home/ubuntu/env/op/application.env
             sudo chmod +r /home/ubuntu/property/op/key/${{ secrets.APPLE_KEY }}
             
-            ./home/ubuntu/script/op/deploy.sh
-            ./home/ubuntu/script/op/switch.sh
-            ./home/ubuntu/script/op/valid.sh
+            /home/ubuntu/script/op/deploy.sh
+            /home/ubuntu/script/op/switch.sh
+            /home/ubuntu/script/op/valid.sh
