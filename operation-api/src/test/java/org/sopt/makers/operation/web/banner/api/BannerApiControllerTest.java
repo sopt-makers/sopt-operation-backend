@@ -1,5 +1,6 @@
 package org.sopt.makers.operation.web.banner.api;
 
+import com.fasterxml.jackson.databind.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -8,10 +9,11 @@ import org.sopt.makers.operation.code.success.web.BannerSuccessCode;
 import org.sopt.makers.operation.filter.JwtAuthenticationFilter;
 import org.sopt.makers.operation.filter.JwtExceptionFilter;
 import org.sopt.makers.operation.jwt.JwtTokenProvider;
+import org.sopt.makers.operation.web.banner.dto.request.BannerRequest.*;
 import org.sopt.makers.operation.web.banner.dto.response.BannerResponse;
+import org.sopt.makers.operation.web.banner.dto.response.BannerResponse.*;
 import org.sopt.makers.operation.web.banner.service.BannerService;
 
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.ComponentScan;
@@ -29,6 +31,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -45,6 +48,8 @@ class BannerApiControllerTest {
     private BannerService bannerService;
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    ObjectMapper objectMapper;
 
     @BeforeEach
     void setMockBanner() {
@@ -120,5 +125,36 @@ class BannerApiControllerTest {
                 // then
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value("true"));
+    }
+
+    @Test
+    @DisplayName("(POST) New Banner")
+    void createNewBanner() throws Exception {
+        // given
+        BannerCreate bannerCreate = new BannerCreate("pg_community", "product", "publisher",
+                LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 31), "link", "image-url-pc", "image-url-mobile"
+        );
+        String request = objectMapper.writeValueAsString(bannerCreate);
+        BannerDetail givenBannerDetail = bannerService.getBannerDetail(MOCK_BANNER_ID);
+        when(bannerService.createBanner(bannerCreate))
+                .thenReturn(givenBannerDetail);
+
+        // when & then
+        this.mockMvc.perform(post("/api/v1/banners")
+                        .contentType(APPLICATION_JSON)
+                        .content(request))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.success").value("true"))
+                .andExpect(jsonPath("$.message").value(BannerSuccessCode.SUCCESS_CREATE_BANNER.getMessage()))
+                .andExpect(jsonPath("$.data.id").value(givenBannerDetail.bannerId()))
+                .andExpect(jsonPath("$.data.status").value(givenBannerDetail.bannerStatus()))
+                .andExpect(jsonPath("$.data.location").value(givenBannerDetail.bannerLocation()))
+                .andExpect(jsonPath("$.data.content_type").value(givenBannerDetail.bannerType()))
+                .andExpect(jsonPath("$.data.publisher").value(givenBannerDetail.publisher()))
+                .andExpect(jsonPath("$.data.link").value(givenBannerDetail.link()))
+                .andExpect(jsonPath("$.data.start_date").value(givenBannerDetail.startDate().toString()))
+                .andExpect(jsonPath("$.data.end_date").value(givenBannerDetail.endDate().toString()))
+                .andExpect(jsonPath("$.data.image_url_pc").value(givenBannerDetail.pcImageUrl()))
+                .andExpect(jsonPath("$.data.image_url_mobile").value(givenBannerDetail.mobileImageUrl()));
     }
 }
