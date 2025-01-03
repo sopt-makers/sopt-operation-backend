@@ -139,10 +139,12 @@ class BannerApiControllerTest {
         when(bannerService.createBanner(bannerCreate))
                 .thenReturn(givenBannerDetail);
 
-        // when & then
-        this.mockMvc.perform(post("/api/v1/banners")
+        this.mockMvc.perform(
+                // when
+                post("/api/v1/banners")
                         .contentType(APPLICATION_JSON)
                         .content(request))
+                // then
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.success").value("true"))
                 .andExpect(jsonPath("$.message").value(BannerSuccessCode.SUCCESS_CREATE_BANNER.getMessage()))
