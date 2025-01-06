@@ -1,9 +1,7 @@
 package org.sopt.makers.operation.web.banner.api;
 
 import com.fasterxml.jackson.databind.*;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.*;
 
 import org.sopt.makers.operation.code.success.web.BannerSuccessCode;
 import org.sopt.makers.operation.filter.JwtAuthenticationFilter;
@@ -11,7 +9,6 @@ import org.sopt.makers.operation.filter.JwtExceptionFilter;
 import org.sopt.makers.operation.jwt.JwtTokenProvider;
 import org.sopt.makers.operation.web.banner.dto.request.BannerRequest.*;
 import org.sopt.makers.operation.web.banner.dto.response.BannerResponse;
-import org.sopt.makers.operation.web.banner.dto.response.BannerResponse.*;
 import org.sopt.makers.operation.web.banner.service.BannerService;
 
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.security.Principal;
 import java.time.LocalDate;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -94,6 +93,7 @@ class BannerApiControllerTest {
     @DisplayName("(DELETE) Banner Delete")
     void deleteBanner() throws Exception {
         //given
+        bannerService.deleteBanner(MOCK_BANNER_ID);
         BannerResponse.BannerDetail mockBannerDetail =  bannerService.getBannerDetail(MOCK_BANNER_ID);
 
         this.mockMvc.perform(
@@ -105,7 +105,6 @@ class BannerApiControllerTest {
             //then
                 .andExpect(status().isNoContent())
                 .andExpect(jsonPath("$.success").value("true"));
-
     }
 
     @Test
@@ -127,36 +126,38 @@ class BannerApiControllerTest {
                 .andExpect(jsonPath("$.success").value("true"));
     }
 
-    @Test
-    @DisplayName("(POST) New Banner")
-    void createNewBanner() throws Exception {
-        // given
-        BannerCreate bannerCreate = new BannerCreate("pg_community", "product", "publisher",
-                LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 31), "link", "image-url-pc", "image-url-mobile"
-        );
-        String request = objectMapper.writeValueAsString(bannerCreate);
-        BannerDetail givenBannerDetail = bannerService.getBannerDetail(MOCK_BANNER_ID);
-        when(bannerService.createBanner(bannerCreate))
-                .thenReturn(givenBannerDetail);
+    @Nested
+    class CreateBannerTests {
+        @Test
+        @DisplayName("(POST) New Banner")
+        void createNewBanner() throws Exception {
+            // given
+            BannerCreate bannerCreate = new BannerCreate("pg_community", "product", "publisher",
+                    LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 31), "link", "image-url-pc", "image-url-mobile");
+            BannerResponse.BannerDetail mockBannerDetail = new BannerResponse.BannerDetail(
+                    MOCK_BANNER_ID, "in_progress", "pg_community", "product", "publisher", "link",
+                    LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 31), "image-url-pc", "image-url-mobile");
+            String request = objectMapper.writeValueAsString(bannerCreate);
+            when(bannerService.createBanner(any(BannerCreate.class))).thenReturn(mockBannerDetail);
 
-        this.mockMvc.perform(
-                // when
-                post("/api/v1/banners")
-                        .contentType(APPLICATION_JSON)
-                        .content(request))
-                // then
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.success").value("true"))
-                .andExpect(jsonPath("$.message").value(BannerSuccessCode.SUCCESS_CREATE_BANNER.getMessage()))
-                .andExpect(jsonPath("$.data.id").value(givenBannerDetail.bannerId()))
-                .andExpect(jsonPath("$.data.status").value(givenBannerDetail.bannerStatus()))
-                .andExpect(jsonPath("$.data.location").value(givenBannerDetail.bannerLocation()))
-                .andExpect(jsonPath("$.data.content_type").value(givenBannerDetail.bannerType()))
-                .andExpect(jsonPath("$.data.publisher").value(givenBannerDetail.publisher()))
-                .andExpect(jsonPath("$.data.link").value(givenBannerDetail.link()))
-                .andExpect(jsonPath("$.data.start_date").value(givenBannerDetail.startDate().toString()))
-                .andExpect(jsonPath("$.data.end_date").value(givenBannerDetail.endDate().toString()))
-                .andExpect(jsonPath("$.data.image_url_pc").value(givenBannerDetail.pcImageUrl()))
-                .andExpect(jsonPath("$.data.image_url_mobile").value(givenBannerDetail.mobileImageUrl()));
+            // when
+            mockMvc.perform(post("/api/v1/banners")
+                            .contentType(APPLICATION_JSON)
+                            .content(request))
+                    // then
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.success").value(true))
+                    .andExpect(jsonPath("$.message").value(BannerSuccessCode.SUCCESS_CREATE_BANNER.getMessage()))
+                    .andExpect(jsonPath("$.data.id").value(mockBannerDetail.bannerId()))
+                    .andExpect(jsonPath("$.data.status").value(mockBannerDetail.bannerStatus()))
+                    .andExpect(jsonPath("$.data.location").value(mockBannerDetail.bannerLocation()))
+                    .andExpect(jsonPath("$.data.content_type").value(mockBannerDetail.bannerType()))
+                    .andExpect(jsonPath("$.data.publisher").value(mockBannerDetail.publisher()))
+                    .andExpect(jsonPath("$.data.link").value(mockBannerDetail.link()))
+                    .andExpect(jsonPath("$.data.start_date").value(mockBannerDetail.startDate().toString()))
+                    .andExpect(jsonPath("$.data.end_date").value(mockBannerDetail.endDate().toString()))
+                    .andExpect(jsonPath("$.data.image_url_pc").value(mockBannerDetail.pcImageUrl()))
+                    .andExpect(jsonPath("$.data.image_url_mobile").value(mockBannerDetail.mobileImageUrl()));
+        }
     }
 }
