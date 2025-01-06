@@ -93,8 +93,7 @@ class BannerApiControllerTest {
     @DisplayName("(DELETE) Banner Delete")
     void deleteBanner() throws Exception {
         //given
-        bannerService.deleteBanner(MOCK_BANNER_ID);
-        BannerResponse.BannerDetail mockBannerDetail =  bannerService.getBannerDetail(MOCK_BANNER_ID);
+        doNothing().when(bannerService).deleteBanner(MOCK_BANNER_ID);
 
         this.mockMvc.perform(
             //when
