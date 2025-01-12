@@ -92,11 +92,11 @@ jobs:
             mkdir -p /home/ubuntu/property/op
             mkdir -p /home/ubuntu/env/op
             
-            mv /home/ubuntu/deploy-temp/op/deploy.sh /home/ubuntu/script/op/deploy.sh
-            mv /home/ubuntu/deploy-temp/op/switch.sh /home/ubuntu/script/op/switch.sh
-            mv /home/ubuntu/deploy-temp/op/valid.sh /home/ubuntu/script/op/valid.sh
-            mv /home/ubuntu/deploy-temp/op/application.env /home/ubuntu/env/op/application.env
-            mv /home/ubuntu/deploy-temp/op/${{ secrets.APPLE_KEY_NAME }} /home/ubuntu/property/op/key/${{ secrets.APPLE_KEY_NAME }}
+            sudo mv /home/ubuntu/deploy-temp/op/deploy.sh /home/ubuntu/script/op/deploy.sh
+            sudo mv /home/ubuntu/deploy-temp/op/switch.sh /home/ubuntu/script/op/switch.sh
+            sudo mv /home/ubuntu/deploy-temp/op/valid.sh /home/ubuntu/script/op/valid.sh
+            sudo mv /home/ubuntu/deploy-temp/op/application.env /home/ubuntu/env/op/application.env
+            sudo mv /home/ubuntu/deploy-temp/op/${{ secrets.APPLE_KEY_NAME }} /home/ubuntu/property/op/key/${{ secrets.APPLE_KEY_NAME }}
             
             sudo chmod +x /home/ubuntu/script/op/deploy.sh
             sudo chmod +x /home/ubuntu/script/op/switch.sh
