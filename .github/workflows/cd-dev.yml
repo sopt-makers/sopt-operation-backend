@@ -56,14 +56,7 @@ jobs:
         env:
           REGION: ${{ secrets.AWS_REGION }}
           S3_BUCKET: ${{ secrets.AWS_BUCKET_NAME }}
-        run: |
-          aws s3 cp --region $REGION \
-            s3://$S3_BUCKET/dev/script/deploy.sh ./deploy.sh
-          aws s3 cp --region $REGION \
-            s3://$S3_BUCKET/dev/script/switch.sh ./switch.sh
-          aws s3 cp --region $REGION \
-            s3://$S3_BUCKET/dev/script/valid.sh ./valid.sh
-
+        run: 
           aws s3 cp --region $REGION \
             s3://$S3_BUCKET/dev/dev.env ./application.env
 
@@ -74,8 +67,8 @@ jobs:
           username: ubuntu
           key: ${{ secrets.PEM_KEY_DEV }}
           port: 22
-          source: "deploy.sh,switch.sh,valid.sh,application.env"
-          target: /home/ubuntu/deploy-temp/op
+          source: "application.env"
+          target: /home/ec2-user/operation/env
 
       - name: 🚀SSH command deploy
         uses: appleboy/ssh-action@master
@@ -85,20 +78,4 @@ jobs:
           key: ${{ secrets.PEM_KEY_DEV }}
           port: 22
           script: |
-            mkdir -p /home/ubuntu/script/op
-            mkdir -p /home/ubuntu/property/op
-            mkdir -p /home/ubuntu/env/op
-            
-            sudo mv /home/ubuntu/deploy-temp/op/deploy.sh /home/ubuntu/script/op/deploy.sh
-            sudo mv /home/ubuntu/deploy-temp/op/switch.sh /home/ubuntu/script/op/switch.sh
-            sudo mv /home/ubuntu/deploy-temp/op/valid.sh /home/ubuntu/script/op/valid.sh
-            sudo mv /home/ubuntu/deploy-temp/op/application.env /home/ubuntu/env/op/application.env
-            
-            sudo chmod +x /home/ubuntu/script/op/deploy.sh
-            sudo chmod +x /home/ubuntu/script/op/switch.sh
-            sudo chmod +x /home/ubuntu/script/op/valid.sh
-            sudo chmod +r /home/ubuntu/env/op/application.env
-            
-            /home/ubuntu/script/op/deploy.sh
-            /home/ubuntu/script/op/switch.sh
-            /home/ubuntu/script/op/valid.sh
+            /home/ec2-user/operation/scripts/deploy.sh
