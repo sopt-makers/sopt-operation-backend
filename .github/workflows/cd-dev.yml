@@ -64,7 +64,7 @@ jobs:
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.HOST_DEV }}
-          username: ubuntu
+          username: ec2-user
           key: ${{ secrets.PEM_KEY_DEV }}
           port: 22
           source: "application.env"
@@ -75,7 +75,7 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST_DEV }}
-          username: ubuntu
+          username: ec2-user
           key: ${{ secrets.PEM_KEY_DEV }}
           port: 22
           script: |
