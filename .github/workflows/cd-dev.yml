@@ -56,7 +56,7 @@ jobs:
         env:
           REGION: ${{ secrets.AWS_REGION }}
           S3_BUCKET: ${{ secrets.AWS_BUCKET_NAME }}
-        run: 
+        run: |
           aws s3 cp --region $REGION \
             s3://$S3_BUCKET/dev/dev.env ./application.env
 
