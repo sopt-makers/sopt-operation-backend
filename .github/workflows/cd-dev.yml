@@ -69,6 +69,7 @@ jobs:
           port: 22
           source: "application.env"
           target: /home/ec2-user/operation/env
+          overwrite: true
 
       - name: 🚀SSH command deploy
         uses: appleboy/ssh-action@master
