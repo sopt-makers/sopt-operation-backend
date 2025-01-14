@@ -72,10 +72,10 @@ public class BannerApiController implements BannerApi {
   @Override
   @GetMapping("/img/pre-signed")
   public ResponseEntity<BaseResponse<?>> getIssuedPreSignedUrlForPutImage(
-      @RequestParam("content-name") String contentName,
-      @RequestParam("image-type") String imageType,
-      @RequestParam("image-extension") String imageExtension,
-      @RequestParam("content-type") String contentType
+      @RequestParam("content_name") String contentName,
+      @RequestParam("image_type") String imageType,
+      @RequestParam("image_extension") String imageExtension,
+      @RequestParam("content_type") String contentType
   ) {
       val response = bannerService.getIssuedPreSignedUrlForPutImage(contentName, imageType,
         imageExtension, contentType);

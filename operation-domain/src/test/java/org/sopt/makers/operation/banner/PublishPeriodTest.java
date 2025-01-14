@@ -18,7 +18,8 @@ public class PublishPeriodTest {
     private static final LocalDate TEST_START_DATE = LocalDate.of(2024,1,1);
     private static final LocalDate TEST_END_DATE = LocalDate.of(2024,12,31);
     private final PublishPeriod givenPeriod = PublishPeriod.builder()
-            .startDate(TEST_START_DATE).endDate(TEST_END_DATE).build();
+            .startDate(TEST_START_DATE)
+            .endDate(TEST_END_DATE).build();
 
     @ParameterizedTest(name = "({index}) date : {0} -> result : {1}")
     @MethodSource("argsForCalculateStatus")
