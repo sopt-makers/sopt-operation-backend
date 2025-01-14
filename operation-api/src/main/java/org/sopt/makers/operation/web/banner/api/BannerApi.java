@@ -33,6 +33,25 @@ public interface BannerApi {
     ResponseEntity<BaseResponse<?>> getBannerDetail(Long bannerId);
 
     @Operation(
+            summary = "배너 목록 조회 API",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "배너 목록 조회 성공"
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "잘못된 요청<br/><br/>1. 존재하지 않는 Parameter Key<br/>2. 존재하지 않는 Parameter Value"
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "서버 내부 오류"
+                    )
+            }
+    )
+    ResponseEntity<BaseResponse<?>> getBanners(String status, String sort);
+
+    @Operation(
         summary = "배너 삭제 API",
         responses = {
             @ApiResponse(

@@ -47,7 +47,6 @@ public class BannerTest {
     private static final LocalDate TEST_BANNER_END_DATE = LocalDate.of(2024, 12, 31);
     private static final String TEST_BANNER_PC_IMAGE_URL = "image-url-for-pc";
     private static final String TEST_BANNER_MOBILE_IMAGE_URL = "image-url-for-mobile";
-
     private static final PublishPeriod TEST_PUBLISH_PERIOD = PublishPeriod.builder()
             .startDate(TEST_BANNER_START_DATE)
             .endDate(TEST_BANNER_END_DATE).build();

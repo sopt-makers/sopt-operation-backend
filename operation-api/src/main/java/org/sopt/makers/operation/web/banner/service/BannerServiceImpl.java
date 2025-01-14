@@ -1,7 +1,8 @@
 package org.sopt.makers.operation.web.banner.service;
 
+import java.time.Clock;
+import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.sopt.makers.operation.banner.domain.Banner;
@@ -9,8 +10,6 @@ import org.sopt.makers.operation.banner.domain.PublishLocation;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import lombok.RequiredArgsConstructor;
-import lombok.val;
 import org.sopt.makers.operation.banner.domain.*;
 
 import org.sopt.makers.operation.banner.repository.BannerRepository;
@@ -32,6 +31,7 @@ public class BannerServiceImpl implements BannerService {
     private final BannerRepository bannerRepository;
     private final S3Service s3Service;
     private final ValueConfig valueConfig;
+    private final Clock clock;
 
     @Override
     public BannerResponse.BannerDetail getBannerDetail(final long bannerId) {
@@ -53,7 +53,7 @@ public class BannerServiceImpl implements BannerService {
 
      List<String> list = bannerList.stream()
          .map( banner -> banner.getImage().retrieveImageUrl(imageType))
-         .collect(Collectors.toUnmodifiableList());
+         .toList();
 
     return BannerResponse.BannerImageUrl.fromEntity(list);
   }
@@ -75,7 +75,7 @@ public class BannerServiceImpl implements BannerService {
     }
 
     private String getBannerImageName(String location, String contentName, String imageType, String imageExtension) {
-        val today = LocalDate.now();
+        val today = LocalDate.now(clock);
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         val formattedDate = today.format(formatter);
 
@@ -98,6 +98,39 @@ public class BannerServiceImpl implements BannerService {
         val banner = saveBanner(newBanner);
 
         return BannerResponse.BannerDetail.fromEntity(banner);
+    }
+
+    @Override
+    public List<BannerSimple> getBanners(FilterCriteria filter, SortCriteria sort) {
+        val allBanners = bannerRepository.findAll();
+        val filteredBanners = getFilteredBanners(allBanners, filter);
+        val resultBanners = getSortedBanners(filteredBanners, sort);
+        return resultBanners.stream()
+                .map(BannerSimple::fromEntity)
+                .toList();
+    }
+
+    private List<Banner> getFilteredBanners(List<Banner> banners, FilterCriteria filter) {
+        if (FilterCriteria.ALL.equals(filter)) {
+            return banners;
+        }
+        val targetStatus = PublishStatus.getByValue(filter.getParameter());
+        return banners.stream()
+                .filter(banner -> targetStatus.equals(banner.getPeriod().getPublishStatus(LocalDate.now(clock))))
+                .toList();
+    }
+
+    private List<Banner> getSortedBanners(List<Banner> banners, SortCriteria criteria) {
+        return switch (criteria) {
+            case STATUS, START_DATE -> banners.stream().sorted(
+                    Comparator.comparing(Banner::getPeriod, (p1, p2) -> p2.getStartDate().compareTo(p1.getStartDate()))
+                            .thenComparing(Banner::getPeriod, Comparator.comparing(PublishPeriod::getEndDate))
+            ).toList();
+            case END_DATE -> banners.stream().sorted(
+                    Comparator.comparing(Banner::getPeriod, Comparator.comparing(PublishPeriod::getEndDate))
+                            .thenComparing(Banner::getPeriod, (p1, p2) -> p2.getStartDate().compareTo(p1.getStartDate()))
+            ).toList();
+        };
     }
 
     private PublishPeriod getPublishPeriod(LocalDate startDate, LocalDate endDate) {
