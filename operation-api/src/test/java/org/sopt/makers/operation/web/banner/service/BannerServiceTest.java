@@ -1,17 +1,25 @@
 package org.sopt.makers.operation.web.banner.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.sopt.makers.operation.banner.domain.PublishPeriod;
 import org.sopt.makers.operation.banner.domain.PublishStatus;
+import org.sopt.makers.operation.banner.repository.BannerRepository;
+import org.sopt.makers.operation.client.s3.S3Service;
+import org.sopt.makers.operation.config.ValueConfig;
 import org.sopt.makers.operation.web.banner.dto.response.BannerResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.time.LocalDate;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -22,10 +30,20 @@ import static org.sopt.makers.operation.web.banner.service.BannerService.*;
 @ActiveProfiles("test")
 @Sql(scripts = "classpath:data/insert-get-banners-data.sql")
 class BannerServiceTest {
-
+    private static final Clock TEST_CLOCK = Clock.fixed(Instant.parse("2024-12-28T00:00:00Z"), ZoneId.systemDefault());
     @Autowired
+    private BannerRepository bannerRepository;
+    @MockBean
+    private S3Service s3Service;
+    @Autowired
+    private ValueConfig valueConfig;
+
     private BannerService bannerService;
 
+    @BeforeEach
+    void setBannerService() {
+        bannerService = new BannerServiceImpl(bannerRepository, s3Service, valueConfig, TEST_CLOCK);
+    }
 
     @ParameterizedTest
     @MethodSource("argsForGetBanners")
@@ -44,7 +62,7 @@ class BannerServiceTest {
                     if (givenFilter.equals(FilterCriteria.ALL)) {
                         return true;
                     }
-                    return period.getPublishStatus(LocalDate.now()).equals(expectedStatus);
+                    return period.getPublishStatus(LocalDate.now(TEST_CLOCK)).equals(expectedStatus);
                 });
     }
     static Stream<Arguments> argsForGetBanners(){
