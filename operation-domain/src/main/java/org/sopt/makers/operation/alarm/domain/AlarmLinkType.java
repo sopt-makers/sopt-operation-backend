@@ -5,10 +5,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum TargetType {
-    ALL("sendAll"),
-    ACTIVE("send"),
-    CSV("send");
-
-    private final String action;
+public enum AlarmLinkType {
+    WEB, APP, NONE
 }
