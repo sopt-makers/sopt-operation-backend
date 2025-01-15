@@ -5,11 +5,12 @@ import static org.sopt.makers.operation.code.success.web.AlarmSuccessCode.SUCCES
 import static org.sopt.makers.operation.code.success.web.AlarmSuccessCode.SUCCESS_GET_ALARMS;
 import static org.sopt.makers.operation.code.success.web.AlarmSuccessCode.SUCCESS_SCHEDULE_ALARM;
 import static org.sopt.makers.operation.code.success.web.AlarmSuccessCode.SUCCESS_SEND_ALARM;
+import static org.sopt.makers.operation.code.success.web.AlarmSuccessCode.SUCCESS_UPDATE_ALARM_STATUS;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.sopt.makers.operation.alarm.domain.Status;
+import org.sopt.makers.operation.alarm.domain.AlarmStatus;
 import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.util.ApiResponseUtil;
 import org.sopt.makers.operation.web.alarm.dto.request.AlarmInstantSendRequest;
@@ -17,10 +18,11 @@ import org.sopt.makers.operation.web.alarm.dto.request.AlarmScheduleSendRequest;
 import org.sopt.makers.operation.web.alarm.service.AlarmService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -50,7 +52,7 @@ public class AlarmApiController implements AlarmApi {
     @GetMapping
     public ResponseEntity<BaseResponse<?>> getAlarms(
             @RequestParam(required = false) Integer generation,
-            @RequestParam(required = false) Status status,
+            @RequestParam(required = false) AlarmStatus status,
             Pageable pageable
     ) {
         val response = alarmService.getAlarms(generation, status, pageable);
@@ -70,4 +72,13 @@ public class AlarmApiController implements AlarmApi {
         alarmService.deleteAlarm(alarmId);
         return ApiResponseUtil.success(SUCCESS_DELETE_ALARM);
     }
+
+    @Override
+    @PatchMapping("/{alarmId}")
+    public ResponseEntity<BaseResponse<?>> updateAlarmStatus(@PathVariable long alarmId) {
+
+        return ApiResponseUtil.success(SUCCESS_UPDATE_ALARM_STATUS);
+    }
+
+
 }

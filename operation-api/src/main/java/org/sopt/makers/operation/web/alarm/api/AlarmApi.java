@@ -2,7 +2,7 @@ package org.sopt.makers.operation.web.alarm.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import org.sopt.makers.operation.alarm.domain.Status;
+import org.sopt.makers.operation.alarm.domain.AlarmStatus;
 import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.web.alarm.dto.request.AlarmInstantSendRequest;
 import org.sopt.makers.operation.web.alarm.dto.request.AlarmScheduleSendRequest;
@@ -79,7 +79,7 @@ public interface AlarmApi {
     )
     ResponseEntity<BaseResponse<?>> getAlarms(
             @RequestParam(required = false) Integer generation,
-            @RequestParam(required = false) Status status,
+            @RequestParam(required = false) AlarmStatus status,
             Pageable pageable
     );
 
@@ -120,4 +120,23 @@ public interface AlarmApi {
             }
     )
     ResponseEntity<BaseResponse<?>> deleteAlarm(@PathVariable long alarmId);
+
+    @Operation(
+            summary = "알림 상태 업데이트 API (Web Hook)",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "204",
+                            description = "알림 상태 업데이트 성공"
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "알림이 존재하지 않습니다."
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "서버 내부 오류"
+                    )
+            }
+    )
+    ResponseEntity<BaseResponse<?>> updateAlarmStatus(@PathVariable long alarmId);
 }
