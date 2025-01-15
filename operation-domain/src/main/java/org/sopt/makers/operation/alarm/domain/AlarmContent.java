@@ -4,13 +4,18 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+
 import lombok.Getter;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+
+import org.sopt.makers.operation.exception.AlarmException;
+import org.sopt.makers.operation.code.failure.AlarmFailureCode;
 
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
+import static org.sopt.makers.operation.constant.AlarmConstant.isSupportedAppLink;
 
 @Getter
 @Builder(access = PRIVATE)
@@ -37,6 +42,9 @@ public class AlarmContent {
     AlarmLinkType linkType;
 
     public static AlarmContent withAppLink(String title, String content, AlarmCategory category, String link) {
+        if (!isSupportedAppLink(link)) {
+            throw new AlarmException(AlarmFailureCode.INVALID_LINK);
+        }
         return AlarmContent.builder()
                 .title(title)
                 .content(content)
