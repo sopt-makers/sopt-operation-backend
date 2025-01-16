@@ -16,7 +16,7 @@ import org.sopt.makers.operation.attendance.repository.attendance.AttendanceRepo
 import org.sopt.makers.operation.attendance.repository.subAttendance.SubAttendanceRepository;
 import org.sopt.makers.operation.client.alarm.alarmServer.AlarmSender;
 import org.sopt.makers.operation.client.alarm.alarmServer.dto.AlarmSenderRequest;
-import org.sopt.makers.operation.common.domain.Part;
+import org.sopt.makers.operation.member.domain.Part;
 import org.sopt.makers.operation.config.ValueConfig;
 import org.sopt.makers.operation.exception.LectureException;
 import org.sopt.makers.operation.exception.SubLectureException;

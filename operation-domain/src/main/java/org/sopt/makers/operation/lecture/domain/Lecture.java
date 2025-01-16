@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.sopt.makers.operation.common.domain.BaseEntity;
-import org.sopt.makers.operation.common.domain.Part;
+import org.sopt.makers.operation.member.domain.Part;
 import org.sopt.makers.operation.attendance.domain.Attendance;
 
 import jakarta.persistence.Column;

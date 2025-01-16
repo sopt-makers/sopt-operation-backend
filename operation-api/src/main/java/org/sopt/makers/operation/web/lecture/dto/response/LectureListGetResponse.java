@@ -4,7 +4,7 @@ import static lombok.AccessLevel.*;
 
 import java.util.List;
 
-import org.sopt.makers.operation.common.domain.Part;
+import org.sopt.makers.operation.member.domain.Part;
 import org.sopt.makers.operation.lecture.domain.Attribute;
 import org.sopt.makers.operation.lecture.domain.Lecture;
 

@@ -6,7 +6,7 @@ import static org.sopt.makers.operation.code.failure.LectureFailureCode.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 
-import org.sopt.makers.operation.common.domain.Part;
+import org.sopt.makers.operation.member.domain.Part;
 import org.sopt.makers.operation.lecture.domain.Attribute;
 import org.sopt.makers.operation.lecture.domain.Lecture;
 import org.sopt.makers.operation.exception.DateTimeParseCustomException;

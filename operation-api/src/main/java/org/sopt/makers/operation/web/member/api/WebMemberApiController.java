@@ -2,7 +2,7 @@ package org.sopt.makers.operation.web.member.api;
 
 import static org.sopt.makers.operation.code.success.web.MemberSuccessCode.*;
 
-import org.sopt.makers.operation.common.domain.Part;
+import org.sopt.makers.operation.member.domain.Part;
 import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.util.ApiResponseUtil;
 import org.sopt.makers.operation.web.member.service.WebMemberService;

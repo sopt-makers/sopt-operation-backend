@@ -1,10 +1,10 @@
 package org.sopt.makers.operation.attendance.repository.attendance;
 
-import static com.querydsl.core.types.dsl.Expressions.*;
+import static com.querydsl.core.types.dsl.Expressions.stringTemplate;
 import static java.util.Objects.*;
 import static org.sopt.makers.operation.attendance.domain.QAttendance.*;
 import static org.sopt.makers.operation.attendance.domain.QSubAttendance.*;
-import static org.sopt.makers.operation.common.domain.Part.*;
+import static org.sopt.makers.operation.member.domain.Part.*;
 import static org.sopt.makers.operation.lecture.domain.QLecture.*;
 import static org.sopt.makers.operation.lecture.domain.QSubLecture.*;
 import static org.sopt.makers.operation.member.domain.QMember.*;
@@ -15,7 +15,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import org.sopt.makers.operation.config.ValueConfig;
-import org.sopt.makers.operation.common.domain.Part;
+import org.sopt.makers.operation.member.domain.Part;
 import org.sopt.makers.operation.attendance.domain.Attendance;
 import org.sopt.makers.operation.lecture.domain.Lecture;
 import org.sopt.makers.operation.lecture.domain.LectureStatus;

@@ -4,7 +4,7 @@ import static org.sopt.makers.operation.code.failure.AttendanceFailureCode.*;
 import static org.sopt.makers.operation.code.failure.LectureFailureCode.*;
 import static org.sopt.makers.operation.code.failure.MemberFailureCode.*;
 
-import org.sopt.makers.operation.common.domain.Part;
+import org.sopt.makers.operation.member.domain.Part;
 import org.sopt.makers.operation.attendance.domain.SubAttendance;
 import org.sopt.makers.operation.attendance.repository.attendance.AttendanceRepository;
 import org.sopt.makers.operation.attendance.repository.subAttendance.SubAttendanceRepository;

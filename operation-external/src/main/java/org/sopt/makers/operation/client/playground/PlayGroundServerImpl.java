@@ -1,11 +1,11 @@
 package org.sopt.makers.operation.client.playground;
 
 import static org.sopt.makers.operation.code.failure.AlarmFailureCode.*;
-import static org.sopt.makers.operation.common.domain.Part.*;
+import static org.sopt.makers.operation.member.domain.Part.*;
 import static org.springframework.http.HttpMethod.*;
 
 import org.sopt.makers.operation.client.playground.dto.MemberListGetResponse;
-import org.sopt.makers.operation.common.domain.Part;
+import org.sopt.makers.operation.member.domain.Part;
 import org.sopt.makers.operation.config.ValueConfig;
 import org.sopt.makers.operation.exception.AlarmException;
 import org.springframework.http.HttpEntity;
