@@ -6,5 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum AlarmLinkType {
-    WEB, APP, NONE
+    WEB("웹"), APP("앱"), NONE("없음")
+    ;
+    private final String name;
 }
