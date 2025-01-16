@@ -6,6 +6,7 @@ import jakarta.persistence.Embeddable;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
@@ -35,6 +36,7 @@ public class AlarmTarget {
     @Column(name = "generation", updatable = false, insertable = false)
     private Integer generation;
 
+    @Setter
     @Column(name = "targets", columnDefinition = "TEXT", updatable = false)
     @Convert(converter = StringListConverter.class)
     private List<String> targetIds;
