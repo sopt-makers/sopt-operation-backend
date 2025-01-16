@@ -37,6 +37,4 @@ public record ScheduleAlarmRequest(
                 .scheduleDateTime(alarm.getIntendedAt())
                 .build();
     }
-
-    public
 }
