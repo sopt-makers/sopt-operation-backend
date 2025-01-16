@@ -14,8 +14,8 @@ import org.sopt.makers.operation.attendance.domain.Attendance;
 import org.sopt.makers.operation.attendance.domain.SubAttendance;
 import org.sopt.makers.operation.attendance.repository.attendance.AttendanceRepository;
 import org.sopt.makers.operation.attendance.repository.subAttendance.SubAttendanceRepository;
-import org.sopt.makers.operation.client.alarm.alarmServer.AlarmSender;
-import org.sopt.makers.operation.client.alarm.alarmServer.dto.AlarmSenderRequest;
+import org.sopt.makers.operation.client.alarm.AlarmManager;
+import org.sopt.makers.operation.client.alarm.dto.InstantAlarmRequest;
 import org.sopt.makers.operation.member.domain.Part;
 import org.sopt.makers.operation.config.ValueConfig;
 import org.sopt.makers.operation.exception.LectureException;
@@ -47,7 +47,7 @@ public class WebLectureServiceImpl implements WebLectureService {
     private final SubAttendanceRepository subAttendanceRepository;
     private final MemberRepository memberRepository;
 
-    private final AlarmSender alarmSender;
+    private final AlarmManager alarmSender;
     private final ValueConfig valueConfig;
 
     @Override
@@ -177,7 +177,14 @@ public class WebLectureServiceImpl implements WebLectureService {
     }
 
     private void sendAlarm(Lecture lecture) {
-        alarmSender.send(AlarmSenderRequest.of(lecture, valueConfig));
+        val alarmMessageTitle = lecture.getName() + " " + valueConfig.getALARM_MESSAGE_TITLE();
+        val alarmMessageContent = valueConfig.getALARM_MESSAGE_CONTENT();
+        val targets = lecture.getAttendances().stream()
+                .map(attendance -> String.valueOf(attendance.getMember().getPlaygroundId()))
+                .filter(id -> !id.equals("null"))
+                .toList();
+        val alarmRequest = InstantAlarmRequest.of(alarmMessageTitle, alarmMessageContent, targets);
+        alarmSender.sendInstant(alarmRequest);
     }
 
     private Lecture getLectureToDelete(long lectureId) {

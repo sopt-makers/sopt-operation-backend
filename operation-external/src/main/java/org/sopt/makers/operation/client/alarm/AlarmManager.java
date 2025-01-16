@@ -1,24 +1,24 @@
 package org.sopt.makers.operation.client.alarm;
 
 import lombok.RequiredArgsConstructor;
-import org.sopt.makers.operation.client.alarm.alarmServer.AlarmSenderImpl;
-import org.sopt.makers.operation.client.alarm.alarmServer.dto.AlarmSenderRequest;
-import org.sopt.makers.operation.client.alarm.eventBridgeServer.EventBridgeSenderImpl;
-import org.sopt.makers.operation.client.alarm.eventBridgeServer.dto.EventBridgeSenderRequest;
+import org.sopt.makers.operation.alarm.domain.Alarm;
+import org.sopt.makers.operation.client.alarm.dto.InstantAlarmRequest;
+import org.sopt.makers.operation.client.alarm.dto.ScheduleAlarmRequest;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class AlarmManager {
+    private final InstantAlarmSender instantAlarmSender;
+    private final ScheduleAlarmSender scheduleAlarmSender;
 
-    private final AlarmSenderImpl alarmSender;
-    private final EventBridgeSenderImpl eventBridgeSender;
-
-    public void sendInstantAlarm(AlarmSenderRequest request) {
-        alarmSender.send(request);
+    public void sendInstant(InstantAlarmRequest alarmRequest) {
+        instantAlarmSender.sendAlarm(alarmRequest);
+    }
+    public void sendSchedule(ScheduleAlarmRequest alarmRequest) {
+        scheduleAlarmSender.sendAlarm(alarmRequest);
     }
 
-    public void sendReservedAlarm(EventBridgeSenderRequest request, String postDate, String postTime, Long alarmId) {
-        eventBridgeSender.scheduleAlarm(request, postDate, postTime, alarmId);
-    }
 }
