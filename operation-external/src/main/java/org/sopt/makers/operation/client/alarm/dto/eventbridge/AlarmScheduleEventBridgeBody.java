@@ -7,7 +7,6 @@ import org.sopt.makers.operation.alarm.domain.AlarmCategory;
 
 @Builder
 public record AlarmScheduleEventBridgeBody(
-        long alarmId,
         List<String> userIds,
         String title,
         String content,

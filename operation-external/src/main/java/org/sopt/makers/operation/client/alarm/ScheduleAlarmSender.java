@@ -118,6 +118,7 @@ class ScheduleAlarmSender implements AlarmSender{
 
     private AlarmScheduleEventBridgeHeader convertToEventBridgeHeader(ScheduleAlarmRequest request) {
         return AlarmScheduleEventBridgeHeader.builder()
+                .alarmId(request.alarmId())
                 .action(request.targetType().getAction().getValue())
                 .xApiKey(valueConfig.getNOTIFICATION_KEY())
                 .transactionId(UUID.randomUUID().toString())
@@ -129,7 +130,6 @@ class ScheduleAlarmSender implements AlarmSender{
         val deepLink = request.linkType().equals(AlarmLinkType.APP) ? request.link() : null;
         val webLink = request.linkType().equals(AlarmLinkType.WEB) ? request.link() : null;
         return AlarmScheduleEventBridgeBody.builder()
-                .alarmId(request.alarmId())
                 .userIds(request.targets())
                 .title(request.title())
                 .content(request.content())
