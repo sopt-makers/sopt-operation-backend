@@ -24,6 +24,7 @@ import org.sopt.makers.operation.exception.AlarmException;
 
 import org.sopt.makers.operation.web.alarm.dto.request.AlarmInstantSendRequest;
 import org.sopt.makers.operation.web.alarm.dto.request.AlarmScheduleSendRequest;
+import org.sopt.makers.operation.web.alarm.dto.request.AlarmScheduleStatusUpdateRequest;
 import org.sopt.makers.operation.web.alarm.dto.response.AlarmGetResponse;
 import org.sopt.makers.operation.web.alarm.dto.response.AlarmCreateResponse;
 import org.sopt.makers.operation.web.alarm.dto.response.AlarmListGetResponse;
@@ -89,6 +90,12 @@ public class AlarmServiceImpl implements AlarmService {
     public void deleteAlarm(long alarmId) {
         val alarm = findAlarm(alarmId);
         alarmRepository.delete(alarm);
+    }
+
+    @Override
+    public void updateScheduleAlarm(long alarmId, AlarmScheduleStatusUpdateRequest request) {
+        val alarm = findAlarm(alarmId);
+        alarm.updateStatusToComplete(request.sendAt());
     }
 
     private Alarm findAlarm(long id) {
