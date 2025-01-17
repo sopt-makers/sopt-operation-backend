@@ -6,6 +6,7 @@ import org.sopt.makers.operation.alarm.domain.AlarmStatus;
 import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.web.alarm.dto.request.AlarmInstantSendRequest;
 import org.sopt.makers.operation.web.alarm.dto.request.AlarmScheduleSendRequest;
+import org.sopt.makers.operation.web.alarm.dto.request.AlarmScheduleStatusUpdateRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -138,5 +139,5 @@ public interface AlarmApi {
                     )
             }
     )
-    ResponseEntity<BaseResponse<?>> updateAlarmStatus(@PathVariable long alarmId);
+    ResponseEntity<BaseResponse<?>> updateAlarmStatus(@PathVariable long alarmId, @RequestBody AlarmScheduleStatusUpdateRequest updateRequest);
 }
