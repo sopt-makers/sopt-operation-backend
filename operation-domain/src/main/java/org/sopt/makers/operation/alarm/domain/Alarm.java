@@ -69,9 +69,9 @@ public class Alarm extends BaseEntity {
                 .build();
     }
 
-    public void updateStatusToComplete() {
+    public void updateStatusToComplete(LocalDateTime successAt) {
         this.status = AlarmStatus.COMPLETED;
-        this.sendAt = LocalDateTime.now();
+        this.sendAt = successAt;
     }
 
 }
