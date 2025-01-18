@@ -15,6 +15,7 @@ public enum BannerSuccessCode implements SuccessCode {
     SUCCESS_DELETE_BANNER(HttpStatus. NO_CONTENT, "배너 삭제 성공"),
     SUCCESS_GET_EXTERNAL_BANNERS(HttpStatus.OK, "외부 배너 조회 성공"),
     SUCCESS_GET_BANNER_IMAGE_PRE_SIGNED_URL(HttpStatus.OK, "이미지 업로드 pre signed url 조회에 성공했습니다"),
+    SUCCESS_UPDATE_BANNER(HttpStatus.OK, "배너 수정에 성공했습니다"),
     SUCCESS_CREATE_BANNER(HttpStatus.CREATED, "배너 생성에 성공했습니다")
     ;
 

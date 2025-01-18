@@ -9,7 +9,7 @@ import lombok.*;
 @RequiredArgsConstructor(access = PRIVATE)
 public class BannerRequest {
 
-    public record BannerCreate(
+    public record BannerCreateOrModify(
             @JsonProperty("location") String bannerLocation,
             @JsonProperty("content_type") String bannerType,
             @JsonProperty("publisher") String publisher,

@@ -17,7 +17,7 @@ import org.sopt.makers.operation.client.s3.S3Service;
 import org.sopt.makers.operation.code.failure.BannerFailureCode;
 import org.sopt.makers.operation.config.ValueConfig;
 import org.sopt.makers.operation.exception.BannerException;
-import org.sopt.makers.operation.web.banner.dto.request.BannerRequest.*;
+import org.sopt.makers.operation.web.banner.dto.request.*;
 import org.sopt.makers.operation.web.banner.dto.response.BannerResponse;
 import org.sopt.makers.operation.web.banner.dto.response.BannerResponse.*;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,9 @@ import org.springframework.transaction.annotation.*;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class BannerServiceImpl implements BannerService {
-
+    private static final String SLASH = "/";
+    private static final String PROTOCOL_SEPARATOR = "//";
+    private static final int PROTOCOL_END_OFFSET = 2;
     private final BannerRepository bannerRepository;
     private final S3Service s3Service;
     private final ValueConfig valueConfig;
@@ -84,7 +86,7 @@ public class BannerServiceImpl implements BannerService {
 
     @Transactional
     @Override
-    public BannerDetail createBanner(BannerCreate request) {
+    public BannerDetail createBanner(BannerRequest.BannerCreateOrModify request) {
         val period = getPublishPeriod(request.startDate(), request.endDate());
         val image = getBannerImage(request.pcImage(), request.mobileImage());
         val newBanner = Banner.builder()
@@ -98,6 +100,31 @@ public class BannerServiceImpl implements BannerService {
         val banner = saveBanner(newBanner);
 
         return BannerResponse.BannerDetail.fromEntity(banner);
+    }
+
+    @Transactional
+    @Override
+    public BannerDetail updateBanner(Long bannerId, BannerRequest.BannerCreateOrModify request) {
+        var banner = getBannerById(bannerId);
+        val period = getPublishPeriod(request.startDate(), request.endDate());
+        val image = getBannerImage(request.pcImage(), request.mobileImage());
+
+        deleteExistImage(banner.getImage().getPcImageUrl());
+        deleteExistImage(banner.getImage().getMobileImageUrl());
+        banner.updatePublisher(request.publisher());
+        banner.updateLink(request.link());
+        banner.updateContentType(ContentType.getByValue(request.bannerType()));
+        banner.updateLocation(PublishLocation.getByValue(request.bannerLocation()));
+        banner.updatePeriod(period);
+        banner.updateImage(image);
+        return BannerResponse.BannerDetail.fromEntity(banner);
+    }
+
+    private void deleteExistImage(String url) {
+        val protocolEndIndex = url.indexOf(PROTOCOL_SEPARATOR) + PROTOCOL_END_OFFSET;
+        val firstSlashIndex = url.indexOf(SLASH, protocolEndIndex);
+        val extractedPath = url.substring(firstSlashIndex);
+        s3Service.deleteFile(valueConfig.getBannerBucket(), extractedPath);
     }
 
     @Override

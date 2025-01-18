@@ -131,13 +131,13 @@ class BannerApiControllerTest {
         @DisplayName("(POST) New Banner")
         void createNewBanner() throws Exception {
             // given
-            BannerCreate bannerCreate = new BannerCreate("pg_community", "product", "publisher",
+            BannerCreateOrModify bannerCreate = new BannerCreateOrModify("pg_community", "product", "publisher",
                     LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 31), "link", "image-url-pc", "image-url-mobile");
             BannerResponse.BannerDetail mockBannerDetail = new BannerResponse.BannerDetail(
                     MOCK_BANNER_ID, "in_progress", "pg_community", "product", "publisher", "link",
                     LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 31), "image-url-pc", "image-url-mobile");
             String request = objectMapper.writeValueAsString(bannerCreate);
-            when(bannerService.createBanner(any(BannerCreate.class))).thenReturn(mockBannerDetail);
+            when(bannerService.createBanner(any(BannerCreateOrModify.class))).thenReturn(mockBannerDetail);
 
             // when
             mockMvc.perform(post("/api/v1/banners")

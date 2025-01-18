@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 import org.sopt.makers.operation.dto.BaseResponse;
 
-import org.sopt.makers.operation.web.banner.dto.request.*;
+import org.sopt.makers.operation.web.banner.dto.request.BannerRequest;
 import org.springframework.http.ResponseEntity;
 
 public interface BannerApi {
@@ -129,6 +129,24 @@ public interface BannerApi {
                     )
             }
     )
-    ResponseEntity<BaseResponse<?>> createBanner(BannerRequest.BannerCreate request);
+    ResponseEntity<BaseResponse<?>> createBanner(BannerRequest.BannerCreateOrModify request);
 
+    @Operation(
+            summary = "배너 수정 API",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "배너 수정 성공"
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "잘못된 요청"
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "서버 내부 오류"
+                    )
+            }
+    )
+    ResponseEntity<BaseResponse<?>> updateBanner(Long bannerId, BannerRequest.BannerCreateOrModify request);
 }
