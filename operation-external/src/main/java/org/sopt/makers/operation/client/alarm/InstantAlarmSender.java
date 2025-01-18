@@ -31,7 +31,7 @@ class InstantAlarmSender implements AlarmSender{
 
     @Override
     public void sendAlarm(AlarmRequest alarmRequest) {
-        InstantAlarmRequest instantRequest = (InstantAlarmRequest) alarmRequest;
+        val instantRequest = (InstantAlarmRequest) alarmRequest;
         try {
             val host = valueConfig.getNOTIFICATION_URL();
             val body = generateBody(instantRequest);
@@ -46,10 +46,8 @@ class InstantAlarmSender implements AlarmSender{
 
     private Map<Object, Object> generateBody(InstantAlarmRequest instantRequest) {
         val body = new HashMap<>();
-
         putRequiredAttributes(instantRequest, body);
         putOptionalAttributes(instantRequest, body);
-
         return body;
     }
 
@@ -60,13 +58,16 @@ class InstantAlarmSender implements AlarmSender{
     }
 
     private static void putOptionalAttributes(InstantAlarmRequest instantRequest, HashMap<Object, Object> body) {
-        if (!instantRequest.targetType().equals(AlarmTargetType.ALL)) {
+        val isTargetAll = instantRequest.targetType().equals(AlarmTargetType.ALL);
+        val isWebLink = instantRequest.linkType().equals(AlarmLinkType.WEB);
+        val isAppLink = instantRequest.linkType().equals(AlarmLinkType.APP);
+
+        if (!isTargetAll) {
             body.put("userIds", instantRequest.targets());
         }
-
-        if (instantRequest.linkType().equals(AlarmLinkType.WEB)) {
+        if (isWebLink) {
             body.put("webLink", instantRequest.link());
-        } else if (instantRequest.linkType().equals(AlarmLinkType.APP)) {
+        } else if (isAppLink) {
             body.put("appLink", instantRequest.link());
         }
     }
@@ -74,16 +75,15 @@ class InstantAlarmSender implements AlarmSender{
     private HttpHeaders generateHeader(InstantAlarmRequest instantRequest) {
         val headers = new HttpHeaders();
         val apiKey = valueConfig.getNOTIFICATION_KEY();
+        val actionValue = instantRequest.targetType().getAction().getValue();
 
         headers.setContentType(APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(APPLICATION_JSON));
 
-        String actionValue = instantRequest.targetType().getAction().getValue();
         headers.add("action", actionValue);
         headers.add("transactionId", randomUUID().toString());
         headers.add("service", "operation");
         headers.add("x-api-key", apiKey);
-
         return headers;
     }
 

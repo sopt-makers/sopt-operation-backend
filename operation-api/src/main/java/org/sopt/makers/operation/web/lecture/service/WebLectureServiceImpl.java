@@ -40,6 +40,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class WebLectureServiceImpl implements WebLectureService {
+    public static final String NULL = "null";
+    public static final String WHITE_SPACE = " ";
 
     private final LectureRepository lectureRepository;
     private final SubLectureRepository subLectureRepository;
@@ -47,7 +49,7 @@ public class WebLectureServiceImpl implements WebLectureService {
     private final SubAttendanceRepository subAttendanceRepository;
     private final MemberRepository memberRepository;
 
-    private final AlarmManager alarmSender;
+    private final AlarmManager alarmManager;
     private final ValueConfig valueConfig;
 
     @Override
@@ -177,14 +179,14 @@ public class WebLectureServiceImpl implements WebLectureService {
     }
 
     private void sendAlarm(Lecture lecture) {
-        val alarmMessageTitle = lecture.getName() + " " + valueConfig.getALARM_MESSAGE_TITLE();
+        val alarmMessageTitle = String.join(WHITE_SPACE, lecture.getName(), valueConfig.getALARM_MESSAGE_TITLE());
         val alarmMessageContent = valueConfig.getALARM_MESSAGE_CONTENT();
         val targets = lecture.getAttendances().stream()
                 .map(attendance -> String.valueOf(attendance.getMember().getPlaygroundId()))
-                .filter(id -> !id.equals("null"))
+                .filter(id -> !id.equals(NULL))
                 .toList();
         val alarmRequest = InstantAlarmRequest.of(alarmMessageTitle, alarmMessageContent, targets);
-        alarmSender.sendInstant(alarmRequest);
+        alarmManager.sendInstant(alarmRequest);
     }
 
     private Lecture getLectureToDelete(long lectureId) {

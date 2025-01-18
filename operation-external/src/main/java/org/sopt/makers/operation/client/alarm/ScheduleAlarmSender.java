@@ -28,6 +28,9 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
+import static org.sopt.makers.operation.constant.AlarmConstant.ALARM_REQUEST_DATE_FORMAT;
+import static org.sopt.makers.operation.constant.AlarmConstant.ALARM_REQUEST_TIME_FORMAT;
+
 @Component
 @RequiredArgsConstructor
 class ScheduleAlarmSender implements AlarmSender{
@@ -52,7 +55,6 @@ class ScheduleAlarmSender implements AlarmSender{
         try {
             val name = generateEventName(scheduleRequest);
             val cronExpression = generateScheduleCronExpression(scheduleRequest);
-
             val eventJson = generateEventJson(scheduleRequest);
             val target = generateEventTarget(eventJson);
 
@@ -85,9 +87,8 @@ class ScheduleAlarmSender implements AlarmSender{
     }
 
     private String generateEventName(ScheduleAlarmRequest request) {
-        val dateData = request.scheduleDateTime().toLocalDate().format(DateTimeFormatter.ISO_DATE);
-        val timeData = request.scheduleDateTime().toLocalTime().format(DateTimeFormatter.ofPattern("HH-mm"));
-
+        val dateData = request.scheduleDateTime().toLocalDate().format(DateTimeFormatter.ofPattern(ALARM_REQUEST_DATE_FORMAT));
+        val timeData = request.scheduleDateTime().toLocalTime().format(DateTimeFormatter.ofPattern(ALARM_REQUEST_TIME_FORMAT));
         return String.format("%s_%s_%d", dateData, timeData, request.alarmId());
     }
 

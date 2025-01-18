@@ -23,6 +23,7 @@ public record InstantAlarmRequest(
     AlarmLinkType linkType
 
 ) implements AlarmRequest {
+
     public static InstantAlarmRequest of(Alarm alarm) {
         val content = alarm.getContent();
         return InstantAlarmRequest.builder()

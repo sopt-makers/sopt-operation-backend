@@ -47,12 +47,13 @@ public class AlarmServiceImpl implements AlarmService {
     public AlarmCreateResponse sendInstantAlarm(AlarmInstantSendRequest request) {
         val alarm = request.toEntity();
         val alarmTarget = alarm.getTarget();
+
         alarmTarget.setTargetIds(extractTargetIds(alarmTarget));
+
         val savedAlarm = alarmRepository.save(alarm);
-
         val alarmRequest = InstantAlarmRequest.of(savedAlarm);
-        alarmManager.sendInstant(alarmRequest);
 
+        alarmManager.sendInstant(alarmRequest);
         return AlarmCreateResponse.of(savedAlarm);
     }
 
@@ -93,6 +94,7 @@ public class AlarmServiceImpl implements AlarmService {
     }
 
     @Override
+    @Transactional
     public void updateScheduleAlarm(long alarmId, AlarmScheduleStatusUpdateRequest request) {
         val alarm = findAlarm(alarmId);
         alarm.updateStatusToComplete(request.sendAt());
