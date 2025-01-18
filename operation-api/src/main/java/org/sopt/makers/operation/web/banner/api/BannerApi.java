@@ -71,7 +71,7 @@ public interface BannerApi {
     ResponseEntity<BaseResponse<?>> createBanner(BannerRequest.BannerCreateOrModify request);
 
     @Operation(
-            summary = "배너 생성 API",
+            summary = "배너 수정 API",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
