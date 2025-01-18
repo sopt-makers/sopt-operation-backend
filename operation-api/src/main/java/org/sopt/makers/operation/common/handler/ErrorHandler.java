@@ -86,12 +86,6 @@ public class ErrorHandler {
         return ApiResponseUtil.failure(ex.getFailureCode());
     }
 
-    @ExceptionHandler(AuthException.class)
-    public ResponseEntity<BaseResponse<?>> authException(AuthException ex) {
-        log.error(ex.getMessage());
-        return ApiResponseUtil.failure(ex.getFailureCode());
-    }
-
     @ExceptionHandler(PermissionException.class)
     public ResponseEntity<BaseResponse<?>> permissionException(PermissionException ex) {
         log.error(ex.getMessage());

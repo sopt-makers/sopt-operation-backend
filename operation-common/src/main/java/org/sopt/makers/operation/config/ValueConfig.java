@@ -42,22 +42,6 @@ public class ValueConfig {
     private String eventBridgeRoleArn;
     @Value("${cloud.aws.s3.banner.name}")
     private String bannerBucket;
-    @Value("${oauth.apple.key.id}")
-    private String appleKeyId;
-    @Value("${oauth.apple.key.path}")
-    private String appleKeyPath;
-    @Value("${oauth.apple.team.id}")
-    private String appleTeamId;
-    @Value("${oauth.apple.aud}")
-    private String appleAud;
-    @Value("${oauth.apple.sub}")
-    private String appleSub;
-    @Value("${oauth.google.client.id}")
-    private String googleClientId;
-    @Value("${oauth.google.client.secret}")
-    private String googleClientSecret;
-    @Value("${oauth.google.redirect.url}")
-    private String googleRedirectUrl;
     @Value("${spring.jwt.secretKey.platform_code}")
     private String platformCodeSecretKey;
 

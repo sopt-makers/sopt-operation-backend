@@ -61,22 +61,6 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
 
-oauth:
-  apple:
-    aud: ${OAUTH_APPLE_AUD}
-    sub: ${OAUTH_APPLE_SUB}
-    key:
-      id: ${OAUTH_APPLE_KEY_ID}
-      path: ${OAUTH_APPLE_KEY_PATH}
-    team:
-      id: ${OAUTH_APPLE_TEAM_ID}
-  google:
-    redirect:
-      url: ${OAUTH_GOOGLE_REDIRECT_URL}
-    client:
-      id: ${OAUTH_GOOGLE_CLIENT_ID}
-      secret: ${OAUTH_GOOGLE_CLIENT_SECRET}
-
 cloud:
   aws:
     credentials:

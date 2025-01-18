@@ -1,5 +1,7 @@
 FROM openjdk:17-jdk-slim as builder
 
+ARG PROFILE=test
+
 # mkdir /app-build && cd /app-build
 WORKDIR /app-build
 
@@ -7,7 +9,7 @@ WORKDIR /app-build
 COPY . /app-build
 
 # create .jar
-RUN ./gradlew build -x test
+RUN echo "Build with PROFILE=${PROFILE}" && ./gradlew build -Pprofile=${PROFILE} --no-daemon
 
 # Run-Time Image Setting
 FROM openjdk:17-jdk-slim as production

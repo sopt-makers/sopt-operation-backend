@@ -48,22 +48,6 @@ notification:
   key: test
   arn: test
 
-oauth:
-  apple:
-    aud: test
-    sub: test
-    key:
-      id: test
-      path: test
-    team:
-      id: test
-  google:
-    redirect:
-      url: test
-    client:
-      id: test
-      secret: test
-
 cloud:
   aws:
     credentials:

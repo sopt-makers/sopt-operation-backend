@@ -1,10 +1,17 @@
 package org.sopt.makers.operation.web.banner.service;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.Clock;
+import java.util.Comparator;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.sopt.makers.operation.banner.domain.Banner;
+import org.sopt.makers.operation.banner.domain.PublishLocation;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import org.sopt.makers.operation.banner.domain.*;
+
 import org.sopt.makers.operation.banner.repository.BannerRepository;
 import org.sopt.makers.operation.client.s3.S3Service;
 import org.sopt.makers.operation.code.failure.BannerFailureCode;
@@ -26,6 +33,7 @@ public class BannerServiceImpl implements BannerService {
     private final BannerRepository bannerRepository;
     private final S3Service s3Service;
     private final ValueConfig valueConfig;
+    private final Clock clock;
 
     @Override
     public BannerResponse.BannerDetail getBannerDetail(final long bannerId) {
@@ -33,7 +41,26 @@ public class BannerServiceImpl implements BannerService {
         return BannerResponse.BannerDetail.fromEntity(banner);
     }
 
-    private Banner getBannerById(final long id) {
+    @Override
+    public void deleteBanner(final long bannerId) {
+        val banner = getBannerById(bannerId);
+        bannerRepository.delete(banner);
+    }
+
+  @Override
+  public List<BannerResponse.BannerImageUrl> getExternalBanners(final String imageType, final String location) {
+     val publishLocation = PublishLocation.getByValue(location);
+
+     val bannerList = bannerRepository.findBannersByLocation(publishLocation);
+
+     List<String> list = bannerList.stream()
+         .map( banner -> banner.getImage().retrieveImageUrl(imageType))
+         .toList();
+
+    return BannerResponse.BannerImageUrl.fromEntity(list);
+  }
+
+  private Banner getBannerById(final long id) {
         return bannerRepository.findById(id)
                 .orElseThrow(() -> new BannerException(BannerFailureCode.NOT_FOUND_BANNER));
     }
@@ -50,7 +77,7 @@ public class BannerServiceImpl implements BannerService {
     }
 
     private String getBannerImageName(String location, String contentName, String imageType, String imageExtension) {
-        val today = LocalDate.now();
+        val today = LocalDate.now(clock);
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         val formattedDate = today.format(formatter);
 
@@ -98,6 +125,39 @@ public class BannerServiceImpl implements BannerService {
         val firstSlashIndex = url.indexOf(SLASH, protocolEndIndex);
         val extractedPath = url.substring(firstSlashIndex);
         s3Service.deleteFile(valueConfig.getBannerBucket(), extractedPath);
+    }
+
+    @Override
+    public List<BannerSimple> getBanners(FilterCriteria filter, SortCriteria sort) {
+        val allBanners = bannerRepository.findAll();
+        val filteredBanners = getFilteredBanners(allBanners, filter);
+        val resultBanners = getSortedBanners(filteredBanners, sort);
+        return resultBanners.stream()
+                .map(BannerSimple::fromEntity)
+                .toList();
+    }
+
+    private List<Banner> getFilteredBanners(List<Banner> banners, FilterCriteria filter) {
+        if (FilterCriteria.ALL.equals(filter)) {
+            return banners;
+        }
+        val targetStatus = PublishStatus.getByValue(filter.getParameter());
+        return banners.stream()
+                .filter(banner -> targetStatus.equals(banner.getPeriod().getPublishStatus(LocalDate.now(clock))))
+                .toList();
+    }
+
+    private List<Banner> getSortedBanners(List<Banner> banners, SortCriteria criteria) {
+        return switch (criteria) {
+            case STATUS, START_DATE -> banners.stream().sorted(
+                    Comparator.comparing(Banner::getPeriod, (p1, p2) -> p2.getStartDate().compareTo(p1.getStartDate()))
+                            .thenComparing(Banner::getPeriod, Comparator.comparing(PublishPeriod::getEndDate))
+            ).toList();
+            case END_DATE -> banners.stream().sorted(
+                    Comparator.comparing(Banner::getPeriod, Comparator.comparing(PublishPeriod::getEndDate))
+                            .thenComparing(Banner::getPeriod, (p1, p2) -> p2.getStartDate().compareTo(p1.getStartDate()))
+            ).toList();
+        };
     }
 
     private PublishPeriod getPublishPeriod(LocalDate startDate, LocalDate endDate) {
