@@ -2,6 +2,7 @@ package org.sopt.makers.operation.web.alarm.dto.response;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static lombok.AccessLevel.PRIVATE;
+import static org.sopt.makers.operation.constant.AlarmConstant.*;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -11,6 +12,7 @@ import java.util.List;
 import lombok.Builder;
 import lombok.val;
 import org.sopt.makers.operation.alarm.domain.Alarm;
+import org.sopt.makers.operation.constant.AlarmConstant;
 
 @Builder(access = PRIVATE)
 public record AlarmListGetResponse(
@@ -41,10 +43,10 @@ public record AlarmListGetResponse(
             String title,
             String content
     ) {
-        private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd hh:mm");
+        private static final String DATETIME_FORMAT = String.join(" ", ALARM_RESPONSE_DATE_FORMAT, ALARM_RESPONSE_TIME_FORMAT);
 
         private static String covertToResponseDateTime(LocalDateTime dateTime) {
-            return dateTime.format(DATE_TIME_FORMATTER);
+            return dateTime.format(DateTimeFormatter.ofPattern(DATETIME_FORMAT));
         }
         private static AlarmResponse of(Alarm alarm) {
             return AlarmResponse.builder()

@@ -2,11 +2,13 @@ package org.sopt.makers.operation.web.alarm.dto.response;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static lombok.AccessLevel.PRIVATE;
+import static org.sopt.makers.operation.constant.AlarmConstant.ALARM_RESPONSE_DATE_FORMAT;
+import static org.sopt.makers.operation.constant.AlarmConstant.ALARM_RESPONSE_TIME_FORMAT;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.val;
-import org.sopt.makers.operation.alarm.domain.*;
+import org.sopt.makers.operation.alarm.domain.Alarm;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -34,8 +36,6 @@ public record AlarmGetResponse(
         String link,
         String linkType
 ) {
-    private static final String RESPONSE_DATE_FORMAT = "yyyy-MM-dd";
-    private static final String RESPONSE_TIME_FORMAT = "HH:mm";
 
     public static AlarmGetResponse of(Alarm alarm) {
         val alarmContent = alarm.getContent();
@@ -62,13 +62,15 @@ public record AlarmGetResponse(
         if (Objects.isNull(dateTime)){
             return null;
         }
-        return dateTime.toLocalDate().format(DateTimeFormatter.ofPattern(RESPONSE_DATE_FORMAT));
+        return dateTime.toLocalDate()
+                .format(DateTimeFormatter.ofPattern(ALARM_RESPONSE_DATE_FORMAT));
     }
 
     private static String covertToTime(LocalDateTime dateTime) {
         if (Objects.isNull(dateTime)){
             return null;
         }
-        return dateTime.toLocalTime().format(DateTimeFormatter.ofPattern(RESPONSE_TIME_FORMAT));
+        return dateTime.toLocalTime()
+                .format(DateTimeFormatter.ofPattern(ALARM_RESPONSE_TIME_FORMAT));
     }
 }

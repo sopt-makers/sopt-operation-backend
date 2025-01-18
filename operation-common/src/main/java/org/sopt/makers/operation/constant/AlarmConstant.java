@@ -19,6 +19,11 @@ public final class AlarmConstant {
             "home/soptamp/current-generation-ranking"
     );
 
+    public static final String ALARM_REQUEST_DATE_FORMAT = "yyyy-MM-dd";
+    public static final String ALARM_REQUEST_TIME_FORMAT = "HH:mm";
+    public static final String ALARM_RESPONSE_DATE_FORMAT = "yyyy-MM-dd";
+    public static final String ALARM_RESPONSE_TIME_FORMAT = "HH:mm";
+
     public static boolean isSupportedAppLink(String link) {
         return SUPPORTED_APP_LINK.contains(link);
     }

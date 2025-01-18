@@ -18,6 +18,8 @@ import org.sopt.makers.operation.alarm.domain.AlarmTargetType;
 import org.sopt.makers.operation.alarm.domain.AlarmTargetPart;
 import org.sopt.makers.operation.alarm.domain.AlarmLinkType;
 
+import static org.sopt.makers.operation.constant.AlarmConstant.ALARM_REQUEST_DATE_FORMAT;
+import static org.sopt.makers.operation.constant.AlarmConstant.ALARM_REQUEST_TIME_FORMAT;
 
 public record AlarmScheduleSendRequest(
         @NotNull String title,
@@ -53,8 +55,8 @@ public record AlarmScheduleSendRequest(
     public Alarm toEntity() {
         AlarmTarget targetEntity = this.toTargetEntity();
         AlarmContent contentEntity = this.toContentEntity();
-        val date = LocalDate.parse(postDate, DateTimeFormatter.ISO_LOCAL_DATE);
-        val time = LocalTime.parse(postTime, DateTimeFormatter.ofPattern("HH:mm"));
+        val date = LocalDate.parse(postDate, DateTimeFormatter.ofPattern(ALARM_REQUEST_DATE_FORMAT));
+        val time = LocalTime.parse(postTime, DateTimeFormatter.ofPattern(ALARM_REQUEST_TIME_FORMAT));
         return Alarm.scheduled(targetEntity, contentEntity, LocalDateTime.of(date, time));
     }
 }
