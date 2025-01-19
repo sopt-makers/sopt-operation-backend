@@ -1,4 +1,4 @@
-package org.sopt.makers.operation.common.domain;
+package org.sopt.makers.operation.member.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

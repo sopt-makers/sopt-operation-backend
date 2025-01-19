@@ -8,7 +8,7 @@ import static org.sopt.makers.operation.member.domain.QMember.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.sopt.makers.operation.common.domain.Part;
+import org.sopt.makers.operation.member.domain.Part;
 import org.sopt.makers.operation.lecture.domain.Lecture;
 import org.sopt.makers.operation.lecture.domain.LectureStatus;
 import org.springframework.stereotype.Repository;

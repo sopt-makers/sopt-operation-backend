@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum Category {
+public enum AlarmCategory {
     NOTICE("공지"),
     NEWS("소식");
 

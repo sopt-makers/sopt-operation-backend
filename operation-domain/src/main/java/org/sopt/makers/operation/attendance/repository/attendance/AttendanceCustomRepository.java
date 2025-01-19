@@ -2,7 +2,7 @@ package org.sopt.makers.operation.attendance.repository.attendance;
 
 import java.util.List;
 
-import org.sopt.makers.operation.common.domain.Part;
+import org.sopt.makers.operation.member.domain.Part;
 import org.sopt.makers.operation.attendance.domain.Attendance;
 import org.sopt.makers.operation.lecture.domain.Lecture;
 import org.sopt.makers.operation.member.domain.Member;

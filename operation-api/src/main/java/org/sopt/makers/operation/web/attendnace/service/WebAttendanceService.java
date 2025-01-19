@@ -1,6 +1,6 @@
 package org.sopt.makers.operation.web.attendnace.service;
 
-import org.sopt.makers.operation.common.domain.Part;
+import org.sopt.makers.operation.member.domain.Part;
 import org.sopt.makers.operation.web.attendnace.dto.request.SubAttendanceUpdateRequest;
 import org.sopt.makers.operation.web.attendnace.dto.response.AttendanceListByLectureGetResponse;
 import org.sopt.makers.operation.web.attendnace.dto.response.AttendanceListByMemberGetResponse;

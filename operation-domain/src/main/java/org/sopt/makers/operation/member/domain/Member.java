@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.sopt.makers.operation.attendance.domain.Attendance;
-import org.sopt.makers.operation.common.domain.Part;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

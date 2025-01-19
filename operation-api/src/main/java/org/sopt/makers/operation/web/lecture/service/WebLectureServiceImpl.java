@@ -14,9 +14,9 @@ import org.sopt.makers.operation.attendance.domain.Attendance;
 import org.sopt.makers.operation.attendance.domain.SubAttendance;
 import org.sopt.makers.operation.attendance.repository.attendance.AttendanceRepository;
 import org.sopt.makers.operation.attendance.repository.subAttendance.SubAttendanceRepository;
-import org.sopt.makers.operation.client.alarm.alarmServer.AlarmSender;
-import org.sopt.makers.operation.client.alarm.alarmServer.dto.AlarmSenderRequest;
-import org.sopt.makers.operation.common.domain.Part;
+import org.sopt.makers.operation.client.alarm.AlarmManager;
+import org.sopt.makers.operation.client.alarm.dto.InstantAlarmRequest;
+import org.sopt.makers.operation.member.domain.Part;
 import org.sopt.makers.operation.config.ValueConfig;
 import org.sopt.makers.operation.exception.LectureException;
 import org.sopt.makers.operation.exception.SubLectureException;
@@ -40,6 +40,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class WebLectureServiceImpl implements WebLectureService {
+    public static final String NULL = "null";
+    public static final String WHITE_SPACE = " ";
 
     private final LectureRepository lectureRepository;
     private final SubLectureRepository subLectureRepository;
@@ -47,7 +49,7 @@ public class WebLectureServiceImpl implements WebLectureService {
     private final SubAttendanceRepository subAttendanceRepository;
     private final MemberRepository memberRepository;
 
-    private final AlarmSender alarmSender;
+    private final AlarmManager alarmManager;
     private final ValueConfig valueConfig;
 
     @Override
@@ -177,7 +179,14 @@ public class WebLectureServiceImpl implements WebLectureService {
     }
 
     private void sendAlarm(Lecture lecture) {
-        alarmSender.send(AlarmSenderRequest.of(lecture, valueConfig));
+        val alarmMessageTitle = String.join(WHITE_SPACE, lecture.getName(), valueConfig.getALARM_MESSAGE_TITLE());
+        val alarmMessageContent = valueConfig.getALARM_MESSAGE_CONTENT();
+        val targets = lecture.getAttendances().stream()
+                .map(attendance -> String.valueOf(attendance.getMember().getPlaygroundId()))
+                .filter(id -> !id.equals(NULL))
+                .toList();
+        val alarmRequest = InstantAlarmRequest.of(alarmMessageTitle, alarmMessageContent, targets);
+        alarmManager.sendInstant(alarmRequest);
     }
 
     private Lecture getLectureToDelete(long lectureId) {
