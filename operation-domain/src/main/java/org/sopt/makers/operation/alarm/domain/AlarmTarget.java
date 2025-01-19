@@ -1,8 +1,6 @@
 package org.sopt.makers.operation.alarm.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Embeddable;
+import jakarta.persistence.*;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -25,12 +23,15 @@ import static lombok.AccessLevel.PROTECTED;
 public class AlarmTarget {
 
     @Column(name = "action", nullable = false, updatable = false, insertable = false)
+    @Enumerated(EnumType.STRING)
     private AlarmSendAction sendAction;
 
     @Column(name = "part", nullable = false, updatable = false, insertable = false)
+    @Enumerated(EnumType.STRING)
     private AlarmTargetPart targetPart;
 
     @Column(name = "target_type", nullable = false, updatable = false, insertable = false)
+    @Enumerated(EnumType.STRING)
     private AlarmTargetType targetType;
 
     @Column(name = "generation", updatable = false, insertable = false)
