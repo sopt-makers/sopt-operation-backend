@@ -12,7 +12,6 @@ import java.util.List;
 import lombok.Builder;
 import lombok.val;
 import org.sopt.makers.operation.alarm.domain.Alarm;
-import org.sopt.makers.operation.constant.AlarmConstant;
 
 @Builder(access = PRIVATE)
 public record AlarmListGetResponse(
@@ -37,8 +36,8 @@ public record AlarmListGetResponse(
             @JsonInclude(value = NON_NULL)
             String targetPart,
             String category,
-            String intendAt,
             @JsonInclude(value = NON_NULL)
+            String intendAt,
             String sendAt,
             String title,
             String content

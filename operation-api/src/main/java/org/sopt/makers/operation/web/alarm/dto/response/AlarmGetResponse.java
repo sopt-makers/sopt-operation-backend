@@ -24,11 +24,11 @@ public record AlarmGetResponse(
         Integer targetGeneration,
         String createDate,
         String createTime,
+        @JsonInclude(value = NON_NULL)
         String intendDate,
+        @JsonInclude(value = NON_NULL)
         String intendTime,
-        @JsonInclude(value = NON_NULL)
         String sendDate,
-        @JsonInclude(value = NON_NULL)
         String sendTime,
         String title,
         String content,
