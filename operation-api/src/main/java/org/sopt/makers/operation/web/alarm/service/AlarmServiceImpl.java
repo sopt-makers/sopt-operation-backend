@@ -55,10 +55,11 @@ public class AlarmServiceImpl implements AlarmService {
 
         alarmTarget.setTargetIds(extractTargetIds(alarmTarget));
 
-        val savedAlarm = alarmRepository.save(alarm);
-        val alarmRequest = InstantAlarmRequest.of(savedAlarm);
+        val alarmRequest = InstantAlarmRequest.of(alarm);
 
         alarmManager.sendInstant(alarmRequest);
+        alarm.updateStatusToComplete(LocalDateTime.now());
+        val savedAlarm = alarmRepository.save(alarm);
         return AlarmCreateResponse.of(savedAlarm);
     }
 

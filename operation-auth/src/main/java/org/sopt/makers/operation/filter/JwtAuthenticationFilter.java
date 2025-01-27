@@ -59,8 +59,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private boolean isAlarmUpdateRequest(HttpServletRequest request) {
         boolean isPatchRequest = request.getMethod().equals("PATCH");
         boolean isAlarmRequest = request.getRequestURI().contains("/api/v1/alarms");
-        System.out.println("isPatch : " + isPatchRequest);
-        System.out.println("isAlarmRequest : " + isAlarmRequest);
         return isPatchRequest && isAlarmRequest;
     }
 }
