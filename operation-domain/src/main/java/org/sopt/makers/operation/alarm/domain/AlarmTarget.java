@@ -22,19 +22,19 @@ import static lombok.AccessLevel.PROTECTED;
 @Embeddable
 public class AlarmTarget {
 
-    @Column(name = "action", nullable = false, updatable = false, insertable = false)
+    @Column(name = "action", nullable = false, updatable = false)
     @Enumerated(EnumType.STRING)
     private AlarmSendAction sendAction;
 
-    @Column(name = "part", nullable = false, updatable = false, insertable = false)
+    @Column(name = "part", nullable = false, updatable = false)
     @Enumerated(EnumType.STRING)
     private AlarmTargetPart targetPart;
 
-    @Column(name = "target_type", nullable = false, updatable = false, insertable = false)
+    @Column(name = "target_type", nullable = false, updatable = false)
     @Enumerated(EnumType.STRING)
     private AlarmTargetType targetType;
 
-    @Column(name = "generation", updatable = false, insertable = false)
+    @Column(name = "generation", updatable = false)
     private Integer generation;
 
     @Setter

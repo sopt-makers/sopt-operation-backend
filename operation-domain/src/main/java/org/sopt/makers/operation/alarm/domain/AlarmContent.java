@@ -48,6 +48,7 @@ public class AlarmContent {
         return AlarmContent.builder()
                 .title(title)
                 .content(content)
+                .category(category)
                 .linkPath(link)
                 .linkType(AlarmLinkType.APP)
                 .build();
@@ -57,6 +58,7 @@ public class AlarmContent {
         return AlarmContent.builder()
                 .title(title)
                 .content(content)
+                .category(category)
                 .linkPath(link)
                 .linkType(AlarmLinkType.WEB)
                 .build();
@@ -66,6 +68,7 @@ public class AlarmContent {
         return AlarmContent.builder()
                 .title(title)
                 .content(content)
+                .category(category)
                 .linkType(AlarmLinkType.NONE)
                 .build();
     }
