@@ -2,7 +2,11 @@ package org.sopt.makers.operation.web.alarm.service;
 
 import static org.sopt.makers.operation.code.failure.AlarmFailureCode.NOT_FOUND_ALARM;
 import static org.sopt.makers.operation.code.failure.AlarmFailureCode.INVALID_ALARM_TARGET_TYPE;
+import static org.sopt.makers.operation.constant.AlarmConstant.ALARM_RESPONSE_DATE_FORMAT;
+import static org.sopt.makers.operation.constant.AlarmConstant.ALARM_RESPONSE_TIME_FORMAT;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class AlarmServiceImpl implements AlarmService {
+    private static final String DATETIME_FORMAT = String.join(" ", ALARM_RESPONSE_DATE_FORMAT, ALARM_RESPONSE_TIME_FORMAT);
 
     private final AlarmRepository alarmRepository;
     private final MemberRepository memberRepository;
@@ -97,7 +102,8 @@ public class AlarmServiceImpl implements AlarmService {
     @Transactional
     public void updateScheduleAlarm(long alarmId, AlarmScheduleStatusUpdateRequest request) {
         val alarm = findAlarm(alarmId);
-        alarm.updateStatusToComplete(request.sendAt());
+        val sendAtDateTime = LocalDateTime.parse(request.sendAt(), DateTimeFormatter.ofPattern(DATETIME_FORMAT));
+        alarm.updateStatusToComplete(sendAtDateTime);
     }
 
     private Alarm findAlarm(long id) {

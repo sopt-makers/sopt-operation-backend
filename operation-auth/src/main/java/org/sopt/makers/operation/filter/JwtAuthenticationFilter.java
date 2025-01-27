@@ -29,7 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         val uri = request.getRequestURI();
 
-        if ((uri.startsWith("/api/v1")) && !uri.contains("auth") && !uri.contains("test")) {
+        if ((uri.startsWith("/api/v1")) && !uri.contains("auth") && !uri.contains("test") && !isAlarmUpdateRequest(request)) {
             val token = jwtTokenProvider.resolveToken(request);
 
             val jwtTokenType = validateTokenType(request);
@@ -54,5 +54,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return request.getRequestURI().startsWith("/api/v1/app") ?
                 JwtTokenType.APP_ACCESS_TOKEN :
                 JwtTokenType.ACCESS_TOKEN;
+    }
+
+    private boolean isAlarmUpdateRequest(HttpServletRequest request) {
+        boolean isPatchRequest = request.getMethod().equals("PATCH");
+        boolean isAlarmRequest = request.getRequestURI().contains("/api/v1/alarms");
+        System.out.println("isPatch : " + isPatchRequest);
+        System.out.println("isAlarmRequest : " + isAlarmRequest);
+        return isPatchRequest && isAlarmRequest;
     }
 }
