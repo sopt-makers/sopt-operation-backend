@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
+
 import lombok.Builder;
 import lombok.val;
 import org.sopt.makers.operation.alarm.domain.Alarm;
@@ -45,6 +47,9 @@ public record AlarmListGetResponse(
         private static final String DATETIME_FORMAT = String.join(" ", ALARM_RESPONSE_DATE_FORMAT, ALARM_RESPONSE_TIME_FORMAT);
 
         private static String covertToResponseDateTime(LocalDateTime dateTime) {
+            if (Objects.isNull(dateTime)){
+                return null;
+            }
             return dateTime.format(DateTimeFormatter.ofPattern(DATETIME_FORMAT));
         }
         private static AlarmResponse of(Alarm alarm) {
