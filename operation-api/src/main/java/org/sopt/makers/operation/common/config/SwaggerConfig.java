@@ -5,6 +5,10 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.servers.Server;
+
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,13 +21,20 @@ import org.springframework.context.annotation.Configuration;
 )
 @Configuration
 public class SwaggerConfig {
+
 	@Bean
-	public OpenAPI api() {
-		Info info = new Info()
-				.title("Makers Operation API Docs")
-				.version("v2.0")
-				.description("운영 프로덕트 API 명세서 입니다.");
-		return new OpenAPI()
-				.info(info);
-	}
+    public OpenAPI api() {
+        Server httpsServer = new Server()
+            .url("https://operation.api.dev.sopt.org")
+            .description("HTTPS Server");
+
+        Info info = new Info()
+            .title("Makers Operation API Docs")
+            .version("v2.0")
+            .description("운영 프로덕트 API 명세서 입니다.");
+
+        return new OpenAPI()
+            .info(info)
+            .servers(List.of(httpsServer));
+    }
 }

@@ -1,5 +1,6 @@
 package org.sopt.makers.operation.filter;
 
+import lombok.extern.slf4j.Slf4j;
 import org.sopt.makers.operation.code.failure.FailureCode;
 import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.exception.TokenException;
@@ -20,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 
 @Component
+@Slf4j
 public class JwtExceptionFilter extends OncePerRequestFilter {
 
     @Override
@@ -30,6 +32,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
        try {
            filterChain.doFilter(httpServletRequest, httpServletResponse);
        } catch(TokenException e) {
+           log.error("Token Exception caught: {}", e.getMessage(), e);  // 토큰 예외 로깅
            val objectMapper = new ObjectMapper();
            val jsonResponse = objectMapper.writeValueAsString(getFailureResponse(e.getFailureCode()));
 

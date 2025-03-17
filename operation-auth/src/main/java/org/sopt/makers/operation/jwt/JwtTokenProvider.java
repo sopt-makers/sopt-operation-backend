@@ -7,6 +7,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.sopt.makers.operation.authentication.AdminAuthentication;
 import org.sopt.makers.operation.exception.TokenException;
@@ -28,6 +29,7 @@ import java.util.Map;
 import static org.sopt.makers.operation.code.failure.TokenFailureCode.INVALID_TOKEN;
 
 @Service
+@Slf4j
 public class JwtTokenProvider {
 
     private final String accessSecretKey;
@@ -91,8 +93,16 @@ public class JwtTokenProvider {
     public boolean validateTokenExpiration(String token, JwtTokenType jwtTokenType) {
         try {
             getClaimsFromToken(token, jwtTokenType);
+            log.debug("Token validation successful for type: {}", jwtTokenType);
             return true;
-        } catch (ExpiredJwtException | SignatureException e) {
+        } catch (ExpiredJwtException e) {
+            log.error("Token expired: {}", e.getMessage());
+            return false;
+        } catch (SignatureException e) {
+            log.error("Invalid token signature: {}", e.getMessage());
+            return false;
+        } catch (Exception e) {
+            log.error("Token validation error: {}", e.getMessage(), e);
             return false;
         }
     }
@@ -140,17 +150,36 @@ public class JwtTokenProvider {
     }
 
     private Claims getClaimsFromToken(String token, JwtTokenType jwtTokenType) {
-        val encodedKey = encodeKey(setSecretKey(jwtTokenType));
+        log.info("Parsing claims from token for type: {}", jwtTokenType);
 
-        return Jwts.parserBuilder()
-                .setSigningKey(encodedKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            String secretKey = setSecretKey(jwtTokenType);
+            log.debug("Using secret key for token type {}", jwtTokenType);
+
+            val encodedKey = encodeKey(secretKey);
+
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(encodedKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            log.debug("Claims parsed successfully");
+            return claims;
+        } catch (Exception e) {
+            log.error("Error parsing claims from token: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     public String resolveToken(HttpServletRequest request) {
         val headerAuth = request.getHeader("Authorization");
+
+        log.debug("Original Authorization header: {}", headerAuth);
+
+
+
+
         return (StringUtils.hasText(headerAuth)) ? headerAuth : null;
     }
 
