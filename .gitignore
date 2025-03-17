@@ -41,3 +41,6 @@ out/
 
 */src/main/generated
 scripts
+
+.DS_Store
+**/.DS_Store
