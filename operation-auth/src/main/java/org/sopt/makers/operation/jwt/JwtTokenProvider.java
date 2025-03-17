@@ -175,12 +175,15 @@ public class JwtTokenProvider {
     public String resolveToken(HttpServletRequest request) {
         val headerAuth = request.getHeader("Authorization");
 
-        log.debug("Original Authorization header: {}", headerAuth);
+        if (StringUtils.hasText(headerAuth)) {
+            // Bearer 접두사가 있으면 제거
+            if (headerAuth.startsWith("Bearer ")) {
+                return headerAuth.substring(7);  // "Bearer " 이후의 문자열만 반환
+            }
+            return headerAuth;  // 접두사가 없으면 그대로 반환
+        }
 
-
-
-
-        return (StringUtils.hasText(headerAuth)) ? headerAuth : null;
+        return null;
     }
 
     private String encodeKey(String secretKey) {
