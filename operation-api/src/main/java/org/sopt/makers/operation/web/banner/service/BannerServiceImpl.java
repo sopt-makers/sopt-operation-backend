@@ -1,6 +1,8 @@
 package org.sopt.makers.operation.web.banner.service;
 
+import java.io.IOException;
 import java.time.Clock;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ import org.sopt.makers.operation.web.banner.dto.response.BannerResponse;
 import org.sopt.makers.operation.web.banner.dto.response.BannerResponse.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +33,8 @@ public class BannerServiceImpl implements BannerService {
     private static final String SLASH = "/";
     private static final String PROTOCOL_SEPARATOR = "//";
     private static final int PROTOCOL_END_OFFSET = 2;
+    private static final String S3_BASE_URL = "https://makers-banner.s3.ap-northeast-2.amazonaws.com/";
+
     private final BannerRepository bannerRepository;
     private final S3Service s3Service;
     private final ValueConfig valueConfig;
@@ -53,9 +58,11 @@ public class BannerServiceImpl implements BannerService {
 
      val bannerList = bannerRepository.findBannersByLocation(publishLocation);
 
-     List<String> list = bannerList.stream()
-         .map( banner -> banner.getImage().retrieveImageUrl(imageType))
-         .toList();
+      List<String> list = new ArrayList<>();
+
+//     List<String> list = bannerList.stream()
+//         .map( banner -> banner.getImage().retrieveImageUrl(imageType))
+//         .toList();
 
     return BannerResponse.BannerImageUrl.fromEntity(list);
   }
@@ -87,19 +94,34 @@ public class BannerServiceImpl implements BannerService {
     @Transactional
     @Override
     public BannerDetail createBanner(BannerRequest.BannerCreateOrModify request) {
+
+
+
+        String PcfileName=storeFile(request.image_pc());
         val period = getPublishPeriod(request.startDate(), request.endDate());
-        val image = getBannerImage(request.pcImage(), request.mobileImage());
+        String MobilefileName=storeFile(request.image_mobile());
+
         val newBanner = Banner.builder()
                 .publisher(request.publisher())
                 .link(request.link())
                 .contentType(ContentType.getByValue(request.bannerType()))
                 .location(PublishLocation.getByValue(request.bannerLocation()))
                 .period(period)
-                .image(image)
+                .pcImageUrl(S3_BASE_URL+PcfileName)
+                .mobileImageUrl(S3_BASE_URL+MobilefileName)
                 .build();
         val banner = saveBanner(newBanner);
 
         return BannerResponse.BannerDetail.fromEntity(banner);
+    }
+
+
+    private String storeFile(MultipartFile file) {
+        try {
+            return s3Service.uploadImage("banners-images/", file,valueConfig.getBannerBucket());
+        } catch (IOException e) {
+            throw new RuntimeException("파일 업로드에 실패했습니다.", e);
+        }
     }
 
     @Transactional
@@ -107,16 +129,19 @@ public class BannerServiceImpl implements BannerService {
     public BannerDetail updateBanner(Long bannerId, BannerRequest.BannerCreateOrModify request) {
         var banner = getBannerById(bannerId);
         val period = getPublishPeriod(request.startDate(), request.endDate());
-        val image = getBannerImage(request.pcImage(), request.mobileImage());
 
-        deleteExistImage(banner.getImage().getPcImageUrl());
-        deleteExistImage(banner.getImage().getMobileImageUrl());
-        banner.updatePublisher(request.publisher());
-        banner.updateLink(request.link());
-        banner.updateContentType(ContentType.getByValue(request.bannerType()));
-        banner.updateLocation(PublishLocation.getByValue(request.bannerLocation()));
-        banner.updatePeriod(period);
-        banner.updateImage(image);
+
+//
+//        val image = getBannerImage(request.pcImage(), request.mobileImage());
+//
+//        deleteExistImage(banner.getImage().getPcImageUrl());
+//        deleteExistImage(banner.getImage().getMobileImageUrl());
+//        banner.updatePublisher(request.publisher());
+//        banner.updateLink(request.link());
+//        banner.updateContentType(ContentType.getByValue(request.bannerType()));
+//        banner.updateLocation(PublishLocation.getByValue(request.bannerLocation()));
+//        banner.updatePeriod(period);
+//        banner.updateImage(image);
         return BannerResponse.BannerDetail.fromEntity(banner);
     }
 

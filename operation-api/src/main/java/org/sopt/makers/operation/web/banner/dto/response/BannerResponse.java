@@ -62,8 +62,8 @@ public final class BannerResponse {
                     .link(banner.getLink())
                     .startDate(banner.getPeriod().getStartDate())
                     .endDate(banner.getPeriod().getEndDate())
-                    .pcImageUrl(banner.getImage().getPcImageUrl())
-                    .mobileImageUrl(banner.getImage().getMobileImageUrl())
+                    .pcImageUrl(banner.getPcImageUrl())
+                    .mobileImageUrl(banner.getMobileImageUrl())
                     .build();
         }
 

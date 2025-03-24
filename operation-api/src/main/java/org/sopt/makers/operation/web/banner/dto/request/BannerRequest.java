@@ -5,6 +5,7 @@ import static lombok.AccessLevel.PRIVATE;
 import com.fasterxml.jackson.annotation.*;
 import java.time.*;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor(access = PRIVATE)
 public class BannerRequest {
@@ -16,7 +17,7 @@ public class BannerRequest {
             @JsonProperty("start_date") LocalDate startDate,
             @JsonProperty("end_date") LocalDate endDate,
             @JsonProperty("link") String link,
-            @JsonProperty("image_pc") String pcImage,
-            @JsonProperty("image_mobile") String mobileImage
+            @JsonProperty("image_pc") MultipartFile image_pc,
+            @JsonProperty("image_mobile") MultipartFile image_mobile
     ) {}
 }

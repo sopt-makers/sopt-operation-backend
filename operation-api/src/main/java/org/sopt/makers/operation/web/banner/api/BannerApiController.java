@@ -44,14 +44,14 @@ public class BannerApiController implements BannerApi {
 
   @PostMapping
   @Override
-  public ResponseEntity<BaseResponse<?>> createBanner(@RequestBody BannerRequest.BannerCreateOrModify request) {
+  public ResponseEntity<BaseResponse<?>> createBanner(@ModelAttribute  BannerRequest.BannerCreateOrModify request) {
       val response = bannerService.createBanner(request);
       return ApiResponseUtil.success(SUCCESS_CREATE_BANNER, response);
   }
 
   @PutMapping("/{bannerId}")
   @Override
-  public ResponseEntity<BaseResponse<?>> updateBanner(@PathVariable("bannerId") Long bannerId, BannerRequest.BannerCreateOrModify request) {
+  public ResponseEntity<BaseResponse<?>> updateBanner(@PathVariable("bannerId") Long bannerId, @ModelAttribute  BannerRequest.BannerCreateOrModify request) {
       val response = bannerService.updateBanner(bannerId, request);
       return ApiResponseUtil.success(SUCCESS_UPDATE_BANNER, response);
   }
