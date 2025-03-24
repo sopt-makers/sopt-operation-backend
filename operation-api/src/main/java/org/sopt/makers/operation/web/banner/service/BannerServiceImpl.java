@@ -94,11 +94,9 @@ public class BannerServiceImpl implements BannerService {
     @Transactional
     @Override
     public BannerDetail createBanner(BannerRequest.BannerCreateOrModify request) {
-
-
+        val period = getPublishPeriod(request.start_date(), request.end_date());
 
         String PcfileName=storeFile(request.image_pc());
-        val period = getPublishPeriod(request.start_date(), request.end_date());
         String MobilefileName=storeFile(request.image_mobile());
 
         val newBanner = Banner.builder()
@@ -127,22 +125,28 @@ public class BannerServiceImpl implements BannerService {
     @Transactional
     @Override
     public BannerDetail updateBanner(Long bannerId, BannerRequest.BannerCreateOrModify request) {
-        var banner = getBannerById(bannerId);
-        val period = getPublishPeriod(request.start_date(), request.end_date());
+        // 기존 배너 조회
+        Banner existingBanner = getBannerById(bannerId);
 
+        // 새 이미지 파일 S3에 업로드
+        String pcFileName = storeFile(request.image_pc());
+        String mobileFileName = storeFile(request.image_mobile());
 
-//
-//        val image = getBannerImage(request.pcImage(), request.mobileImage());
-//
-//        deleteExistImage(banner.getImage().getPcImageUrl());
-//        deleteExistImage(banner.getImage().getMobileImageUrl());
-//        banner.updatePublisher(request.publisher());
-//        banner.updateLink(request.link());
-//        banner.updateContentType(ContentType.getByValue(request.bannerType()));
-//        banner.updateLocation(PublishLocation.getByValue(request.bannerLocation()));
-//        banner.updatePeriod(period);
-//        banner.updateImage(image);
-        return BannerResponse.BannerDetail.fromEntity(banner);
+        // 게시 기간 생성
+        PublishPeriod period = getPublishPeriod(request.start_date(), request.end_date());
+
+        // 기존 엔티티의 모든 필드 업데이트
+        existingBanner.updateLocation(PublishLocation.getByValue(request.location()));
+        existingBanner.updateContentType(ContentType.getByValue(request.content_type()));
+        existingBanner.updatePublisher(request.publisher());
+        existingBanner.updateLink(request.link());
+        existingBanner.updatePeriod(period);
+        existingBanner.updatePcImage(S3_BASE_URL + pcFileName);
+        existingBanner.updateMobileImage(S3_BASE_URL + mobileFileName);
+
+        // 변경 감지(dirty checking)에 의해 자동으로 업데이트됨
+
+        return BannerResponse.BannerDetail.fromEntity(existingBanner);
     }
 
     private void deleteExistImage(String url) {
