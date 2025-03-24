@@ -59,12 +59,9 @@ public class S3ServiceImpl implements S3Service {
         s3Client.deleteObject(b -> b.bucket(bucketName).key(fileName));
     }
 
-
     @Override
     public String uploadImage(String directoryPath, MultipartFile image,String bucketName) throws IOException {
         final String key = directoryPath + generateImageFileName();
-
-
         validateExtension(image);
         validateFileSize(image);
 
@@ -91,13 +88,9 @@ public class S3ServiceImpl implements S3Service {
         return UUID.randomUUID() + ".png";
     }
 
-
-
-
     private void validateFileSize(MultipartFile image) {
         if (image.getSize() > MAX_FILE_SIZE) {
             throw new RuntimeException("이미지 사이즈는 5MB를 넘을 수 없습니다.");
         }
     }
-
 }

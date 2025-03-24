@@ -40,7 +40,6 @@ public class BannerServiceImpl implements BannerService {
     private static final String PROTOCOL_SEPARATOR = "//";
     private static final int PROTOCOL_END_OFFSET = 2;
     private static final String S3_BASE_URL = "https://makers-banner.s3.ap-northeast-2.amazonaws.com/";
-
     private final BannerRepository bannerRepository;
     private final S3Service s3Service;
     private final ValueConfig valueConfig;
@@ -138,17 +137,13 @@ public class BannerServiceImpl implements BannerService {
     @Transactional
     @Override
     public BannerDetail updateBanner(Long bannerId, BannerRequest.BannerCreateOrModify request) {
-        // 기존 배너 조회
+        PublishPeriod period = getPublishPeriod(request.start_date(), request.end_date());
         Banner existingBanner = getBannerById(bannerId);
 
-        // 새 이미지 파일 S3에 업로드
         String pcFileName = storeFile(request.image_pc());
         String mobileFileName = storeFile(request.image_mobile());
 
-        // 게시 기간 생성
-        PublishPeriod period = getPublishPeriod(request.start_date(), request.end_date());
-
-        // 기존 엔티티의 모든 필드 업데이트
+        // 변경 감지(dirty checking)에 의해 자동으로 업데이트됨
         existingBanner.updateLocation(PublishLocation.getByValue(request.location()));
         existingBanner.updateContentType(ContentType.getByValue(request.content_type()));
         existingBanner.updatePublisher(request.publisher());
@@ -156,8 +151,6 @@ public class BannerServiceImpl implements BannerService {
         existingBanner.updatePeriod(period);
         existingBanner.updatePcImage(S3_BASE_URL + pcFileName);
         existingBanner.updateMobileImage(S3_BASE_URL + mobileFileName);
-
-        // 변경 감지(dirty checking)에 의해 자동으로 업데이트됨
 
         return BannerResponse.BannerDetail.fromEntity(existingBanner);
     }

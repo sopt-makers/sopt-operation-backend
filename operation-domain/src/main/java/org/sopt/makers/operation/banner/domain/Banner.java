@@ -45,7 +45,6 @@ public class Banner extends BaseEntity {
     private String publisher;
 
     private String link;
-
     private String pcImageUrl;
     private String mobileImageUrl;
 
@@ -55,9 +54,6 @@ public class Banner extends BaseEntity {
             @AttributeOverride(name = "endDate", column = @Column(name = "end_date", nullable = false))
     })
     private PublishPeriod period;
-
-
-
 
     @Builder
     private Banner(PublishLocation location, String link, ContentType contentType, String publisher, PublishPeriod period, String pcImageUrl, String mobileImageUrl) {
@@ -88,7 +84,4 @@ public class Banner extends BaseEntity {
 
     public void updatePcImage(String image) { this.pcImageUrl = pcImageUrl; }
     public void updateMobileImage(String image) { this.mobileImageUrl= mobileImageUrl; }
-
-
-
 }
