@@ -74,8 +74,8 @@ public class BannerApiController implements BannerApi {
   public ResponseEntity<BaseResponse<?>> deleteBanner(
       @PathVariable("bannerId") Long bannerId
   ) {
-    bannerService.deleteBanner(bannerId);
-    return ApiResponseUtil.success(SUCCESS_DELETE_BANNER);
+
+    return bannerService.deleteBanner(bannerId);
   }
 
   @Override

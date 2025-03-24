@@ -1,5 +1,7 @@
 package org.sopt.makers.operation.web.banner.service;
 
+import static org.sopt.makers.operation.code.success.web.BannerSuccessCode.SUCCESS_DELETE_BANNER;
+
 import java.io.IOException;
 import java.time.Clock;
 import java.util.ArrayList;
@@ -18,10 +20,13 @@ import org.sopt.makers.operation.banner.repository.BannerRepository;
 import org.sopt.makers.operation.client.s3.S3Service;
 import org.sopt.makers.operation.code.failure.BannerFailureCode;
 import org.sopt.makers.operation.config.ValueConfig;
+import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.exception.BannerException;
+import org.sopt.makers.operation.util.ApiResponseUtil;
 import org.sopt.makers.operation.web.banner.dto.request.*;
 import org.sopt.makers.operation.web.banner.dto.response.BannerResponse;
 import org.sopt.makers.operation.web.banner.dto.response.BannerResponse.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,10 +51,12 @@ public class BannerServiceImpl implements BannerService {
         return BannerResponse.BannerDetail.fromEntity(banner);
     }
 
+    @Transactional
     @Override
-    public void deleteBanner(final long bannerId) {
+    public ResponseEntity<BaseResponse<?>> deleteBanner(final long bannerId) {
         val banner = getBannerById(bannerId);
         bannerRepository.delete(banner);
+        return ApiResponseUtil.success(SUCCESS_DELETE_BANNER);
     }
 
   @Override

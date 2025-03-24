@@ -1,5 +1,6 @@
 package org.sopt.makers.operation.web.banner.service;
 
+import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.web.banner.dto.request.BannerRequest;
 
 import java.util.Arrays;
@@ -9,12 +10,13 @@ import org.sopt.makers.operation.code.failure.BannerFailureCode;
 import org.sopt.makers.operation.exception.BannerException;
 import org.sopt.makers.operation.web.banner.dto.response.BannerResponse;
 import org.sopt.makers.operation.web.banner.dto.response.BannerResponse.BannerImageUrl;
+import org.springframework.http.ResponseEntity;
 
 public interface BannerService {
 
     BannerResponse.BannerDetail getBannerDetail(final long bannerId);
 
-    void deleteBanner(final long bannerId);
+    ResponseEntity<BaseResponse<?>> deleteBanner(final long bannerId);
 
     List<BannerImageUrl> getExternalBanners(final String platform, final String location);
 
