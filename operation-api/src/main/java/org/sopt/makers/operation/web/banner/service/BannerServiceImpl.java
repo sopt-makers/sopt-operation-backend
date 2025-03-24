@@ -98,14 +98,14 @@ public class BannerServiceImpl implements BannerService {
 
 
         String PcfileName=storeFile(request.image_pc());
-        val period = getPublishPeriod(request.startDate(), request.endDate());
+        val period = getPublishPeriod(request.start_date(), request.end_date());
         String MobilefileName=storeFile(request.image_mobile());
 
         val newBanner = Banner.builder()
                 .publisher(request.publisher())
                 .link(request.link())
-                .contentType(ContentType.getByValue(request.bannerType()))
-                .location(PublishLocation.getByValue(request.bannerLocation()))
+                .contentType(ContentType.getByValue(request.content_type()))
+                .location(PublishLocation.getByValue(request.location()))
                 .period(period)
                 .pcImageUrl(S3_BASE_URL+PcfileName)
                 .mobileImageUrl(S3_BASE_URL+MobilefileName)
@@ -128,7 +128,7 @@ public class BannerServiceImpl implements BannerService {
     @Override
     public BannerDetail updateBanner(Long bannerId, BannerRequest.BannerCreateOrModify request) {
         var banner = getBannerById(bannerId);
-        val period = getPublishPeriod(request.startDate(), request.endDate());
+        val period = getPublishPeriod(request.start_date(), request.end_date());
 
 
 //
