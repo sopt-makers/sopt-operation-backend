@@ -1,5 +1,6 @@
 package org.sopt.makers.operation.web.banner.service;
 
+import static org.sopt.makers.operation.code.failure.BannerFailureCode.NOT_SUPPORTED_PLATFORM_TYPE;
 import static org.sopt.makers.operation.code.success.web.BannerSuccessCode.SUCCESS_DELETE_BANNER;
 
 import java.io.IOException;
@@ -65,13 +66,18 @@ public class BannerServiceImpl implements BannerService {
 
      val bannerList = bannerRepository.findBannersByLocation(publishLocation);
 
-      List<String> list = new ArrayList<>();
 
-//     List<String> list = bannerList.stream()
-//         .map( banner -> banner.getImage().retrieveImageUrl(imageType))
-//         .toList();
+      List<String> urlList = bannerList.stream()
+              .map(banner -> {
+                  return switch (imageType) {
+                      case "pc" -> banner.getPcImageUrl();
+                      case "mobile" -> banner.getMobileImageUrl();
+                      default -> throw new BannerException(NOT_SUPPORTED_PLATFORM_TYPE);
+                  };
+              })
+              .toList();
 
-    return BannerResponse.BannerImageUrl.fromEntity(list);
+    return BannerResponse.BannerImageUrl.fromEntity(urlList);
   }
 
   private Banner getBannerById(final long id) {
