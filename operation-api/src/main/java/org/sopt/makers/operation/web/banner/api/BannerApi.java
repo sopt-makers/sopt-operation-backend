@@ -1,11 +1,15 @@
 package org.sopt.makers.operation.web.banner.api;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 import org.sopt.makers.operation.dto.BaseResponse;
 
 import org.sopt.makers.operation.web.banner.dto.request.BannerRequest;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 public interface BannerApi {
@@ -108,7 +112,13 @@ public interface BannerApi {
                             responseCode = "500",
                             description = "서버 내부 오류"
                     )
-            }
+            },
+            requestBody = @RequestBody(
+                    content = @Content(
+                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                            schema = @Schema(implementation = BannerRequest.BannerCreateOrModify.class)
+                    )
+            )
     )
     ResponseEntity<BaseResponse<?>> createBanner(BannerRequest.BannerCreateOrModify request);
 
@@ -127,7 +137,13 @@ public interface BannerApi {
                             responseCode = "500",
                             description = "서버 내부 오류"
                     )
-            }
+            },
+            requestBody = @RequestBody(
+                    content = @Content(
+                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                            schema = @Schema(implementation = BannerRequest.BannerCreateOrModify.class)
+                    )
+            )
     )
     ResponseEntity<BaseResponse<?>> updateBanner(Long bannerId, BannerRequest.BannerCreateOrModify request);
 }
