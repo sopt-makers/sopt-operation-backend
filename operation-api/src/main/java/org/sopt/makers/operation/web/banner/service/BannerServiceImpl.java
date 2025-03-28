@@ -120,8 +120,8 @@ public class BannerServiceImpl implements BannerService {
     public BannerDetail createBanner(BannerRequest.BannerCreateOrModify request) {
         val period = getPublishPeriod(request.start_date(), request.end_date());
 
-        String PcfileName=storeFile(request.image_pc());
-        String MobilefileName=storeFile(request.image_mobile());
+        String pcImageKey = storeFile(request.image_pc());
+        String mobileImageKey = storeFile(request.image_mobile());
 
         val newBanner = Banner.builder()
                 .publisher(request.publisher())
@@ -129,12 +129,15 @@ public class BannerServiceImpl implements BannerService {
                 .contentType(ContentType.getByValue(request.content_type()))
                 .location(PublishLocation.getByValue(request.location()))
                 .period(period)
-                .pcImageUrl(S3_BASE_URL+PcfileName)
-                .mobileImageUrl(S3_BASE_URL+MobilefileName)
+                .pcImageKey(pcImageKey)
+                .mobileImageKey(mobileImageKey)
                 .build();
         val banner = saveBanner(newBanner);
 
-        return BannerResponse.BannerDetail.fromEntity(banner);
+        String pcSignedUrl = s3Service.getUrl(valueConfig.getBannerBucket(), pcImageKey);
+        String mobileSignedUrl = s3Service.getUrl(valueConfig.getBannerBucket(), mobileImageKey);
+
+        return BannerResponse.BannerDetail.fromEntity(banner, pcSignedUrl, mobileSignedUrl);
     }
 
 
@@ -152,8 +155,11 @@ public class BannerServiceImpl implements BannerService {
         PublishPeriod period = getPublishPeriod(request.start_date(), request.end_date());
         Banner existingBanner = getBannerById(bannerId);
 
-        String pcFileName = storeFile(request.image_pc());
-        String mobileFileName = storeFile(request.image_mobile());
+        String oldPcImageKey = existingBanner.getPcImageKey();
+        String oldMobileImageKey = existingBanner.getMobileImageKey();
+
+        String pcImageKey = storeFile(request.image_pc());
+        String mobileImageKey = storeFile(request.image_mobile());
 
         // 변경 감지(dirty checking)에 의해 자동으로 업데이트됨
         existingBanner.updateLocation(PublishLocation.getByValue(request.location()));
@@ -161,11 +167,23 @@ public class BannerServiceImpl implements BannerService {
         existingBanner.updatePublisher(request.publisher());
         existingBanner.updateLink(request.link());
         existingBanner.updatePeriod(period);
-        existingBanner.updatePcImage(S3_BASE_URL + pcFileName);
-        existingBanner.updateMobileImage(S3_BASE_URL + mobileFileName);
+        existingBanner.updatePcImageKey(pcImageKey);
+        existingBanner.updateMobileImageKey(mobileImageKey);
 
-        return BannerResponse.BannerDetail.fromEntity(existingBanner);
+        if (oldPcImageKey != null) {
+            s3Service.deleteFile(valueConfig.getBannerBucket(), oldPcImageKey);
+        }
+
+        if (oldMobileImageKey != null) {
+            s3Service.deleteFile(valueConfig.getBannerBucket(), oldMobileImageKey);
+        }
+
+        String pcSignedUrl = s3Service.getUrl(valueConfig.getBannerBucket(), pcImageKey);
+        String mobileSignedUrl = s3Service.getUrl(valueConfig.getBannerBucket(), mobileImageKey);
+
+        return BannerResponse.BannerDetail.fromEntity(existingBanner, pcSignedUrl, mobileSignedUrl);
     }
+
 
     private void deleteExistImage(String url) {
         val protocolEndIndex = url.indexOf(PROTOCOL_SEPARATOR) + PROTOCOL_END_OFFSET;
