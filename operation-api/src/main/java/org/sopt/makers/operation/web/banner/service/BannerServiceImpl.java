@@ -48,7 +48,10 @@ public class BannerServiceImpl implements BannerService {
     @Override
     public BannerResponse.BannerDetail getBannerDetail(final long bannerId) {
         val banner = getBannerById(bannerId);
-        return BannerResponse.BannerDetail.fromEntity(banner);
+        String pcSignedUrl = s3Service.getUrl(valueConfig.getBannerBucket(), banner.getPcImageKey());
+        String mobileSignedUrl = s3Service.getUrl(valueConfig.getBannerBucket(), banner.getMobileImageKey());
+
+        return BannerResponse.BannerDetail.fromEntity(banner, pcSignedUrl, mobileSignedUrl);
     }
 
 
@@ -71,25 +74,29 @@ public class BannerServiceImpl implements BannerService {
     }
 
 
-  @Override
-  public List<BannerResponse.BannerImageUrl> getExternalBanners(final String imageType, final String location) {
-     val publishLocation = PublishLocation.getByValue(location);
+    @Override
+    public List<BannerResponse.BannerImageUrl> getExternalBanners(final String imageType, final String location) {
+        val publishLocation = PublishLocation.getByValue(location);
 
-     val bannerList = bannerRepository.findBannersByLocation(publishLocation);
+        val bannerList = bannerRepository.findBannersByLocation(publishLocation);
 
 
-      List<String> urlList = bannerList.stream()
-              .map(banner -> {
-                  return switch (imageType) {
-                      case "pc" -> banner.getPcImageUrl();
-                      case "mobile" -> banner.getMobileImageUrl();
-                      default -> throw new BannerException(NOT_SUPPORTED_PLATFORM_TYPE);
-                  };
-              })
-              .toList();
+        List<String> imageKeyList = bannerList.stream()
+                .map(banner -> {
+                    return switch (imageType) {
+                        case "pc" -> banner.getPcImageKey();
+                        case "mobile" -> banner.getMobileImageKey();
+                        default -> throw new BannerException(NOT_SUPPORTED_PLATFORM_TYPE);
+                    };
+                })
+                .toList();
 
-    return BannerResponse.BannerImageUrl.fromEntity(urlList);
-  }
+        List<String> signedUrlList = imageKeyList.stream()
+                .map(key -> s3Service.getUrl(valueConfig.getBannerBucket(), key))
+                .toList();
+
+        return BannerResponse.BannerImageUrl.fromEntity(signedUrlList);
+    }
 
   private Banner getBannerById(final long id) {
         return bannerRepository.findById(id)
