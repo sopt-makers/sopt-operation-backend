@@ -93,25 +93,6 @@ public interface BannerApi {
   )
   ResponseEntity<BaseResponse<?>> getExternalBanners(String platform, String location);
 
-  @Operation(
-            summary = "배너 이미지 PreSignedUrl 조회 API",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "PreSignedUrl 조회 성공"
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "잘못된 요청"
-                    ),
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "서버 내부 오류"
-                    )
-            }
-    )
-    ResponseEntity<BaseResponse<?>> getIssuedPreSignedUrlForPutImage(String contentName, String imageType, String imageExtension, String contentType);
-
     @Operation(
             summary = "배너 생성 API",
             responses = {

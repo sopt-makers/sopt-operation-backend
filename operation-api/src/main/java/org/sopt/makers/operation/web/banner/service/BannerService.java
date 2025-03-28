@@ -20,7 +20,6 @@ public interface BannerService {
 
     List<BannerImageUrl> getExternalBanners(final String platform, final String location);
 
-    BannerResponse.ImagePreSignedUrl getIssuedPreSignedUrlForPutImage(String contentName, String imageType, String imageExtension, String contentType);
 
     BannerResponse.BannerDetail createBanner(BannerRequest.BannerCreateOrModify request);
 

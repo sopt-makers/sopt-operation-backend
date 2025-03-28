@@ -80,13 +80,4 @@ public final class BannerResponse {
         }
     }
 
-    @Builder(access = PRIVATE)
-    public record ImagePreSignedUrl(
-            @JsonProperty("presigned-url") String preSignedUrl,
-            @JsonProperty("filename") String fileName
-    ) {
-        public static ImagePreSignedUrl of(String preSignedUrl, String filename) {
-            return new ImagePreSignedUrl(preSignedUrl, filename);
-        }
-    }
 }

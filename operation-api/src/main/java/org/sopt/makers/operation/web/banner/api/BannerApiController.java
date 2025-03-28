@@ -87,16 +87,5 @@ public class BannerApiController implements BannerApi {
         bannerService.getExternalBanners(imageType, location));
   }
 
-  @Override
-  @GetMapping("/img/pre-signed")
-  public ResponseEntity<BaseResponse<?>> getIssuedPreSignedUrlForPutImage(
-      @RequestParam("content_name") String contentName,
-      @RequestParam("image_type") String imageType,
-      @RequestParam("image_extension") String imageExtension,
-      @RequestParam("content_type") String contentType
-  ) {
-      val response = bannerService.getIssuedPreSignedUrlForPutImage(contentName, imageType,
-        imageExtension, contentType);
-    return ApiResponseUtil.success(SUCCESS_GET_BANNER_IMAGE_PRE_SIGNED_URL, response);
-  }
+
 }
