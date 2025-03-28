@@ -51,13 +51,25 @@ public class BannerServiceImpl implements BannerService {
         return BannerResponse.BannerDetail.fromEntity(banner);
     }
 
+
     @Transactional
     @Override
     public ResponseEntity<BaseResponse<?>> deleteBanner(final long bannerId) {
         val banner = getBannerById(bannerId);
+
+
+        if (banner.getPcImageKey() != null) {
+            s3Service.deleteFile(valueConfig.getBannerBucket(), banner.getPcImageKey());
+        }
+
+        if (banner.getMobileImageKey() != null) {
+            s3Service.deleteFile(valueConfig.getBannerBucket(), banner.getMobileImageKey());
+        }
+
         bannerRepository.delete(banner);
         return ApiResponseUtil.success(SUCCESS_DELETE_BANNER);
     }
+
 
   @Override
   public List<BannerResponse.BannerImageUrl> getExternalBanners(final String imageType, final String location) {

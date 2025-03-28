@@ -45,8 +45,12 @@ public class Banner extends BaseEntity {
     private String publisher;
 
     private String link;
-    private String pcImageUrl;
-    private String mobileImageUrl;
+
+    @Column(name = "pc_image_key")
+    private String pcImageKey;
+
+    @Column(name = "mobile_image_key")
+    private String mobileImageKey;
 
     @Embedded
     @AttributeOverrides({
@@ -56,14 +60,14 @@ public class Banner extends BaseEntity {
     private PublishPeriod period;
 
     @Builder
-    private Banner(PublishLocation location, String link, ContentType contentType, String publisher, PublishPeriod period, String pcImageUrl, String mobileImageUrl) {
+    private Banner(PublishLocation location, String link, ContentType contentType, String publisher, PublishPeriod period, String pcImageKey, String mobileImageKey) {
         this.location = location;
         this.link = link;
         this.contentType = contentType;
         this.publisher = publisher;
         this.period = period;
-        this.pcImageUrl=pcImageUrl;
-        this.mobileImageUrl=mobileImageUrl;
+        this.pcImageKey = pcImageKey;
+        this.mobileImageKey = mobileImageKey;
     }
 
     public void updateLocation(PublishLocation location) {
@@ -82,6 +86,11 @@ public class Banner extends BaseEntity {
 
     public void updatePeriod(PublishPeriod period) { this.period = period; }
 
-    public void updatePcImage(String image) { this.pcImageUrl = pcImageUrl; }
-    public void updateMobileImage(String image) { this.mobileImageUrl= mobileImageUrl; }
+    public void updatePcImageKey(String pcImageKey) {
+        this.pcImageKey = pcImageKey;
+    }
+
+    public void updateMobileImageKey(String mobileImageKey) {
+        this.mobileImageKey = mobileImageKey;
+    }
 }
