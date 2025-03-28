@@ -1,6 +1,11 @@
 package org.sopt.makers.operation.web.banner.service;
 
+import static org.sopt.makers.operation.code.failure.BannerFailureCode.NOT_SUPPORTED_PLATFORM_TYPE;
+import static org.sopt.makers.operation.code.success.web.BannerSuccessCode.SUCCESS_DELETE_BANNER;
+
+import java.io.IOException;
 import java.time.Clock;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -16,20 +21,22 @@ import org.sopt.makers.operation.banner.repository.BannerRepository;
 import org.sopt.makers.operation.client.s3.S3Service;
 import org.sopt.makers.operation.code.failure.BannerFailureCode;
 import org.sopt.makers.operation.config.ValueConfig;
+import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.exception.BannerException;
+import org.sopt.makers.operation.util.ApiResponseUtil;
 import org.sopt.makers.operation.web.banner.dto.request.*;
 import org.sopt.makers.operation.web.banner.dto.response.BannerResponse;
 import org.sopt.makers.operation.web.banner.dto.response.BannerResponse.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class BannerServiceImpl implements BannerService {
-    private static final String SLASH = "/";
-    private static final String PROTOCOL_SEPARATOR = "//";
-    private static final int PROTOCOL_END_OFFSET = 2;
+
     private final BannerRepository bannerRepository;
     private final S3Service s3Service;
     private final ValueConfig valueConfig;
@@ -38,42 +45,55 @@ public class BannerServiceImpl implements BannerService {
     @Override
     public BannerResponse.BannerDetail getBannerDetail(final long bannerId) {
         val banner = getBannerById(bannerId);
-        return BannerResponse.BannerDetail.fromEntity(banner);
+        String pcSignedUrl = s3Service.getUrl(valueConfig.getBannerBucket(), banner.getPcImageKey());
+        String mobileSignedUrl = s3Service.getUrl(valueConfig.getBannerBucket(), banner.getMobileImageKey());
+
+        return BannerResponse.BannerDetail.fromEntity(banner, pcSignedUrl, mobileSignedUrl);
     }
+
+    @Transactional
+    @Override
+    public ResponseEntity<BaseResponse<?>> deleteBanner(final long bannerId) {
+        val banner = getBannerById(bannerId);
+
+        if (banner.getPcImageKey() != null) {
+            s3Service.deleteFile(valueConfig.getBannerBucket(), banner.getPcImageKey());
+        }
+
+        if (banner.getMobileImageKey() != null) {
+            s3Service.deleteFile(valueConfig.getBannerBucket(), banner.getMobileImageKey());
+        }
+
+        bannerRepository.delete(banner);
+        return ApiResponseUtil.success(SUCCESS_DELETE_BANNER);
+    }
+
 
     @Override
-    public void deleteBanner(final long bannerId) {
-        val banner = getBannerById(bannerId);
-        bannerRepository.delete(banner);
+    public List<BannerResponse.BannerImageUrl> getExternalBanners(final String imageType, final String location) {
+        val publishLocation = PublishLocation.getByValue(location);
+        val bannerList = bannerRepository.findBannersByLocation(publishLocation);
+
+        List<String> imageKeyList = bannerList.stream()
+                .map(banner -> {
+                    return switch (imageType) {
+                        case "pc" -> banner.getPcImageKey();
+                        case "mobile" -> banner.getMobileImageKey();
+                        default -> throw new BannerException(NOT_SUPPORTED_PLATFORM_TYPE);
+                    };
+                })
+                .toList();
+
+        List<String> signedUrlList = imageKeyList.stream()
+                .map(key -> s3Service.getUrl(valueConfig.getBannerBucket(), key))
+                .toList();
+
+        return BannerResponse.BannerImageUrl.fromEntity(signedUrlList);
     }
-
-  @Override
-  public List<BannerResponse.BannerImageUrl> getExternalBanners(final String imageType, final String location) {
-     val publishLocation = PublishLocation.getByValue(location);
-
-     val bannerList = bannerRepository.findBannersByLocation(publishLocation);
-
-     List<String> list = bannerList.stream()
-         .map( banner -> banner.getImage().retrieveImageUrl(imageType))
-         .toList();
-
-    return BannerResponse.BannerImageUrl.fromEntity(list);
-  }
 
   private Banner getBannerById(final long id) {
         return bannerRepository.findById(id)
                 .orElseThrow(() -> new BannerException(BannerFailureCode.NOT_FOUND_BANNER));
-    }
-
-    @Override
-    public BannerResponse.ImagePreSignedUrl getIssuedPreSignedUrlForPutImage(String contentName, String imageType, String imageExtension, String contentType) {
-        val type = ImageType.getByValue(imageType);
-        val extension = ImageExtension.getByValue(imageExtension);
-        val location = ContentType.getByValue(contentType).getLocation();
-        val fileName = getBannerImageName(location, contentName, type.getValue(), extension.getValue());
-        val putPreSignedUrl = s3Service.createPreSignedUrlForPutObject(valueConfig.getBannerBucket(), fileName);
-
-        return BannerResponse.ImagePreSignedUrl.of(putPreSignedUrl, fileName);
     }
 
     private String getBannerImageName(String location, String contentName, String imageType, String imageExtension) {
@@ -87,44 +107,70 @@ public class BannerServiceImpl implements BannerService {
     @Transactional
     @Override
     public BannerDetail createBanner(BannerRequest.BannerCreateOrModify request) {
-        val period = getPublishPeriod(request.startDate(), request.endDate());
-        val image = getBannerImage(request.pcImage(), request.mobileImage());
+        val period = getPublishPeriod(request.start_date(), request.end_date());
+
+        String pcImageKey = storeFile(request.image_pc());
+        String mobileImageKey = storeFile(request.image_mobile());
+
         val newBanner = Banner.builder()
                 .publisher(request.publisher())
                 .link(request.link())
-                .contentType(ContentType.getByValue(request.bannerType()))
-                .location(PublishLocation.getByValue(request.bannerLocation()))
+                .contentType(ContentType.getByValue(request.content_type()))
+                .location(PublishLocation.getByValue(request.location()))
                 .period(period)
-                .image(image)
+                .pcImageKey(pcImageKey)
+                .mobileImageKey(mobileImageKey)
                 .build();
         val banner = saveBanner(newBanner);
 
-        return BannerResponse.BannerDetail.fromEntity(banner);
+        String pcSignedUrl = s3Service.getUrl(valueConfig.getBannerBucket(), pcImageKey);
+        String mobileSignedUrl = s3Service.getUrl(valueConfig.getBannerBucket(), mobileImageKey);
+
+        return BannerResponse.BannerDetail.fromEntity(banner, pcSignedUrl, mobileSignedUrl);
+    }
+
+
+    private String storeFile(MultipartFile file) {
+        try {
+            return s3Service.uploadImage("banners-images/", file,valueConfig.getBannerBucket());
+        } catch (IOException e) {
+            throw new RuntimeException("파일 업로드에 실패했습니다.", e);
+        }
     }
 
     @Transactional
     @Override
     public BannerDetail updateBanner(Long bannerId, BannerRequest.BannerCreateOrModify request) {
-        var banner = getBannerById(bannerId);
-        val period = getPublishPeriod(request.startDate(), request.endDate());
-        val image = getBannerImage(request.pcImage(), request.mobileImage());
+        PublishPeriod period = getPublishPeriod(request.start_date(), request.end_date());
+        Banner existingBanner = getBannerById(bannerId);
 
-        deleteExistImage(banner.getImage().getPcImageUrl());
-        deleteExistImage(banner.getImage().getMobileImageUrl());
-        banner.updatePublisher(request.publisher());
-        banner.updateLink(request.link());
-        banner.updateContentType(ContentType.getByValue(request.bannerType()));
-        banner.updateLocation(PublishLocation.getByValue(request.bannerLocation()));
-        banner.updatePeriod(period);
-        banner.updateImage(image);
-        return BannerResponse.BannerDetail.fromEntity(banner);
-    }
+        String oldPcImageKey = existingBanner.getPcImageKey();
+        String oldMobileImageKey = existingBanner.getMobileImageKey();
 
-    private void deleteExistImage(String url) {
-        val protocolEndIndex = url.indexOf(PROTOCOL_SEPARATOR) + PROTOCOL_END_OFFSET;
-        val firstSlashIndex = url.indexOf(SLASH, protocolEndIndex);
-        val extractedPath = url.substring(firstSlashIndex);
-        s3Service.deleteFile(valueConfig.getBannerBucket(), extractedPath);
+        String pcImageKey = storeFile(request.image_pc());
+        String mobileImageKey = storeFile(request.image_mobile());
+
+        // 변경 감지(dirty checking)에 의해 자동으로 업데이트됨
+        existingBanner.updateLocation(PublishLocation.getByValue(request.location()));
+        existingBanner.updateContentType(ContentType.getByValue(request.content_type()));
+        existingBanner.updatePublisher(request.publisher());
+        existingBanner.updateLink(request.link());
+        existingBanner.updatePeriod(period);
+        existingBanner.updatePcImageKey(pcImageKey);
+        existingBanner.updateMobileImageKey(mobileImageKey);
+
+        if (oldPcImageKey != null) {
+            s3Service.deleteFile(valueConfig.getBannerBucket(), oldPcImageKey);
+        }
+
+        if (oldMobileImageKey != null) {
+            s3Service.deleteFile(valueConfig.getBannerBucket(), oldMobileImageKey);
+        }
+
+        String pcSignedUrl = s3Service.getUrl(valueConfig.getBannerBucket(), pcImageKey);
+        String mobileSignedUrl = s3Service.getUrl(valueConfig.getBannerBucket(), mobileImageKey);
+
+        return BannerResponse.BannerDetail.fromEntity(existingBanner, pcSignedUrl, mobileSignedUrl);
     }
 
     @Override
@@ -164,15 +210,6 @@ public class BannerServiceImpl implements BannerService {
         return PublishPeriod.builder()
                 .startDate(startDate)
                 .endDate(endDate)
-                .build();
-    }
-
-    private BannerImage getBannerImage(String pcImage, String mobileImage) {
-        val pcImageUrl = s3Service.getUrl(valueConfig.getBannerBucket(), pcImage);
-        val mobileImageUrl = s3Service.getUrl(valueConfig.getBannerBucket(), mobileImage);
-        return BannerImage.builder()
-                .pcImageUrl(pcImageUrl)
-                .mobileImageUrl(mobileImageUrl)
                 .build();
     }
 

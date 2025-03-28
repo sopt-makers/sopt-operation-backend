@@ -52,7 +52,7 @@ public final class BannerResponse {
             @JsonProperty("image_url_mobile") String mobileImageUrl
     ) {
 
-        public static BannerDetail fromEntity(Banner banner) {
+        public static BannerDetail fromEntity(Banner banner, String pcSignedUrl, String mobileSignedUrl) {
             return BannerDetail.builder()
                     .bannerId(banner.getId())
                     .bannerStatus(banner.getPeriod().getPublishStatus(LocalDate.now()).getValue())
@@ -62,31 +62,22 @@ public final class BannerResponse {
                     .link(banner.getLink())
                     .startDate(banner.getPeriod().getStartDate())
                     .endDate(banner.getPeriod().getEndDate())
-                    .pcImageUrl(banner.getImage().getPcImageUrl())
-                    .mobileImageUrl(banner.getImage().getMobileImageUrl())
+                    .pcImageUrl(pcSignedUrl)
+                    .mobileImageUrl(mobileSignedUrl)
                     .build();
         }
 
 
     }
     public record BannerImageUrl(
-        @JsonProperty("url") String url
+            @JsonProperty("url") String url
     ){
 
         public static List<BannerImageUrl> fromEntity(List<String> urlList){
             return urlList.stream()
-                .map(BannerImageUrl::new)
-                .collect(Collectors.toUnmodifiableList());
+                    .map(BannerImageUrl::new)
+                    .collect(Collectors.toUnmodifiableList());
         }
     }
 
-    @Builder(access = PRIVATE)
-    public record ImagePreSignedUrl(
-            @JsonProperty("presigned-url") String preSignedUrl,
-            @JsonProperty("filename") String fileName
-    ) {
-        public static ImagePreSignedUrl of(String preSignedUrl, String filename) {
-            return new ImagePreSignedUrl(preSignedUrl, filename);
-        }
-    }
 }

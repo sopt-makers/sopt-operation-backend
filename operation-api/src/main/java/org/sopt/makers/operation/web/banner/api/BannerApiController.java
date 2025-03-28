@@ -44,14 +44,14 @@ public class BannerApiController implements BannerApi {
 
   @PostMapping
   @Override
-  public ResponseEntity<BaseResponse<?>> createBanner(@RequestBody BannerRequest.BannerCreateOrModify request) {
+  public ResponseEntity<BaseResponse<?>> createBanner(@ModelAttribute  BannerRequest.BannerCreateOrModify request) {
       val response = bannerService.createBanner(request);
       return ApiResponseUtil.success(SUCCESS_CREATE_BANNER, response);
   }
 
   @PutMapping("/{bannerId}")
   @Override
-  public ResponseEntity<BaseResponse<?>> updateBanner(@PathVariable("bannerId") Long bannerId, BannerRequest.BannerCreateOrModify request) {
+  public ResponseEntity<BaseResponse<?>> updateBanner(@PathVariable("bannerId") Long bannerId, @ModelAttribute  BannerRequest.BannerCreateOrModify request) {
       val response = bannerService.updateBanner(bannerId, request);
       return ApiResponseUtil.success(SUCCESS_UPDATE_BANNER, response);
   }
@@ -74,8 +74,7 @@ public class BannerApiController implements BannerApi {
   public ResponseEntity<BaseResponse<?>> deleteBanner(
       @PathVariable("bannerId") Long bannerId
   ) {
-    bannerService.deleteBanner(bannerId);
-    return ApiResponseUtil.success(SUCCESS_DELETE_BANNER);
+    return bannerService.deleteBanner(bannerId);
   }
 
   @Override
@@ -88,16 +87,5 @@ public class BannerApiController implements BannerApi {
         bannerService.getExternalBanners(imageType, location));
   }
 
-  @Override
-  @GetMapping("/img/pre-signed")
-  public ResponseEntity<BaseResponse<?>> getIssuedPreSignedUrlForPutImage(
-      @RequestParam("content_name") String contentName,
-      @RequestParam("image_type") String imageType,
-      @RequestParam("image_extension") String imageExtension,
-      @RequestParam("content_type") String contentType
-  ) {
-      val response = bannerService.getIssuedPreSignedUrlForPutImage(contentName, imageType,
-        imageExtension, contentType);
-    return ApiResponseUtil.success(SUCCESS_GET_BANNER_IMAGE_PRE_SIGNED_URL, response);
-  }
+
 }
