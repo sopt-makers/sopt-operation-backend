@@ -23,6 +23,8 @@ public enum BannerFailureCode implements FailureCode {
 
     INVALID_BANNER_PROGRESS_STATUS_PARAMETER(BAD_REQUEST, "올바르지 않은 배너 진행 상태 조건입니다."),
     INVALID_BANNER_SORT_CRITERIA_PARAMETER(BAD_REQUEST, "올바르지 않은 배너 정렬 조건입니다."),
+    CANNOT_MODIFY_DONE_BANNER(BAD_REQUEST, "게시 종료된 배너는 수정할 수 없습니다."),
+    CANNOT_DELETE_DONE_BANNER(BAD_REQUEST, "게시 종료된 배너는 삭제할 수 없습니다."),
     ;
 
     private final HttpStatus status;

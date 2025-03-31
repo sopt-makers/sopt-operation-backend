@@ -55,6 +55,12 @@ public class BannerServiceImpl implements BannerService {
     @Override
     public ResponseEntity<BaseResponse<?>> deleteBanner(final long bannerId) {
         val banner = getBannerById(bannerId);
+        val currentDate = LocalDate.now(clock);
+        val bannerStatus = banner.getPeriod().getPublishStatus(currentDate);
+
+        if (PublishStatus.DONE.equals(bannerStatus)) {
+            throw new BannerException(BannerFailureCode.CANNOT_DELETE_DONE_BANNER);
+        }
 
         if (banner.getPcImageKey() != null) {
             s3Service.deleteFile(valueConfig.getBannerBucket(), banner.getPcImageKey());
@@ -143,6 +149,13 @@ public class BannerServiceImpl implements BannerService {
     public BannerDetail updateBanner(Long bannerId, BannerRequest.BannerCreateOrModify request) {
         PublishPeriod period = getPublishPeriod(request.start_date(), request.end_date());
         Banner existingBanner = getBannerById(bannerId);
+        val currentDate = LocalDate.now(clock);
+        val bannerStatus = existingBanner.getPeriod().getPublishStatus(currentDate);
+
+        if (PublishStatus.DONE.equals(bannerStatus)) {
+            throw new BannerException(BannerFailureCode.CANNOT_MODIFY_DONE_BANNER);
+        }
+
 
         String oldPcImageKey = existingBanner.getPcImageKey();
         String oldMobileImageKey = existingBanner.getMobileImageKey();
