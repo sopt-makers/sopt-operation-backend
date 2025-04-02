@@ -30,6 +30,7 @@ spring:
       app: ${JWT_SECRET_KEY_APP}
       access: ${JWT_SECRET_KEY_ACCESS}
       refresh: ${JWT_SECRET_KEY_REFRESH}
+      platform_code: ${JWT_SECRET_PLATFORM_CODE}
   secretKey:
     playground: ${SECRET_KEY_PG}
 
@@ -47,8 +48,6 @@ sopt:
 
 admin:
   url:
-    prod_legacy: ${ADMIN_URL_PROD_LEGACY}
-    dev_legacy: ${ADMIN_URL_DEV_LEGACY}
     prod: ${ADMIN_URL_PROD}
     dev: ${ADMIN_URL_DEV}
     local: ${ADMIN_URL_LOCAL}
@@ -56,10 +55,23 @@ admin:
 notification:
   url: ${NOTIFICATION_URL}
   key: ${NOTIFICATION_KEY}
+  arn: ${NOTIFICATION_ARN}
 
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_CREDENTIALS_ACCESS_KEY}
+      secretKey: ${AWS_CREDENTIALS_SECRET_KEY}
+    eventBridge:
+      roleArn: ${AWS_CREDENTIALS_EVENTBRIDGE_ROLE_ARN}
+    s3:
+      banner:
+        name: ${BUCKET_FOR_BANNER}
+    region: ${AWS_REGION}
 
 management:
   endpoints:
