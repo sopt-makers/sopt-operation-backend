@@ -15,8 +15,6 @@ import static lombok.AccessLevel.PRIVATE;
 public enum ContentType {
     PRODUCT("product", "product/"),
     BIRTHDAY("birthday", "birthday/"),
-    SPONSOR("sponsor", "sponsor/"),
-    EVENT("event", "event/"),
     ETC("etc", "etc/"),
     ;
 

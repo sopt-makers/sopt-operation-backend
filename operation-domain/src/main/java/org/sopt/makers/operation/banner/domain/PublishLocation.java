@@ -16,7 +16,6 @@ public enum PublishLocation {
     PLAYGROUND_COMMUNITY("pg_community"),
     CREW_MAIN("cr_main"),
     CREW_FEED("cr_feed"),
-    OFFICIAL_PAGE("org"),
     ;
 
     private final String value;
