@@ -33,7 +33,7 @@ jobs:
           AWS_ECR_REPO: ${{ secrets.AWS_ECR_REPO_DEV }}
         run: |
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
-          docker build -t $AWS_ECR_REPO .
+          docker build -t $AWS_ECR_REPO --build-arg PROFILE=test .
           docker tag $AWS_ECR_REPO:latest public.ecr.aws/$AWS_ACCOUNT_ID/$AWS_ECR_REPO:latest
           docker push public.ecr.aws/$AWS_ACCOUNT_ID/$AWS_ECR_REPO:latest
 
