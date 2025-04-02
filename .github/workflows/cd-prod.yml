@@ -1,4 +1,4 @@
-name: cd-prod
+name: cd-dev
 
 on:
   workflow_dispatch:
@@ -6,14 +6,14 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-push-and-deploy:
+  build-and-push:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Checkout
+      - name: ✅ Checkout
         uses: actions/checkout@v3
 
-      - name: Set up JDK 17
+      - name: ⚙️ Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: 17
@@ -27,55 +27,56 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew
-        shell: bash
-
-      - name: Create Property
-        run: |
-          touch ./operation-api/src/main/resources/application-prod.yml
-          echo "${{ secrets.APPLICATION_PROD }}" >> ./operation-api/src/main/resources/application-prod.yml
-          
-          mkdir -p ./operation-api/src/main/resources/static
-          echo "${{ secrets.APPLE_KEY }}" | base64 --decode > ./operation-api/src/main/resources/static/${{ secrets.APPLE_KEY_NAME }}
-
       - name: 🧱 Build Image and Push to ECR
         env:
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
           AWS_ECR_REPO: ${{ secrets.AWS_ECR_REPO_PROD }}
         run: |
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
-          docker build -t $AWS_ECR_REPO .
+          docker build -t $AWS_ECR_REPO --build-arg PROFILE=prod .
           docker tag $AWS_ECR_REPO:latest public.ecr.aws/$AWS_ACCOUNT_ID/$AWS_ECR_REPO:latest
           docker push public.ecr.aws/$AWS_ACCOUNT_ID/$AWS_ECR_REPO:latest
 
-      - name: 📝 Copy Script File
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ✅ Checkout
+        uses: actions/checkout@v3
+
+      - name: 🔒 Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: 📝 Copy Files from S3
         env:
           REGION: ${{ secrets.AWS_REGION }}
           S3_BUCKET: ${{ secrets.AWS_BUCKET_NAME }}
         run: |
-          mkdir script
           aws s3 cp --region $REGION \
-            s3://$S3_BUCKET/prod/script/deploy.sh script/deploy.sh
-          aws s3 cp --region $REGION \
-            s3://$S3_BUCKET/prod/script/switch.sh script/switch.sh
-          aws s3 cp --region $REGION \
-            s3://$S3_BUCKET/prod/script/valid.sh script/valid.sh
+            s3://$S3_BUCKET/prod/prod.env ./application.env
 
-      - name: Make zip file
-        run: zip -r ./$GITHUB_SHA.zip ./script
-        shell: bash
+      - name: 🔄 Transfer Files to Server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST_PROD }}
+          username: ec2-user
+          key: ${{ secrets.PEM_KEY_PROD }}
+          port: 22
+          source: "application.env"
+          target: /home/ubuntu/operation/env
+          overwrite: true
 
-      - name: Upload Property Zip to S3 and Create Code Deploy
-        env:
-          REGION: ${{ secrets.AWS_REGION }}
-          DEPLOY_APPLICATION: ${{ secrets.AWS_DEPLOY_APPLICATION }}
-          DEPLOY_GROUP: ${{ secrets.AWS_DEPLOY_GROUP_PROD }}
-          S3_BUCKET: ${{ secrets.AWS_BUCKET_NAME }}
-        run: |
-          aws s3 cp --region $REGION ./$GITHUB_SHA.zip s3://$S3_BUCKET/prod/deploy/$GITHUB_SHA.zip
-          
-          aws deploy create-deployment --application-name $AWS_DEPLOY_APPLICATION_NAME
-          --deployment-config-name CodeDeployDefault.AllAtOnce
-          --deployment-group-name $DEPLOY_GROUP
-          --s3-location bucket=$S3_BUCKET,bundleType=zip,key=prod/deploy/$GITHUB_SHA.zip
+      - name: 🚀SSH command deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_PROD }}
+          username: ubuntu
+          key: ${{ secrets.PEM_KEY_PROD }}
+          port: 22
+          script: |
+            /home/ubuntu/operation/scripts/deploy.sh

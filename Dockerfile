@@ -20,6 +20,9 @@ WORKDIR /app-run
 # copy .jar to Run-Time Image
 COPY --from=builder /app-build/build/libs/operation.jar /app-run/operation.jar
 
+# 환경 변수로 프로파일을 설정할 수 있도록 함
+ENV PROFILE=${PROFILE}
+
 
 EXPOSE 8080
 ENTRYPOINT ["java"]
