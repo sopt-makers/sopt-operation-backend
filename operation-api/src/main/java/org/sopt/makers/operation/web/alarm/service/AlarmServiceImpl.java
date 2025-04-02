@@ -1,125 +1,132 @@
 package org.sopt.makers.operation.web.alarm.service;
 
-import static org.sopt.makers.operation.code.failure.AlarmFailureCode.*;
+import static org.sopt.makers.operation.code.failure.AlarmFailureCode.NOT_FOUND_ALARM;
+import static org.sopt.makers.operation.code.failure.AlarmFailureCode.INVALID_ALARM_TARGET_TYPE;
+import static org.sopt.makers.operation.constant.AlarmConstant.ALARM_RESPONSE_DATE_FORMAT;
+import static org.sopt.makers.operation.constant.AlarmConstant.ALARM_RESPONSE_TIME_FORMAT;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
+import lombok.RequiredArgsConstructor;
+import lombok.val;
 
-import org.sopt.makers.operation.client.alarm.AlarmSender;
-import org.sopt.makers.operation.client.alarm.dto.AlarmSenderRequest;
-import org.sopt.makers.operation.client.playground.PlayGroundServer;
-import org.sopt.makers.operation.config.ValueConfig;
-import org.sopt.makers.operation.common.domain.Part;
 import org.sopt.makers.operation.alarm.domain.Alarm;
-import org.sopt.makers.operation.alarm.domain.Status;
+import org.sopt.makers.operation.alarm.domain.AlarmStatus;
+import org.sopt.makers.operation.alarm.domain.AlarmTarget;
+import org.sopt.makers.operation.alarm.domain.AlarmTargetType;
 import org.sopt.makers.operation.alarm.repository.AlarmRepository;
+import org.sopt.makers.operation.client.alarm.dto.InstantAlarmRequest;
+import org.sopt.makers.operation.client.alarm.dto.ScheduleAlarmRequest;
 import org.sopt.makers.operation.member.domain.Member;
 import org.sopt.makers.operation.member.repository.MemberRepository;
-import org.sopt.makers.operation.web.alarm.dto.request.AlarmCreateRequest;
+
+import org.sopt.makers.operation.config.ValueConfig;
+import org.sopt.makers.operation.client.alarm.AlarmManager;
 import org.sopt.makers.operation.exception.AlarmException;
-import org.sopt.makers.operation.web.alarm.dto.request.AlarmSendRequest;
-import org.sopt.makers.operation.web.alarm.dto.response.AlarmCreateResponse;
+
+import org.sopt.makers.operation.web.alarm.dto.request.AlarmInstantSendRequest;
+import org.sopt.makers.operation.web.alarm.dto.request.AlarmScheduleSendRequest;
+import org.sopt.makers.operation.web.alarm.dto.request.AlarmScheduleStatusUpdateRequest;
 import org.sopt.makers.operation.web.alarm.dto.response.AlarmGetResponse;
+import org.sopt.makers.operation.web.alarm.dto.response.AlarmCreateResponse;
 import org.sopt.makers.operation.web.alarm.dto.response.AlarmListGetResponse;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import lombok.RequiredArgsConstructor;
-import lombok.val;
-
 @Service
 @RequiredArgsConstructor
 public class AlarmServiceImpl implements AlarmService {
+    private static final String DATETIME_FORMAT = String.join(" ", ALARM_RESPONSE_DATE_FORMAT, ALARM_RESPONSE_TIME_FORMAT);
 
-	private final AlarmRepository alarmRepository;
-	private final MemberRepository memberRepository;
+    private final AlarmRepository alarmRepository;
+    private final MemberRepository memberRepository;
+    private final AlarmManager alarmManager;
+    private final ValueConfig valueConfig;
 
-	private final AlarmSender alarmSender;
-	private final PlayGroundServer playGroundServer;
-	private final ValueConfig valueConfig;
+    @Override
+    @Transactional
+    public AlarmCreateResponse sendInstantAlarm(AlarmInstantSendRequest request) {
+        val alarm = request.toEntity();
+        val alarmTarget = alarm.getTarget();
 
-	@Override
-	@Transactional
-	public void sendAlarm(AlarmSendRequest request) {
-		val alarm = getAlarmReadyToSend(request.alarmId());
-		val targets = getTargets(alarm);
-		alarmSender.send(AlarmSenderRequest.of(alarm, targets));
-		alarm.updateToSent();
-	}
+        alarmTarget.setTargetIds(extractTargetIds(alarmTarget));
 
-	@Override
-	@Transactional
-	public AlarmCreateResponse saveAlarm(AlarmCreateRequest request) {
-		val savedAlarm = alarmRepository.save(request.toEntity());
-		return AlarmCreateResponse.of(savedAlarm);
-	}
+        val alarmRequest = InstantAlarmRequest.of(alarm);
 
-	@Override
-	public AlarmListGetResponse getAlarms(Integer generation, Part part, Status status, Pageable pageable) {
-		val alarms = alarmRepository.findOrderByCreatedDate(generation, part, status, pageable);
-		val totalCount = alarmRepository.count(generation, part, status);
-		return AlarmListGetResponse.of(alarms, totalCount);
-	}
+        alarmManager.sendInstant(alarmRequest);
+        alarm.updateStatusToComplete(LocalDateTime.now());
+        val savedAlarm = alarmRepository.save(alarm);
+        return AlarmCreateResponse.of(savedAlarm);
+    }
 
-	@Override
-	public AlarmGetResponse getAlarm(long alarmId) {
-		val alarm = findAlarm(alarmId);
-		return AlarmGetResponse.of(alarm);
-	}
+    @Override
+    @Transactional
+    public AlarmCreateResponse sendScheduleAlarm(AlarmScheduleSendRequest request) {
+        val alarm = request.toEntity();
+        val alarmTarget = alarm.getTarget();
+        alarmTarget.setTargetIds(extractTargetIds(alarmTarget));
+        val savedAlarm = alarmRepository.save(alarm);
 
-	@Override
-	@Transactional
-	public void deleteAlarm(long alarmId) {
-		val alarm = findAlarm(alarmId);
-		alarmRepository.delete(alarm);
-	}
+        val scheduleAlarmRequest = ScheduleAlarmRequest.of(savedAlarm);
+        alarmManager.sendSchedule(scheduleAlarmRequest);
 
-	private Alarm getAlarmReadyToSend(long alarmId) {
-		val alarm = findAlarm(alarmId);
-		if (alarm.isSent()) {
-			throw new AlarmException(SENT_ALARM);
-		}
-		return alarm;
-	}
+        return AlarmCreateResponse.of(savedAlarm);
+    }
 
-	private Alarm findAlarm(long id) {
-		return alarmRepository.findById(id)
-				.orElseThrow(() -> new AlarmException(INVALID_ALARM));
-	}
+    @Override
+    @Transactional(readOnly = true)
+    public AlarmGetResponse getAlarm(long alarmId) {
+        val alarm = findAlarm(alarmId);
+        return AlarmGetResponse.of(alarm);
+    }
 
-	private List<String> getTargets(Alarm alarm) {
-		return alarm.hasTargets()
-				? alarm.getTargetList()
-				: getTargetsByActivityAndPart(alarm.getIsActive(), alarm.getPart());
-	}
+    @Override
+    @Transactional(readOnly = true)
+    public AlarmListGetResponse getAlarms(Integer generation, AlarmStatus status, Pageable pageable) {
+        val alarms = alarmRepository.findOrderByCreatedDate(generation, status, pageable);
+        val totalCount = alarmRepository.count(generation, status);
+        return AlarmListGetResponse.of(alarms, totalCount);
+    }
 
-	private List<String> getTargetsByActivityAndPart(boolean isActive, Part part) {
-		return isActive ? getActiveTargets(part) : getInactiveTargets(part);
-	}
+    @Override
+    @Transactional
+    public void deleteAlarm(long alarmId) {
+        val alarm = findAlarm(alarmId);
+        alarmRepository.delete(alarm);
+    }
 
-	private List<String> getActiveTargets(Part part) {
-		val generation = valueConfig.getGENERATION();
-		val members = memberRepository.find(generation, part);
-		return members.stream()
-				.map(Member::getPlaygroundId)
-				.filter(Objects::nonNull)
-				.map(String::valueOf)
-				.toList();
-	}
+    @Override
+    @Transactional
+    public void updateScheduleAlarm(long alarmId, AlarmScheduleStatusUpdateRequest request) {
+        val alarm = findAlarm(alarmId);
+        val sendAtDateTime = LocalDateTime.parse(request.sendAt(), DateTimeFormatter.ofPattern(DATETIME_FORMAT));
+        alarm.updateStatusToComplete(sendAtDateTime);
+    }
 
-	private List<String> getInactiveTargets(Part part) {
-		val generation = valueConfig.getGENERATION();
-		val activePlaygroundIds = getActiveTargets(part);
-		return getPlaygroundIds(generation, part).stream()
-				.filter(id -> !activePlaygroundIds.contains(id))
-				.toList();
-	}
+    private Alarm findAlarm(long id) {
+        return alarmRepository.findById(id)
+                .orElseThrow(() -> new AlarmException(NOT_FOUND_ALARM));
+    }
 
-	private List<String> getPlaygroundIds(int generation, Part part) {
-		val members = playGroundServer.getMembers(generation, part);
-		return members.memberIds().stream()
-				.map(String::valueOf)
-				.toList();
-	}
+    private List<String> extractTargetIds(AlarmTarget target) {
+        val targetType = target.getTargetType();
+        if (targetType.equals(AlarmTargetType.CSV)) {
+            return target.getTargetIds();
+        }
+
+        val members = switch (targetType) {
+            case ALL -> memberRepository.findAll();
+            case ACTIVE -> memberRepository.find(valueConfig.getGENERATION(), target.getTargetPart().toPartDomain());
+            default -> throw new AlarmException(INVALID_ALARM_TARGET_TYPE);
+        };
+        return members.stream()
+                .map(Member::getPlaygroundId)
+                .filter(Objects::nonNull)
+                .map(String::valueOf)
+                .toList();
+    }
 }

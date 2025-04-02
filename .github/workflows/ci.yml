@@ -23,14 +23,6 @@ jobs:
         run: chmod +x ./gradlew
         shell: bash
 
-      - name: Create application.yml
-        run: |
-          pwd
-          cd ./operation-api/src/main/resources
-          touch ./application-dev.yml
-          echo "${{ secrets.APPLICATION_DEV }}" >> ./application-dev.yml
-          cat ./application-dev.yml
-
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: 🧱 Build with Gradle
+        run: docker build -t app-ci .
         shell: bash

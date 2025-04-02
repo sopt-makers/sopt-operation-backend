@@ -37,7 +37,10 @@ out/
 ### VS Code ###
 .vscode/
 
-### config yml ###
-application-**.yml
+*.env
 
 */src/main/generated
+scripts
+
+.DS_Store
+**/.DS_Store

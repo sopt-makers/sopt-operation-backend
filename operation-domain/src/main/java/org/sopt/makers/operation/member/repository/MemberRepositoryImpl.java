@@ -1,12 +1,12 @@
 package org.sopt.makers.operation.member.repository;
 
 import static java.util.Objects.*;
-import static org.sopt.makers.operation.common.domain.Part.*;
+import static org.sopt.makers.operation.member.domain.Part.*;
 import static org.sopt.makers.operation.member.domain.QMember.*;
 
 import java.util.List;
 
-import org.sopt.makers.operation.common.domain.Part;
+import org.sopt.makers.operation.member.domain.Part;
 import org.sopt.makers.operation.member.domain.Member;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;

@@ -48,6 +48,13 @@ public class Attendance {
 	@OneToMany(mappedBy = "attendance")
 	private final List<SubAttendance> subAttendances = new ArrayList<>();
 
+    protected Attendance(Long id, Member member, Lecture lecture, AttendanceStatus status) {
+        this.id = id;
+        setMember(member);
+        setLecture(lecture);
+        this.status = status;
+    }
+
 	public Attendance(Member member, Lecture lecture) {
 		setMember(member);
 		setLecture(lecture);
@@ -79,13 +86,12 @@ public class Attendance {
 		val second = getSubAttendanceByRound(2);
 
 		return switch (this.lecture.getAttribute()) {
-			case SEMINAR -> {
+			case SEMINAR, EVENT -> {
 				if (first.getStatus().equals(ATTENDANCE) && second.getStatus().equals(ATTENDANCE)) {
 					yield ATTENDANCE;
 				}
 				yield first.getStatus().equals(ABSENT) && second.getStatus().equals(ABSENT) ? ABSENT : TARDY;
 			}
-			case EVENT -> second.getStatus().equals(ATTENDANCE) ? ATTENDANCE : ABSENT;
 			case ETC -> second.getStatus().equals(ATTENDANCE) ? PARTICIPATE : NOT_PARTICIPATE;
 		};
 	}
@@ -103,7 +109,7 @@ public class Attendance {
 					yield 0f;
 				}
 			}
-			case EVENT -> this.status.equals(ATTENDANCE) ? 0.5f : 0f;
+			case EVENT -> this.status.equals(ABSENT) ? 0f : 0.5f;
 			default -> 0f;
 		};
 	}

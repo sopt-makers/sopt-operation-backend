@@ -4,8 +4,34 @@ jar {
 
 bootJar {
     enabled = true
+//    mainClassName = 'org.sopt.makers.operation.OperationApplication'
 }
 
+String jarName = "operation.jar"
+tasks.named("bootJar") {
+    bootJar.getArchiveFileName().set(jarName)
+
+    bootJar.doLast(task -> {
+        copy(copySpec -> {
+            copySpec.from("build/libs/" + jarName)
+            copySpec.into("../build/libs")
+        })
+    })
+}
+
+def profile = project.findProperty("profile") ?: "test"
+println("Build Profile: $profile")
+
+tasks.register("processProfileYaml", Copy) {
+    from("src/main/resources/application-${profile}.yaml")
+    into("build/resources/main") // 빌드 시 사용할 리소스 경로
+    rename { "application.yaml" } // 모든 프로파일 파일을 application.yaml로 변경
+}
+
+// processResources 작업 후에 실행되도록 의존성 추가
+tasks.named("processResources") {
+    dependsOn("processProfileYaml")
+}
 dependencies {
     // module
     implementation project(path: ':operation-auth')
@@ -17,8 +43,15 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
     // swagger
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
 
+    // jwt builder library
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+    runtimeOnly "io.jsonwebtoken:jjwt-impl:0.11.2"
+    runtimeOnly "io.jsonwebtoken:jjwt-jackson:0.11.2"
+
+    testImplementation 'com.h2database:h2'
 }

@@ -1,0 +1,80 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+    import: optional:file:.env[.properties]
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+  datasource:
+    driver-class-name: ${DB_DRIVER_CLASS_NAME}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+      globally_quoted_identifiers: true
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database: postgresql
+
+  jwt:
+    secretKey:
+      app: ${JWT_SECRET_KEY_APP}
+      access: ${JWT_SECRET_KEY_ACCESS}
+      refresh: ${JWT_SECRET_KEY_REFRESH}
+      platform_code: ${JWT_SECRET_PLATFORM_CODE}
+  secretKey:
+    playground: ${SECRET_KEY_PG}
+
+sopt:
+  current:
+    generation: ${SOPT_CURRENT_GENERATION}
+  makers:
+    playground:
+      server: ${SOPT_MAKER_PG_URL}
+      token: ${SOPT_MAKER_PG_TOKEN}
+  alarm:
+    message:
+      title_end: ${SOPT_ALARM_MESSAGE_TITLE} # (세션명) 출석점수 반영
+      content_end: ${SOPT_ALARM_MESSAGE_CONTENT}
+
+admin:
+  url:
+    prod: ${ADMIN_URL_PROD}
+    dev: ${ADMIN_URL_DEV}
+    local: ${ADMIN_URL_LOCAL}
+
+notification:
+  url: ${NOTIFICATION_URL}
+  key: ${NOTIFICATION_KEY}
+  arn: ${NOTIFICATION_ARN}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_CREDENTIALS_ACCESS_KEY}
+      secretKey: ${AWS_CREDENTIALS_SECRET_KEY}
+    eventBridge:
+      roleArn: ${AWS_CREDENTIALS_EVENTBRIDGE_ROLE_ARN}
+    s3:
+      banner:
+        name: ${BUCKET_FOR_BANNER}
+    region: ${AWS_REGION}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

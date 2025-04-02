@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.sopt.makers.operation.attendance.domain.Attendance;
-import org.sopt.makers.operation.common.domain.Part;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -44,6 +43,19 @@ public class Member {
 
 	@OneToMany(mappedBy = "member")
 	List<Attendance> attendances = new ArrayList<>();
+
+	protected Member(Long id, Long playgroundId, String name, int generation, ObYb obyb, Part part, String university, float score, String phone, List<Attendance> attendances) {
+		this.id = id;
+		this.playgroundId = playgroundId;
+		this.name = name;
+		this.generation = generation;
+		this.obyb = obyb;
+		this.part = part;
+		this.university = university;
+		this.score = score;
+		this.phone = phone;
+		this.attendances = attendances;
+	}
 
 	public void updateScore(float score) {
 		this.score += score;

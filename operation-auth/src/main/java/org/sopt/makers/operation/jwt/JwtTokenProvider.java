@@ -1,7 +1,5 @@
 package org.sopt.makers.operation.jwt;
 
-import static org.sopt.makers.operation.code.failure.TokenFailureCode.*;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -9,6 +7,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.sopt.makers.operation.authentication.AdminAuthentication;
 import org.sopt.makers.operation.exception.TokenException;
@@ -19,7 +18,6 @@ import org.springframework.util.StringUtils;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
-
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -28,18 +26,43 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@RequiredArgsConstructor
+import static org.sopt.makers.operation.code.failure.TokenFailureCode.INVALID_TOKEN;
+
 @Service
+@Slf4j
 public class JwtTokenProvider {
 
-    @Value("${spring.jwt.secretKey.access}")
-    private String accessSecretKey;
+    private final String accessSecretKey;
+    private final String refreshSecretKey;
+    private final String appAccessSecretKey;
+    private final String platformCodeSecretKey;
 
-    @Value("${spring.jwt.secretKey.refresh}")
-    private String refreshSecretKey;
+    public JwtTokenProvider(
+            @Value("${spring.jwt.secretKey.access}") String accessSecretKey,
+            @Value("${spring.jwt.secretKey.refresh}") String refreshSecretKey,
+            @Value("${spring.jwt.secretKey.app}") String appAccessSecretKey,
+            @Value("${spring.jwt.secretKey.platform_code}") String platformCodeSecretKey
+    ) {
+        this.accessSecretKey = accessSecretKey;
+        this.refreshSecretKey = refreshSecretKey;
+        this.appAccessSecretKey = appAccessSecretKey;
+        this.platformCodeSecretKey = platformCodeSecretKey;
+    }
 
-    @Value("${spring.jwt.secretKey.app}")
-    private String appAccessSecretKey;
+    public String generatePlatformCode(final String clientId, final String redirectUri, final Long userId) {
+        val encodeKey = encodeKey(platformCodeSecretKey);
+        val secretKeyBytes = DatatypeConverter.parseBase64Binary(encodeKey);
+        val signingKey = new SecretKeySpec(secretKeyBytes, SignatureAlgorithm.HS256.getJcaName());
+
+        return Jwts.builder()
+                .setHeader(createHeader())
+                .setIssuer(clientId)
+                .setAudience(redirectUri)
+                .setSubject(Long.toString(userId))
+                .setExpiration(createExpireDate(JwtTokenType.PLATFORM_CODE))
+                .signWith(signingKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
 
     public String generateAccessToken(final Authentication authentication) {
         val encodedKey = encodeKey(accessSecretKey);
@@ -70,7 +93,24 @@ public class JwtTokenProvider {
     public boolean validateTokenExpiration(String token, JwtTokenType jwtTokenType) {
         try {
             getClaimsFromToken(token, jwtTokenType);
+            log.debug("Token validation successful for type: {}", jwtTokenType);
             return true;
+        } catch (ExpiredJwtException e) {
+            log.error("Token expired: {}", e.getMessage());
+            return false;
+        } catch (SignatureException e) {
+            log.error("Invalid token signature: {}", e.getMessage());
+            return false;
+        } catch (Exception e) {
+            log.error("Token validation error: {}", e.getMessage(), e);
+            return false;
+        }
+    }
+
+    public boolean validatePlatformCode(String platformCode, String clientId, String redirectUri) {
+        try {
+            val claims = getClaimsFromToken(platformCode, JwtTokenType.PLATFORM_CODE);
+            return isClaimsMatchingRequest(claims, clientId, redirectUri);
         } catch (ExpiredJwtException | SignatureException e) {
             return false;
         }
@@ -78,7 +118,8 @@ public class JwtTokenProvider {
 
     public AdminAuthentication getAuthentication(String token, JwtTokenType jwtTokenType) {
         return switch (jwtTokenType) {
-            case ACCESS_TOKEN, REFRESH_TOKEN -> new AdminAuthentication(getId(token, jwtTokenType), null, null);
+            case ACCESS_TOKEN, REFRESH_TOKEN, PLATFORM_CODE ->
+                    new AdminAuthentication(getId(token, jwtTokenType), null, null);
             case APP_ACCESS_TOKEN -> new AdminAuthentication(getPlayGroundId(token, jwtTokenType), null, null);
         };
     }
@@ -103,19 +144,46 @@ public class JwtTokenProvider {
         }
     }
 
-    private Claims getClaimsFromToken(String token, JwtTokenType jwtTokenType) {
-        val encodedKey = encodeKey(setSecretKey(jwtTokenType));
+    private boolean isClaimsMatchingRequest(Claims claims, String clientId, String redirectUri) {
+        return claims.getAudience().equals(redirectUri)
+                && claims.getIssuer().equals(clientId);
+    }
 
-        return Jwts.parserBuilder()
-                .setSigningKey(encodedKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+    private Claims getClaimsFromToken(String token, JwtTokenType jwtTokenType) {
+        log.info("Parsing claims from token for type: {}", jwtTokenType);
+
+        try {
+            String secretKey = setSecretKey(jwtTokenType);
+            log.debug("Using secret key for token type {}", jwtTokenType);
+
+            val encodedKey = encodeKey(secretKey);
+
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(encodedKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            log.debug("Claims parsed successfully");
+            return claims;
+        } catch (Exception e) {
+            log.error("Error parsing claims from token: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     public String resolveToken(HttpServletRequest request) {
         val headerAuth = request.getHeader("Authorization");
-        return (StringUtils.hasText(headerAuth)) ? headerAuth : null;
+
+        if (StringUtils.hasText(headerAuth)) {
+            // Bearer 접두사가 있으면 제거
+            if (headerAuth.startsWith("Bearer ")) {
+                return headerAuth.substring(7);  // "Bearer " 이후의 문자열만 반환
+            }
+            return headerAuth;  // 접두사가 없으면 그대로 반환
+        }
+
+        return null;
     }
 
     private String encodeKey(String secretKey) {
@@ -131,6 +199,7 @@ public class JwtTokenProvider {
             case ACCESS_TOKEN -> accessSecretKey;
             case REFRESH_TOKEN -> refreshSecretKey;
             case APP_ACCESS_TOKEN -> appAccessSecretKey;
+            case PLATFORM_CODE -> platformCodeSecretKey;
         };
     }
 
@@ -139,6 +208,7 @@ public class JwtTokenProvider {
             case ACCESS_TOKEN -> now.plusHours(5);
             case REFRESH_TOKEN -> now.plusWeeks(2);
             case APP_ACCESS_TOKEN -> throw new TokenException(INVALID_TOKEN);
+            case PLATFORM_CODE -> now.plusMinutes(5);
         };
     }
 

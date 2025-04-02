@@ -20,9 +20,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
     // db
-    runtimeOnly 'com.h2database:h2'
     runtimeOnly 'org.postgresql:postgresql'
 
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.14.0-rc1'
+
+    // test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'com.h2database:h2'
 }

@@ -1,7 +1,7 @@
 package org.sopt.makers.operation.client.alarm;
 
-import org.sopt.makers.operation.client.alarm.dto.AlarmSenderRequest;
+import org.sopt.makers.operation.client.alarm.dto.AlarmRequest;
 
-public interface AlarmSender {
-	void send(AlarmSenderRequest request);
+interface AlarmSender {
+    void sendAlarm(AlarmRequest alarmRequest);
 }
