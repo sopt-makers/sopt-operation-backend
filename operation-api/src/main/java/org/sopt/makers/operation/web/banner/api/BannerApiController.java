@@ -59,7 +59,7 @@ public class BannerApiController implements BannerApi {
   @Override
   @GetMapping
   public ResponseEntity<BaseResponse<?>> getBanners(
-          @RequestParam(value = "filter", required = false, defaultValue = "all") String filterCriteriaParameter,
+          @RequestParam(value = "status", required = false, defaultValue = "all") String filterCriteriaParameter,
           @RequestParam(value = "sort", required = false, defaultValue = "status") String sortCriteriaParameter
   ) {
     val progressStatus = FilterCriteria.fromParameter(filterCriteriaParameter);
