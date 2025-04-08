@@ -209,7 +209,7 @@ public class BannerServiceImpl implements BannerService {
     private List<Banner> getSortedBanners(List<Banner> banners, SortCriteria criteria) {
         return switch (criteria) {
             case STATUS, START_DATE -> banners.stream().sorted(
-                    Comparator.comparing(Banner::getPeriod, (p1, p2) -> p2.getStartDate().compareTo(p1.getStartDate()))
+                    Comparator.comparing(Banner::getPeriod, Comparator.comparing(PublishPeriod::getStartDate))
                             .thenComparing(Banner::getPeriod, Comparator.comparing(PublishPeriod::getEndDate))
             ).toList();
             case END_DATE -> banners.stream().sorted(
