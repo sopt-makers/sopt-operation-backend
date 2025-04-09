@@ -53,7 +53,11 @@ public interface BannerApi {
                     )
             }
     )
-    ResponseEntity<BaseResponse<?>> getBanners(String status, String sort);
+    ResponseEntity<BaseResponse<?>> getBanners(
+            String filter,
+            String sort,
+            Integer page,
+            Integer limit);
 
     @Operation(
             summary = "배너 삭제 API",
@@ -148,4 +152,6 @@ public interface BannerApi {
             )
     )
     ResponseEntity<BaseResponse<?>> updateBanner(Long bannerId, BannerRequest.BannerCreateOrModify request);
+
+
 }
