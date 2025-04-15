@@ -54,7 +54,7 @@ public interface BannerApi {
             }
     )
     ResponseEntity<BaseResponse<?>> getBanners(
-            String filter,
+            String status,
             String sort,
             Integer page,
             Integer limit);

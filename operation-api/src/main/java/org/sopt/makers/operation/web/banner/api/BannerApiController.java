@@ -59,7 +59,7 @@ public class BannerApiController implements BannerApi {
   @Override
   @GetMapping
   public ResponseEntity<BaseResponse<?>> getBanners(
-          @RequestParam(value = "filter", required = false, defaultValue = "all") String filterCriteriaParameter,
+          @RequestParam(value = "status", required = false, defaultValue = "all") String filterCriteriaParameter,
           @RequestParam(value = "sort", required = false, defaultValue = "status") String sortCriteriaParameter,
           @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
           @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit
