@@ -25,6 +25,7 @@ import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.exception.BannerException;
 import org.sopt.makers.operation.util.ApiResponseUtil;
 import org.sopt.makers.operation.web.banner.dto.request.*;
+import org.sopt.makers.operation.web.banner.dto.response.BannerPaginationResponse;
 import org.sopt.makers.operation.web.banner.dto.response.BannerResponse;
 import org.sopt.makers.operation.web.banner.dto.response.BannerResponse.*;
 import org.springframework.http.ResponseEntity;
@@ -187,13 +188,35 @@ public class BannerServiceImpl implements BannerService {
     }
 
     @Override
-    public List<BannerSimple> getBanners(FilterCriteria filter, SortCriteria sort) {
+    public BannerPaginationResponse<BannerSimple> getBannersWithPagination(
+            FilterCriteria filter,
+            SortCriteria sort,
+            int page,
+            int limit) {
         val allBanners = bannerRepository.findAll();
+
         val filteredBanners = getFilteredBanners(allBanners, filter);
-        val resultBanners = getSortedBanners(filteredBanners, sort);
-        return resultBanners.stream()
+        val sortedBanners = getSortedBanners(filteredBanners, sort);
+
+        val totalCount = sortedBanners.size();
+        val startIndex = (page - 1) * limit;
+        val endIndex = Math.min(startIndex + limit, totalCount);
+
+        if (startIndex > totalCount) {
+            return new BannerPaginationResponse<>(List.of(), totalCount, limit, page);
+        }
+
+        val paginatedBanners = sortedBanners.subList(startIndex, endIndex)
+                .stream()
                 .map(BannerSimple::fromEntity)
                 .toList();
+
+        return new BannerPaginationResponse<>(
+                paginatedBanners,
+                totalCount,
+                limit,
+                page
+        );
     }
 
     private List<Banner> getFilteredBanners(List<Banner> banners, FilterCriteria filter) {
@@ -209,7 +232,7 @@ public class BannerServiceImpl implements BannerService {
     private List<Banner> getSortedBanners(List<Banner> banners, SortCriteria criteria) {
         return switch (criteria) {
             case STATUS, START_DATE -> banners.stream().sorted(
-                    Comparator.comparing(Banner::getPeriod, (p1, p2) -> p2.getStartDate().compareTo(p1.getStartDate()))
+                    Comparator.comparing(Banner::getPeriod, Comparator.comparing(PublishPeriod::getStartDate))
                             .thenComparing(Banner::getPeriod, Comparator.comparing(PublishPeriod::getEndDate))
             ).toList();
             case END_DATE -> banners.stream().sorted(

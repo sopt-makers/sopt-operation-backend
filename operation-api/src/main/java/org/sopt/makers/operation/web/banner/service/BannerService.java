@@ -8,8 +8,10 @@ import java.util.List;
 
 import org.sopt.makers.operation.code.failure.BannerFailureCode;
 import org.sopt.makers.operation.exception.BannerException;
+import org.sopt.makers.operation.web.banner.dto.response.BannerPaginationResponse;
 import org.sopt.makers.operation.web.banner.dto.response.BannerResponse;
 import org.sopt.makers.operation.web.banner.dto.response.BannerResponse.BannerImageUrl;
+import org.sopt.makers.operation.web.banner.dto.response.BannerResponse.BannerSimple;
 import org.springframework.http.ResponseEntity;
 
 public interface BannerService {
@@ -25,8 +27,11 @@ public interface BannerService {
 
     BannerResponse.BannerDetail updateBanner(Long bannerId, BannerRequest.BannerCreateOrModify request);
 
-    List<BannerResponse.BannerSimple> getBanners(final FilterCriteria status, final SortCriteria sort);
-
+    BannerPaginationResponse<BannerSimple> getBannersWithPagination(
+            FilterCriteria filter,
+            SortCriteria sort,
+            int page,
+            int limit);
     enum FilterCriteria {
         ALL("all"),
         RESERVED("reserved"),
