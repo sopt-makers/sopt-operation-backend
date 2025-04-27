@@ -179,8 +179,11 @@ public class WebLectureServiceImpl implements WebLectureService {
     }
 
     private void sendAlarm(Lecture lecture) {
-        val alarmMessageTitle = String.join(WHITE_SPACE, lecture.getName(), valueConfig.getALARM_MESSAGE_TITLE());
-        val alarmMessageContent = valueConfig.getALARM_MESSAGE_CONTENT();
+        final String HARDCODED_TITLE = "출석점수 반영";
+        final String HARDCODED_CONTENT = "출석점수가 새롭게 반영되었어요! 내 점수를 확인해 볼까요?";
+
+        val alarmMessageTitle = String.join(WHITE_SPACE, lecture.getName(), HARDCODED_TITLE);
+        val alarmMessageContent = HARDCODED_CONTENT;
         val targets = lecture.getAttendances().stream()
                 .map(attendance -> String.valueOf(attendance.getMember().getPlaygroundId()))
                 .filter(id -> !id.equals(NULL))
