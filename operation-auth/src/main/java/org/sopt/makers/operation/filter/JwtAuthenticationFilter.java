@@ -31,7 +31,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         val uri = request.getRequestURI();
         log.info("Request URI: {}", uri);  // URI 로깅
-        if ((uri.startsWith("/api/v1")) && !uri.contains("auth") && !uri.contains("test") && !isAlarmUpdateRequest(request)) {
+        if ((uri.startsWith("/api/v1")) && !isExcludedFromJwtAuth(uri)
+                && !uri.contains("test") && !isAlarmUpdateRequest(request)) {
             val token = jwtTokenProvider.resolveToken(request);
             log.info("Authorization header: {}", token);  // 토큰 로깅
 
@@ -63,6 +64,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.error("Error occurred during filter chain processing: {}", e.getMessage(), e);
             throw e;
         }
+    }
+
+    private boolean isExcludedFromJwtAuth(String uri) {
+        return uri.contains("/auth") && !uri.equals("/api/v1/auth/password");
     }
 
     private void checkJwtAvailable(String token, JwtTokenType jwtTokenType) {
