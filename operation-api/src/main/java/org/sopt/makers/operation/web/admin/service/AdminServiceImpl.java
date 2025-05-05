@@ -8,6 +8,7 @@ import org.sopt.makers.operation.authentication.AdminAuthentication;
 import org.sopt.makers.operation.exception.AdminFailureException;
 import org.sopt.makers.operation.jwt.JwtTokenProvider;
 import org.sopt.makers.operation.jwt.JwtTokenType;
+import org.sopt.makers.operation.web.admin.dto.request.PasswordChangeRequest;
 import org.sopt.makers.operation.web.admin.dto.request.SignUpRequest;
 import org.sopt.makers.operation.web.admin.dto.response.SignUpResponse;
 import org.sopt.makers.operation.web.admin.dto.request.LoginRequest;
@@ -106,4 +107,17 @@ public class AdminServiceImpl implements AdminService {
 		return adminRepository.findById(adminId)
 				.orElseThrow(() -> new AdminFailureException(INVALID_MEMBER));
 	}
+
+
+
+	@Override
+	@Transactional
+	public void changePassword(Long adminId, PasswordChangeRequest request) {
+		val admin = findById(adminId);
+		checkPasswordMatched(request.oldPassword(), admin);
+		val encodedNewPassword = passwordEncoder.encode(request.newPassword());
+		admin.setPassword(encodedNewPassword);
+	}
+
+
 }

@@ -2,18 +2,19 @@ package org.sopt.makers.operation.web.admin.api;
 
 import static org.sopt.makers.operation.code.success.web.AdminSuccessCode.*;
 
+import org.sopt.makers.operation.authentication.AdminAuthentication;
 import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.util.ApiResponseUtil;
 import org.sopt.makers.operation.common.util.Cookie;
 import org.sopt.makers.operation.web.admin.dto.request.LoginRequest;
+import org.sopt.makers.operation.web.admin.dto.request.PasswordChangeRequest;
 import org.sopt.makers.operation.web.admin.dto.request.SignUpRequest;
 import org.sopt.makers.operation.web.admin.service.AdminService;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
@@ -48,4 +49,20 @@ public class AdminApiController implements AdminApi {
 		val response = authService.refresh(refreshToken);
 		return ApiResponseUtil.success(SUCCESS_GET_REFRESH_TOKEN, response);
 	}
+
+	@PatchMapping("/password")
+	@Override
+	public ResponseEntity<BaseResponse<?>> changePassword(
+			@RequestBody PasswordChangeRequest request
+	) {
+		val authentication = SecurityContextHolder.getContext().getAuthentication();
+		Long adminId = Long.parseLong(authentication.getPrincipal().toString());
+
+		authService.changePassword(adminId, request);
+		return ApiResponseUtil.success(SUCCESS_CHANGE_PASSWORD);
+	}
+
+
+
+
 }
