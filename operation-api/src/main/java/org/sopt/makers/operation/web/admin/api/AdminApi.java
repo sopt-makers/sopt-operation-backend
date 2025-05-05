@@ -2,6 +2,7 @@ package org.sopt.makers.operation.web.admin.api;
 
 import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.web.admin.dto.request.LoginRequest;
+import org.sopt.makers.operation.web.admin.dto.request.PasswordChangeRequest;
 import org.sopt.makers.operation.web.admin.dto.request.SignUpRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -72,4 +73,34 @@ public interface AdminApi {
 			}
 	)
 	ResponseEntity<BaseResponse<?>> refresh(@CookieValue String refreshToken);
+
+
+
+
+	@Operation(
+			security = @SecurityRequirement(name = "Authorization"),
+			summary = "비밀번호 변경 API",
+			responses = {
+					@ApiResponse(
+							responseCode = "200",
+							description = "비밀번호 변경 성공"
+					),
+					@ApiResponse(
+							responseCode = "400",
+							description = "잘못된 요청"
+					),
+					@ApiResponse(
+							responseCode = "401",
+							description = "인증 실패"
+					),
+					@ApiResponse(
+							responseCode = "500",
+							description = "서버 내부 오류"
+					)
+			}
+	)
+	ResponseEntity<BaseResponse<?>> changePassword(@RequestBody PasswordChangeRequest request);
+
+
+
 }
