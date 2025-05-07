@@ -62,9 +62,9 @@ class InstantAlarmSender implements AlarmSender{
     }
 
     private static void putOptionalAttributes(InstantAlarmRequest instantRequest, HashMap<Object, Object> body) {
-        val isTargetAll = instantRequest.targetType().equals(AlarmTargetType.ALL);
-        val isWebLink = instantRequest.linkType().equals(AlarmLinkType.WEB);
-        val isAppLink = instantRequest.linkType().equals(AlarmLinkType.APP);
+        val isTargetAll = Objects.equals(instantRequest.targetType(), AlarmTargetType.ALL);
+        val isWebLink = Objects.equals(instantRequest.linkType(), AlarmLinkType.WEB);
+        val isAppLink = Objects.equals(instantRequest.linkType(), AlarmLinkType.APP);
 
         if (!isTargetAll) {
             body.put("userIds", instantRequest.targets());
@@ -79,7 +79,9 @@ class InstantAlarmSender implements AlarmSender{
     private HttpHeaders generateHeader(InstantAlarmRequest instantRequest) {
         val headers = new HttpHeaders();
         val apiKey = valueConfig.getNOTIFICATION_KEY();
-        val actionValue = instantRequest.targetType().getAction().getValue();
+        val actionValue = instantRequest.targetType() != null && instantRequest.targetType().getAction() != null
+                ? instantRequest.targetType().getAction().getValue()
+                : AlarmSendAction.SEND.getValue();
 
         headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
         headers.setAccept(Collections.singletonList(APPLICATION_JSON));
