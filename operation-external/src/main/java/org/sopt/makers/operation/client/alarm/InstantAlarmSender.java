@@ -3,6 +3,7 @@ package org.sopt.makers.operation.client.alarm;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.sopt.makers.operation.alarm.domain.AlarmLinkType;
+import org.sopt.makers.operation.alarm.domain.AlarmSendAction;
 import org.sopt.makers.operation.alarm.domain.AlarmTargetType;
 import org.sopt.makers.operation.client.alarm.dto.AlarmRequest;
 import org.sopt.makers.operation.client.alarm.dto.InstantAlarmRequest;
@@ -10,14 +11,17 @@ import org.sopt.makers.operation.config.ValueConfig;
 import org.sopt.makers.operation.exception.AlarmException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static java.util.UUID.randomUUID;
 import static org.sopt.makers.operation.code.failure.AlarmFailureCode.FAIL_SEND_ALARM;
@@ -77,7 +81,7 @@ class InstantAlarmSender implements AlarmSender{
         val apiKey = valueConfig.getNOTIFICATION_KEY();
         val actionValue = instantRequest.targetType().getAction().getValue();
 
-        headers.setContentType(APPLICATION_JSON);
+        headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
         headers.setAccept(Collections.singletonList(APPLICATION_JSON));
 
         headers.add("action", actionValue);
