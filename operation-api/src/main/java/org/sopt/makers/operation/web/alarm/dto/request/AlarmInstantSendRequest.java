@@ -27,9 +27,9 @@ public record AlarmInstantSendRequest(
         return switch (this.targetType) {
             case ALL -> this.part.equals(AlarmTargetPart.ALL)
                             ? AlarmTarget.all()
-                            : AlarmTarget.partialForAll(this.part, this.targetList);
+                            : AlarmTarget.partialForAll(this.createdGeneration, this.part, this.targetList);
             case ACTIVE -> AlarmTarget.partialForActive(this.createdGeneration, this.part, this.targetList);
-            case CSV -> AlarmTarget.partialForCsv(this.targetList);
+            case CSV -> AlarmTarget.partialForCsv(this.createdGeneration, this.targetList);
         };
     }
 
