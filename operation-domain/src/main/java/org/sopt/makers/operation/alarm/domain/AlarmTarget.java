@@ -50,8 +50,9 @@ public class AlarmTarget {
                 .build();
     }
 
-    public static AlarmTarget partialForAll(AlarmTargetPart targetPart, List<String> targetIds) {
+    public static AlarmTarget partialForAll(int generation, AlarmTargetPart targetPart, List<String> targetIds) {
         return AlarmTarget.builder()
+                .generation(generation)
                 .sendAction(AlarmSendAction.SEND)
                 .targetType(AlarmTargetType.ALL)
                 .targetPart(targetPart)
@@ -70,8 +71,9 @@ public class AlarmTarget {
     }
 
 
-    public static AlarmTarget partialForCsv(List<String> targetIds) {
+    public static AlarmTarget partialForCsv(int generation, List<String> targetIds) {
         return AlarmTarget.builder()
+                .generation(generation)
                 .sendAction(AlarmSendAction.SEND)
                 .targetType(AlarmTargetType.CSV)
                 .targetPart(AlarmTargetPart.UNDEFINED)
