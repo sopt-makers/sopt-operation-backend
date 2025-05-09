@@ -26,4 +26,4 @@ ENV PROFILE=${PROFILE}
 
 EXPOSE 8080
 ENTRYPOINT ["java"]
-CMD ["-jar", "operation.jar"]
+CMD ["-Dfile.encoding=UTF-8", "-jar", "operation.jar"]
