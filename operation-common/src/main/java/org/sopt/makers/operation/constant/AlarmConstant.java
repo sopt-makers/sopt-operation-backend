@@ -16,7 +16,9 @@ public final class AlarmConstant {
             "home/attendance/attendance-modal",
             "home/soptamp",
             "home/soptamp/entire-ranking",
-            "home/soptamp/current-generation-ranking"
+            "home/soptamp/current-generation-ranking",
+            "home/poke/notification-list",
+            "home/fortune"
     );
 
     public static final String ALARM_REQUEST_DATE_FORMAT = "yyyy-MM-dd";

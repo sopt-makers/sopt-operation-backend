@@ -64,7 +64,9 @@ public class ValueConfig {
             "home/attendance/attendance-modal",
             "home/soptamp",
             "home/soptamp/entire-ranking",
-            "home/soptamp/current-generation-ranking"
+            "home/soptamp/current-generation-ranking",
+            "home/poke/notification-list",
+            "home/fortune"
     );
     private final List<String> WEB_LINK_LIST = Arrays.asList(
             "https://playground.sopt.org/members",
