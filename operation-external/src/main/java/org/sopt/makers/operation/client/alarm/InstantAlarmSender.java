@@ -68,7 +68,7 @@ class InstantAlarmSender implements AlarmSender{
         if (isWebLink) {
             body.put("webLink", instantRequest.link());
         } else if (isAppLink) {
-            body.put("appLink", instantRequest.link());
+            body.put("deepLink", instantRequest.link());
         }
     }
 
