@@ -61,6 +61,7 @@ public class SecurityConfig {
                                 .requestMatchers(new AntPathRequestMatcher(TEST_PATH_PATTERN)).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher(ERROR_PATH_PATTERN)).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/api/v1/alarms/**", "PATCH")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/api/v1/banners/images", "GET")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/actuator/**")).permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
