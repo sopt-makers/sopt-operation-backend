@@ -78,3 +78,6 @@ management:
     web:
       exposure:
         include: health
+
+official:
+  apikey: ${APK_KEY}
