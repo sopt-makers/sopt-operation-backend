@@ -15,6 +15,8 @@ import org.sopt.makers.operation.banner.domain.PublishLocation;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.function.Function;
+
 import org.sopt.makers.operation.banner.domain.*;
 
 import org.sopt.makers.operation.banner.repository.BannerRepository;
@@ -77,25 +79,29 @@ public class BannerServiceImpl implements BannerService {
 
 
     @Override
-    public List<BannerResponse.BannerImageUrl> getExternalBanners(final String imageType, final String location) {
+    public List<BannerResponse.BannerImageWithPeriod> getExternalBanners(final String imageType, final String location) {
         val publishLocation = PublishLocation.getByValue(location);
         val bannerList = bannerRepository.findBannersByLocation(publishLocation);
 
-        List<String> imageKeyList = bannerList.stream()
-                .map(banner -> {
-                    return switch (imageType) {
-                        case "pc" -> banner.getPcImageKey();
-                        case "mobile" -> banner.getMobileImageKey();
-                        default -> throw new BannerException(NOT_SUPPORTED_PLATFORM_TYPE);
-                    };
+        val currentDate = LocalDate.now();
+
+        List<Banner> activeBanners = bannerList.stream()
+                .filter(banner -> {
+                    val publishStatus = banner.getPeriod().getPublishStatus(currentDate);
+                    return publishStatus == PublishStatus.IN_PROGRESS;
                 })
                 .toList();
 
-        List<String> signedUrlList = imageKeyList.stream()
-                .map(key -> s3Service.getUrl(valueConfig.getBannerBucket(), key))
-                .toList();
+        Function<Banner, String> imageUrlExtractor = banner -> {
+            String imageKey = switch (imageType) {
+                case "pc" -> banner.getPcImageKey();
+                case "mobile" -> banner.getMobileImageKey();
+                default -> throw new BannerException(NOT_SUPPORTED_PLATFORM_TYPE);
+            };
+            return s3Service.getUrl(valueConfig.getBannerBucket(), imageKey);
+        };
 
-        return BannerResponse.BannerImageUrl.fromEntity(signedUrlList);
+        return BannerResponse.BannerImageWithPeriod.fromEntities(activeBanners, imageUrlExtractor);
     }
 
   private Banner getBannerById(final long id) {
