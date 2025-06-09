@@ -2,6 +2,7 @@ package org.sopt.makers.operation.web.banner.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -69,6 +70,29 @@ public final class BannerResponse {
 
 
     }
+
+    @Builder(access = PRIVATE)
+    public record BannerImageWithPeriod(
+            @JsonProperty("url") String url,
+            @JsonProperty("start_date") LocalDate startDate,
+            @JsonProperty("end_date") LocalDate endDate
+
+    ) {
+        public static BannerImageWithPeriod fromEntity(Banner banner, String imageUrl) {
+            return BannerImageWithPeriod.builder()
+                    .url(imageUrl)
+                    .startDate(banner.getPeriod().getStartDate())
+                    .endDate(banner.getPeriod().getEndDate())
+                    .build();
+        }
+
+        public static List<BannerImageWithPeriod> fromEntities(List<Banner> banners, Function<Banner, String> imageUrlExtractor) {
+            return banners.stream()
+                    .map(banner -> BannerImageWithPeriod.fromEntity(banner, imageUrlExtractor.apply(banner)))
+                    .collect(Collectors.toUnmodifiableList());
+        }
+    }
+
     public record BannerImageUrl(
             @JsonProperty("url") String url
     ){

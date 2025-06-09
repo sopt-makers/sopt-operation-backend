@@ -3,11 +3,14 @@ package org.sopt.makers.operation.web.banner.api;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
+import org.sopt.makers.operation.code.failure.ApiKeyFailureCode;
 import org.sopt.makers.operation.dto.BaseResponse;
+import org.sopt.makers.operation.exception.ApiKeyException;
 import org.sopt.makers.operation.util.ApiResponseUtil;
 import org.sopt.makers.operation.web.banner.dto.request.BannerRequest;
 import org.sopt.makers.operation.web.banner.service.BannerService;
 import org.sopt.makers.operation.web.banner.service.BannerService.FilterCriteria;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +26,6 @@ import org.springframework.web.bind.annotation.*;
 
 import static org.sopt.makers.operation.code.success.web.BannerSuccessCode.SUCCESS_CREATE_BANNER;
 import static org.sopt.makers.operation.code.success.web.BannerSuccessCode.SUCCESS_GET_BANNER_DETAIL;
-import static org.sopt.makers.operation.code.success.web.BannerSuccessCode.SUCCESS_GET_BANNER_IMAGE_PRE_SIGNED_URL;
 import static org.sopt.makers.operation.code.success.web.BannerSuccessCode.SUCCESS_UPDATE_BANNER;
 
 @RestController
@@ -32,6 +34,8 @@ import static org.sopt.makers.operation.code.success.web.BannerSuccessCode.SUCCE
 public class BannerApiController implements BannerApi {
 
   private final BannerService bannerService;
+  @Value("${official.apikey}")
+  private String apiKey;
 
   @Override
   @GetMapping("/{bannerId}")
@@ -92,11 +96,22 @@ public class BannerApiController implements BannerApi {
   @Override
   @GetMapping("/images")
   public ResponseEntity<BaseResponse<?>> getExternalBanners(
-      @RequestParam("image_type") String imageType,
-      @RequestParam("location") String location
+          @RequestParam("image_type") String imageType,
+          @RequestParam("location") String location,
+          @RequestHeader("api-key") String apiKey
   ) {
-    return ApiResponseUtil.success(SUCCESS_GET_EXTERNAL_BANNERS,
-        bannerService.getExternalBanners(imageType, location));
+
+
+    if (apiKey == null || apiKey.trim().isEmpty()) {
+      throw new ApiKeyException(ApiKeyFailureCode.MISSING_API_KEY);
+    }
+
+    if (!this.apiKey.equals(apiKey)) {
+      throw new ApiKeyException(ApiKeyFailureCode.INVALID_API_KEY);
+    }
+
+    val result = bannerService.getExternalBanners(imageType, location);
+    return ApiResponseUtil.success(SUCCESS_GET_EXTERNAL_BANNERS, result);
   }
 
 

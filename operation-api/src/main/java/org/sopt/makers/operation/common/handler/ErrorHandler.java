@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.sopt.makers.operation.code.failure.ApiKeyFailureCode;
 import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.exception.*;
 import org.sopt.makers.operation.util.ApiResponseUtil;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -129,5 +131,27 @@ public class ErrorHandler {
         log.error("[Missing Parameter Exception] : {}", ex.getMessage());
         return ApiResponseUtil.failure(ex.getMessage());
     }
+
+
+    @ExceptionHandler(ApiKeyException.class)
+    public ResponseEntity<BaseResponse<?>> apiKeyException(ApiKeyException ex) {
+        log.error(ex.getMessage());
+        return ApiResponseUtil.failure(ex.getFailureCode());
+    }
+
+    // 🔥 Spring의 기본 헤더 누락 예외도 처리
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    public ResponseEntity<BaseResponse<?>> missingHeaderException(MissingRequestHeaderException ex) {
+        log.error("[Missing Header Exception] : {}", ex.getMessage());
+
+        if ("api-key".equals(ex.getHeaderName())) {
+            return ApiResponseUtil.failure(ApiKeyFailureCode.MISSING_API_KEY);
+        }
+
+        return ApiResponseUtil.failure("필수 헤더가 누락되었습니다: " + ex.getHeaderName());
+    }
+
+
+
 
 }

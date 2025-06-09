@@ -1,7 +1,10 @@
 package org.sopt.makers.operation.web.banner.api;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -85,22 +88,70 @@ public interface BannerApi {
 
   @Operation(
       summary = "게시 중인 외부 배너 리스트 조회 API",
+          description="추가한 배너의 접근 URL과 게시 기간을 조회합니다.",
       responses = {
           @ApiResponse(
               responseCode = "200",
               description = "게시 중인 외부 배너 리스트 조회 성공"
           ),
-          @ApiResponse(
-              responseCode = "400",
-              description = "잘못된 요청"
-          ),
+              @ApiResponse(
+                      responseCode = "400",
+                      description = "잘못된 요청<br/><br/>1. 유효하지 않은 API 키 <br/>2. 잘못된 파라미터 값",
+                      content = @Content(
+                              mediaType = "application/json",
+                              examples = {
+                                      @ExampleObject(
+                                              name = "유효하지 않은 API 키",
+                                              value = """
+                        {
+                          "success": false,
+                          "message": "API 키가 유효하지 않습니다."
+                        }
+                        """
+                                      ),
+                                      @ExampleObject(
+                                              name = "잘못된 파라미터",
+                                              value = """
+                        {
+                          "success": false,
+                          "message": "지원하지 않는 플랫폼 유형입니다."
+                        }
+                        """
+                                      )
+                              }
+                      )
+              ),
           @ApiResponse(
               responseCode = "500",
               description = "서버 내부 오류"
           )
-      }
+      },
+          parameters = {
+                  @Parameter(
+                          name = "image_type",
+                          description = "이미지 타입",
+                          required = true,
+                          example = "pc",
+                          schema = @Schema(type = "string", allowableValues = {"pc", "mobile"})
+                  ),
+                  @Parameter(
+                          name = "location",
+                          description = "배너 게시 위치",
+                          required = true,
+                          example = "pg_community",
+                          schema = @Schema(type = "string", allowableValues = {"pg_community", "cr_main", "cr_feed"})
+                  ),
+                  @Parameter(
+                          name = "api-key",
+                          description = "API 인증 키 (헤더로 전송)",
+                          required = true,
+                          in = ParameterIn.HEADER,
+                          example = "your-api-key-here",
+                          schema = @Schema(type = "string")
+                  )
+          }
   )
-  ResponseEntity<BaseResponse<?>> getExternalBanners(String platform, String location);
+  ResponseEntity<BaseResponse<?>> getExternalBanners(String platform, String location,String apiKey);
 
     @Operation(
             summary = "배너 생성 API",
