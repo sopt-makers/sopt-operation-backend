@@ -139,7 +139,6 @@ public class ErrorHandler {
         return ApiResponseUtil.failure(ex.getFailureCode());
     }
 
-    // 🔥 Spring의 기본 헤더 누락 예외도 처리
     @ExceptionHandler(MissingRequestHeaderException.class)
     public ResponseEntity<BaseResponse<?>> missingHeaderException(MissingRequestHeaderException ex) {
         log.error("[Missing Header Exception] : {}", ex.getMessage());
@@ -150,8 +149,4 @@ public class ErrorHandler {
 
         return ApiResponseUtil.failure("필수 헤더가 누락되었습니다: " + ex.getHeaderName());
     }
-
-
-
-
 }
