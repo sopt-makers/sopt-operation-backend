@@ -79,7 +79,7 @@ public class BannerServiceImpl implements BannerService {
 
 
     @Override
-    public List<BannerResponse.BannerImageWithPeriod> getExternalBanners(final String imageType, final String location) {
+    public List<BannerResponse.BannerImageWithBothPlatforms> getExternalBanners(final String location) {
         val publishLocation = PublishLocation.getByValue(location);
         val bannerList = bannerRepository.findBannersByLocation(publishLocation);
 
@@ -92,16 +92,15 @@ public class BannerServiceImpl implements BannerService {
                 })
                 .toList();
 
-        Function<Banner, String> imageUrlExtractor = banner -> {
-            String imageKey = switch (imageType) {
-                case "pc" -> banner.getPcImageKey();
-                case "mobile" -> banner.getMobileImageKey();
-                default -> throw new BannerException(NOT_SUPPORTED_PLATFORM_TYPE);
-            };
-            return s3Service.getUrl(valueConfig.getBannerBucket(), imageKey);
-        };
+        // PC URL 생성 함수
+        Function<Banner, String> pcUrlExtractor = banner ->
+                s3Service.getUrl(valueConfig.getBannerBucket(), banner.getPcImageKey());
 
-        return BannerResponse.BannerImageWithPeriod.fromEntities(activeBanners, imageUrlExtractor);
+        // Mobile URL 생성 함수
+        Function<Banner, String> mobileUrlExtractor = banner ->
+                s3Service.getUrl(valueConfig.getBannerBucket(), banner.getMobileImageKey());
+
+        return BannerResponse.BannerImageWithBothPlatforms.fromEntities(activeBanners, pcUrlExtractor, mobileUrlExtractor);
     }
 
   private Banner getBannerById(final long id) {
