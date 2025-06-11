@@ -87,8 +87,8 @@ public interface BannerApi {
   ResponseEntity<BaseResponse<?>> deleteBanner(Long bannerId);
 
   @Operation(
-      summary = "게시 중인 외부 배너 리스트 조회 API",
-          description="추가한 배너의 접근 URL과 게시 기간을 조회합니다.",
+      summary = "게시 중인 외부 배너 리스트 조회  API (PC/Mobile 동시 조회)",
+          description="추가한 배너의 PC/Mobile 접근 URL과 게시 기간을 한 번에 조회합니다.",
       responses = {
           @ApiResponse(
               responseCode = "200",
@@ -114,7 +114,7 @@ public interface BannerApi {
                                               value = """
                         {
                           "success": false,
-                          "message": "지원하지 않는 플랫폼 유형입니다."
+                          "message": "지원하지 않는 장소 유형입니다."
                         }
                         """
                                       )
@@ -127,13 +127,7 @@ public interface BannerApi {
           )
       },
           parameters = {
-                  @Parameter(
-                          name = "image_type",
-                          description = "이미지 타입",
-                          required = true,
-                          example = "pc",
-                          schema = @Schema(type = "string", allowableValues = {"pc", "mobile"})
-                  ),
+
                   @Parameter(
                           name = "location",
                           description = "배너 게시 위치",
@@ -151,7 +145,7 @@ public interface BannerApi {
                   )
           }
   )
-  ResponseEntity<BaseResponse<?>> getExternalBanners(String platform, String location,String apiKey);
+  ResponseEntity<BaseResponse<?>> getExternalBanners(String location,String apiKey);
 
     @Operation(
             summary = "배너 생성 API",

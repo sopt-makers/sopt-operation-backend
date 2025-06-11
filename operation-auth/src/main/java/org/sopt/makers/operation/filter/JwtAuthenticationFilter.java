@@ -33,7 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         log.info("Request URI: {}", uri);  // URI 로깅
         if ((uri.startsWith("/api/v1")) && !isExcludedFromJwtAuth(uri)
                 && !uri.contains("test") && !isAlarmUpdateRequest(request)
-        &!isBannerImageRequest(request)) {
+                &&!isBannerImageRequest(request)) {
             val token = jwtTokenProvider.resolveToken(request);
             log.info("Authorization header: {}", token);  // 토큰 로깅
 

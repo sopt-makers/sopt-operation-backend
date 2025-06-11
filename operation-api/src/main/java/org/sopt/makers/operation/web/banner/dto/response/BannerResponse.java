@@ -93,6 +93,39 @@ public final class BannerResponse {
         }
     }
 
+
+    @Builder(access = PRIVATE)
+    public record BannerImageWithBothPlatforms(
+            @JsonProperty("pc_url") String pcUrl,
+            @JsonProperty("mobile_url") String mobileUrl,
+            @JsonProperty("start_date") LocalDate startDate,
+            @JsonProperty("end_date") LocalDate endDate,
+            @JsonProperty("link") String link
+    ) {
+        public static BannerImageWithBothPlatforms fromEntity(Banner banner, String pcImageUrl, String mobileImageUrl) {
+            return BannerImageWithBothPlatforms.builder()
+                    .pcUrl(pcImageUrl)
+                    .mobileUrl(mobileImageUrl)
+                    .startDate(banner.getPeriod().getStartDate())
+                    .endDate(banner.getPeriod().getEndDate())
+                    .link(banner.getLink())
+                    .build();
+        }
+
+        public static List<BannerImageWithBothPlatforms> fromEntities(List<Banner> banners,
+                                                                      Function<Banner, String> pcUrlExtractor,
+                                                                      Function<Banner, String> mobileUrlExtractor) {
+            return banners.stream()
+                    .map(banner -> BannerImageWithBothPlatforms.fromEntity(
+                            banner,
+                            pcUrlExtractor.apply(banner),
+                            mobileUrlExtractor.apply(banner)
+                    ))
+                    .collect(Collectors.toUnmodifiableList());
+        }
+    }
+
+
     public record BannerImageUrl(
             @JsonProperty("url") String url
     ){

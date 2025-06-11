@@ -20,8 +20,8 @@ public interface BannerService {
 
     ResponseEntity<BaseResponse<?>> deleteBanner(final long bannerId);
 
-    List<BannerResponse.BannerImageWithPeriod> getExternalBanners(final String platform, final String location);
 
+    List<BannerResponse.BannerImageWithBothPlatforms> getExternalBanners(final String location);
 
     BannerResponse.BannerDetail createBanner(BannerRequest.BannerCreateOrModify request);
 

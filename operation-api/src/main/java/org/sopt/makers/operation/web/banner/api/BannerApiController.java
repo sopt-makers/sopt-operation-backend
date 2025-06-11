@@ -96,7 +96,6 @@ public class BannerApiController implements BannerApi {
   @Override
   @GetMapping("/images")
   public ResponseEntity<BaseResponse<?>> getExternalBanners(
-          @RequestParam("image_type") String imageType,
           @RequestParam("location") String location,
           @RequestHeader("api-key") String apiKey
   ) {
@@ -110,7 +109,7 @@ public class BannerApiController implements BannerApi {
       throw new ApiKeyException(ApiKeyFailureCode.INVALID_API_KEY);
     }
 
-    val result = bannerService.getExternalBanners(imageType, location);
+    val result = bannerService.getExternalBanners(location);
     return ApiResponseUtil.success(SUCCESS_GET_EXTERNAL_BANNERS, result);
   }
 

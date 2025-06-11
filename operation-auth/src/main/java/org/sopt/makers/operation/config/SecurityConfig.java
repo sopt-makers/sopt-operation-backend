@@ -38,6 +38,8 @@ public class SecurityConfig {
         http.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                 .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/v3/**")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/v1/banners/images", "GET")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/v1/banners/images", "OPTIONS")).permitAll()
         );
         setHttp(http);
         return http.build();
