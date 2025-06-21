@@ -1,7 +1,8 @@
-package org.sopt.makers.operation.code.failure;
+package org.sopt.makers.operation.code.failure.auth;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.sopt.makers.operation.code.failure.FailureCode;
 import org.springframework.http.HttpStatus;
 
 @Getter
