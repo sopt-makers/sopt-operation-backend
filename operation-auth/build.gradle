@@ -18,5 +18,12 @@ dependencies {
     implementation group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
     implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.1'
 
+
+    // 새로운 JWT & 캐싱 라이브러리
+    implementation("com.nimbusds:nimbus-jose-jwt:9.37.3")
+    implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
+
+
+
     implementation 'org.springframework.boot:spring-boot-starter-web'
 }
