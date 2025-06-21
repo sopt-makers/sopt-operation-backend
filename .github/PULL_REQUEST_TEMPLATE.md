@@ -13,7 +13,6 @@
 -->
 
 ## Related Issue 🚀
-- closed #{이슈_번호
 - related to #{이슈_번호}
 
 ## Work Description ✏️
