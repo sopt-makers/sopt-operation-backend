@@ -1,6 +1,5 @@
 package org.sopt.makers.operation.client.auth;
 
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.sopt.makers.operation.code.failure.ClientFailure;
@@ -8,7 +7,6 @@ import org.sopt.makers.operation.exception.ClientException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-
 
 @Slf4j
 @Component

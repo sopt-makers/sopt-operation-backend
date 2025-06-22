@@ -1,6 +1,5 @@
 package org.sopt.makers.operation.authentication;
 
-
 import lombok.Getter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;

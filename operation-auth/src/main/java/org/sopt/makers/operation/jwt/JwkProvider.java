@@ -1,6 +1,5 @@
 package org.sopt.makers.operation.jwt;
 
-
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.nimbusds.jose.JOSEException;
