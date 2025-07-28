@@ -61,7 +61,6 @@ class ScheduleAlarmSender implements AlarmSender{
             val createScheduleRequest = generateEvent(name, target, cronExpression);
             schedulerClient.createSchedule(createScheduleRequest);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new AlarmException(AlarmFailureCode.FAIL_SCHEDULE_ALARM);
         }
     }
