@@ -96,7 +96,12 @@ public class AlarmServiceImpl implements AlarmService {
     @Transactional
     public void deleteAlarm(long alarmId) {
         val alarm = findAlarm(alarmId);
+        val isScheduledAlarm = alarm.getStatus().equals(AlarmStatus.SCHEDULED);
+
         alarmRepository.delete(alarm);
+        if (isScheduledAlarm) {
+            alarmManager.deleteSchedule(alarmId, alarm.getIntendedAt());
+        }
     }
 
     @Override
