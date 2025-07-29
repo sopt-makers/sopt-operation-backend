@@ -19,7 +19,7 @@ public enum AlarmFailureCode implements FailureCode {
     INVALID_SCHEDULE_ALARM_FORMAT(BAD_REQUEST, "알림 예약 시간 포맷이 맞지 않습니다."),
     FAIL_SEND_ALARM(BAD_REQUEST, "알림 즉시 발송에 실패하였습니다."),
     FAIL_SCHEDULE_ALARM(BAD_REQUEST, "알림 예약 발송에 실패하였습니다."),
-    FAIL_DELETE_SCHEDULE_ALARM(BAD_REQUEST, "예약 알림 삭자에 실패하였습니다."),
+    FAIL_DELETE_SCHEDULE_ALARM(BAD_REQUEST, "예약 알림 삭제에 실패하였습니다."),
 
     // 404
     NOT_FOUND_ALARM(NOT_FOUND, "알림이 존재하지 않습니다."),
