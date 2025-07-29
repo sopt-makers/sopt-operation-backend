@@ -3,6 +3,7 @@ package org.sopt.makers.operation.client.alarm;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.sopt.makers.operation.alarm.domain.AlarmLinkType;
@@ -139,4 +140,11 @@ class ScheduleAlarmSender implements AlarmSender{
                 .build();
     }
 
+    @PreDestroy
+    private void cleanUp() {
+        boolean safeClose = schedulerClient != null;
+        if (safeClose) {
+            schedulerClient.close();
+        }
+    }
 }

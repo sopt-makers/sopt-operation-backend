@@ -1,5 +1,6 @@
 package org.sopt.makers.operation.client.alarm;
 
+import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
@@ -53,5 +54,13 @@ public class ScheduleAlarmDeleter {
         val dateData = scheduleDateTime.toLocalDate().format(DateTimeFormatter.ofPattern(ALARM_REQUEST_DATE_FORMAT));
         val timeData = scheduleDateTime.toLocalTime().format(DateTimeFormatter.ofPattern(ALARM_REQUEST_SCHEDULE_TIME_FORMAT));
         return String.format("%s_%s_%d", dateData, timeData, alarmId);
+    }
+
+    @PreDestroy
+    private void cleanUp() {
+        boolean safeClose = schedulerClient != null;
+        if (safeClose) {
+            schedulerClient.close();
+        }
     }
 }
