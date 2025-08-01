@@ -92,11 +92,20 @@ public class AlarmServiceImpl implements AlarmService {
         return AlarmListGetResponse.of(alarms, totalCount);
     }
 
+    // 외부 API 호출이 트랜잭션 지연 및 성능 저하를 유발할 수 있으나,
+    // 현재는 도메인 정책상 정합성을 우선시하기 위해 외부 API 호출을 트랜잭션 내에서 함께 처리합니다.
+    // 향후 보상 트랜잭션 또는 비동기 처리를 고려할 수 있습니다.
+    // @sung-silver
     @Override
     @Transactional
     public void deleteAlarm(long alarmId) {
         val alarm = findAlarm(alarmId);
+        val isScheduledAlarm = alarm.getStatus().equals(AlarmStatus.SCHEDULED);
+
         alarmRepository.delete(alarm);
+        if (isScheduledAlarm) {
+            alarmManager.deleteSchedule(alarmId, alarm.getIntendedAt());
+        }
     }
 
     @Override
