@@ -31,6 +31,8 @@ spring:
       access: ${JWT_SECRET_KEY_ACCESS}
       refresh: ${JWT_SECRET_KEY_REFRESH}
       platform_code: ${JWT_SECRET_PLATFORM_CODE}
+    jwk:
+      issuer : ${MAKERS_AUTH_JWK_ISSUER}
   secretKey:
     playground: ${SECRET_KEY_PG}
 
@@ -82,3 +84,11 @@ management:
 
 official:
   apikey: ${APK_KEY}
+
+external:
+  auth:
+    url:  https://auth.api.sopt.org
+    api-key: ${AUTH_API_KEY}
+    service-name: ${OUR_SERVICE_NAME}
+    endpoints:
+      jwk: ${MAKERS_AUTH_JWK_ENDPOINT}
