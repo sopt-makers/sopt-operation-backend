@@ -82,10 +82,10 @@ management:
 official:
   apikey: ${APK_KEY}
 
-  external:
-    auth:
-      url: https://auth.api.sopt.org
-      api-key: ${AUTH_API_KEY}
-      service-name: ${OUR_SERVICE_NAME}
-      endpoints:
-        jwk: ${MAKERS_AUTH_JWK_ENDPOINT}
+external:
+  auth:
+    url:  https://auth.api.sopt.org
+    api-key: ${AUTH_API_KEY}
+    service-name: ${OUR_SERVICE_NAME}
+    endpoints:
+      jwk: ${MAKERS_AUTH_JWK_ENDPOINT}
