@@ -6,6 +6,8 @@ import java.security.Principal;
 
 import org.sopt.makers.operation.app.attendance.dto.request.LectureAttendRequest;
 import org.sopt.makers.operation.app.attendance.service.AppAttendanceService;
+import org.sopt.makers.operation.authentication.AdminAuthentication;
+import org.sopt.makers.operation.authentication.MakersAuthentication;
 import org.sopt.makers.operation.common.util.CommonUtils;
 import org.sopt.makers.operation.util.ApiResponseUtil;
 import org.sopt.makers.operation.dto.BaseResponse;
@@ -29,8 +31,26 @@ public class AppAttendanceApiController implements AppAttendanceApi {
 	@Override
 	@PostMapping("/attend")
 	public ResponseEntity<BaseResponse<?>> attend(@RequestBody LectureAttendRequest request, Principal principal) {
-		val memberId = utils.getMemberId(principal);
+		//val memberId = utils.getMemberId(principal);
+        Long memberId = extractUserId(principal);
+
 		val response = attendanceService.attend(memberId, request);
 		return ApiResponseUtil.success(SUCCESS_ATTEND, response);
 	}
+    private Long extractUserId(Principal principal) {
+        // 외부 JWK 토큰인 경우 - MakersAuthentication
+        if (principal instanceof MakersAuthentication makers) {
+            return Long.parseLong(makers.getUserId());
+        }
+
+        // 내부 APP_ACCESS_TOKEN인 경우 - AdminAuthentication (playgroundId 포함)
+        if (principal instanceof AdminAuthentication admin) {
+            return (Long) admin.getPrincipal(); // playgroundId가 저장됨
+        }
+
+        // 기본 fallback (기존 방식)
+        return Long.parseLong(principal.getName());
+    }
+
+
 }
