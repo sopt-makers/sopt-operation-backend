@@ -23,7 +23,7 @@ dependencies {
     runtimeOnly 'org.postgresql:postgresql'
 
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.14.0-rc1'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
     // test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
