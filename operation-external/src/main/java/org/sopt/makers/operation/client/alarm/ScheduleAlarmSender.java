@@ -1,53 +1,40 @@
 package org.sopt.makers.operation.client.alarm;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
-import lombok.val;
+import static org.sopt.makers.operation.constant.AlarmConstant.ALARM_REQUEST_DATE_FORMAT;
+import static org.sopt.makers.operation.constant.AlarmConstant.ALARM_REQUEST_SCHEDULE_TIME_FORMAT;
+
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
+
 import org.sopt.makers.operation.alarm.domain.AlarmLinkType;
 import org.sopt.makers.operation.client.alarm.dto.AlarmRequest;
 import org.sopt.makers.operation.client.alarm.dto.ScheduleAlarmRequest;
-import org.sopt.makers.operation.client.alarm.dto.eventbridge.AlarmScheduleEventBridgeRequest;
 import org.sopt.makers.operation.client.alarm.dto.eventbridge.AlarmScheduleEventBridgeBody;
 import org.sopt.makers.operation.client.alarm.dto.eventbridge.AlarmScheduleEventBridgeHeader;
+import org.sopt.makers.operation.client.alarm.dto.eventbridge.AlarmScheduleEventBridgeRequest;
 import org.sopt.makers.operation.code.failure.AlarmFailureCode;
 import org.sopt.makers.operation.config.ValueConfig;
 import org.sopt.makers.operation.exception.AlarmException;
 import org.springframework.stereotype.Component;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.RequiredArgsConstructor;
+import lombok.val;
 import software.amazon.awssdk.services.scheduler.SchedulerClient;
 import software.amazon.awssdk.services.scheduler.model.CreateScheduleRequest;
 import software.amazon.awssdk.services.scheduler.model.FlexibleTimeWindow;
 import software.amazon.awssdk.services.scheduler.model.FlexibleTimeWindowMode;
 import software.amazon.awssdk.services.scheduler.model.Target;
 
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.UUID;
-
-import static org.sopt.makers.operation.constant.AlarmConstant.ALARM_REQUEST_DATE_FORMAT;
-import static org.sopt.makers.operation.constant.AlarmConstant.ALARM_REQUEST_SCHEDULE_TIME_FORMAT;
-
 @Component
 @RequiredArgsConstructor
 class ScheduleAlarmSender implements AlarmSender{
     private final ValueConfig valueConfig;
-    private SchedulerClient schedulerClient;
-    private ObjectMapper objectMapper;
-
-    @PostConstruct
-    private void init() {
-        val awsCredentials = AwsBasicCredentials.create(valueConfig.getAccessKey(),
-                valueConfig.getSecretKey());
-        this.schedulerClient = SchedulerClient.builder()
-                .region(Region.AP_NORTHEAST_2)
-                .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
-                .build();
-        this.objectMapper = new ObjectMapper();
-    }
+    private final SchedulerClient schedulerClient;
+    private final ObjectMapper objectMapper;
 
     @Override
     public void sendAlarm(AlarmRequest alarmRequest) {
@@ -61,7 +48,6 @@ class ScheduleAlarmSender implements AlarmSender{
             val createScheduleRequest = generateEvent(name, target, cronExpression);
             schedulerClient.createSchedule(createScheduleRequest);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new AlarmException(AlarmFailureCode.FAIL_SCHEDULE_ALARM);
         }
     }
@@ -139,5 +125,4 @@ class ScheduleAlarmSender implements AlarmSender{
                 .webLink(webLink)
                 .build();
     }
-
 }

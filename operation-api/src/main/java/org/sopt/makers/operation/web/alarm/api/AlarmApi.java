@@ -107,7 +107,7 @@ public interface AlarmApi {
             summary = "알림 삭제 API",
             responses = {
                     @ApiResponse(
-                            responseCode = "200",
+                            responseCode = "204",
                             description = "알림 삭제 성공"
                     ),
                     @ApiResponse(
