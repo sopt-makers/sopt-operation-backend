@@ -44,16 +44,12 @@ public record AttendanceListByLectureGetResponse(
 	@Builder(access = PRIVATE)
 	private record MemberResponse(
 			long memberId,
-			String name,
-			String university,
-			String part
+			String name
 	) {
 		private static MemberResponse of(Member member) {
 			return MemberResponse.builder()
 					.memberId(member.getId())
 					.name(member.getName())
-					.university(member.getUniversity())
-					.part(member.getPart().getName())
 					.build();
 		}
 	}

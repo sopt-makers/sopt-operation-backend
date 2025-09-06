@@ -32,28 +32,23 @@ public class Member {
 	private int generation;
 
 	@Enumerated(EnumType.STRING)
-	private ObYb obyb;
-
-	@Enumerated(EnumType.STRING)
 	private Part part;
 
-	private String university;
 	private float score;
-	private String phone;
 
 	@OneToMany(mappedBy = "member")
 	List<Attendance> attendances = new ArrayList<>();
 
-	protected Member(Long id, Long playgroundId, String name, int generation, ObYb obyb, Part part, String university, float score, String phone, List<Attendance> attendances) {
+	protected Member(Long id, Long playgroundId, String name, int generation,  Part part, float score, List<Attendance> attendances) {
 		this.id = id;
 		this.playgroundId = playgroundId;
 		this.name = name;
 		this.generation = generation;
-		this.obyb = obyb;
+
 		this.part = part;
-		this.university = university;
+
 		this.score = score;
-		this.phone = phone;
+
 		this.attendances = attendances;
 	}
 
