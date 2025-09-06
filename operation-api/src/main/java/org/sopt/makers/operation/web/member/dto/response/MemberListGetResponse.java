@@ -27,7 +27,6 @@ public record MemberListGetResponse(
 	private record MemberResponse(
 			long id,
 			String name,
-			String university,
 			Part part,
 			float score,
 			AttendanceStatusResponse total
@@ -37,7 +36,6 @@ public record MemberListGetResponse(
 			return MemberResponse.builder()
 					.id(member.getId())
 					.name(member.getName())
-					.university(member.getUniversity())
 					.part(member.getPart())
 					.score(member.getScore())
 					.total(AttendanceStatusResponse.of(member))

@@ -15,8 +15,6 @@ public record AttendanceListByMemberGetResponse(
 	String name,
 	float score,
 	String part,
-	String university,
-	String phone,
 	List<LectureResponse> lectures
 ) {
 
@@ -25,8 +23,6 @@ public record AttendanceListByMemberGetResponse(
 				.name(member.getName())
 				.score(member.getScore())
 				.part(member.getPart().getName())
-				.university(member.getUniversity())
-				.phone(member.getPhone())
 				.lectures(attendances.stream().map(LectureResponse::of).toList())
 				.build();
 	}
