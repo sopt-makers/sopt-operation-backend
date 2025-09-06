@@ -133,7 +133,7 @@ public class AlarmServiceImpl implements AlarmService {
             default -> throw new AlarmException(INVALID_ALARM_TARGET_TYPE);
         };
         return members.stream()
-                .map(Member::getPlaygroundId)
+                .map(Member::getId)
                 .filter(Objects::nonNull)
                 .map(String::valueOf)
                 .toList();

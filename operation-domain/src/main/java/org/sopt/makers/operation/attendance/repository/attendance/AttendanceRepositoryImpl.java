@@ -80,7 +80,7 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 	}
 
 	@Override
-	public List<Attendance> findToday(long memberPlaygroundId) {
+	public List<Attendance> findToday(long memberId) {
 		val today = LocalDate.now();
 		val startOfDay = today.atStartOfDay();
 		val endOfDay = LocalDateTime.of(today, LocalTime.MAX);
@@ -91,7 +91,7 @@ public class AttendanceRepositoryImpl implements AttendanceCustomRepository {
 			.leftJoin(attendance.subAttendances, subAttendance).fetchJoin().distinct()
 			.leftJoin(subAttendance.subLecture, subLecture).fetchJoin()
 			.where(
-				member.playgroundId.eq(memberPlaygroundId),
+				member.id.eq(memberId),
 				member.generation.eq(valueConfig.getGENERATION()),
 				lecture.part.eq(member.part).or(lecture.part.eq(ALL)),
 				lecture.startDate.between(startOfDay, endOfDay))

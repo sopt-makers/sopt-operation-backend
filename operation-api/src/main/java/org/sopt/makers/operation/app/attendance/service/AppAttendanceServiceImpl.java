@@ -39,15 +39,15 @@ public class AppAttendanceServiceImpl implements AppAttendanceService {
 
 	@Override
 	@Transactional
-	public LectureAttendResponse attend(long playgroundId, LectureAttendRequest request) {
-		val subAttendance = getSubAttendance(request.subLectureId(), request.code(), playgroundId);
+	public LectureAttendResponse attend(long memberId, LectureAttendRequest request) {
+		val subAttendance = getSubAttendance(request.subLectureId(), request.code(), memberId);
 		subAttendance.updateStatus(ATTENDANCE);
 		return LectureAttendResponse.of(subAttendance);
 	}
 
-	private SubAttendance getSubAttendance(long subLectureId, String code, long playgroundId) {
+	private SubAttendance getSubAttendance(long subLectureId, String code, long memberId) {
 		val subLecture = getSubLecture(subLectureId, code);
-		val attendance = getAttendance(subLecture, playgroundId);
+		val attendance = getAttendance(subLecture, memberId);
 		return getSubAttendance(attendance, subLecture.getRound());
 	}
 
@@ -88,16 +88,16 @@ public class AppAttendanceServiceImpl implements AppAttendanceService {
 		}
 	}
 
-	private Attendance getAttendance(SubLecture subLecture, long playgroundId) {
+	private Attendance getAttendance(SubLecture subLecture, long memberId) {
 		val lecture = subLecture.getLecture();
 		val generation = valueConfig.getGENERATION();
-		val member = findMember(playgroundId, generation);
+		val member = findMember(memberId, generation);
 		return findAttendance(lecture, member);
 	}
 
-	private Member findMember(long playgroundId, int generation) {
+	private Member findMember(long memberId, int generation) {
 		return memberRepository
-				.getMemberByPlaygroundIdAndGeneration(playgroundId, generation)
+				.getMemberByIdAndGeneration(memberId, generation)
 				.orElseThrow(() -> new MemberException(INVALID_MEMBER));
 	}
 

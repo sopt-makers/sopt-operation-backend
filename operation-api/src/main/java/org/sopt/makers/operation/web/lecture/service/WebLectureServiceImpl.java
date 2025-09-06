@@ -185,7 +185,7 @@ public class WebLectureServiceImpl implements WebLectureService {
         val alarmMessageTitle = String.join(WHITE_SPACE, lecture.getName(), HARDCODED_TITLE);
         val alarmMessageContent = HARDCODED_CONTENT;
         val targets = lecture.getAttendances().stream()
-                .map(attendance -> String.valueOf(attendance.getMember().getPlaygroundId()))
+                .map(attendance -> String.valueOf(attendance.getMember().getId()))
                 .filter(id -> !id.equals(NULL))
                 .toList();
         val alarmRequest = InstantAlarmRequest.of(alarmMessageTitle, alarmMessageContent, targets);
