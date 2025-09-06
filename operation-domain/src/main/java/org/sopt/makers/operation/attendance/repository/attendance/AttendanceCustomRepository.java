@@ -12,6 +12,6 @@ public interface AttendanceCustomRepository {
 	List<Attendance> findAttendanceByMemberId(Long memberId);
 	List<Attendance> findFetchJoin(Lecture lecture, Part part, Pageable pageable);
 	List<Attendance> findFetchJoin(Member member);
-	List<Attendance> findToday(long memberPlaygroundId);
+	List<Attendance> findToday(long memberId);
 	int count(Lecture lecture, Part part);
 }

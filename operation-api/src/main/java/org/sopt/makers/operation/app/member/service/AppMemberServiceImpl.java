@@ -29,8 +29,8 @@ public class AppMemberServiceImpl implements AppMemberService {
     private final ValueConfig valueConfig;
 
     @Override
-    public AttendanceTotalResponseDTO getMemberTotalAttendance(Long playGroundId) {
-        val member = memberRepository.getMemberByPlaygroundIdAndGeneration(playGroundId, valueConfig.getGENERATION())
+    public AttendanceTotalResponseDTO getMemberTotalAttendance(Long memberId) {
+        val member = memberRepository.getMemberByIdAndGeneration(memberId, valueConfig.getGENERATION())
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER));
 
         val attendances = findAttendances(member);
@@ -41,8 +41,8 @@ public class AppMemberServiceImpl implements AppMemberService {
     }
 
     @Override
-    public MemberScoreGetResponse getMemberScore(Long playGroundId) {
-        val member = memberRepository.getMemberByPlaygroundIdAndGeneration(playGroundId, valueConfig.getGENERATION())
+    public MemberScoreGetResponse getMemberScore(Long memberId) {
+        val member = memberRepository.getMemberByIdAndGeneration(memberId, valueConfig.getGENERATION())
                 .orElseThrow(() -> new MemberException(INVALID_MEMBER));
 
         return MemberScoreGetResponse.of(member.getScore());

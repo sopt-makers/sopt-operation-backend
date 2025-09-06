@@ -107,32 +107,12 @@ public class JwtTokenProvider {
         }
     }
 
-    public boolean validatePlatformCode(String platformCode, String clientId, String redirectUri) {
-        try {
-            val claims = getClaimsFromToken(platformCode, JwtTokenType.PLATFORM_CODE);
-            return isClaimsMatchingRequest(claims, clientId, redirectUri);
-        } catch (ExpiredJwtException | SignatureException e) {
-            return false;
-        }
-    }
 
     public AdminAuthentication getAuthentication(String token, JwtTokenType jwtTokenType) {
-        return switch (jwtTokenType) {
-            case ACCESS_TOKEN, REFRESH_TOKEN, PLATFORM_CODE ->
-                    new AdminAuthentication(getId(token, jwtTokenType), null, null);
-            case APP_ACCESS_TOKEN -> new AdminAuthentication(getPlayGroundId(token, jwtTokenType), null, null);
-        };
+        return new AdminAuthentication(getId(token, jwtTokenType), null, null);
     }
 
-    public Long getPlayGroundId(String token, JwtTokenType jwtTokenType) {
-        try {
-            val claims = getClaimsFromToken(token, jwtTokenType);
 
-            return Long.parseLong(claims.get("playgroundId").toString());
-        } catch (ExpiredJwtException | SignatureException e) {
-            throw new TokenException(INVALID_TOKEN);
-        }
-    }
 
     public Long getId(String token, JwtTokenType jwtTokenType) {
         try {
@@ -144,10 +124,6 @@ public class JwtTokenProvider {
         }
     }
 
-    private boolean isClaimsMatchingRequest(Claims claims, String clientId, String redirectUri) {
-        return claims.getAudience().equals(redirectUri)
-                && claims.getIssuer().equals(clientId);
-    }
 
     private Claims getClaimsFromToken(String token, JwtTokenType jwtTokenType) {
         log.info("Parsing claims from token for type: {}", jwtTokenType);

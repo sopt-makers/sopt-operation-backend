@@ -26,7 +26,6 @@ public class Member {
 	@Column(name = "member_id")
 	private Long id;
 
-	private Long playgroundId;
 
 	private String name;
 	private int generation;
@@ -39,9 +38,8 @@ public class Member {
 	@OneToMany(mappedBy = "member")
 	List<Attendance> attendances = new ArrayList<>();
 
-	protected Member(Long id, Long playgroundId, String name, int generation,  Part part, float score, List<Attendance> attendances) {
+	protected Member(Long id, String name, int generation,  Part part, float score, List<Attendance> attendances) {
 		this.id = id;
-		this.playgroundId = playgroundId;
 		this.name = name;
 		this.generation = generation;
 
