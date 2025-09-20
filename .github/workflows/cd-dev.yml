@@ -27,6 +27,20 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      # 🚨 NEW: ECR 이미지 삭제 단계 추가
+      - name: 🗑️ Delete all ECR images
+        env:
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+          ECR_REPOSITORY: ${{ secrets.AWS_ECR_REPO_DEV }}
+        run: |
+          echo "Deleting all images from ECR repository..."
+          aws ecr-public batch-delete-image \
+            --region us-east-1 \
+            --repository-name $ECR_REPOSITORY \
+            --image-ids "$(aws ecr-public describe-images --region us-east-1 --repository-name $ECR_REPOSITORY --query 'imageDetails[*].{imageDigest:imageDigest}' --output json)" \
+            || echo "No images to delete or repository is empty"
+
+
       - name: 🧱 Build Image and Push to ECR
         env:
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
