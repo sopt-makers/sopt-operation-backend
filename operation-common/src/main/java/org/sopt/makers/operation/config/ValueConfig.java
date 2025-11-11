@@ -56,18 +56,6 @@ public class ValueConfig {
     private final int HACKATHON_LECTURE_START_HOUR = 16;
     private final String NOTIFICATION_HEADER_SERVICE = "operation";
 
-    private final List<String> APP_LINK_LIST = Arrays.asList(
-            "home",
-            "home/notification",
-            "home/mypage",
-            "home/attendance",
-            "home/attendance/attendance-modal",
-            "home/soptamp",
-            "home/soptamp/entire-ranking",
-            "home/soptamp/current-generation-ranking",
-            "home/poke/notification-list",
-            "home/fortune"
-    );
     private final List<String> WEB_LINK_LIST = Arrays.asList(
             "https://playground.sopt.org/members",
             "https://playground.sopt.org/group"
