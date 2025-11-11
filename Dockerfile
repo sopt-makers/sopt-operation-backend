@@ -1,4 +1,4 @@
-FROM openjdk:17-jdk-slim as builder
+FROM eclipse-temurin:17-jdk-jammy  as builder
 
 ARG PROFILE=test
 
@@ -12,7 +12,7 @@ COPY . /app-build
 RUN echo "Build with PROFILE=${PROFILE}" && ./gradlew build -Pprofile=${PROFILE} --no-daemon
 
 # Run-Time Image Setting
-FROM openjdk:17-jdk-slim as production
+FROM eclipse-temurin:17-jdk-jammy  as production
 
 # mkdir /app-run && cd /app-run
 WORKDIR /app-run
