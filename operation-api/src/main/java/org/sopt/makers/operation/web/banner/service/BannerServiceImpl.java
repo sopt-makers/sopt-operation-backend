@@ -90,6 +90,7 @@ public class BannerServiceImpl implements BannerService {
                     val publishStatus = banner.getPeriod().getPublishStatus(currentDate);
                     return publishStatus == PublishStatus.IN_PROGRESS;
                 })
+                .sorted(Comparator.comparing(Banner::getId))
                 .toList();
 
         // PC URL 생성 함수
