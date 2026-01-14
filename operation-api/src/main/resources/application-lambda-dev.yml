@@ -6,6 +6,8 @@ spring:
 
   main:
     lazy-initialization: true  # Cold Start 최적화
+    web-application-type: servlet              # ✨ 추가: WebMVC 강제 사용
+    allow-bean-definition-overriding: true     # ✨ 추가: 빈 오버라이딩 허용
 
   servlet:
     multipart:

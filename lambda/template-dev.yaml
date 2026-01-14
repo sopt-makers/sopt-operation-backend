@@ -3,32 +3,140 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   SOPT Operation Backend DEV - Spring Boot on AWS Lambda with SnapStart
 
+# =============================================================================
+# 전역 설정
+# =============================================================================
 Globals:
   Function:
     Timeout: 300
     MemorySize: 2048
     Runtime: java17
+  Api:
+    OpenApiVersion: 3.0.1
 
+# =============================================================================
+# 파라미터 정의
+# =============================================================================
 Parameters:
+  # S3 설정
   S3Bucket:
     Type: String
     Default: "operation-lambda-deploy"
     Description: S3 bucket containing the Lambda ZIP
   S3Key:
     Type: String
-    Default: ""
     Description: S3 key (path) to the Lambda ZIP file
-  Profile:
+
+  # Spring 프로파일
+  SpringProfile:
     Type: String
     Default: "lambda-dev"
-    Description: Spring profile to use
+    Description: Spring profile to activate
 
+  # Database
+  DbDriverClassName:
+    Type: String
+    Default: "org.postgresql.Driver"
+  DbUrl:
+    Type: String
+    NoEcho: true
+  DbUsername:
+    Type: String
+    NoEcho: true
+  DbPassword:
+    Type: String
+    NoEcho: true
+
+  # JWT
+  JwtSecretKeyApp:
+    Type: String
+    NoEcho: true
+  JwtSecretKeyAccess:
+    Type: String
+    NoEcho: true
+  JwtSecretKeyRefresh:
+    Type: String
+    NoEcho: true
+  JwtSecretPlatformCode:
+    Type: String
+    NoEcho: true
+
+  # Playground
+  SecretKeyPg:
+    Type: String
+    NoEcho: true
+  SoptCurrentGeneration:
+    Type: String
+  SoptMakerPgUrl:
+    Type: String
+  SoptMakerPgToken:
+    Type: String
+    NoEcho: true
+
+  # Alarm
+  SoptAlarmMessageTitle:
+    Type: String
+  SoptAlarmMessageContent:
+    Type: String
+
+  # Admin URLs
+  AdminUrlProd:
+    Type: String
+  AdminUrlDev:
+    Type: String
+  AdminUrlLocal:
+    Type: String
+
+  # Notification
+  NotificationUrl:
+    Type: String
+  NotificationKey:
+    Type: String
+    NoEcho: true
+  NotificationArn:
+    Type: String
+
+  # AWS
+  AwsCredentialsAccessKey:
+    Type: String
+    NoEcho: true
+  AwsCredentialsSecretKey:
+    Type: String
+    NoEcho: true
+  AwsCredentialsEventBridgeRoleArn:
+    Type: String
+  AwsRegion:
+    Type: String
+    Default: "ap-northeast-2"
+  BucketForBanner:
+    Type: String
+
+  # Official
+  ApkKey:
+    Type: String
+    NoEcho: true
+
+  # External Auth
+  MakersAuthJwkEndpoint:
+    Type: String
+  MakersAuthJwkIssuer:
+    Type: String
+  AuthApiKey:
+    Type: String
+    NoEcho: true
+  OurServiceName:
+    Type: String
+
+# =============================================================================
+# 리소스 정의
+# =============================================================================
 Resources:
   # Lambda 함수
   ApiFunction:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: !Sub "${AWS::StackName}-api"
+      Description: SOPT Operation Backend API
       CodeUri:
         Bucket: !Ref S3Bucket
         Key: !Ref S3Key
@@ -38,28 +146,82 @@ Resources:
       AutoPublishAlias: live
       Environment:
         Variables:
-          SPRING_PROFILES_ACTIVE: !Ref Profile
+          # Spring
+          SPRING_PROFILES_ACTIVE: !Ref SpringProfile
           TZ: Asia/Seoul
           JAVA_TOOL_OPTIONS: "-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
+
+          # Database
+          DB_DRIVER_CLASS_NAME: !Ref DbDriverClassName
+          DB_URL: !Ref DbUrl
+          DB_USERNAME: !Ref DbUsername
+          DB_PASSWORD: !Ref DbPassword
+
+          # JWT
+          JWT_SECRET_KEY_APP: !Ref JwtSecretKeyApp
+          JWT_SECRET_KEY_ACCESS: !Ref JwtSecretKeyAccess
+          JWT_SECRET_KEY_REFRESH: !Ref JwtSecretKeyRefresh
+          JWT_SECRET_PLATFORM_CODE: !Ref JwtSecretPlatformCode
+
+          # Playground
+          SECRET_KEY_PG: !Ref SecretKeyPg
+          SOPT_CURRENT_GENERATION: !Ref SoptCurrentGeneration
+          SOPT_MAKER_PG_URL: !Ref SoptMakerPgUrl
+          SOPT_MAKER_PG_TOKEN: !Ref SoptMakerPgToken
+
+          # Alarm
+          SOPT_ALARM_MESSAGE_TITLE: !Ref SoptAlarmMessageTitle
+          SOPT_ALARM_MESSAGE_CONTENT: !Ref SoptAlarmMessageContent
+
+          # Admin URLs
+          ADMIN_URL_PROD: !Ref AdminUrlProd
+          ADMIN_URL_DEV: !Ref AdminUrlDev
+          ADMIN_URL_LOCAL: !Ref AdminUrlLocal
+
+          # Notification
+          NOTIFICATION_URL: !Ref NotificationUrl
+          NOTIFICATION_KEY: !Ref NotificationKey
+          NOTIFICATION_ARN: !Ref NotificationArn
+
+          # AWS
+          AWS_CREDENTIALS_ACCESS_KEY: !Ref AwsCredentialsAccessKey
+          AWS_CREDENTIALS_SECRET_KEY: !Ref AwsCredentialsSecretKey
+          AWS_CREDENTIALS_EVENTBRIDGE_ROLE_ARN: !Ref AwsCredentialsEventBridgeRoleArn
+          BUCKET_FOR_BANNER: !Ref BucketForBanner
+
+          # Official
+          APK_KEY: !Ref ApkKey
+
+          # External Auth
+          MAKERS_AUTH_JWK_ENDPOINT: !Ref MakersAuthJwkEndpoint
+          MAKERS_AUTH_JWK_ISSUER: !Ref MakersAuthJwkIssuer
+          AUTH_API_KEY: !Ref AuthApiKey
+          OUR_SERVICE_NAME: !Ref OurServiceName
+
       Policies:
         - AWSLambdaBasicExecutionRole
-        - Statement:
+        - Version: "2012-10-17"
+          Statement:
             - Effect: Allow
               Action:
                 - s3:GetObject
-              Resource: !Sub "arn:aws:s3:::${S3Bucket}/*"
+                - s3:PutObject
+                - s3:DeleteObject
+              Resource:
+                - !Sub "arn:aws:s3:::${BucketForBanner}/*"
+                - !Sub "arn:aws:s3:::${S3Bucket}/*"
       Events:
-        ApiProxy:
-          Type: Api
-          Properties:
-            RestApiId: !Ref ApiGateway
-            Path: /{proxy+}
-            Method: ANY
         ApiRoot:
           Type: Api
           Properties:
             RestApiId: !Ref ApiGateway
             Path: /
+            Method: ANY
+        ApiProxy:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /{proxy+}
             Method: ANY
 
   # API Gateway
@@ -68,19 +230,29 @@ Resources:
     Properties:
       Name: !Sub "${AWS::StackName}-api"
       StageName: dev
+      Description: SOPT Operation Backend API Gateway
       Cors:
         AllowOrigin: "'*'"
         AllowHeaders: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
         AllowMethods: "'GET,POST,PUT,PATCH,DELETE,OPTIONS'"
         AllowCredentials: false
 
+# =============================================================================
+# 출력값
+# =============================================================================
 Outputs:
   ApiEndpoint:
     Description: "API Gateway endpoint URL"
     Value: !Sub "https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/dev"
+    Export:
+      Name: !Sub "${AWS::StackName}-ApiEndpoint"
   LambdaFunctionName:
     Description: "Lambda Function Name"
     Value: !Ref ApiFunction
+    Export:
+      Name: !Sub "${AWS::StackName}-FunctionName"
   LambdaFunctionArn:
     Description: "Lambda Function ARN"
     Value: !GetAtt ApiFunction.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-FunctionArn"
