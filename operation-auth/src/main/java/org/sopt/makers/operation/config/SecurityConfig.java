@@ -52,6 +52,28 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // ✨ Lambda Dev 환경용 SecurityFilterChain 추가
+    @Bean
+    @Profile("lambda-dev")
+    public SecurityFilterChain filterChainLambdaDev(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+                .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/v3/**")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/v1/banners/images", "GET")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/v1/banners/images", "OPTIONS")).permitAll()
+        );
+        setHttp(http);
+        return http.build();
+    }
+
+    // ✨ Lambda Prod 환경용 SecurityFilterChain 추가
+    @Bean
+    @Profile("lambda-prod")
+    public SecurityFilterChain filterChainLambdaProd(HttpSecurity http) throws Exception {
+        setHttp(http);
+        return http.build();
+    }
+
     private void setHttp(HttpSecurity http) throws Exception {
         http.httpBasic().disable()
                 .csrf().disable()
