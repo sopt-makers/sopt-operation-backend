@@ -1,0 +1,86 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  SOPT Operation Backend DEV - Spring Boot on AWS Lambda with SnapStart
+
+Globals:
+  Function:
+    Timeout: 300
+    MemorySize: 2048
+    Runtime: java17
+
+Parameters:
+  S3Bucket:
+    Type: String
+    Default: "operation-lambda-deploy"
+    Description: S3 bucket containing the Lambda ZIP
+  S3Key:
+    Type: String
+    Default: ""
+    Description: S3 key (path) to the Lambda ZIP file
+  Profile:
+    Type: String
+    Default: "lambda-dev"
+    Description: Spring profile to use
+
+Resources:
+  # Lambda 함수
+  ApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-api"
+      CodeUri:
+        Bucket: !Ref S3Bucket
+        Key: !Ref S3Key
+      Handler: org.sopt.makers.operation.LambdaHandler
+      SnapStart:
+        ApplyOn: PublishedVersions
+      AutoPublishAlias: live
+      Environment:
+        Variables:
+          SPRING_PROFILES_ACTIVE: !Ref Profile
+          TZ: Asia/Seoul
+          JAVA_TOOL_OPTIONS: "-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+              Resource: !Sub "arn:aws:s3:::${S3Bucket}/*"
+      Events:
+        ApiProxy:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /{proxy+}
+            Method: ANY
+        ApiRoot:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /
+            Method: ANY
+
+  # API Gateway
+  ApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub "${AWS::StackName}-api"
+      StageName: dev
+      Cors:
+        AllowOrigin: "'*'"
+        AllowHeaders: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
+        AllowMethods: "'GET,POST,PUT,PATCH,DELETE,OPTIONS'"
+        AllowCredentials: false
+
+Outputs:
+  ApiEndpoint:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/dev"
+  LambdaFunctionName:
+    Description: "Lambda Function Name"
+    Value: !Ref ApiFunction
+  LambdaFunctionArn:
+    Description: "Lambda Function ARN"
+    Value: !GetAtt ApiFunction.Arn
