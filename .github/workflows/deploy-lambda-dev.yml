@@ -1,0 +1,147 @@
+name: Deploy Lambda (Dev)
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Lambda Dev 환경에 배포하시겠습니까? (yes 입력)'
+        required: true
+        default: 'no'
+
+env:
+  AWS_REGION: ap-northeast-2
+  S3_BUCKET: operation-lambda-deploy
+  STACK_NAME: sopt-operation-dev
+
+jobs:
+  deploy:
+    name: Build and Deploy to Lambda
+    runs-on: ubuntu-latest
+    if: github.event.inputs.confirm == 'yes'
+
+    steps:
+      # 1. 코드 체크아웃
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. JDK 17 설정
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      # 3. Gradle 권한 설정
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # 4. Lambda JAR 빌드
+      - name: Build Lambda JAR
+        run: ./gradlew clean :operation-api:lambdaJar -x test
+
+      # 5. AWS 자격 증명 설정
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # 6. SAM CLI 설치
+      - name: Install SAM CLI
+        uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+
+      # 7. S3에 Lambda ZIP 업로드
+      - name: Upload to S3
+        id: upload
+        run: |
+          JAR_FILE=$(ls operation-api/build/distributions/*-lambda.zip | head -1)
+          TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
+          S3_KEY="deploy/${STACK_NAME}-${TIMESTAMP}.zip"
+          
+          aws s3 cp "$JAR_FILE" "s3://${S3_BUCKET}/${S3_KEY}"
+          
+          echo "s3_key=${S3_KEY}" >> $GITHUB_OUTPUT
+          echo "✅ Uploaded to s3://${S3_BUCKET}/${S3_KEY}"
+
+      # 8. SAM Deploy
+      - name: SAM Deploy
+        working-directory: lambda
+        run: |
+          sam deploy \
+            --template template-dev.yaml \
+            --stack-name ${{ env.STACK_NAME }} \
+            --region ${{ env.AWS_REGION }} \
+            --capabilities CAPABILITY_IAM \
+            --no-fail-on-empty-changeset \
+            --no-confirm-changeset \
+            --parameter-overrides \
+              S3Bucket=${{ env.S3_BUCKET }} \
+              S3Key=${{ steps.upload.outputs.s3_key }} \
+              SpringProfile=lambda-dev \
+              DbDriverClassName="${{ secrets.LAMBDA_DB_DRIVER_CLASS_NAME }}" \
+              DbUrl="${{ secrets.LAMBDA_DB_URL }}" \
+              DbUsername="${{ secrets.LAMBDA_DB_USERNAME }}" \
+              DbPassword="${{ secrets.LAMBDA_DB_PASSWORD }}" \
+              JwtSecretKeyApp="${{ secrets.LAMBDA_JWT_SECRET_KEY_APP }}" \
+              JwtSecretKeyAccess="${{ secrets.LAMBDA_JWT_SECRET_KEY_ACCESS }}" \
+              JwtSecretKeyRefresh="${{ secrets.LAMBDA_JWT_SECRET_KEY_REFRESH }}" \
+              JwtSecretPlatformCode="${{ secrets.LAMBDA_JWT_SECRET_PLATFORM_CODE }}" \
+              SecretKeyPg="${{ secrets.LAMBDA_SECRET_KEY_PG }}" \
+              SoptCurrentGeneration="${{ secrets.LAMBDA_SOPT_CURRENT_GENERATION }}" \
+              SoptMakerPgUrl="${{ secrets.LAMBDA_SOPT_MAKER_PG_URL }}" \
+              SoptMakerPgToken="${{ secrets.LAMBDA_SOPT_MAKER_PG_TOKEN }}" \
+              SoptAlarmMessageTitle="${{ secrets.LAMBDA_SOPT_ALARM_MESSAGE_TITLE }}" \
+              SoptAlarmMessageContent="${{ secrets.LAMBDA_SOPT_ALARM_MESSAGE_CONTENT }}" \
+              AdminUrlProd="${{ secrets.LAMBDA_ADMIN_URL_PROD }}" \
+              AdminUrlDev="${{ secrets.LAMBDA_ADMIN_URL_DEV }}" \
+              AdminUrlLocal="${{ secrets.LAMBDA_ADMIN_URL_LOCAL }}" \
+              NotificationUrl="${{ secrets.LAMBDA_NOTIFICATION_URL }}" \
+              NotificationKey="${{ secrets.LAMBDA_NOTIFICATION_KEY }}" \
+              NotificationArn="${{ secrets.LAMBDA_NOTIFICATION_ARN }}" \
+              AwsCredentialsAccessKey="${{ secrets.LAMBDA_AWS_CREDENTIALS_ACCESS_KEY }}" \
+              AwsCredentialsSecretKey="${{ secrets.LAMBDA_AWS_CREDENTIALS_SECRET_KEY }}" \
+              AwsCredentialsEventBridgeRoleArn="${{ secrets.LAMBDA_AWS_CREDENTIALS_EVENTBRIDGE_ROLE_ARN }}" \
+              AwsRegion="${{ env.AWS_REGION }}" \
+              BucketForBanner="${{ secrets.LAMBDA_BUCKET_FOR_BANNER }}" \
+              ApkKey="${{ secrets.LAMBDA_APK_KEY }}" \
+              MakersAuthJwkEndpoint="${{ secrets.LAMBDA_MAKERS_AUTH_JWK_ENDPOINT }}" \
+              MakersAuthJwkIssuer="${{ secrets.LAMBDA_MAKERS_AUTH_JWK_ISSUER }}" \
+              AuthApiKey="${{ secrets.LAMBDA_AUTH_API_KEY }}" \
+              OurServiceName="${{ secrets.LAMBDA_OUR_SERVICE_NAME }}"
+
+      # 9. 배포 결과 출력
+      - name: Get API Endpoint
+        id: endpoint
+        run: |
+          API_ENDPOINT=$(aws cloudformation describe-stacks \
+            --stack-name ${{ env.STACK_NAME }} \
+            --query "Stacks[0].Outputs[?OutputKey=='ApiEndpoint'].OutputValue" \
+            --output text)
+          
+          LAMBDA_NAME=$(aws cloudformation describe-stacks \
+            --stack-name ${{ env.STACK_NAME }} \
+            --query "Stacks[0].Outputs[?OutputKey=='LambdaFunctionName'].OutputValue" \
+            --output text)
+          
+          echo "api_endpoint=${API_ENDPOINT}" >> $GITHUB_OUTPUT
+          echo "lambda_name=${LAMBDA_NAME}" >> $GITHUB_OUTPUT
+
+      # 10. 배포 결과 Summary
+      - name: Deployment Summary
+        run: |
+          echo "## 🚀 Lambda 배포 완료!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| 항목 | 값 |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|-----|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Stack Name** | ${{ env.STACK_NAME }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Lambda Function** | ${{ steps.endpoint.outputs.lambda_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **API Endpoint** | ${{ steps.endpoint.outputs.api_endpoint }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 테스트 명령어" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "curl ${{ steps.endpoint.outputs.api_endpoint }}/api/v1/test" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
