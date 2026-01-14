@@ -1,0 +1,117 @@
+spring:
+  config:
+    activate:
+      on-profile: lambda-dev
+    import: optional:file:.env[.properties]
+
+  main:
+    lazy-initialization: true  # Cold Start 최적화
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+  datasource:
+    driver-class-name: ${DB_DRIVER_CLASS_NAME}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 2        # Lambda 최적화 (동시 실행 제한적)
+      minimum-idle: 0             # Cold Start 최적화
+      connection-timeout: 5000    # 빠른 실패 처리 (5초)
+      idle-timeout: 30000         # 30초
+      max-lifetime: 60000         # 60초 (Lambda freeze/thaw 사이클 고려)
+      validation-timeout: 2000
+      leak-detection-threshold: 20000
+      connection-test-query: SELECT 1
+      register-mbeans: false      # JMX MBean 비활성화
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+      globally_quoted_identifiers: true
+    open-in-view: false  # Lambda 필수 - 요청 처리 최적화
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        default_batch_fetch_size: 10  # N+1 문제 방지
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database: postgresql
+
+  jwt:
+    secretKey:
+      app: ${JWT_SECRET_KEY_APP}
+      access: ${JWT_SECRET_KEY_ACCESS}
+      refresh: ${JWT_SECRET_KEY_REFRESH}
+      platform_code: ${JWT_SECRET_PLATFORM_CODE}
+    jwk:
+      issuer: ${MAKERS_AUTH_JWK_ISSUER}
+
+  secretKey:
+    playground: ${SECRET_KEY_PG}
+
+sopt:
+  current:
+    generation: ${SOPT_CURRENT_GENERATION}
+  makers:
+    playground:
+      server: ${SOPT_MAKER_PG_URL}
+      token: ${SOPT_MAKER_PG_TOKEN}
+  alarm:
+    message:
+      title_end: ${SOPT_ALARM_MESSAGE_TITLE}
+      content_end: ${SOPT_ALARM_MESSAGE_CONTENT}
+
+admin:
+  url:
+    prod: ${ADMIN_URL_PROD}
+    dev: ${ADMIN_URL_DEV}
+    local: ${ADMIN_URL_LOCAL}
+
+notification:
+  url: ${NOTIFICATION_URL}
+  key: ${NOTIFICATION_KEY}
+  arn: ${NOTIFICATION_ARN}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_CREDENTIALS_ACCESS_KEY}
+      secretKey: ${AWS_CREDENTIALS_SECRET_KEY}
+    eventBridge:
+      roleArn: ${AWS_CREDENTIALS_EVENTBRIDGE_ROLE_ARN}
+    s3:
+      banner:
+        name: ${BUCKET_FOR_BANNER}
+    region: ${AWS_REGION}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  health:
+    diskspace:
+      enabled: false  # Lambda는 읽기 전용 파일시스템
+
+official:
+  apikey: ${APK_KEY}
+
+external:
+  auth:
+    url: https://auth.api.sopt.org
+    api-key: ${AUTH_API_KEY}
+    service-name: ${OUR_SERVICE_NAME}
+    endpoints:
+      jwk: ${MAKERS_AUTH_JWK_ENDPOINT}
