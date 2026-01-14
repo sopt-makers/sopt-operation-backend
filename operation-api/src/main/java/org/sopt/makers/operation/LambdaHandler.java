@@ -3,7 +3,7 @@ package org.sopt.makers.operation;
 import com.amazonaws.serverless.proxy.model.AwsProxyRequest;
 import com.amazonaws.serverless.proxy.model.AwsProxyResponse;
 import com.amazonaws.serverless.proxy.spring.SpringBootLambdaContainerHandler;
-import com.amazonaws.serverless.exceptions.ContainerInitializationException;
+import com.amazonaws.serverless.proxy.spring.SpringBootProxyHandlerBuilder;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 
@@ -23,9 +23,12 @@ public class LambdaHandler implements RequestStreamHandler {
 
     static {
         try {
-            handler = SpringBootLambdaContainerHandler.getAwsProxyHandler(OperationApplication.class);
-        } catch (ContainerInitializationException e) {
-            throw new RuntimeException("Could not initialize Spring Boot application", e);
+            // Servlet 모드 강제 사용 (WebFlux가 클래스패스에 있어도 무시)
+            handler = new SpringBootProxyHandlerBuilder<AwsProxyRequest>()
+                    .defaultProxy()
+                    .asyncInit()
+                    .springBootApplication(OperationApplication.class)
+                    .buildAndInitialize();
         } catch (Exception e) {
             throw new RuntimeException("Could not initialize Lambda handler", e);
         }
