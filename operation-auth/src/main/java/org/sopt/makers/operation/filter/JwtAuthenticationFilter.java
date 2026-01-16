@@ -39,6 +39,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         val uri = request.getRequestURI();
         log.info("Request URI: {}", uri);  // URI 로깅
+        // ✨ Swagger 경로는 JWT 인증 건너뛰기
+        if (isSwaggerPath(uri)) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         if ((uri.startsWith("/api/v1")) && !isExcludedFromJwtAuth(uri)
                 && !uri.contains("test") && !isAlarmUpdateRequest(request)
                 &&!isBannerImageRequest(request)) {
@@ -129,4 +135,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         boolean isAlarmRequest = request.getRequestURI().contains("/api/v1/alarms");
         return isPatchRequest && isAlarmRequest;
     }
+
+    private boolean isSwaggerPath(String uri) {
+        return uri.startsWith("/swagger-ui")
+                || uri.startsWith("/v3/api-docs")
+                || uri.startsWith("/v3/")
+                || uri.equals("/swagger-ui.html");
+    }
+
 }
