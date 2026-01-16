@@ -1,3 +1,10 @@
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
+
 spring:
   config:
     activate:
@@ -85,6 +92,10 @@ notification:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
+    url: /v3/api-docs                    # ✨ /dev 제거됨
+    config-url: /v3/api-docs/swagger-config  # ✨ /dev 제거됨
+  api-docs:
+    path: /v3/api-docs
 
 cloud:
   aws:
