@@ -1,5 +1,6 @@
 package org.sopt.makers.operation;
 
+import com.amazonaws.serverless.exceptions.ContainerInitializationException;
 import com.amazonaws.serverless.proxy.model.AwsProxyRequest;
 import com.amazonaws.serverless.proxy.model.AwsProxyResponse;
 import com.amazonaws.serverless.proxy.spring.SpringBootLambdaContainerHandler;
@@ -23,13 +24,34 @@ public class LambdaHandler implements RequestStreamHandler {
 
     static {
         try {
-            // Servlet 모드 강제 사용 (WebFlux가 클래스패스에 있어도 무시)
-            handler = new SpringBootProxyHandlerBuilder<AwsProxyRequest>()
-                    .defaultProxy()
-                    .asyncInit()
-                    .springBootApplication(OperationApplication.class)
-                    .buildAndInitialize();
-        } catch (Exception e) {
+            handler = SpringBootLambdaContainerHandler.getAwsProxyHandler(OperationApplication.class);
+
+
+// ✨ 이미지, 폰트만 바이너리 처리 (JS/CSS 제외)
+            SpringBootLambdaContainerHandler.getContainerConfig().addBinaryContentTypes(
+                    // 이미지
+                    "image/png",
+                    "image/jpeg",
+                    "image/gif",
+                    "image/svg+xml",
+                    "image/webp",
+                    "image/x-icon",
+
+                    // 폰트
+                    "font/woff",
+                    "font/woff2",
+                    "application/font-woff",
+                    "application/font-woff2",
+
+                    // 기타 바이너리
+                    "application/octet-stream",
+                    "application/pdf"
+            );
+
+        } catch (ContainerInitializationException e) {
+            throw new RuntimeException("Could not initialize Spring Boot application", e);
+        }
+        catch (Exception e) {
             throw new RuntimeException("Could not initialize Lambda handler", e);
         }
     }
