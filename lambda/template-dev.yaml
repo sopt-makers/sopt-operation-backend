@@ -231,11 +231,11 @@ Resources:
       Name: !Sub "${AWS::StackName}-api"
       StageName: dev
       Description: SOPT Operation Backend API Gateway
-      Cors:
-        AllowOrigin: "'*'"
-        AllowHeaders: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
-        AllowMethods: "'GET,POST,PUT,PATCH,DELETE,OPTIONS'"
-        AllowCredentials: false
+#      Cors:
+#        AllowOrigin: "'*'"
+#        AllowHeaders: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
+#        AllowMethods: "'GET,POST,PUT,PATCH,DELETE,OPTIONS'"
+#        AllowCredentials: false
 
 # =============================================================================
 # 출력값
