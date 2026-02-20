@@ -35,15 +35,16 @@ public class AlarmTarget {
     private AlarmTargetType targetType;
 
     @Column(name = "generation", updatable = false)
-    private Integer generation;
+    private Integer generation; // 해당 알림을 발송하는 기수
 
     @Setter
     @Column(name = "targets", columnDefinition = "TEXT", updatable = false)
     @Convert(converter = StringListConverter.class)
     private List<String> targetIds;
 
-    public static AlarmTarget all() {
+    public static AlarmTarget all(int generation) {
         return AlarmTarget.builder()
+                .generation(generation)
                 .sendAction(AlarmSendAction.SEND_ALL)
                 .targetType(AlarmTargetType.ALL)
                 .targetPart(AlarmTargetPart.ALL)

@@ -10,8 +10,10 @@ import io.swagger.v3.oas.models.servers.Server;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 @SecurityScheme(
         name = "Authorization",
@@ -23,7 +25,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SwaggerConfig {
 
+    // ✨ 기존 dev/prod용
     @Bean
+    @Profile({"dev", "prod"})
     public OpenAPI api() {
         Server localServer = new Server()
                 .url("http://localhost:8080")
@@ -33,6 +37,33 @@ public class SwaggerConfig {
                 .url("https://operation.api.dev.sopt.org")
                 .description("HTTPS Server");
 
+        return createOpenAPI(List.of(localServer, httpsServer));
+    }
+
+    // ✨ Lambda Dev용 - API Gateway URL 사용
+    @Bean
+    @Profile("lambda-dev")
+    public OpenAPI apiLambdaDev() {
+        Server lambdaServer = new Server()
+                .url("https://operation-api-dev.sopt.org")  // ✨ 커스텀 도메인으로 변경
+                .description("Lambda Dev Server");
+
+        return createOpenAPI(List.of(lambdaServer));
+    }
+
+    // ✨ Lambda Prod용
+    @Bean
+    @Profile("lambda-prod")
+    public OpenAPI apiLambdaProd() {
+        Server httpsServer = new Server()
+                .url("https://operation.api.sopt.org")
+                .description("Production Server");
+
+        return createOpenAPI(List.of(httpsServer));
+    }
+
+    // ✨ 공통 OpenAPI 생성 메서드
+    private OpenAPI createOpenAPI(List<Server> servers) {
         Info info = new Info()
                 .title("Makers Operation API Docs")
                 .version("v2.0")
@@ -40,11 +71,9 @@ public class SwaggerConfig {
 
         SecurityRequirement securityRequirement = new SecurityRequirement().addList("Authorization");
 
-
-
         return new OpenAPI()
                 .info(info)
-                .servers(List.of(localServer, httpsServer))
+                .servers(servers)
                 .addSecurityItem(securityRequirement);
     }
 }

@@ -18,7 +18,7 @@ dependencies {
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-aws', version: '2.2.6.RELEASE'
 
     // 외부 인증 서버 통신용
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
+   // implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation project(':operation-domain')
 }
 
