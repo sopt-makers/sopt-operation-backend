@@ -37,7 +37,7 @@ public record AlarmScheduleSendRequest(
     private AlarmTarget toTargetEntity() {
         return switch (this.targetType) {
             case ALL -> this.part.equals(AlarmTargetPart.ALL)
-                    ? AlarmTarget.all()
+                    ? AlarmTarget.all(this.createdGeneration)
                     : AlarmTarget.partialForAll(this.createdGeneration, this.part, this.targetList);
             case ACTIVE -> AlarmTarget.partialForActive(this.createdGeneration, this.part, this.targetList);
             case CSV -> AlarmTarget.partialForCsv(this.createdGeneration, this.targetList);
