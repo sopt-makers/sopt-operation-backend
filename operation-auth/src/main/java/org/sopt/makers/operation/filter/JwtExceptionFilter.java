@@ -29,20 +29,20 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest,
-            HttpServletResponse httpServletResponse,
-            FilterChain filterChain
+                                    HttpServletResponse httpServletResponse,
+                                    FilterChain filterChain
     ) throws ServletException, IOException {
-       try {
-           filterChain.doFilter(httpServletRequest, httpServletResponse);
-       } catch(TokenException e) {
-           log.error("Token Exception caught: {}", e.getMessage(), e);  // 토큰 예외 로깅
-           val jsonResponse = objectMapper.writeValueAsString(getFailureResponse(e.getFailureCode()));
+        try {
+            filterChain.doFilter(httpServletRequest, httpServletResponse);
+        } catch(TokenException e) {
+            log.warn("JWT auth failed [{}]: {}", httpServletRequest.getRequestURI(), e.getMessage());
+            val jsonResponse = objectMapper.writeValueAsString(getFailureResponse(e.getFailureCode()));
 
-           httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-           httpServletResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
-           httpServletResponse.setCharacterEncoding("UTF-8");
-           httpServletResponse.getWriter().write(jsonResponse);
-       }
+            httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+            httpServletResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            httpServletResponse.setCharacterEncoding("UTF-8");
+            httpServletResponse.getWriter().write(jsonResponse);
+        }
     }
 
     private ResponseEntity<BaseResponse<?>> getFailureResponse(FailureCode failureCode) {
