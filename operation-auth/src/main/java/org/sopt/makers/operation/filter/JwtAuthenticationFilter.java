@@ -38,8 +38,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         val uri = request.getRequestURI();
-        log.info("Request URI: {}", uri);  // URI 로깅
-        // ✨ Swagger 경로는 JWT 인증 건너뛰기
+        log.debug("Request URI: {}", uri);
+
+        // Swagger 경로는 JWT 인증 건너뛰기
         if (isSwaggerPath(uri)) {
             chain.doFilter(request, response);
             return;
@@ -47,38 +48,38 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if ((uri.startsWith("/api/v1")) && !isExcludedFromJwtAuth(uri)
                 && !uri.contains("test") && !isAlarmUpdateRequest(request)
-                &&!isBannerImageRequest(request)) {
+                && !isBannerImageRequest(request)) {
             val token = jwtTokenProvider.resolveToken(request);
-            log.info("Authorization header: {}", token);  // 토큰 로깅
+            log.debug("Authorization header present: {}", token != null);
             try {
-                if(isExternalJwkToken(token)) {
+                if (isExternalJwkToken(token)) {
                     MakersAuthentication authentication = jwtAuthenticationService.authenticate(token);
                     authentication.setAuthenticated(true);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                }else{
+                } else {
                     val jwtTokenType = validateTokenType(request);
-                    log.info("JWT Token type: {}", jwtTokenType);  // 토큰 타입 로깅
+                    log.debug("JWT Token type: {}", jwtTokenType);
                     checkJwtAvailable(token, jwtTokenType);
                     val auth = jwtTokenProvider.getAuthentication(token, jwtTokenType);
-                    log.info("Authentication object created for subject ID: {}", auth.getPrincipal());
+                    log.debug("Authentication object created for subject ID: {}", auth.getPrincipal());
 
                     auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
-                log.info("Authentication successful");  // 인증 성공 로깅
+                log.debug("Authentication successful for URI: {}", uri);
             } catch (TokenException e) {
-                log.error("Token exception occurred: {}", e.getMessage(), e);
+                log.warn("Token validation failed for URI [{}]: {}", uri, e.getMessage());
                 throw e;
-            }catch (Exception e) {
-                log.error("Authentication error: {}", e.getMessage(), e);  // 인증 에러 로깅
+            } catch (Exception e) {
+                log.warn("Authentication failed for URI [{}]: {}", uri, e.getMessage());
                 throw new TokenException(INVALID_TOKEN);
             }
         }
 
         try {
             chain.doFilter(request, response);
-            log.info("Request processing completed for URI: {}", uri);
+            log.debug("Request processing completed for URI: {}", uri);
         } catch (Exception e) {
             log.error("Error occurred during filter chain processing: {}", e.getMessage(), e);
             throw e;
@@ -88,27 +89,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private boolean isExcludedFromJwtAuth(String uri) {
         return uri.contains("/auth") && !uri.equals("/api/v1/auth/password");
     }
+
     private boolean isBannerImageRequest(HttpServletRequest request) {
         return request.getMethod().equals("GET") &&
                 request.getRequestURI().equals("/api/v1/banners/images");
     }
 
     private void checkJwtAvailable(String token, JwtTokenType jwtTokenType) {
-        log.info("Checking JWT availability for token type: {}", jwtTokenType);
+        log.debug("Checking JWT availability for token type: {}", jwtTokenType);
 
         if (token == null) {
-            log.error("Token is null - Authentication failed");
+            log.warn("Token is null for type: {}", jwtTokenType);
             throw new TokenException(INVALID_TOKEN);
         }
 
         boolean isValid = jwtTokenProvider.validateTokenExpiration(token, jwtTokenType);
 
         if (!isValid) {
-            log.error("Token validation failed for token type: {}", jwtTokenType);
+            log.warn("Token expired for type: {}", jwtTokenType);
             throw new TokenException(INVALID_TOKEN);
         }
 
-        log.info("Token successfully validated for type: {}", jwtTokenType);
+        log.debug("Token successfully validated for type: {}", jwtTokenType);
     }
 
     private JwtTokenType validateTokenType(HttpServletRequest request) {
@@ -142,5 +144,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 || uri.startsWith("/v3/")
                 || uri.equals("/swagger-ui.html");
     }
-
 }
