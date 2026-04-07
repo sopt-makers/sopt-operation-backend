@@ -45,5 +45,10 @@ scripts
 .DS_Store
 **/.DS_Store
 
+gradle.properties
+
 lambda/.env
 lambda/params-*.json
+
+### Clauoe Code ###
+CLAUDE.md

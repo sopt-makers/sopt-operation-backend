@@ -21,7 +21,7 @@
     </springProfile>
 
     <!-- ==================== 로컬/테스트 환경 ==================== -->
-    <springProfile name="local | test">
+    <springProfile name="local | test | dev">
         <include resource="console-appender.xml"/>
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
