@@ -120,7 +120,7 @@ public class AppLectureServiceImpl implements AppLectureService {
         val message = getMessage(lecture.getAttribute());
 
         if (checkOnAttendanceAbsence(subLecture, subAttendance)) {
-            return TodayLectureResponse.getOnAttendanceLectureResponse(subAttendance, lecture, responseType, message);
+            return TodayLectureResponse.getOnAttendanceLectureResponse(subAttendances, lecture, responseType, message);
         }
 
         return TodayLectureResponse.getAttendanceLectureResponse(subAttendances, subAttendance, lecture, responseType, message);

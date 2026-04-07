@@ -58,14 +58,14 @@ public record TodayLectureResponse(
     }
 
     public static TodayLectureResponse getOnAttendanceLectureResponse(
-            SubAttendance subAttendance,
+            List<SubAttendance> subAttendances,
             Lecture lecture,
             LectureResponseType responseType,
             String message
     ) {
         return lecture.isFirst()
                 ? TodayLectureResponse.of(responseType, lecture, message, Collections.emptyList())
-                : TodayLectureResponse.of(responseType, lecture, message, Collections.singletonList(subAttendance));
+                : TodayLectureResponse.of(responseType, lecture, message, Collections.singletonList(subAttendances.get(0)));
     }
 
     public static TodayLectureResponse getAttendanceLectureResponse(

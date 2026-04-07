@@ -22,6 +22,8 @@ spring:
       access: test
       refresh: test
       platform_code: test
+    jwk:
+      issuer: test
   secretKey:
     playground: test
 

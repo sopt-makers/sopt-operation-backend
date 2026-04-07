@@ -13,6 +13,8 @@ Globals:
     Runtime: java17
   Api:
     OpenApiVersion: 3.0.1
+    BinaryMediaTypes:
+      - "multipart/form-data"
 
 # =============================================================================
 # 파라미터 정의
