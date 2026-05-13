@@ -11,13 +11,16 @@ import org.sopt.makers.operation.web.banner.dto.request.BannerRequest;
 import org.sopt.makers.operation.web.banner.service.BannerService;
 import org.sopt.makers.operation.web.banner.service.BannerService.FilterCriteria;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import static org.sopt.makers.operation.code.success.web.BannerSuccessCode.*;
 import static org.sopt.makers.operation.web.banner.service.BannerService.*;
@@ -47,16 +50,41 @@ public class BannerApiController implements BannerApi {
     return ApiResponseUtil.success(SUCCESS_GET_BANNER_DETAIL, response);
   }
 
-  @PostMapping
+  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @Override
-  public ResponseEntity<BaseResponse<?>> createBanner(@Valid @ModelAttribute BannerRequest.BannerCreateOrModify request) {
+  public ResponseEntity<BaseResponse<?>> createBanner(
+          @RequestPart("location") String location,
+          @RequestPart("content_type") String contentType,
+          @RequestPart("publisher") String publisher,
+          @RequestPart("start_date") String startDate,
+          @RequestPart("end_date") String endDate,
+          @RequestPart(name = "link", required = false) String link,
+          @RequestPart("image_pc") MultipartFile imagePc,
+          @RequestPart("image_mobile") MultipartFile imageMobile
+  ) {
+      val request = new BannerRequest.BannerCreateOrModify(
+              location, contentType, publisher, startDate, endDate, link, imagePc, imageMobile
+      );
       val response = bannerService.createBanner(request);
       return ApiResponseUtil.success(SUCCESS_CREATE_BANNER, response);
   }
 
-  @PutMapping("/{bannerId}")
+  @PutMapping(value = "/{bannerId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @Override
-  public ResponseEntity<BaseResponse<?>> updateBanner(@PathVariable("bannerId") Long bannerId, @Valid @ModelAttribute BannerRequest.BannerCreateOrModify request) {
+  public ResponseEntity<BaseResponse<?>> updateBanner(
+          @PathVariable("bannerId") Long bannerId,
+          @RequestPart("location") String location,
+          @RequestPart("content_type") String contentType,
+          @RequestPart("publisher") String publisher,
+          @RequestPart("start_date") String startDate,
+          @RequestPart("end_date") String endDate,
+          @RequestPart(name = "link", required = false) String link,
+          @RequestPart("image_pc") MultipartFile imagePc,
+          @RequestPart("image_mobile") MultipartFile imageMobile
+  ) {
+      val request = new BannerRequest.BannerCreateOrModify(
+              location, contentType, publisher, startDate, endDate, link, imagePc, imageMobile
+      );
       val response = bannerService.updateBanner(bannerId, request);
       return ApiResponseUtil.success(SUCCESS_UPDATE_BANNER, response);
   }

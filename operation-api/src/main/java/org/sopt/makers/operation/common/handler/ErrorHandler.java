@@ -19,6 +19,7 @@ import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -191,6 +192,13 @@ public class ErrorHandler {
     public ResponseEntity<BaseResponse<?>> multipartException(MultipartException ex) {
         log.error("[MultipartException] : {}", ex.getMessage(), ex);
         return ApiResponseUtil.failure("multipart 요청 파싱 실패: " + ex.getMessage());
+    }
+
+    // @RequestPart 필수 파트 누락
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<BaseResponse<?>> missingPartException(MissingServletRequestPartException ex) {
+        log.error("[MissingServletRequestPartException] : {}", ex.getMessage());
+        return ApiResponseUtil.failure("필수 multipart 파트가 누락되었습니다: " + ex.getRequestPartName());
     }
 
     // JSON 바디 파싱 실패

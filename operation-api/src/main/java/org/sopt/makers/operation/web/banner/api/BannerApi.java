@@ -14,6 +14,7 @@ import org.sopt.makers.operation.dto.BaseResponse;
 import org.sopt.makers.operation.web.banner.dto.request.BannerRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface BannerApi {
     @Operation(
@@ -170,7 +171,16 @@ public interface BannerApi {
                     )
             )
     )
-    ResponseEntity<BaseResponse<?>> createBanner(BannerRequest.BannerCreateOrModify request);
+    ResponseEntity<BaseResponse<?>> createBanner(
+            String location,
+            String contentType,
+            String publisher,
+            String startDate,
+            String endDate,
+            String link,
+            MultipartFile imagePc,
+            MultipartFile imageMobile
+    );
 
     @Operation(
             summary = "배너 수정 API",
@@ -196,7 +206,17 @@ public interface BannerApi {
                     )
             )
     )
-    ResponseEntity<BaseResponse<?>> updateBanner(Long bannerId, BannerRequest.BannerCreateOrModify request);
+    ResponseEntity<BaseResponse<?>> updateBanner(
+            Long bannerId,
+            String location,
+            String contentType,
+            String publisher,
+            String startDate,
+            String endDate,
+            String link,
+            MultipartFile imagePc,
+            MultipartFile imageMobile
+    );
 
 
 }
