@@ -120,7 +120,7 @@ public class BannerServiceImpl implements BannerService {
     @Transactional
     @Override
     public BannerDetail createBanner(BannerRequest.BannerCreateOrModify request) {
-        val period = getPublishPeriod(request.start_date(), request.end_date());
+        val period = getPublishPeriod(request.getStartDate(), request.getEndDate());
 
         String pcImageKey = storeFile(request.image_pc());
         String mobileImageKey = storeFile(request.image_mobile());
@@ -154,7 +154,7 @@ public class BannerServiceImpl implements BannerService {
     @Transactional
     @Override
     public BannerDetail updateBanner(Long bannerId, BannerRequest.BannerCreateOrModify request) {
-        PublishPeriod period = getPublishPeriod(request.start_date(), request.end_date());
+        PublishPeriod period = getPublishPeriod(request.getStartDate(), request.getEndDate());
         Banner existingBanner = getBannerById(bannerId);
         val currentDate = LocalDate.now(clock);
         val bannerStatus = existingBanner.getPeriod().getPublishStatus(currentDate);

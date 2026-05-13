@@ -10,11 +10,15 @@ import org.sopt.makers.operation.exception.*;
 import org.sopt.makers.operation.util.ApiResponseUtil;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartException;
 
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -148,5 +152,58 @@ public class ErrorHandler {
         }
 
         return ApiResponseUtil.failure("필수 헤더가 누락되었습니다: " + ex.getHeaderName());
+    }
+
+    // @ModelAttribute 폼 바인딩/타입 변환 실패 (예: LocalDate 파싱 실패, MultipartFile 매핑 실패)
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<BaseResponse<?>> bindException(BindException ex) {
+        List<String> errorMessages = ex.getBindingResult().getAllErrors().stream()
+                .map(this::getBindErrorMessage)
+                .collect(Collectors.toList());
+
+        val errorMessage = errorMessages.isEmpty()
+                ? ex.getMessage()
+                : String.join(", ", errorMessages);
+        log.error("[BindException] : {}", errorMessage, ex);
+
+        return ApiResponseUtil.failure("요청 값 바인딩 실패: " + errorMessage);
+    }
+
+    private String getBindErrorMessage(ObjectError objectError) {
+        if (objectError instanceof FieldError fieldError) {
+            return String.format("[%s] 값이 올바르지 않습니다. (rejected=%s, reason=%s)",
+                    fieldError.getField(),
+                    fieldError.getRejectedValue(),
+                    fieldError.getDefaultMessage());
+        }
+        return objectError.getDefaultMessage();
+    }
+
+    // 파일 크기 초과 (max-file-size / max-request-size)
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<BaseResponse<?>> maxUploadSizeException(MaxUploadSizeExceededException ex) {
+        log.error("[MaxUploadSizeExceededException] : {}", ex.getMessage(), ex);
+        return ApiResponseUtil.failure("업로드 파일 크기가 허용 한도를 초과했습니다: " + ex.getMessage());
+    }
+
+    // multipart 파싱 자체 실패 (boundary 오류, 손상된 body 등)
+    @ExceptionHandler(MultipartException.class)
+    public ResponseEntity<BaseResponse<?>> multipartException(MultipartException ex) {
+        log.error("[MultipartException] : {}", ex.getMessage(), ex);
+        return ApiResponseUtil.failure("multipart 요청 파싱 실패: " + ex.getMessage());
+    }
+
+    // JSON 바디 파싱 실패
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<BaseResponse<?>> notReadableException(HttpMessageNotReadableException ex) {
+        log.error("[HttpMessageNotReadableException] : {}", ex.getMessage(), ex);
+        return ApiResponseUtil.failure("요청 바디를 읽을 수 없습니다: " + ex.getMostSpecificCause().getMessage());
+    }
+
+    // 위에서 잡지 못한 모든 예외에 대한 fallback — 람다에서 body 비어버리는 문제 방지
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<BaseResponse<?>> fallbackException(Exception ex) {
+        log.error("[UnhandledException] {} : {}", ex.getClass().getSimpleName(), ex.getMessage(), ex);
+        return ApiResponseUtil.failure(ex.getClass().getSimpleName() + ": " + ex.getMessage());
     }
 }
