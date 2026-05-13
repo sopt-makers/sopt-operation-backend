@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import static org.sopt.makers.operation.code.success.web.BannerSuccessCode.*;
 import static org.sopt.makers.operation.web.banner.service.BannerService.*;
 
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import static org.sopt.makers.operation.code.success.web.BannerSuccessCode.SUCCESS_CREATE_BANNER;
@@ -48,14 +49,14 @@ public class BannerApiController implements BannerApi {
 
   @PostMapping
   @Override
-  public ResponseEntity<BaseResponse<?>> createBanner(@ModelAttribute  BannerRequest.BannerCreateOrModify request) {
+  public ResponseEntity<BaseResponse<?>> createBanner(@Valid @ModelAttribute BannerRequest.BannerCreateOrModify request) {
       val response = bannerService.createBanner(request);
       return ApiResponseUtil.success(SUCCESS_CREATE_BANNER, response);
   }
 
   @PutMapping("/{bannerId}")
   @Override
-  public ResponseEntity<BaseResponse<?>> updateBanner(@PathVariable("bannerId") Long bannerId, @ModelAttribute  BannerRequest.BannerCreateOrModify request) {
+  public ResponseEntity<BaseResponse<?>> updateBanner(@PathVariable("bannerId") Long bannerId, @Valid @ModelAttribute BannerRequest.BannerCreateOrModify request) {
       val response = bannerService.updateBanner(bannerId, request);
       return ApiResponseUtil.success(SUCCESS_UPDATE_BANNER, response);
   }
