@@ -4,6 +4,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 import com.fasterxml.jackson.annotation.*;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import java.time.*;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,10 +23,10 @@ public class BannerRequest {
             @JsonProperty("publisher") String publisher,
 
             @Schema(description = "시작일", type = "string", format = "date", required = true)
-            @JsonProperty("start_date") LocalDate start_date,
+            @NotNull @JsonProperty("start_date") LocalDate start_date,
 
             @Schema(description = "종료일", type = "string", format = "date", required = true)
-            @JsonProperty("end_date") LocalDate end_date,
+            @NotNull @JsonProperty("end_date") LocalDate end_date,
 
             @Schema(description = "링크", required = false)
             @JsonProperty("link") String link,
