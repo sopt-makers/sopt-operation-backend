@@ -3,6 +3,7 @@ package org.sopt.makers.operation.config;
 import lombok.RequiredArgsConstructor;
 import org.sopt.makers.operation.filter.JwtAuthenticationFilter;
 import org.sopt.makers.operation.filter.JwtExceptionFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -28,6 +29,9 @@ public class SecurityConfig {
     private static final String AUTH_PATH_PATTERN = API_V1_PREFIX + "/auth/**";
     private static final String TEST_PATH_PATTERN = API_V1_PREFIX + "/test/**";
     private static final String ERROR_PATH_PATTERN = "/error";
+
+    @Value("${management.endpoints.web.base-path:/actuator}")
+    private String actuatorBasePath;
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtExceptionFilter jwtExceptionFilter;
@@ -110,7 +114,7 @@ public class SecurityConfig {
                                 .requestMatchers(new AntPathRequestMatcher(ERROR_PATH_PATTERN)).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/api/v1/alarms/**", "PATCH")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/api/v1/banners/images", "GET")).permitAll()
-                                .requestMatchers(new AntPathRequestMatcher("/actuator/**")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher(actuatorBasePath + "/**")).permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
@@ -132,7 +136,7 @@ public class SecurityConfig {
                                 .requestMatchers(new AntPathRequestMatcher(ERROR_PATH_PATTERN)).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/api/v1/alarms/**", "PATCH")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/api/v1/banners/images", "GET")).permitAll()
-                                .requestMatchers(new AntPathRequestMatcher("/actuator/**")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher(actuatorBasePath + "/**")).permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
