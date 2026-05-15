@@ -82,9 +82,11 @@ cloud:
 management:
   endpoints:
     web:
-      base-path: /${ACTUATOR_BASE_PATH}
+      base-path: /actuator
       exposure:
         include: health, prometheus
+      path-mapping:
+        prometheus: ${ACTUATOR_BASE_PATH}
   endpoint:
     prometheus:
       enabled: true
