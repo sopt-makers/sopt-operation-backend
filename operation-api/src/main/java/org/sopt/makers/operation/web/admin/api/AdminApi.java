@@ -14,6 +14,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 public interface AdminApi {
 
+	// signup API 비활성화 (DB 직접 insert로 어드민 계정 생성)
+	/*
 	@Operation(
 			summary = "회원가입 API",
 			responses = {
@@ -32,7 +34,7 @@ public interface AdminApi {
 			}
 	)
 	ResponseEntity<BaseResponse<?>> signup(@RequestBody SignUpRequest signUpRequestDTO);
-
+	*/
 
 	@Operation(
 			summary = "로그인 API",
