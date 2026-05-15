@@ -8,6 +8,10 @@ Globals:
     Timeout: 300
     MemorySize: 2048
     Runtime: java17
+  Api:
+    OpenApiVersion: 3.0.1
+    BinaryMediaTypes:
+      - "multipart/form-data"
 
 Parameters:
   S3Bucket:

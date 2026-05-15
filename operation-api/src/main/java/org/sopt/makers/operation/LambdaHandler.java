@@ -27,8 +27,11 @@ public class LambdaHandler implements RequestStreamHandler {
             handler = SpringBootLambdaContainerHandler.getAwsProxyHandler(OperationApplication.class);
 
 
-// ✨ 이미지, 폰트만 바이너리 처리 (JS/CSS 제외)
+// ✨ 이미지, 폰트, multipart 업로드 바이너리 처리 (JS/CSS 제외)
             SpringBootLambdaContainerHandler.getContainerConfig().addBinaryContentTypes(
+                    // 멀티파트 업로드 (배너 이미지 등)
+                    "multipart/form-data",
+
                     // 이미지
                     "image/png",
                     "image/jpeg",
