@@ -82,8 +82,14 @@ cloud:
 management:
   endpoints:
     web:
+      base-path: /${ACTUATOR_BASE_PATH}
       exposure:
-        include: health
+        include: health, prometheus
+  endpoint:
+    prometheus:
+      enabled: true
+    health:
+      show-details: never
 
 official:
   apikey: ${APK_KEY}
