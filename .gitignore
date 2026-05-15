@@ -49,6 +49,8 @@ gradle.properties
 
 lambda/.env
 lambda/params-*.json
+application-local.yml
 
 ### Clauoe Code ###
 CLAUDE.md
+.claude
