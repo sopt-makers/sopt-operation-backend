@@ -95,7 +95,7 @@ public class Lecture extends BaseEntity {
 
 	public void updateToEnd() {
 		this.lectureStatus = END;
-		attendances.forEach(Attendance::updateMemberScore);
+		attendances.forEach(Attendance::recalculateMemberScore);
 	}
 
 	public boolean isEnd() {

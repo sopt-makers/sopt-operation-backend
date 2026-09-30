@@ -114,12 +114,12 @@ public class Attendance {
 		};
 	}
 
-	public void updateMemberScore() {
-		this.member.updateScore(this.getScore());
+	public void recalculateMemberScore() {
+		this.member.updateTotalScore();
 	}
 
 	public void restoreMemberScore() {
-		this.member.updateScore((-1) * this.getScore());
+		this.member.updateTotalScoreExcluding(this);
 	}
 
 	public boolean isEnd() {
