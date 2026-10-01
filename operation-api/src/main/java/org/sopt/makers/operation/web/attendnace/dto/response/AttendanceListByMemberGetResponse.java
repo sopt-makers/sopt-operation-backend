@@ -2,6 +2,7 @@ package org.sopt.makers.operation.web.attendnace.dto.response;
 
 import static lombok.AccessLevel.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.sopt.makers.operation.attendance.domain.Attendance;
@@ -29,6 +30,8 @@ public record AttendanceListByMemberGetResponse(
 
 	@Builder(access = PRIVATE)
 	record LectureResponse(
+			LocalDateTime startDate,
+			LocalDateTime endDate,
 			String lecture,
 			float additiveScore,
 			String status,
@@ -37,6 +40,8 @@ public record AttendanceListByMemberGetResponse(
 
 		public static LectureResponse of(Attendance attendance) {
 			return LectureResponse.builder()
+					.startDate(attendance.getLecture().getStartDate())
+					.endDate(attendance.getLecture().getEndDate())
 					.lecture(attendance.getLecture().getName())
 					.additiveScore(attendance.getScore())
 					.status(attendance.getStatus().getName())
