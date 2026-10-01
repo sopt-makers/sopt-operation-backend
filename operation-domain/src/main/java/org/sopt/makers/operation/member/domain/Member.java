@@ -50,16 +50,24 @@ public class Member {
 		this.attendances = attendances;
 	}
 
-	public void updateScore(float score) {
-		this.score += score;
-	}
-
 	public void updateTotalScore() {
 		this.score = calcAllAttendances();
 	}
 
+	public void updateTotalScoreExcluding(Attendance excludedAttendance) {
+		this.score = calcAllAttendancesExcluding(excludedAttendance);
+	}
+
 	private float calcAllAttendances() {
 		return (float) (2 + this.attendances.stream()
+				.filter(Attendance::isEnd)
+				.mapToDouble(Attendance::getScore)
+				.sum());
+	}
+
+	private float calcAllAttendancesExcluding(Attendance excludedAttendance) {
+		return (float) (2 + this.attendances.stream()
+				.filter(attendance -> attendance != excludedAttendance)
 				.filter(Attendance::isEnd)
 				.mapToDouble(Attendance::getScore)
 				.sum());
